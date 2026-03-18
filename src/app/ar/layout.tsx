@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Arabic } from "next/font/google";
 import { ar } from "@/lib/i18n";
+import { SetArabicLang } from "@/components/layout/SetArabicLang";
 
 const notoArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
@@ -20,7 +21,8 @@ export const metadata: Metadata = {
 
 export default function ArabicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${notoArabic.variable}`} style={{ fontFamily: "'Noto Sans Arabic', sans-serif" }}>
+    <div dir="rtl" lang="ar" className={`${notoArabic.variable}`} style={{ fontFamily: "'Noto Sans Arabic', sans-serif" }}>
+      <SetArabicLang />
       {children}
     </div>
   );

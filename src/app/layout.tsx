@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { DM_Sans, Space_Mono, Lora } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -56,11 +55,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const locale = headers().get("x-locale") || "en";
-  const isArabic = locale === "ar";
-
   return (
-    <html lang={isArabic ? "ar" : "en"} dir={isArabic ? "rtl" : "ltr"} className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-white text-dark">
         <JsonLd data={organizationSchema()} />
         <Header />

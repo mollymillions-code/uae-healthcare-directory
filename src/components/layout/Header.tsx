@@ -17,6 +17,18 @@ const NAV_LINKS = [
   { label: "Al Ain", href: "/directory/al-ain" },
 ];
 
+function getArabicPath(pathname: string): string {
+  if (pathname.startsWith('/ar')) {
+    return pathname.replace(/^\/ar/, '') || '/';
+  }
+  // Only directory and homepage have Arabic versions
+  if (pathname === '/' || pathname.startsWith('/directory')) {
+    return `/ar${pathname}`;
+  }
+  // Everything else — go to Arabic homepage
+  return '/ar';
+}
+
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -57,7 +69,7 @@ export function Header() {
               About
             </Link>
             <span className="w-px h-5 bg-white/20 mx-2" />
-            <Link href={pathname.startsWith('/ar') ? pathname.replace('/ar', '') || '/' : `/ar${pathname}`} className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+            <Link href={getArabicPath(pathname)} className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
             </Link>
           </nav>
@@ -98,7 +110,7 @@ export function Header() {
               <Link href="/intelligence" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Insights</Link>
               <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
               <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
-              <Link href={pathname.startsWith('/ar') ? pathname.replace('/ar', '') || '/' : `/ar${pathname}`} className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>
+              <Link href={getArabicPath(pathname)} className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>
                 {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
               </Link>
             </div>

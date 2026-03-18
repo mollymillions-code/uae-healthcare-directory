@@ -136,8 +136,9 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   const scored = getTopItems(newItems, 25);
   console.log(`[Pipeline] Top 25 scored. #1: "${scored[0]?.item.title.slice(0, 60)}" (score: ${scored[0]?.score})`);
 
-  // Generate articles for top 25 by score
-  const toProcess = scored.slice(0, 25).map((s) => s.item);
+  // Generate articles for top 10 by score per run (Vercel function timeout = 60s)
+  // Full top-25 scoring is preserved — remaining 15 get picked up in next cron run
+  const toProcess = scored.slice(0, 10).map((s) => s.item);
   let articles: Omit<JournalArticle, "id">[] = [];
   try {
     articles = await generateArticleBatch(toProcess, 3);

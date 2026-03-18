@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Middleware handles:
- * 1. 301 redirects for legacy URL paths (/uae → /directory, /journal → /intelligence)
- * 2. Sets x-locale header so the root layout can render the correct html lang attribute
+ * 301 redirects for legacy URL paths.
+ * /uae/...     → /directory/...
+ * /journal/... → /intelligence/...
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -24,12 +24,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  // Set locale header for root layout to read
-  const response = NextResponse.next();
-  response.headers.set("x-locale", pathname.startsWith("/ar") ? "ar" : "en");
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"],
+  matcher: ["/uae/:path*", "/journal/:path*"],
 };
