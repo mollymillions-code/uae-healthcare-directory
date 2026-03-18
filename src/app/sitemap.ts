@@ -219,7 +219,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   });
 
-  // Arabic city pages + city+category pages + individual provider listings
+  // Arabic city pages + city+category + area + area+category pages
   for (const city of cities) {
     entries.push({
       url: `${baseUrl}/ar/directory/${city.slug}`,
@@ -235,6 +235,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: "weekly",
         priority: 0.7,
       });
+    }
+
+    // Arabic area pages + area+category facets
+    const areas = getAreasByCity(city.slug);
+    for (const area of areas) {
+      entries.push({
+        url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.6,
+      });
+      for (const cat of categories) {
+        entries.push({
+          url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.6,
+        });
+      }
     }
   }
 

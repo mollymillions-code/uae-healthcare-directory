@@ -101,6 +101,28 @@ export default function CityPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Filter shortcuts — insurance, language, conditions */}
+      <section className="mb-10">
+        <div className="section-header">
+          <h2>Filter Providers in {city.name}</h2>
+          <span className="arrows">&gt;&gt;&gt;</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
+            <span className="font-medium">By Insurance</span>
+            <span className="text-xs text-muted">Daman, Thiqa, AXA...</span>
+          </Link>
+          <Link href={`/directory/${city.slug}/language`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
+            <span className="font-medium">By Language</span>
+            <span className="text-xs text-muted">Arabic, English, Hindi...</span>
+          </Link>
+          <Link href={`/directory/${city.slug}/condition`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
+            <span className="font-medium">By Condition</span>
+            <span className="text-xs text-muted">Dental, LASIK, IVF...</span>
+          </Link>
+        </div>
+      </section>
+
       {/* Areas — 3-column grid with counts */}
       {areas.length > 0 && (
         <section className="mb-10">

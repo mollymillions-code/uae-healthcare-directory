@@ -3,7 +3,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Heart, Shield, MapPin, Star } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About the UAE Open Healthcare Directory",
   description: "The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents.",
 };
 
