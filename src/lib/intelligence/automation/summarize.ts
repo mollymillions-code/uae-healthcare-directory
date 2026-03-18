@@ -39,7 +39,7 @@ export async function generateArticle(
       systemInstruction: getArticleSystemPrompt(),
     });
 
-    const prompt = `Transform this news item into a UAE Healthcare Journal article.
+    const prompt = `Transform this news item into a Zavis Healthcare Industry Insights article.
 
 SOURCE: ${item.source}
 TITLE: ${item.title}

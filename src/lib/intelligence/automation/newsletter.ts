@@ -68,7 +68,7 @@ function buildDailyBriefingHTML(articles: JournalArticle[], date: string): strin
                 Daily Briefing
               </h1>
               <p style="font-family: 'Oswald', Helvetica, sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #9a9a90; margin: 4px 0 0 0;">
-                UAE Healthcare Intelligence · ${date}
+                Zavis Healthcare Industry Insights · ${date}
               </p>
             </td>
           </tr>
@@ -83,7 +83,7 @@ function buildDailyBriefingHTML(articles: JournalArticle[], date: string): strin
                 <a href="${BASE_URL}/intelligence" style="color: #b69a52; text-decoration: none;">Read all stories →</a>
               </p>
               <p style="font-family: 'Oswald', Helvetica, sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: #9a9a90; margin: 0;">
-                UAE Healthcare Intelligence · Powered by <a href="https://zavis.ae" style="color: #9a9a90;">Zavis</a>
+                Zavis Healthcare Industry Insights · Powered by <a href="https://zavis.ae" style="color: #9a9a90;">Zavis</a>
                 <br>
                 <a href="${BASE_URL}/intelligence/unsubscribe" style="color: #9a9a90;">Unsubscribe</a>
               </p>
@@ -101,7 +101,7 @@ function buildDailyBriefingHTML(articles: JournalArticle[], date: string): strin
 function buildDailyBriefingText(articles: JournalArticle[], date: string): string {
   const lines = [
     "THE ZAVIS BRIEFING",
-    `UAE Healthcare Intelligence — ${date}`,
+    `Zavis Healthcare Industry Insights — ${date}`,
     "━".repeat(50),
     "",
   ];
@@ -117,7 +117,7 @@ function buildDailyBriefingText(articles: JournalArticle[], date: string): strin
 
   lines.push("━".repeat(50));
   lines.push(`Read all stories: ${BASE_URL}/intelligence`);
-  lines.push("UAE Healthcare Intelligence · Powered by Zavis");
+  lines.push("Zavis Healthcare Industry Insights · Powered by Zavis");
 
   return lines.join("\n");
 }

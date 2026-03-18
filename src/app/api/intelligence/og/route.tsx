@@ -34,7 +34,7 @@ function seededRandom(seed: string) {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title") || "UAE Healthcare Journal";
+  const title = searchParams.get("title") || "Zavis Healthcare Industry Insights";
   const category = searchParams.get("category") || "regulatory";
   const slug = searchParams.get("slug") || "default";
 
@@ -233,7 +233,7 @@ export async function GET(request: NextRequest) {
                 letterSpacing: "0.1em",
               }}
             >
-              UAE Healthcare Journal
+              Zavis Healthcare Industry Insights
             </span>
             <span
               style={{

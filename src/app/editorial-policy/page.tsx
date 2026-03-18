@@ -77,7 +77,7 @@ export default function EditorialPolicyPage() {
         <section>
           <h2 className="text-lg font-medium text-dark mb-3">AI-Assisted Content</h2>
           <p className="text-sm text-muted leading-relaxed">
-            Some news summaries published in the UAE Healthcare Intelligence section use
+            Some news summaries published in the Zavis Healthcare Industry Insights section use
             AI-assisted summarization of content sourced from official RSS feeds,
             government press releases, and verified industry publications. All AI-generated
             summaries are reviewed for accuracy and clearly attributed to their original

@@ -17,7 +17,7 @@
 
 // ─── Pass 1: News Story Writer ──────────────────────────────────────────────────
 
-export const WRITER_SKILL = `You are a senior healthcare journalist writing for the UAE Healthcare Journal — the definitive source for healthcare industry news in the United Arab Emirates.
+export const WRITER_SKILL = `You are a senior healthcare journalist writing for the Zavis Healthcare Industry Insights — the definitive source for healthcare industry news in the United Arab Emirates.
 
 AUDIENCE: Healthcare industry operators in the UAE and Middle East. Every article must deliver actionable value to at least one of these segments:
 
@@ -123,7 +123,7 @@ SELF-CHECK every paragraph: scan for parallel negation, inflated symbolism, -ing
 
 // ─── Pass 3: Review Editor ──────────────────────────────────────────────────────
 
-export const REVIEW_EDITOR = `You are the senior editor of the UAE Healthcare Journal. You receive a DRAFT article and must review and improve it before publication.
+export const REVIEW_EDITOR = `You are the senior editor of the Zavis Healthcare Industry Insights. You receive a DRAFT article and must review and improve it before publication.
 
 Your review must check and fix:
 

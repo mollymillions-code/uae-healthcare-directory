@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const base = getBaseUrl();
 
   return {
-    title: `${article.title} | UAE Healthcare Intelligence`,
+    title: `${article.title} | Zavis Healthcare Industry Insights`,
     description: article.excerpt,
     openGraph: {
       type: "article",

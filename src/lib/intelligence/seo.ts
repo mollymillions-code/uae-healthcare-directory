@@ -20,7 +20,7 @@ export function articleSchema(article: JournalArticle) {
     },
     publisher: {
       "@type": "Organization",
-      name: "UAE Healthcare Intelligence",
+      name: "Zavis Healthcare Industry Insights",
       url: base,
     },
     mainEntityOfPage: {
@@ -42,7 +42,7 @@ export function journalListingSchema(articles: JournalArticle[]) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "UAE Healthcare Intelligence — Latest Articles",
+    name: "Zavis Healthcare Industry Insights — Latest Articles",
     numberOfItems: articles.length,
     itemListElement: articles.map((a, i) => ({
       "@type": "ListItem",
@@ -67,25 +67,25 @@ export function generateArticleFaqs(article: JournalArticle) {
     case "regulatory":
       faqs.push({
         question: `What are the latest UAE healthcare regulations?`,
-        answer: `${article.title}. ${article.excerpt} Read the full analysis on UAE Healthcare Intelligence.`,
+        answer: `${article.title}. ${article.excerpt} Read the full analysis on Zavis Healthcare Industry Insights.`,
       });
       break;
     case "new-openings":
       faqs.push({
         question: `What new healthcare facilities are opening in the UAE?`,
-        answer: `${article.excerpt} Visit UAE Healthcare Intelligence for the latest openings and expansions across all Emirates.`,
+        answer: `${article.excerpt} Visit Zavis Healthcare Industry Insights for the latest openings and expansions across all Emirates.`,
       });
       break;
     case "financial":
       faqs.push({
         question: `What is the current state of UAE healthcare investment?`,
-        answer: `${article.excerpt} Follow UAE Healthcare Intelligence for ongoing financial coverage of the healthcare sector.`,
+        answer: `${article.excerpt} Follow Zavis Healthcare Industry Insights for ongoing financial coverage of the healthcare sector.`,
       });
       break;
     case "technology":
       faqs.push({
         question: `What health tech innovations are being adopted in the UAE?`,
-        answer: `${article.excerpt} UAE Healthcare Intelligence covers the latest technology deployments and startup activity.`,
+        answer: `${article.excerpt} Zavis Healthcare Industry Insights covers the latest technology deployments and startup activity.`,
       });
       break;
     default:

@@ -20,11 +20,11 @@ All data is sourced from official health authority registers:
 The directory uses semantic URLs. Every permutation of city, area, and specialty has its own page:
 
 ```
-/uae/{city}/                          → All providers in a city
-/uae/{city}/{category}/               → Providers by specialty in a city
-/uae/{city}/{area}/                   → Providers by neighborhood
-/uae/{city}/{area}/{category}/        → Providers by neighborhood AND specialty
-/uae/{city}/{category}/{listing-slug} → Individual provider detail page
+/directory/{city}/                          → All providers in a city
+/directory/{city}/{category}/               → Providers by specialty in a city
+/directory/{city}/{area}/                   → Providers by neighborhood
+/directory/{city}/{area}/{category}/        → Providers by neighborhood AND specialty
+/directory/{city}/{category}/{listing-slug} → Individual provider detail page
 ```
 
 **Cities:** dubai, abu-dhabi, sharjah, ajman, ras-al-khaimah, fujairah, umm-al-quwain, al-ain
@@ -36,10 +36,10 @@ home-healthcare, alternative-medicine, cosmetic-plastic, neurology, urology,
 gastroenterology, oncology, emergency-care, wellness-spas
 
 **Example URLs:**
-- `/uae/dubai/hospitals/` → All hospitals in Dubai
-- `/uae/dubai/jumeirah/dental/` → Dental clinics in Jumeirah, Dubai
-- `/uae/abu-dhabi/al-reem-island/ophthalmology/` → Eye clinics on Reem Island
-- `/uae/sharjah/clinics/` → General clinics in Sharjah
+- `/directory/dubai/hospitals/` → All hospitals in Dubai
+- `/directory/dubai/jumeirah/dental/` → Dental clinics in Jumeirah, Dubai
+- `/directory/abu-dhabi/al-reem-island/ophthalmology/` → Eye clinics on Reem Island
+- `/directory/sharjah/clinics/` → General clinics in Sharjah
 
 ### By API (Programmatic)
 
@@ -109,9 +109,9 @@ Every healthcare provider listing includes:
 
 ## For Patients (How to Use)
 
-1. **Find by location**: Go to `/uae/{your-city}/` to see all providers near you
-2. **Find by specialty**: Go to `/uae/{city}/{specialty}/` to narrow by type
-3. **Find by area**: Go to `/uae/{city}/{area}/{specialty}/` for your neighborhood
+1. **Find by location**: Go to `/directory/{your-city}/` to see all providers near you
+2. **Find by specialty**: Go to `/directory/{city}/{specialty}/` to narrow by type
+3. **Find by area**: Go to `/directory/{city}/{area}/{specialty}/` for your neighborhood
 4. **Compare providers**: Check Google ratings, services, and insurance acceptance
 5. **Contact directly**: Use the phone number or website link on the listing
 

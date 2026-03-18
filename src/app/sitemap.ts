@@ -168,7 +168,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Journal landing
   entries.push({
-    url: `${baseUrl}/journal`,
+    url: `${baseUrl}/intelligence`,
     lastModified: new Date(),
     changeFrequency: "hourly",
     priority: 0.95,

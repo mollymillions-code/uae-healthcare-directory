@@ -26,7 +26,7 @@ export async function GET() {
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>UAE Healthcare Intelligence Feed</title>
+    <title>Zavis Healthcare Industry Insights Feed</title>
     <link>${base}/intelligence</link>
     <description>Real-time UAE healthcare intelligence: regulatory updates, new openings, financial analysis, health tech, events, and workforce trends.</description>
     <language>en-ae</language>

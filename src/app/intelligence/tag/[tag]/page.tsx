@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const base = getBaseUrl();
 
   return {
-    title: `${tag} — UAE Healthcare Intelligence`,
+    title: `${tag} — Zavis Healthcare Industry Insights`,
     description: `All UAE healthcare news tagged "${tag}". Coverage includes regulatory updates, financial analysis, new openings, and industry intelligence.`,
     alternates: {
       canonical: `${base}/intelligence/tag/${params.tag}`,

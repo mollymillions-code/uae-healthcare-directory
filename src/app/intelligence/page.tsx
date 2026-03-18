@@ -26,13 +26,13 @@ import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 export const revalidate = 3600; // 1 hour
 
 export const metadata: Metadata = {
-  title: "UAE Healthcare Journal | UAE Healthcare News, Regulation & Market Data",
+  title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
   description:
     "Real-time coverage of UAE healthcare: regulatory updates from DHA, DOH, MOHAP, new clinic openings, financial analysis, health tech, events, and workforce trends. The definitive source for healthcare professionals in the UAE and Middle East.",
   openGraph: {
     type: "website",
     locale: "en_AE",
-    siteName: "UAE Healthcare Journal",
+    siteName: "Zavis Healthcare Industry Insights",
   },
   alternates: {
     types: {
@@ -75,7 +75,7 @@ export default function JournalPage() {
         <div className="text-center">
           <Link href="/intelligence">
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-dark tracking-tight">
-              UAE Healthcare Journal
+              Zavis Healthcare Industry Insights
             </h1>
           </Link>
           <p className="text-sm text-muted mt-2 tracking-wide uppercase font-sans">
@@ -204,7 +204,7 @@ export default function JournalPage() {
       <section className="container-tc pb-16">
         <div className="answer-block" data-answer-block="true">
           <p className="font-sans text-muted leading-relaxed">
-            According to its editorial team, the UAE Healthcare Journal covers nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
+            According to its editorial team, the Zavis Healthcare Industry Insights covers nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
           </p>
         </div>
       </section>

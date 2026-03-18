@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const base = getBaseUrl();
 
   return {
-    title: `${cat.name} | UAE Healthcare Intelligence`,
+    title: `${cat.name} | Zavis Healthcare Industry Insights`,
     description: cat.description,
     alternates: {
       canonical: `${base}/intelligence/category/${cat.slug}`,
@@ -115,7 +115,7 @@ export default function CategoryPage({ params }: PageProps) {
       <section className="container-tc pb-16">
         <div className="answer-block" data-answer-block="true">
           <p className="font-sans text-muted leading-relaxed">
-            UAE Healthcare Intelligence covers {cat.name.toLowerCase()} for the
+            Zavis Healthcare Industry Insights covers {cat.name.toLowerCase()} for the
             healthcare industry in the United Arab Emirates. {cat.description}{" "}
             Updated daily for healthcare professionals. Last updated March 2026.
           </p>
