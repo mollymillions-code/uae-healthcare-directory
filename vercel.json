@@ -1,8 +1,2 @@
 {
-  "crons": [
-    {
-      "path": "/api/journal/ingest",
-      "schedule": "0 */2 * * *"
-    }
-  ]
 }
