@@ -63,17 +63,17 @@ export default function ArticlePage({ params }: PageProps) {
       <JsonLd data={articleSchema(article)} />
 
       {/* Back link */}
-      <div className="container-wide pt-6">
+      <div className="container-tc pt-6">
         <Link
           href="/journal"
-          className="inline-flex items-center gap-1.5 label hover:text-gold transition-colors"
+          className="inline-flex items-center gap-1.5 label hover:text-accent transition-colors"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to Journal
         </Link>
       </div>
 
-      <article className="container-wide pt-8 pb-16">
+      <article className="container-tc pt-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Article body */}
           <div className="lg:col-span-2">
@@ -81,7 +81,7 @@ export default function ArticlePage({ params }: PageProps) {
             <div className="flex items-center gap-2 mb-4">
               <Link
                 href={`/journal/category/${article.category}`}
-                className="label text-gold hover:text-gold-dark transition-colors"
+                className="label text-accent hover:text-accent-dark transition-colors"
               >
                 {category?.name}
               </Link>
@@ -94,32 +94,32 @@ export default function ArticlePage({ params }: PageProps) {
             </div>
 
             {/* Headline */}
-            <h1 className="font-display text-display font-bold text-ink leading-tight mb-5">
+            <h1 className="font-sans text-2xl font-bold text-dark leading-tight mb-5">
               {article.title}
             </h1>
 
             {/* Excerpt */}
-            <p className="font-display text-lg text-ink-muted leading-relaxed mb-6">
+            <p className="font-sans text-lg text-muted leading-relaxed mb-6">
               {article.excerpt}
             </p>
 
             {/* Byline */}
-            <div className="rule-thick" />
+            <div className="border-b-2 border-dark" />
             <div className="flex items-center justify-between py-3 mb-8">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-ink">
+                <span className="text-sm font-medium text-dark">
                   {article.author.name}
                 </span>
                 {article.author.role && (
                   <>
-                    <span className="text-ink-muted">·</span>
+                    <span className="text-muted">·</span>
                     <span className="label">{article.author.role}</span>
                   </>
                 )}
               </div>
               <div className="flex items-center gap-3">
                 <span className="label">{formatDate(article.publishedAt)}</span>
-                <span className="text-ink-muted">·</span>
+                <span className="text-muted">·</span>
                 <span className="label">{article.readTimeMinutes} min read</span>
               </div>
             </div>
@@ -128,13 +128,13 @@ export default function ArticlePage({ params }: PageProps) {
             <ArticleBody html={article.body} />
 
             {/* Tags */}
-            <div className="rule mt-10 pt-6">
+            <div className="border-b border-light-200 mt-10 pt-6">
               <div className="flex flex-wrap gap-1.5">
                 {article.tags.map((tag) => (
                   <Link
                     key={tag}
                     href={`/journal/tag/${tag}`}
-                    className="inline-block px-2.5 py-1 text-xs font-kicker bg-canvas-200 text-ink-muted hover:bg-ink hover:text-canvas transition-colors"
+                    className="inline-block px-2.5 py-1 text-xs font-mono bg-canvas-200 text-muted hover:bg-dark hover:text-white transition-colors"
                   >
                     {tag}
                   </Link>
@@ -144,7 +144,7 @@ export default function ArticlePage({ params }: PageProps) {
 
             {/* Source attribution */}
             {article.sourceName && (
-              <div className="rule mt-6 pt-4">
+              <div className="border-b border-light-200 mt-6 pt-4">
                 <span className="label">
                   Source: {article.sourceName}
                   {article.source === "government" && " (Official)"}
@@ -156,13 +156,13 @@ export default function ArticlePage({ params }: PageProps) {
             {related.length > 0 && (
               <div className="mt-12">
                 <div className="rule-warm" />
-                <h2 className="font-display text-xl font-bold text-ink pt-4 mb-6">
+                <h2 className="font-sans text-xl font-bold text-dark pt-4 mb-6">
                   Related coverage
                 </h2>
                 <div className="space-y-0">
                   {related.map((rel, i) => (
                     <div key={rel.id}>
-                      {i > 0 && <div className="rule my-4" />}
+                      {i > 0 && <div className="border-b border-light-200 my-4" />}
                       <ArticleCard article={rel} variant="horizontal" />
                     </div>
                   ))}
@@ -176,15 +176,15 @@ export default function ArticlePage({ params }: PageProps) {
             <NewsletterSignup />
 
             <div>
-              <div className="rule-thick mb-4" />
-              <h3 className="label text-gold mb-4">Topics</h3>
+              <div className="border-b-2 border-dark mb-4" />
+              <h3 className="label text-accent mb-4">Topics</h3>
               <TagCloud tags={tags} limit={20} />
             </div>
 
             {/* More in this category */}
             <div>
-              <div className="rule-thick mb-4" />
-              <h3 className="label text-gold mb-4">
+              <div className="border-b-2 border-dark mb-4" />
+              <h3 className="label text-accent mb-4">
                 More in {category?.name}
               </h3>
               <div className="space-y-3">

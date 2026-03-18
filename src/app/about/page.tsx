@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="container-wide py-8">
+    <div className="container-tc py-8">
       <Breadcrumb items={[{ label: "About" }]} />
 
       <div className="max-w-3xl mx-auto">

@@ -32,7 +32,7 @@ export default function ClaimPage() {
   ];
 
   return (
-    <div className="container-wide py-8">
+    <div className="container-tc py-8">
       {/* Header */}
       <div className="max-w-2xl mx-auto text-center mb-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">

@@ -48,7 +48,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
   const baseUrl = `/search?${params.toString()}`;
 
   return (
-    <div className="container-wide py-8">
+    <div className="container-tc py-8">
       {/* Search Bar */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Search Healthcare Providers</h1>
@@ -111,7 +111,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
             Try adjusting your search terms or filters.
           </p>
           <div className="flex justify-center gap-3">
-            <a href="/search" className="btn-subscribe">Clear Search</a>
+            <a href="/search" className="btn-accent">Clear Search</a>
             <a href="/" className="btn-secondary">Browse Directory</a>
           </div>
         </div>

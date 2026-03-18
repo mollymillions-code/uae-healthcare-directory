@@ -46,7 +46,7 @@ export default function CityPage({ params }: Props) {
   const base = getBaseUrl();
 
   return (
-    <div className="container-wide py-8">
+    <div className="container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
         { name: city.name, url: `${base}/uae/${city.slug}` },

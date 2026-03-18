@@ -41,12 +41,6 @@ export default function HomePage() {
     { question: "Can clinics update their listing?", answer: "Yes. Healthcare providers can claim their listing for free with a DHA/DOH/MOHAP license. Once verified, update contact details, hours, and services." },
   ];
 
-  // Top cities for hero cards
-  const heroCities = [
-    { slug: "dubai", name: "Dubai", count: getProviderCountByCity("dubai"), img: "/images/cities/dubai.png" },
-    { slug: "abu-dhabi", name: "Abu Dhabi", count: getProviderCountByCity("abu-dhabi"), img: "/images/cities/abu-dhabi.png" },
-    { slug: "sharjah", name: "Sharjah", count: getProviderCountByCity("sharjah"), img: "/images/cities/sharjah.png" },
-  ];
 
   return (
     <>

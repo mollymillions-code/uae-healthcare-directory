@@ -33,11 +33,11 @@ interface Props {
 
 /**
  * Resolve the URL segments into one of:
- * 1. /uae/dubai/{category}                  → City + Category
- * 2. /uae/dubai/{area}                      → City + Area
- * 3. /uae/dubai/{area}/{category}           → City + Area + Category (facet)
- * 4. /uae/dubai/{category}/{listing}        → Individual listing
- * 5. /uae/dubai/{area}/{category}/{listing} → Individual listing (via area path)
+ * 1. /uae/dubai/{category}                  -> City + Category
+ * 2. /uae/dubai/{area}                      -> City + Area
+ * 3. /uae/dubai/{area}/{category}           -> City + Area + Category (facet)
+ * 4. /uae/dubai/{category}/{listing}        -> Individual listing
+ * 5. /uae/dubai/{area}/{category}/{listing} -> Individual listing (via area path)
  */
 function resolveSegments(citySlug: string, segments: string[]) {
   const [seg1, seg2, seg3] = segments;
@@ -55,7 +55,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
     // Could be: area+category, category+listing, or area+listing
     const cat1 = getCategoryBySlug(seg1);
     if (cat1) {
-      // seg1 is category → seg2 must be a listing slug
+      // seg1 is category -> seg2 must be a listing slug
       const provider = getProviderBySlug(seg2);
       if (provider) return { type: "listing" as const, category: cat1, provider };
       // Could be a subcategory
@@ -168,7 +168,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     fri: "Friday", sat: "Saturday", sun: "Sunday",
   };
 
-  // ─── City + Category Page ────────────────────────────────────────────────────
+  // --- City + Category Page ---
   if (resolved.type === "city-category") {
     const { category } = resolved;
     const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
@@ -178,7 +178,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     const facetFaqs = generateFacetFaqs(city, category, null, total);
 
     return (
-      <div className="container-wide py-8">
+      <div className="container-tc py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/uae/${city.slug}` }, { name: category.name }])} />
         <JsonLd data={itemListSchema(`${category.name} in ${city.name}`, providers, city.name)} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
@@ -221,14 +221,14 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     );
   }
 
-  // ─── City + Area Page ────────────────────────────────────────────────────────
+  // --- City + Area Page ---
   if (resolved.type === "city-area") {
     const { area } = resolved;
     const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
     const categories = getCategories();
 
     return (
-      <div className="container-wide py-8">
+      <div className="container-tc py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/uae/${city.slug}` }, { name: area.name }])} />
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/uae/${city.slug}` }, { label: area.name }]} />
 
@@ -253,7 +253,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     );
   }
 
-  // ─── Area + Category Facet Page ──────────────────────────────────────────────
+  // --- Area + Category Facet Page ---
   if (resolved.type === "area-category") {
     const { area, category } = resolved;
     const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
@@ -261,7 +261,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     const facetFaqs = generateFacetFaqs(city, category, area, total);
 
     return (
-      <div className="container-wide py-8">
+      <div className="container-tc py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/uae/${city.slug}` }, { name: area.name, url: `${base}/uae/${city.slug}/${area.slug}` }, { name: category.name }])} />
         <JsonLd data={itemListSchema(`${category.name} in ${area.name}, ${city.name}`, providers, city.name)} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
@@ -290,7 +290,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     );
   }
 
-  // ─── Individual Listing Page ─────────────────────────────────────────────────
+  // --- Individual Listing Page ---
   if (resolved.type === "listing") {
     const { category, provider } = resolved;
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
@@ -306,7 +306,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     ];
 
     return (
-      <div className="container-wide py-8">
+      <div className="container-tc py-8">
         <JsonLd data={medicalOrganizationSchema(provider, city, category, area)} />
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/uae/${city.slug}` }, { name: category.name, url: `${base}/uae/${city.slug}/${category.slug}` }, { name: provider.name }])} />
         <JsonLd data={faqPageSchema(providerFaqs)} />
@@ -332,14 +332,14 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               <p className="text-gray-700 leading-relaxed font-medium">{answerBlock}</p>
             </div>
 
-            {/* About — self-contained chunk */}
+            {/* About -- self-contained chunk */}
             <div className="card p-6 mb-6" data-section="about">
               <h2 className="font-semibold text-gray-900 mb-3">About {provider.name}</h2>
               <p className="text-gray-600 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
               <p className="text-xs text-gray-400 mt-3">Source: Official UAE health authority register. Last verified: {provider.lastVerified}.</p>
             </div>
 
-            {/* Services — self-contained chunk */}
+            {/* Services -- self-contained chunk */}
             {provider.services.length > 0 && (
               <div className="card p-6 mb-6" data-section="services">
                 <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Stethoscope className="h-5 w-5 text-brand-600" /> Services</h2>
@@ -348,7 +348,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               </div>
             )}
 
-            {/* Hours — self-contained chunk */}
+            {/* Hours -- self-contained chunk */}
             {provider.operatingHours && (
               <div className="card p-6 mb-6" data-section="hours">
                 <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-brand-600" /> Operating Hours</h2>
@@ -363,7 +363,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               </div>
             )}
 
-            {/* Insurance — self-contained chunk */}
+            {/* Insurance -- self-contained chunk */}
             {provider.insurance.length > 0 && (
               <div className="card p-6 mb-6" data-section="insurance">
                 <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Shield className="h-5 w-5 text-brand-600" /> Accepted Insurance</h2>
@@ -372,7 +372,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               </div>
             )}
 
-            {/* Languages — self-contained chunk */}
+            {/* Languages -- self-contained chunk */}
             {provider.languages.length > 0 && (
               <div className="card p-6 mb-6" data-section="languages">
                 <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Languages className="h-5 w-5 text-brand-600" /> Languages Spoken</h2>
@@ -380,7 +380,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               </div>
             )}
 
-            {/* Map — self-contained chunk */}
+            {/* Map -- self-contained chunk */}
             <div className="card p-6 mb-6" data-section="location">
               <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><MapPin className="h-5 w-5 text-brand-600" /> Location</h2>
               <GoogleMapEmbed query={`${provider.name}, ${provider.address}`} />
@@ -406,7 +406,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                   <div className="flex items-center gap-3 text-sm text-gray-700"><MapPin className="h-4 w-4" /> {provider.address}</div>
                 </div>
                 <div className="mt-4 space-y-2">
-                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-subscribe w-full"><Phone className="h-4 w-4 mr-2" /> Call Now</a>}
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-accent w-full"><Phone className="h-4 w-4 mr-2" /> Call Now</a>}
                   <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary w-full"><MapPin className="h-4 w-4 mr-2" /> Directions</a>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                 <div className="card p-6 bg-brand-50 border-brand-200">
                   <h3 className="font-semibold text-gray-900 mb-2">Is this your business?</h3>
                   <p className="text-sm text-gray-600 mb-4">Claim your listing to update information.</p>
-                  <Link href={`/claim/${provider.id}`} className="btn-subscribe w-full">Claim Listing</Link>
+                  <Link href={`/claim/${provider.id}`} className="btn-accent w-full">Claim Listing</Link>
                 </div>
               )}
 
@@ -439,13 +439,13 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     );
   }
 
-  // ─── Subcategory page ────────────────────────────────────────────────────────
+  // --- Subcategory page ---
   if (resolved.type === "city-category-subcategory") {
     const { category, subcategory } = resolved;
     const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page, limit: 20, sort: "rating" });
 
     return (
-      <div className="container-wide py-8">
+      <div className="container-tc py-8">
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/uae/${city.slug}` }, { label: category.name, href: `/uae/${city.slug}/${category.slug}` }, { label: subcategory.name }]} />
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{subcategory.name} in {city.name}</h1>
         <p className="text-sm text-gray-500 mb-6">{total} providers</p>

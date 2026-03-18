@@ -34,7 +34,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
 
   if (submitted) {
     return (
-      <div className="container-wide py-16">
+      <div className="container-tc py-16">
         <div className="max-w-lg mx-auto text-center">
           <div className="h-16 w-16 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="h-8 w-8 text-brand-500" />
@@ -48,7 +48,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
           </p>
           <button
             onClick={() => router.push("/")}
-            className="btn-subscribe"
+            className="btn-accent"
           >
             Return to Directory
           </button>
@@ -58,7 +58,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
   }
 
   return (
-    <div className="container-wide py-8">
+    <div className="container-tc py-8">
       <Breadcrumb
         items={[
           { label: "Claim Listing", href: "/claim" },
@@ -236,7 +236,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
             </div>
           </div>
 
-          <button type="submit" className="btn-subscribe w-full py-3 text-base">
+          <button type="submit" className="btn-accent w-full py-3 text-base">
             Submit Claim Request
           </button>
         </form>
