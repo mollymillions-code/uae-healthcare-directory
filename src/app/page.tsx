@@ -191,14 +191,14 @@ export default function HomePage() {
           <div className="lg:col-span-2">
             <div className="rule-heavy" />
             <div className="pt-4">
-              {topProviders.map((p) => (
+              {topProviders.map((p, idx) => (
                 <Link
                   key={p.id}
                   href={`/uae/${p.citySlug}/${p.categorySlug}/${p.slug}`}
                   className="list-item group"
                 >
                   <div className="number">
-                    {String(i + 1).padStart(2, "0")}
+                    {String(idx + 1).padStart(2, "0")}
                   </div>
                   <div className="content">
                     <h4 className="group-hover:text-gold transition-colors">{p.name}</h4>

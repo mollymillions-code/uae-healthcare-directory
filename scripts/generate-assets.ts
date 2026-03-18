@@ -1,36 +1,207 @@
 /**
- * Generate creative assets for the UAE Healthcare Directory
- * using Google's Nano Banana Pro 2 (Gemini 3.1 Flash Image Preview)
+ * Generate editorial creative assets for the UAE Healthcare Directory
+ * using Google Gemini image generation (Nano Banana Pro 2)
  *
- * Generates: hero image, city images, category illustrations
+ * VANGUARD aesthetic: deep forest green (#143625), antique gold (#B69A52),
+ * warm canvas (#F6F5F2). Comforting, editorial, fine-art photography feel.
  */
 
 import * as fs from "fs";
 import * as path from "path";
 
 const API_KEY = "AIzaSyBlb-6SaGxmdcf1AhOc5tImzVTsDqd0ptY";
-const MODEL = "gemini-3.1-flash-image-preview";
+const MODEL = "gemini-2.0-flash-preview-image-generation";
 const OUTPUT_DIR = path.resolve("public/images");
 
-interface GenerationConfig {
-  prompt: string;
+const STYLE = `Fine art editorial photography. Muted desaturated palette: warm ivory, deep forest green, antique gold tones. Soft diffused natural lighting with slight film grain texture. Elegant, calming, comforting. No text, no logos, no watermarks, no recognizable faces. Abstract and suggestive rather than literal. Magazine editorial quality.`;
+
+interface Asset {
+  name: string;
   filename: string;
   subfolder?: string;
+  prompt: string;
 }
 
-async function generateImage(config: GenerationConfig): Promise<boolean> {
-  const { prompt, filename, subfolder } = config;
-  const dir = subfolder ? path.join(OUTPUT_DIR, subfolder) : OUTPUT_DIR;
+const assets: Asset[] = [
+  // === HERO ===
+  {
+    name: "hero-bg",
+    filename: "hero-bg.png",
+    prompt: `Abstract atmospheric photograph of light filtering through translucent architectural glass in a modern healthcare atrium. Warm golden light creating soft patterns on white marble. Deep green shadow tones. Minimal and serene. ${STYLE}`,
+  },
 
+  // === MISSING CITIES ===
+  {
+    name: "sharjah",
+    filename: "sharjah.png",
+    subfolder: "cities",
+    prompt: `Aerial view of Sharjah UAE — the Al Noor mosque and Khalid Lagoon at golden hour. Warm ivory sky, deep teal water. Elegant minarets silhouetted. Dreamy editorial quality. ${STYLE}`,
+  },
+  {
+    name: "ajman",
+    filename: "ajman.png",
+    subfolder: "cities",
+    prompt: `Serene coastal scene of Ajman UAE — calm turquoise waters, pristine white sand beach, distant low-rise buildings. Golden hour, peaceful atmosphere. ${STYLE}`,
+  },
+  {
+    name: "ras-al-khaimah",
+    filename: "ras-al-khaimah.png",
+    subfolder: "cities",
+    prompt: `The Hajar mountains near Ras Al Khaimah UAE — dramatic ochre and green mountain ridges at sunrise. Desert meets mountain. Atmospheric haze. Majestic. ${STYLE}`,
+  },
+  {
+    name: "fujairah",
+    filename: "fujairah.png",
+    subfolder: "cities",
+    prompt: `Fujairah coastline UAE — rugged mountains meeting the Indian Ocean. Rocky coast, deep blue water, warm light on ancient stone. Wild natural beauty. ${STYLE}`,
+  },
+  {
+    name: "umm-al-quwain",
+    filename: "umm-al-quwain.png",
+    subfolder: "cities",
+    prompt: `Mangrove lagoon at Umm Al Quwain UAE — still waters reflecting a pastel sky. Mangrove trees in deep green. Quietude and natural beauty. ${STYLE}`,
+  },
+
+  // === MISSING CATEGORIES ===
+  {
+    name: "clinics",
+    filename: "clinics.png",
+    subfolder: "categories",
+    prompt: `Minimalist close-up of a stethoscope resting on warm linen surface. Soft focus, golden light from window. Clean and reassuring. ${STYLE}`,
+  },
+  {
+    name: "dermatology",
+    filename: "dermatology.png",
+    subfolder: "categories",
+    prompt: `Abstract macro of a single drop of golden serum on frosted glass. Light refracting through it creating warm patterns. Luxurious skincare essence. ${STYLE}`,
+  },
+  {
+    name: "pediatrics",
+    filename: "pediatrics.png",
+    subfolder: "categories",
+    prompt: `Small wooden toy stethoscope on soft knitted fabric in cream and sage green. Warm gentle nurturing atmosphere. Soft focus background. ${STYLE}`,
+  },
+  {
+    name: "orthopedics",
+    filename: "orthopedics.png",
+    subfolder: "categories",
+    prompt: `Abstract anatomical illustration of a human spine rendered in gold ink on deep green paper. Medical illustration style, elegant and scientific. ${STYLE}`,
+  },
+  {
+    name: "mental-health",
+    filename: "mental-health.png",
+    subfolder: "categories",
+    prompt: `Peaceful zen garden — smooth river stones in raked sand pattern, one green leaf resting on stone. Calm meditative therapeutic. ${STYLE}`,
+  },
+  {
+    name: "physiotherapy",
+    filename: "physiotherapy.png",
+    subfolder: "categories",
+    prompt: `Warm wooden massage tools arranged on linen cloth with eucalyptus sprigs. Therapeutic and soothing. Spa warmth. ${STYLE}`,
+  },
+  {
+    name: "obstetrics-gynecology",
+    filename: "obstetrics-gynecology.png",
+    subfolder: "categories",
+    prompt: `Single white peony flower in full bloom on ivory fabric. Soft ethereal light. Feminine, nurturing, life-giving symbolism. ${STYLE}`,
+  },
+  {
+    name: "ent",
+    filename: "ent.png",
+    subfolder: "categories",
+    prompt: `Abstract sound waves visualized as golden concentric circles on deep green background. Elegant scientific minimal. ${STYLE}`,
+  },
+  {
+    name: "radiology",
+    filename: "radiology.png",
+    subfolder: "categories",
+    prompt: `X-ray lightbox glowing with soft blue-white light in a dark room. One medical film silhouetted. Clinical but beautiful. ${STYLE}`,
+  },
+  {
+    name: "laboratory",
+    filename: "laboratory.png",
+    subfolder: "categories",
+    prompt: `Glass laboratory flasks and beakers with amber and emerald liquids lit by soft window light. Scientific elegance still life. ${STYLE}`,
+  },
+  {
+    name: "fertility",
+    filename: "fertility.png",
+    subfolder: "categories",
+    prompt: `Single sprouting seedling emerging from dark soil lit by warm golden light from above. New life hope growth. ${STYLE}`,
+  },
+  {
+    name: "oncology",
+    filename: "oncology.png",
+    subfolder: "categories",
+    prompt: `Abstract microscopy image of cells in warm amber and deep green tones. Scientific beauty. Life at the cellular level. ${STYLE}`,
+  },
+  {
+    name: "neurology",
+    filename: "neurology.png",
+    subfolder: "categories",
+    prompt: `Abstract neural network pattern rendered in gold filaments on dark green background. Synapses firing with warm light. Scientific art. ${STYLE}`,
+  },
+  {
+    name: "gastroenterology",
+    filename: "gastroenterology.png",
+    subfolder: "categories",
+    prompt: `Still life of healing herbs and chamomile tea in ceramic bowl on natural linen. Warm tones, comforting, wellness. ${STYLE}`,
+  },
+  {
+    name: "urology",
+    filename: "urology.png",
+    subfolder: "categories",
+    prompt: `Clear water droplets on smooth stone surface. Clean pure clinical elegance. Muted warm tones. ${STYLE}`,
+  },
+  {
+    name: "pulmonology",
+    filename: "pulmonology.png",
+    subfolder: "categories",
+    prompt: `Macro photograph of delicate leaf skeleton showing intricate branching vein patterns resembling lung bronchial tree. Nature as anatomy. ${STYLE}`,
+  },
+  {
+    name: "endocrinology",
+    filename: "endocrinology.png",
+    subfolder: "categories",
+    prompt: `Abstract molecular structure as golden geometric shapes floating in soft green space. Hormones and balance. Scientific elegance. ${STYLE}`,
+  },
+  {
+    name: "nephrology",
+    filename: "nephrology.png",
+    subfolder: "categories",
+    prompt: `Smooth river pebbles arranged in kidney-bean shape on wet sand. Natural organic form. Water droplets catching golden light. ${STYLE}`,
+  },
+  {
+    name: "home-healthcare",
+    filename: "home-healthcare.png",
+    subfolder: "categories",
+    prompt: `Comfortable armchair by window with sheer curtains, small side table with tea cup and reading glasses. Home comfort warmth. ${STYLE}`,
+  },
+  {
+    name: "alternative-medicine",
+    filename: "alternative-medicine.png",
+    subfolder: "categories",
+    prompt: `Dried herbs and flowers arranged on handmade paper — lavender turmeric root ginger green leaves. Traditional healing. Warm earthy. ${STYLE}`,
+  },
+  {
+    name: "medical-equipment",
+    filename: "medical-equipment.png",
+    subfolder: "categories",
+    prompt: `Precision medical instruments — surgical steel tools arranged symmetrically on dark green velvet surface. Industrial beauty. ${STYLE}`,
+  },
+];
+
+async function generateImage(asset: Asset): Promise<boolean> {
+  const dir = asset.subfolder ? path.join(OUTPUT_DIR, asset.subfolder) : OUTPUT_DIR;
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const outPath = path.join(dir, filename);
+  const outPath = path.join(dir, asset.filename);
   if (fs.existsSync(outPath)) {
-    console.log(`  ⏭ ${filename} already exists, skipping`);
+    console.log(`  ⏭  ${asset.name} (exists)`);
     return true;
   }
 
-  console.log(`  🎨 Generating: ${filename}`);
+  console.log(`  🎨 Generating: ${asset.name}`);
 
   try {
     const response = await fetch(
@@ -39,18 +210,9 @@ async function generateImage(config: GenerationConfig): Promise<boolean> {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
-            },
-          ],
+          contents: [{ parts: [{ text: asset.prompt }] }],
           generationConfig: {
-            responseModalities: ["image", "text"],
-            temperature: 1.0,
+            responseModalities: ["IMAGE", "TEXT"],
           },
         }),
       }
@@ -63,19 +225,18 @@ async function generateImage(config: GenerationConfig): Promise<boolean> {
     }
 
     const data = await response.json();
-
-    // Extract image from response
     const parts = data.candidates?.[0]?.content?.parts || [];
+
     for (const part of parts) {
       if (part.inlineData?.mimeType?.startsWith("image/")) {
         const buffer = Buffer.from(part.inlineData.data, "base64");
         fs.writeFileSync(outPath, buffer);
-        console.log(`  ✅ Saved: ${outPath} (${(buffer.length / 1024).toFixed(1)}KB)`);
+        console.log(`  ✅ ${asset.name} (${(buffer.length / 1024).toFixed(1)}KB)`);
         return true;
       }
     }
 
-    console.error(`  ❌ No image in response for ${filename}`);
+    console.error(`  ❌ No image in response for ${asset.name}`);
     return false;
   } catch (err) {
     console.error(`  ❌ Error: ${(err as Error).message}`);
@@ -84,95 +245,24 @@ async function generateImage(config: GenerationConfig): Promise<boolean> {
 }
 
 async function main() {
-  console.log("🎨 UAE Healthcare Directory — Asset Generation\n");
-  console.log(`  Model: ${MODEL}\n`);
-
-  const assets: GenerationConfig[] = [
-    // Hero image
-    {
-      prompt:
-        "Create a modern, elegant editorial-style illustration for a healthcare directory website hero section. Abstract geometric shapes in warm sand (#d4a574), deep teal (#0d7377), and cream (#f5f0e8) tones. Include subtle medical motifs — a stylized stethoscope, heartbeat line, and cross — woven into flowing architectural forms inspired by modern UAE skylines. Wide panoramic composition, 1400x600px aspect ratio. Minimalist, sophisticated, editorial magazine feel. No text, no photos of people.",
-      filename: "hero-bg.png",
-    },
-
-    // City images
-    {
-      prompt:
-        "Abstract geometric illustration of Dubai skyline — Burj Khalifa silhouette, flowing curves, in warm teal (#0d7377) and sand gold (#d4a574) on cream background. Minimalist editorial style, no text, no photos. Clean vector-like aesthetic. 600x400px.",
-      filename: "dubai.png",
-      subfolder: "cities",
-    },
-    {
-      prompt:
-        "Abstract geometric illustration of Abu Dhabi — Sheikh Zayed Mosque dome silhouette, flowing arches, in warm teal (#0d7377) and sand gold (#d4a574) on cream background. Minimalist editorial style, no text, no photos. 600x400px.",
-      filename: "abu-dhabi.png",
-      subfolder: "cities",
-    },
-    {
-      prompt:
-        "Abstract geometric illustration of Sharjah — Islamic art-inspired geometric patterns with a minaret silhouette, in warm teal (#0d7377) and terracotta on cream background. Minimalist editorial style, no text, no photos. 600x400px.",
-      filename: "sharjah.png",
-      subfolder: "cities",
-    },
-    {
-      prompt:
-        "Abstract geometric illustration of Al Ain city — oasis palms and mountain silhouette (Jebel Hafeet), in warm teal (#0d7377) and earthy brown on cream background. Minimalist editorial style, no text. 600x400px.",
-      filename: "al-ain.png",
-      subfolder: "cities",
-    },
-
-    // Category illustrations
-    {
-      prompt:
-        "Minimalist geometric icon illustration of a hospital — clean architectural lines forming a medical building with a cross, in deep teal (#0d7377) on cream background. Modern, editorial, vector-like. No text. 300x300px.",
-      filename: "hospitals.png",
-      subfolder: "categories",
-    },
-    {
-      prompt:
-        "Minimalist geometric icon illustration of dental care — stylized tooth with clean geometric lines, in deep teal (#0d7377) on cream background. Modern editorial style. No text. 300x300px.",
-      filename: "dental.png",
-      subfolder: "categories",
-    },
-    {
-      prompt:
-        "Minimalist geometric icon illustration of a pharmacy — mortar and pestle with clean flowing lines, in deep teal (#0d7377) on cream background. Modern editorial style. No text. 300x300px.",
-      filename: "pharmacy.png",
-      subfolder: "categories",
-    },
-    {
-      prompt:
-        "Minimalist geometric icon illustration of cardiology — anatomical heart with flowing geometric lines and a heartbeat rhythm, in deep teal (#0d7377) and warm coral on cream background. Modern editorial. No text. 300x300px.",
-      filename: "cardiology.png",
-      subfolder: "categories",
-    },
-    {
-      prompt:
-        "Minimalist geometric icon illustration of an eye for ophthalmology — stylized eye with geometric iris patterns, in deep teal (#0d7377) on cream background. Modern editorial style. No text. 300x300px.",
-      filename: "ophthalmology.png",
-      subfolder: "categories",
-    },
-    {
-      prompt:
-        "Minimalist geometric icon illustration of dermatology — skin layers with flowing abstract waves, in deep teal (#0d7377) and soft coral on cream background. Modern editorial style. No text. 300x300px.",
-      filename: "dermatology.png",
-      subfolder: "categories",
-    },
-  ];
+  console.log(`\n🎨 VANGUARD Asset Generation — UAE Healthcare Directory`);
+  console.log(`  Model: ${MODEL}`);
+  console.log(`  Aesthetic: Deep green + antique gold + warm canvas`);
+  console.log(`  Total: ${assets.length} assets\n`);
 
   let success = 0;
   let failed = 0;
 
   for (const asset of assets) {
-    const result = await generateImage(asset);
-    if (result) success++;
+    const ok = await generateImage(asset);
+    if (ok) success++;
     else failed++;
 
-    // Rate limiting — 200ms between requests
-    await new Promise((r) => setTimeout(r, 200));
+    // Rate limit
+    await new Promise((r) => setTimeout(r, 2500));
   }
 
-  console.log(`\n✅ Generated ${success} assets (${failed} failed)`);
+  console.log(`\n✅ Done: ${success} generated, ${failed} failed\n`);
 }
 
 main().catch(console.error);
