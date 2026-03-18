@@ -34,3 +34,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scraped data (raw HTML files)
+/data/raw/
+
+# AI collab
+/.ai-collab/
+/.claude/
+/data/parsed/*.json

@@ -1,101 +1,148 @@
-import Image from "next/image";
+import { SearchBar } from "@/components/search/SearchBar";
+import { CityCard } from "@/components/directory/CityCard";
+import { CategoryCard } from "@/components/directory/CategoryCard";
+import { ProviderCard } from "@/components/provider/ProviderCard";
+import { FaqSection } from "@/components/seo/FaqSection";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getCities, getCategories, getTopRatedProviders, getProviderCountByCity } from "@/lib/data";
+import { getBaseUrl } from "@/lib/helpers";
 
-export default function Home() {
+export const revalidate = 86400;
+
+export default function HomePage() {
+  const cities = getCities();
+  const categories = getCategories();
+  const topProviders = getTopRatedProviders(undefined, 6);
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "UAE Healthcare Directory",
+    url: getBaseUrl(),
+    description: "The most comprehensive free healthcare directory for the UAE.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${getBaseUrl()}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "UAE Healthcare Directory",
+    url: getBaseUrl(),
+    description: "Free, comprehensive directory of healthcare providers across all UAE cities.",
+  };
+
+  const homeFaqs = [
+    { question: "What is the UAE Healthcare Directory?", answer: "The UAE Healthcare Directory is a free, comprehensive online directory of healthcare providers across all seven Emirates. Find hospitals, clinics, dentists, specialists, pharmacies, and more with ratings, reviews, contact details, and maps." },
+    { question: "How do I find a doctor near me in the UAE?", answer: "Use our search feature at the top of the page. Select your city, choose a specialty category, and optionally enter a search term. You can also browse by city to see all healthcare providers in your area." },
+    { question: "Is the UAE Healthcare Directory free to use?", answer: "Yes, the UAE Healthcare Directory is completely free for all UAE residents. You can search for and view information about healthcare providers at no cost." },
+    { question: "How can I update my clinic's information?", answer: "Healthcare providers can claim their listing by visiting the Claim Listing page. Once verified, you can request updates to your contact details, hours, services, and more." },
+    { question: "Which cities are covered?", answer: "We cover all major UAE cities including Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, Umm Al Quwain, and Al Ain." },
+  ];
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <JsonLd data={websiteJsonLd} />
+      <JsonLd data={orgJsonLd} />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-brand-500 to-brand-700 text-white py-16 sm:py-24">
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">
+              Find Healthcare Providers<br />Across the UAE
+            </h1>
+            <p className="text-lg text-white/80">
+              The most comprehensive free directory of hospitals, clinics, dentists, and specialists
+              in Dubai, Abu Dhabi, Sharjah, and all Emirates.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <SearchBar />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Cities */}
+      <section className="container-wide py-12">
+        <h2 className="section-title mb-6">Browse by City</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cities.map((city) => (
+            <CityCard
+              key={city.slug}
+              name={city.name}
+              slug={city.slug}
+              emirate={city.emirate}
+              providerCount={getProviderCountByCity(city.slug)}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="container-wide py-12">
+        <h2 className="section-title mb-6">Browse by Specialty</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {categories.map((cat) => (
+            <CategoryCard
+              key={cat.slug}
+              name={cat.name}
+              slug={cat.slug}
+              icon={cat.icon}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Top Rated */}
+      <section className="container-wide py-12">
+        <h2 className="section-title mb-6">Top Rated Providers</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {topProviders.map((provider) => (
+            <ProviderCard
+              key={provider.id}
+              name={provider.name}
+              slug={provider.slug}
+              citySlug={provider.citySlug}
+              categorySlug={provider.categorySlug}
+              address={provider.address}
+              phone={provider.phone}
+              website={provider.website}
+              shortDescription={provider.shortDescription}
+              googleRating={provider.googleRating}
+              googleReviewCount={provider.googleReviewCount}
+              isClaimed={provider.isClaimed}
+              isVerified={provider.isVerified}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* AEO Answer Block */}
+      <section className="container-wide py-8">
+        <div className="answer-block" data-answer-block="true">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Healthcare in the UAE</h2>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            The United Arab Emirates has a world-class healthcare system spanning 7 Emirates and major cities
+            including Dubai, Abu Dhabi, Sharjah, Al Ain, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain.
+            Healthcare is regulated by the Dubai Health Authority (DHA), Department of Health Abu Dhabi (DOH),
+            and the Ministry of Health and Prevention (MOHAP). This directory covers 26 healthcare categories
+            including hospitals, dental clinics, dermatology, ophthalmology, cardiology, mental health,
+            pediatrics, pharmacy, labs, and more.
+          </p>
+        </div>
+      </section>
+
+      {/* FAQs */}
+      <section className="container-wide pb-12">
+        <FaqSection faqs={homeFaqs} />
+      </section>
+    </>
   );
 }
