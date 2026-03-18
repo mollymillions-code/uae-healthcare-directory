@@ -139,7 +139,7 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   // 5. Apply absolute quality threshold — minimum score of 35/100 to publish
   // This prevents low-quality or generic articles from being published just
   // because they ranked highest in a weak batch.
-  const MINIMUM_SCORE = 60;
+  const MINIMUM_SCORE = 40;
   const qualified = scored.filter((s) => s.score >= MINIMUM_SCORE);
   console.log(`[Pipeline] ${qualified.length} items above minimum threshold (${MINIMUM_SCORE}/100)`);
 
