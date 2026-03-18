@@ -40,7 +40,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
             className="input"
           />
         </div>
-        <button type="submit" className="btn-primary">
+        <button type="submit" className="btn-subscribe">
           <Search className="h-4 w-4" />
         </button>
       </form>
@@ -51,7 +51,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
     <form onSubmit={handleSearch}>
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-end">
         <div className="sm:col-span-5">
-          <label className="label mb-2 block">Search</label>
+          <label className="kicker mb-2 block text-[0.65rem]">Search</label>
           <input
             type="text"
             value={query}
@@ -61,7 +61,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           />
         </div>
         <div className="sm:col-span-3">
-          <label className="label mb-2 block">City</label>
+          <label className="kicker mb-2 block text-[0.65rem]">City</label>
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
@@ -74,7 +74,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           </select>
         </div>
         <div className="sm:col-span-3">
-          <label className="label mb-2 block">Specialty</label>
+          <label className="kicker mb-2 block text-[0.65rem]">Specialty</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -87,7 +87,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           </select>
         </div>
         <div className="sm:col-span-1">
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-subscribe w-full py-3">
             <Search className="h-4 w-4" />
           </button>
         </div>

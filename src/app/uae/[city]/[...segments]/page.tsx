@@ -406,7 +406,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                   <div className="flex items-center gap-3 text-sm text-gray-700"><MapPin className="h-4 w-4" /> {provider.address}</div>
                 </div>
                 <div className="mt-4 space-y-2">
-                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-primary w-full"><Phone className="h-4 w-4 mr-2" /> Call Now</a>}
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-subscribe w-full"><Phone className="h-4 w-4 mr-2" /> Call Now</a>}
                   <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`} target="_blank" rel="noopener noreferrer" className="btn-secondary w-full"><MapPin className="h-4 w-4 mr-2" /> Directions</a>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                 <div className="card p-6 bg-brand-50 border-brand-200">
                   <h3 className="font-semibold text-gray-900 mb-2">Is this your business?</h3>
                   <p className="text-sm text-gray-600 mb-4">Claim your listing to update information.</p>
-                  <Link href={`/claim/${provider.id}`} className="btn-primary w-full">Claim Listing</Link>
+                  <Link href={`/claim/${provider.id}`} className="btn-subscribe w-full">Claim Listing</Link>
                 </div>
               )}
 

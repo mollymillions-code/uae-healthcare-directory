@@ -48,7 +48,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
           </p>
           <button
             onClick={() => router.push("/")}
-            className="btn-primary"
+            className="btn-subscribe"
           >
             Return to Directory
           </button>
@@ -236,7 +236,7 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary w-full py-3 text-base">
+          <button type="submit" className="btn-subscribe w-full py-3 text-base">
             Submit Claim Request
           </button>
         </form>

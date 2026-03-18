@@ -1,27 +1,29 @@
 import type { Metadata } from "next";
-import { Source_Serif_4, Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
+import { Cormorant_Garamond, Oswald, Inter } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
-const sourceSerif = Source_Serif_4({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-source-serif",
+  variable: "--font-cormorant",
   display: "swap",
-  weight: ["300", "400", "600", "700", "900"],
+  weight: ["300", "400", "600", "700"],
+  style: ["normal", "italic"],
 });
 
-const bricolage = Bricolage_Grotesque({
+const oswald = Oswald({
   subsets: ["latin"],
-  variable: "--font-bricolage",
+  variable: "--font-oswald",
   display: "swap",
+  weight: ["400", "500", "600"],
 });
 
-const jetbrains = JetBrains_Mono({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-inter",
   display: "swap",
-  weight: ["400"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -47,9 +49,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sourceSerif.variable} ${bricolage.variable} ${jetbrains.variable}`}
+      className={`${cormorant.variable} ${oswald.variable} ${inter.variable}`}
     >
-      <body className="font-sans antialiased min-h-screen flex flex-col bg-stone text-ink">
+      <body className="font-body antialiased min-h-screen flex flex-col bg-canvas text-ink">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

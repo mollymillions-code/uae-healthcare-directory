@@ -111,7 +111,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
             Try adjusting your search terms or filters.
           </p>
           <div className="flex justify-center gap-3">
-            <a href="/search" className="btn-primary">Clear Search</a>
+            <a href="/search" className="btn-subscribe">Clear Search</a>
             <a href="/" className="btn-secondary">Browse Directory</a>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
 import { getCities, getCategories, getAreasByCity, getProviders } from "@/lib/data";
+import { getLatestArticles } from "@/lib/journal/data";
+import { JOURNAL_CATEGORIES } from "@/lib/journal/categories";
 import { getBaseUrl } from "@/lib/helpers";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -76,6 +78,45 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     });
   }
+
+  // ─── Journal ───────────────────────────────────────────────────────────────
+
+  // Journal landing
+  entries.push({
+    url: `${baseUrl}/journal`,
+    lastModified: new Date(),
+    changeFrequency: "hourly",
+    priority: 0.95,
+  });
+
+  // Journal category pages
+  for (const cat of JOURNAL_CATEGORIES) {
+    entries.push({
+      url: `${baseUrl}/journal/category/${cat.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+    });
+  }
+
+  // Journal articles
+  const journalArticles = getLatestArticles(100);
+  for (const article of journalArticles) {
+    entries.push({
+      url: `${baseUrl}/journal/${article.slug}`,
+      lastModified: new Date(article.updatedAt || article.publishedAt),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    });
+  }
+
+  // Journal RSS feed
+  entries.push({
+    url: `${baseUrl}/journal/feed.xml`,
+    lastModified: new Date(),
+    changeFrequency: "hourly",
+    priority: 0.3,
+  });
 
   // Static pages
   entries.push(

@@ -9,61 +9,174 @@
   }
 
   ::selection {
-    background-color: #c8553a22;
+    background-color: rgba(182, 154, 82, 0.25);
+  }
+
+  h1, h2, h3, h4, .serif {
+    font-family: var(--font-cormorant), Georgia, serif;
   }
 }
 
 @layer components {
   .container-wide {
-    @apply mx-auto max-w-6xl px-5 sm:px-8;
+    @apply mx-auto max-w-[1600px] px-5 sm:px-8;
   }
 
-  /* Horizontal rule — the primary structural element */
+  /* Kicker — uppercase label in Oswald */
+  .kicker {
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply uppercase tracking-[0.1em] text-xs font-medium text-gold;
+  }
+
+  /* Meta — small uppercase data labels */
+  .meta {
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply uppercase tracking-[0.05em] text-[0.7rem] text-ink-muted flex items-center gap-4;
+  }
+
+  .meta .highlight {
+    @apply text-ink font-semibold;
+  }
+
+  /* Rules */
   .rule {
-    @apply border-t border-ink/10;
+    @apply border-t border-ink-light;
   }
 
-  .rule-thick {
-    @apply border-t-2 border-ink;
+  .rule-heavy {
+    @apply border-t-4 border-ink;
   }
 
-  .rule-warm {
-    @apply border-t-2 border-warm;
+  .rule-bottom {
+    @apply border-b-2 border-ink;
   }
 
-  /* Typography helpers */
-  .label {
-    @apply text-[10px] font-mono uppercase tracking-[0.15em] text-ink-300;
+  /* Buttons */
+  .btn-subscribe {
+    @apply inline-flex items-center justify-center bg-ink text-canvas px-6 py-3 transition-colors;
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply uppercase tracking-[0.1em] text-xs;
   }
 
-  .body-text {
-    @apply font-serif text-base text-ink-500 leading-relaxed;
-  }
-
-  /* Minimal input */
-  .input {
-    @apply block w-full border-b border-ink/15 bg-transparent px-0 py-3 text-sm text-ink placeholder:text-ink-200 focus:border-ink focus:outline-none transition-colors;
-  }
-
-  .input-boxed {
-    @apply block w-full rounded-none border border-ink/10 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink-200 focus:border-ink focus:outline-none transition-colors;
-  }
-
-  /* Buttons — no rounded corners, no shadows */
-  .btn-primary {
-    @apply inline-flex items-center justify-center bg-ink text-stone px-6 py-3 text-sm font-medium tracking-wide hover:bg-ink-600 transition-colors;
+  .btn-subscribe:hover {
+    @apply bg-green;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center border border-ink text-ink px-6 py-3 text-sm font-medium tracking-wide hover:bg-ink hover:text-stone transition-colors;
+    @apply inline-flex items-center justify-center border border-ink-light text-ink px-4 py-2 transition-all;
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply text-xs;
   }
 
-  .btn-warm {
-    @apply inline-flex items-center justify-center bg-warm text-white px-6 py-3 text-sm font-medium tracking-wide hover:bg-warm-600 transition-colors;
+  .btn-outline:hover {
+    @apply border-ink bg-ink text-canvas;
   }
 
   /* Answer block — for LLM/AEO */
   .answer-block {
-    @apply border-l-2 border-warm pl-5 py-1;
+    @apply border-l-2 border-gold pl-5 py-1;
   }
+
+  /* Data bar / ticker */
+  .data-bar {
+    @apply bg-green text-canvas py-3 overflow-hidden whitespace-nowrap;
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply text-xs tracking-[0.1em] uppercase;
+  }
+
+  /* Article card */
+  .article-card img {
+    @apply w-full object-cover mb-4;
+    filter: grayscale(10%) contrast(1.05);
+  }
+
+  .article-card h3 {
+    @apply font-display text-display-sm leading-tight mb-2;
+    letter-spacing: -0.01em;
+  }
+
+  /* List items (directory rows) */
+  .list-item {
+    @apply grid gap-4 py-3 border-b border-ink-light items-center;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .list-item .number {
+    @apply font-display text-display-sm text-gold font-light italic;
+    width: 40px;
+  }
+
+  .list-item .content h4 {
+    @apply font-display text-section mb-0.5;
+  }
+
+  /* Footer */
+  .footer-col h5 {
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply text-gold tracking-[0.1em] uppercase text-xs mb-4;
+  }
+
+  /* Journal prose */
+  .prose-journal {
+    @apply text-ink-muted leading-relaxed;
+  }
+
+  .prose-journal p {
+    @apply mb-5;
+  }
+
+  .prose-journal h2 {
+    @apply font-display text-2xl font-bold text-ink mt-10 mb-4;
+  }
+
+  .prose-journal blockquote {
+    @apply border-l-2 border-gold pl-5 py-1 my-6 italic text-ink-muted;
+  }
+
+  .prose-journal a {
+    @apply text-gold underline underline-offset-2 hover:text-gold-dark transition-colors;
+  }
+
+  /* Footer column heading */
+  .footer-col-heading {
+    font-family: var(--font-oswald), system-ui, sans-serif;
+    @apply text-gold tracking-[0.1em] uppercase text-xs mb-4;
+  }
+
+  /* Input — minimal underline style */
+  .input {
+    @apply block w-full border-b border-ink-light bg-transparent px-0 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-ink focus:outline-none transition-colors;
+  }
+
+  .input-boxed {
+    @apply block w-full border border-ink-light bg-white px-4 py-3 text-sm text-ink placeholder:text-ink-muted focus:border-ink focus:outline-none transition-colors;
+  }
+
+  /* Label */
+  .label {
+    @apply font-kicker text-[10px] uppercase tracking-[0.15em] text-ink-muted;
+  }
+}
+
+/* Ticker animation */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 40s linear infinite;
+}
+
+/* Editorial break background glow */
+.editorial-glow::before {
+  content: '';
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(182, 154, 82, 0.1) 0%, rgba(12, 26, 20, 0) 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
