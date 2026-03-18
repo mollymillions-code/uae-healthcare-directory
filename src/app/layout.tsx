@@ -1,20 +1,27 @@
 import type { Metadata } from "next";
-import { DM_Sans, Space_Mono } from "next/font/google";
+import { Playfair_Display, Outfit, JetBrains_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
-const spaceMono = Space_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-space-mono",
+  variable: "--font-jetbrains",
   display: "swap",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -43,10 +50,7 @@ export const metadata: Metadata = {
     description:
       "Free, comprehensive directory of healthcare providers across all UAE cities. Ratings, reviews, contact details, and maps.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -55,8 +59,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${spaceMono.variable}`}>
-      <body className="font-sans antialiased min-h-screen flex flex-col">
+    <html
+      lang="en"
+      className={`${playfair.variable} ${outfit.variable} ${jetbrains.variable}`}
+    >
+      <body className="font-sans antialiased min-h-screen flex flex-col bg-cream text-dark">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
