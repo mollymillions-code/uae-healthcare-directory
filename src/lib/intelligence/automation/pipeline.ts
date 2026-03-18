@@ -16,7 +16,7 @@
  */
 
 import { fetchAllFeeds, filterRelevantItems, type RawFeedItem } from "./feeds";
-import { generateArticleBatch, generateArticleImage } from "./summarize";
+import { generateArticleBatch } from "./summarize";
 import { getTopItems } from "./scoring";
 import { sendDailyBriefing } from "./newsletter";
 import { getLatestArticles } from "../data";
@@ -136,9 +136,9 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   const scored = getTopItems(newItems, 25);
   console.log(`[Pipeline] Top 25 scored. #1: "${scored[0]?.item.title.slice(0, 60)}" (score: ${scored[0]?.score})`);
 
-  // Generate articles for top 10 by score per run (Vercel function timeout = 60s)
-  // Full top-25 scoring is preserved — remaining 15 get picked up in next cron run
-  const toProcess = scored.slice(0, 10).map((s) => s.item);
+  // Generate top 3 articles per run (Vercel Hobby = 60s timeout)
+  // Runs every 2 hours = ~36 articles/day. Remaining scored items picked up next run.
+  const toProcess = scored.slice(0, 3).map((s) => s.item);
   let articles: Omit<JournalArticle, "id">[] = [];
   try {
     articles = await generateArticleBatch(toProcess, 3);
@@ -147,18 +147,8 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     errors.push(`Article generation failed: ${String(error)}`);
   }
 
-  // 5. Generate images for articles
-  for (const article of articles) {
-    try {
-      const imageData = await generateArticleImage(article.title, article.category);
-      if (imageData) {
-        article.imageUrl = imageData;
-        console.log(`[Pipeline] Generated image for: ${article.title}`);
-      }
-    } catch {
-      console.log(`[Pipeline] Image generation skipped for: ${article.title}`);
-    }
-  }
+  // 5. Skip image generation in serverless (too slow for function timeout)
+  // Images generated via separate script: npm run journal:images
 
   // 6. Assign IDs, set featured/breaking based on score rank
   const fullArticles: JournalArticle[] = articles.map((a, idx) => ({

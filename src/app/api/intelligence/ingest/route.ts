@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { runContentPipeline } from "@/lib/intelligence/automation/pipeline";
 
+// Allow up to 300 seconds (Vercel Pro) or 60s (Hobby)
+export const maxDuration = 300;
+
 // POST /api/intelligence/ingest
 // Triggers the content ingestion pipeline.
 // Protected by CRON_SECRET for Vercel Cron Jobs.

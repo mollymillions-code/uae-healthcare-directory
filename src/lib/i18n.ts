@@ -77,6 +77,14 @@ export const ar = {
     pulmonology: "أمراض الرئة", oncology: "الأورام",
     endocrinology: "الغدد الصماء", rheumatology: "الروماتيزم",
     "plastic-surgery": "الجراحة التجميلية", radiology: "الأشعة",
+    "ob-gyn": "النساء والتوليد",
+    "nutrition-dietetics": "التغذية والحمية",
+    "labs-diagnostics": "المختبرات والتشخيص",
+    "radiology-imaging": "الأشعة والتصوير",
+    "home-healthcare": "الرعاية الصحية المنزلية",
+    "cosmetic-plastic": "الجراحة التجميلية والترميمية",
+    "emergency-care": "الطوارئ والرعاية العاجلة",
+    "wellness-spas": "مراكز العافية والسبا الطبي",
   } as Record<string, string>,
 
   // Extra labels used in existing pages
