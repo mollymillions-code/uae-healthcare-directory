@@ -183,7 +183,7 @@ export async function fetchFeed(source: FeedSource): Promise<RawFeedItem[]> {
     const feed = await parser.parseURL(source.url);
     const items: RawFeedItem[] = (feed.items || []).map((item) => {
       const raw: RawFeedItem = {
-        title: item.title || "Untitled",
+        title: typeof item.title === "string" ? item.title : (item.title as unknown as string) || "Untitled",
         link: item.link || "",
         description: item.contentSnippet || item.content || "",
         pubDate: item.pubDate || new Date().toISOString(),
@@ -230,8 +230,9 @@ export async function fetchAllFeeds(): Promise<RawFeedItem[]> {
 function deduplicateItems(items: RawFeedItem[]): RawFeedItem[] {
   const seen = new Set<string>();
   return items.filter((item) => {
+    if (!item.title || typeof item.title !== "string") return false;
     const key = item.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 60);
-    if (seen.has(key)) return false;
+    if (!key || seen.has(key)) return false;
     seen.add(key);
     return true;
   });
