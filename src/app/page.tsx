@@ -153,7 +153,7 @@ export default function HomePage() {
           <div className="lg:col-span-2">
             <div className="rule-heavy" />
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 pt-4">
-              {categories.map((cat, i) => {
+              {categories.map((cat) => {
                 const count = getProviderCountByCategory(cat.slug);
                 return (
                   <Link
@@ -191,7 +191,7 @@ export default function HomePage() {
           <div className="lg:col-span-2">
             <div className="rule-heavy" />
             <div className="pt-4">
-              {topProviders.map((p, i) => (
+              {topProviders.map((p) => (
                 <Link
                   key={p.id}
                   href={`/uae/${p.citySlug}/${p.categorySlug}/${p.slug}`}
