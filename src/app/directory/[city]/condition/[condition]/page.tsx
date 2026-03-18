@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import {
   getCityBySlug, getCities, getCategoryBySlug,
   getConditions, getProviders,
+  getProviderCountByCategoryAndCity,
 } from "@/lib/data";
 import type { LocalProvider } from "@/lib/data";
 import {
@@ -28,7 +29,12 @@ export function generateStaticParams() {
 
   for (const city of cities) {
     for (const cond of conditions) {
-      params.push({ city: city.slug, condition: cond.slug });
+      const hasProviders = cond.relatedCategories?.some(
+        (catSlug: string) => getProviderCountByCategoryAndCity(catSlug, city.slug) > 0
+      );
+      if (hasProviders) {
+        params.push({ city: city.slug, condition: cond.slug });
+      }
     }
   }
 

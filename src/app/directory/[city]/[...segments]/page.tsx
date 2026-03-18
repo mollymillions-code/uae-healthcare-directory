@@ -13,6 +13,7 @@ import {
   getCityBySlug, getCities, getCategoryBySlug, getCategories,
   getAreaBySlug, getAreasByCity, getSubcategoriesByCategory,
   getProviderBySlug, getProviders, getTopRatedProviders,
+  getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema, itemListSchema,
@@ -93,17 +94,26 @@ export async function generateStaticParams() {
   const categories = getCategories();
 
   for (const city of cities) {
-    // City + Category pages (8 × 26 = 208)
+    // City + Category pages — only if providers exist
     for (const cat of categories) {
-      params.push({ city: city.slug, segments: [cat.slug] });
+      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      if (count > 0) {
+        params.push({ city: city.slug, segments: [cat.slug] });
+      }
     }
-    // City + Area pages (62 total)
+    // City + Area pages — only if providers exist
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      params.push({ city: city.slug, segments: [area.slug] });
-      // Area + Category facet pages (62 × 26 = 1,612)
-      for (const cat of categories) {
-        params.push({ city: city.slug, segments: [area.slug, cat.slug] });
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
+        params.push({ city: city.slug, segments: [area.slug] });
+        // Area + Category facet pages — only if providers exist in this combination
+        for (const cat of categories) {
+          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          if (total > 0) {
+            params.push({ city: city.slug, segments: [area.slug, cat.slug] });
+          }
+        }
       }
     }
 
@@ -169,9 +179,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
     case "listing": {
       const listingCanonical = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
+      const isEnriched = Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0) || Boolean(resolved.provider.phone) || Boolean(resolved.provider.website);
       return {
         title: `${resolved.provider.name} | ${resolved.category.name} in ${city.name}`,
-        description: `${resolved.provider.shortDescription} Rating: ${resolved.provider.googleRating}/5. Last verified ${resolved.provider.lastVerified}.`,
+        description: `${resolved.provider.shortDescription} ${resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0 ? `Rating: ${resolved.provider.googleRating}/5.` : ""} Last verified ${resolved.provider.lastVerified}.`,
+        ...(!isEnriched ? { robots: { index: true, follow: true, "max-snippet": 50 } } : {}),
         alternates: {
           canonical: listingCanonical,
           languages: {
@@ -185,6 +197,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
+        },
+      };
+    }
+    case "city-category-subcategory": {
+      const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, subcategorySlug: resolved.subcategory.slug, limit: 1 });
+      return {
+        title: `${resolved.subcategory.name} in ${city.name} | ${resolved.category.name}`,
+        description: `Find ${resolved.subcategory.name} specialists in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with ratings and reviews.`,
+        alternates: {
+          canonical: `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
         },
       };
     }

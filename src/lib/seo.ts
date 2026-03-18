@@ -36,11 +36,13 @@ export function medicalOrganizationSchema(
       addressRegion: city.emirate,
       addressCountry: "AE",
     },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: parseFloat(provider.latitude),
-      longitude: parseFloat(provider.longitude),
-    },
+    ...(parseFloat(provider.latitude) !== 0 && parseFloat(provider.longitude) !== 0 ? {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: parseFloat(provider.latitude),
+        longitude: parseFloat(provider.longitude),
+      },
+    } : {}),
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
       credentialCategory: "Health Authority License",

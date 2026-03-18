@@ -15,7 +15,7 @@
  *  - Manual trigger via API route
  */
 
-import { fetchAllFeeds, isUAEHealthcareRelevant, type RawFeedItem } from "./feeds";
+import { fetchAllFeeds, filterRelevantItems, type RawFeedItem } from "./feeds";
 import { generateArticleBatch, generateArticleImage } from "./summarize";
 import { sendDailyBriefing } from "./newsletter";
 import { getLatestArticles } from "../data";
@@ -104,9 +104,9 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     return { feedItemsFetched: 0, relevantItems: 0, newItems: 0, articlesGenerated: 0, errors, timestamp };
   }
 
-  // 2. Filter for UAE healthcare relevance
-  const relevant = feedItems.filter(isUAEHealthcareRelevant);
-  console.log(`[Pipeline] ${relevant.length} items are UAE healthcare relevant`);
+  // 2. Filter by tiered relevance (Tier 1 UAE sources = loose, Tier 3 global = strict)
+  const relevant = filterRelevantItems(feedItems);
+  console.log(`[Pipeline] ${relevant.length} items passed relevance filter`);
 
   // 3. Deduplicate against existing articles
   const existing = getLatestArticles(100);

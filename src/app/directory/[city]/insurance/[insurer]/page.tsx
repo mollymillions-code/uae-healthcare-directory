@@ -27,7 +27,10 @@ export function generateStaticParams() {
 
   for (const city of cities) {
     for (const ins of insurers) {
-      params.push({ city: city.slug, insurer: ins.slug });
+      const count = getProviderCountByInsurance(ins.slug, city.slug);
+      if (count > 0) {
+        params.push({ city: city.slug, insurer: ins.slug });
+      }
     }
   }
 

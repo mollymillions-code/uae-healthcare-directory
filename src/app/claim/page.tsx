@@ -6,6 +6,7 @@ import { getBaseUrl } from "@/lib/helpers";
 export const metadata: Metadata = {
   title: "Claim Your Listing",
   description: "Healthcare providers can claim their listing to update information, add photos, and manage their presence in the UAE Open Healthcare Directory.",
+  robots: { index: false, follow: true },
   alternates: {
     canonical: `${getBaseUrl()}/claim`,
   },

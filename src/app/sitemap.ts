@@ -1,5 +1,9 @@
 import { MetadataRoute } from "next";
-import { getCities, getCategories, getAreasByCity, getProviders } from "@/lib/data";
+import {
+  getCities, getCategories, getAreasByCity, getProviders,
+  getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
+  getProviderCountByInsurance, getProviderCountByLanguage,
+} from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 import { getBaseUrl } from "@/lib/helpers";
@@ -39,14 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   });
 
-  // Skill directory for LLM agents
-  entries.push({
-    url: `${baseUrl}/directory-skill.md`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.3,
-  });
-
   // ─── Directory: Cities, Categories, Areas, Facets ─────────────────────────
   for (const city of cities) {
     // City pages
@@ -57,38 +53,47 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     });
 
-    // City + Category pages
+    // City + Category pages — only if providers exist
     for (const cat of categories) {
-      entries.push({
-        url: `${baseUrl}/directory/${city.slug}/${cat.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      });
-    }
-
-    // City + Area pages
-    const areas = getAreasByCity(city.slug);
-    for (const area of areas) {
-      entries.push({
-        url: `${baseUrl}/directory/${city.slug}/${area.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
-
-      // Area + Category facet pages (every permutation — the AEO surface area)
-      for (const cat of categories) {
+      const catCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      if (catCount > 0) {
         entries.push({
-          url: `${baseUrl}/directory/${city.slug}/${area.slug}/${cat.slug}`,
+          url: `${baseUrl}/directory/${city.slug}/${cat.slug}`,
           lastModified: new Date(),
           changeFrequency: "weekly",
-          priority: 0.7,
+          priority: 0.8,
         });
       }
     }
 
-    // ─── Insurance pages per city ─────────────────────────────────────────
+    // City + Area pages — only if providers exist
+    const areas = getAreasByCity(city.slug);
+    for (const area of areas) {
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/${area.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+
+        // Area + Category facet pages — only if providers exist in this combination
+        for (const cat of categories) {
+          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          if (total > 0) {
+            entries.push({
+              url: `${baseUrl}/directory/${city.slug}/${area.slug}/${cat.slug}`,
+              lastModified: new Date(),
+              changeFrequency: "weekly",
+              priority: 0.7,
+            });
+          }
+        }
+      }
+    }
+
+    // ─── Insurance pages per city — only if providers accept that insurer ──
     entries.push({
       url: `${baseUrl}/directory/${city.slug}/insurance`,
       lastModified: new Date(),
@@ -96,15 +101,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const insurer of INSURANCE_PROVIDERS) {
-      entries.push({
-        url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+      const insCount = getProviderCountByInsurance(insurer.slug, city.slug);
+      if (insCount > 0) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
     }
 
-    // ─── Language pages per city ──────────────────────────────────────────
+    // ─── Language pages per city — only if providers speak that language ───
     entries.push({
       url: `${baseUrl}/directory/${city.slug}/language`,
       lastModified: new Date(),
@@ -112,15 +120,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const lang of LANGUAGES) {
-      entries.push({
-        url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+      const langCount = getProviderCountByLanguage(lang.slug, city.slug);
+      if (langCount > 0) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
     }
 
-    // ─── Condition pages per city ─────────────────────────────────────────
+    // ─── Condition pages per city — only if related categories have providers
     entries.push({
       url: `${baseUrl}/directory/${city.slug}/condition`,
       lastModified: new Date(),
@@ -128,12 +139,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const condition of CONDITIONS) {
-      entries.push({
-        url: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+      const hasProviders = condition.relatedCategories?.some(
+        (catSlug: string) => getProviderCountByCategoryAndCity(catSlug, city.slug) > 0
+      );
+      if (hasProviders) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
     }
   }
 
@@ -203,10 +219,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.3,
   });
 
-  // ─── Static pages ────────────────────────────────────────────────────────
+  // ─── Static pages (trust pages only — transactional pages like /claim excluded) ─
   entries.push(
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
-    { url: `${baseUrl}/claim`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${baseUrl}/editorial-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${baseUrl}/privacy-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
@@ -230,31 +245,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     });
 
+    // Arabic city+category — only if providers exist
     for (const cat of categories) {
-      entries.push({
-        url: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+      const catCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      if (catCount > 0) {
+        entries.push({
+          url: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
     }
 
-    // Arabic area pages + area+category facets
-    const areas = getAreasByCity(city.slug);
-    for (const area of areas) {
-      entries.push({
-        url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.6,
-      });
-      for (const cat of categories) {
+    // Arabic area pages + area+category facets — only if providers exist
+    const arAreas = getAreasByCity(city.slug);
+    for (const area of arAreas) {
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
         entries.push({
-          url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}/${cat.slug}`,
+          url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`,
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 0.6,
         });
+        for (const cat of categories) {
+          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          if (total > 0) {
+            entries.push({
+              url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}/${cat.slug}`,
+              lastModified: new Date(),
+              changeFrequency: "weekly",
+              priority: 0.6,
+            });
+          }
+        }
       }
     }
   }

@@ -27,7 +27,10 @@ export function generateStaticParams() {
 
   for (const city of cities) {
     for (const lang of languages) {
-      params.push({ city: city.slug, lang: lang.slug });
+      const count = getProviderCountByLanguage(lang.slug, city.slug);
+      if (count > 0) {
+        params.push({ city: city.slug, lang: lang.slug });
+      }
     }
   }
 

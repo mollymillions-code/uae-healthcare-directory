@@ -11,6 +11,7 @@ import {
   getCityBySlug, getCities, getCategoryBySlug, getCategories,
   getAreaBySlug, getAreasByCity,
   getProviderBySlug, getProviders, getTopRatedProviders,
+  getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema,
@@ -77,14 +78,26 @@ export async function generateStaticParams() {
   const categories = getCategories();
 
   for (const city of cities) {
+    // City + Category pages — only if providers exist
     for (const cat of categories) {
-      params.push({ city: city.slug, segments: [cat.slug] });
+      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      if (count > 0) {
+        params.push({ city: city.slug, segments: [cat.slug] });
+      }
     }
+    // City + Area pages — only if providers exist
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      params.push({ city: city.slug, segments: [area.slug] });
-      for (const cat of categories) {
-        params.push({ city: city.slug, segments: [area.slug, cat.slug] });
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
+        params.push({ city: city.slug, segments: [area.slug] });
+        // Area + Category facet pages — only if providers exist in this combination
+        for (const cat of categories) {
+          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          if (total > 0) {
+            params.push({ city: city.slug, segments: [area.slug, cat.slug] });
+          }
+        }
       }
     }
     // Individual provider listing pages — Arabic mirror of every provider
