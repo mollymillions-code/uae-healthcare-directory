@@ -14,7 +14,7 @@ export function Footer() {
         </div>
 
         {/* Columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 border-t border-white/10 pt-8 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
@@ -52,6 +52,13 @@ export function Footer() {
               <li><span className="text-sm text-white/60">Newsletter</span></li>
               <li><Link href="/intelligence/feed.xml" className="text-sm text-white/60 hover:text-white transition-colors">RSS Feed</Link></li>
               <li><Link href="/editorial-policy" className="text-sm text-white/60 hover:text-white transition-colors">Editorial Policy</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Legal</h5>
+            <ul className="space-y-2">
+              <li><Link href="/privacy-policy" className="text-sm text-white/60 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
           <div>

@@ -30,7 +30,20 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: `Healthcare Providers in ${city.name}, UAE | ${count}+ Listings`,
     description: `Find ${count}+ healthcare providers in ${city.name}, UAE. Browse hospitals, clinics, dentists, and specialists with ratings, reviews, and contact details. Last verified March 2026.`,
-    alternates: { canonical: `${getBaseUrl()}/directory/${city.slug}` },
+    alternates: {
+      canonical: `${getBaseUrl()}/directory/${city.slug}`,
+      languages: {
+        'en-AE': `${getBaseUrl()}/directory/${city.slug}`,
+        'ar-AE': `${getBaseUrl()}/ar/directory/${city.slug}`,
+      },
+    },
+    openGraph: {
+      title: `Healthcare Providers in ${city.name}, UAE`,
+      description: `Find ${count}+ healthcare providers in ${city.name}. Browse hospitals, clinics, dentists, and specialists with ratings and reviews.`,
+      type: 'website',
+      locale: 'en_AE',
+      siteName: 'UAE Open Healthcare Directory',
+    },
   };
 }
 

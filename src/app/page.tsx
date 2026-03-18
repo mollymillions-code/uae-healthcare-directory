@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchBar } from "@/components/search/SearchBar";
@@ -14,7 +15,17 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ChevronRight } from "lucide-react";
 
-export const revalidate = 86400;
+export const metadata: Metadata = {
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+    languages: {
+      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+      'ar-AE': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae'}/ar`,
+    },
+  },
+};
+
+export const revalidate = 21600;
 
 export default function HomePage() {
   const cities = getCities();

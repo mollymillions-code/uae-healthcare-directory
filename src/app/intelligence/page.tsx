@@ -34,6 +34,11 @@ export const metadata: Metadata = {
     siteName: "Zavis Healthcare Industry Insights",
   },
   alternates: {
+    canonical: `${getBaseUrl()}/intelligence`,
+    languages: {
+      'en-AE': `${getBaseUrl()}/intelligence`,
+      'ar-AE': `${getBaseUrl()}/intelligence`,
+    },
     types: {
       "application/rss+xml": `${getBaseUrl()}/intelligence/feed.xml`,
     },
@@ -201,7 +206,7 @@ export default function JournalPage() {
       <section className="container-tc pb-16">
         <div className="answer-block" data-answer-block="true">
           <p className="font-sans text-muted leading-relaxed">
-            According to its editorial team, the Zavis Healthcare Industry Insights covers nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
+            Zavis Healthcare Industry Insights is the definitive source for healthcare industry news in the United Arab Emirates, covering nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
           </p>
         </div>
       </section>

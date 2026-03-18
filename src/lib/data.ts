@@ -244,16 +244,16 @@ export function getFaqs(entityType: string, entitySlug: string): { question: str
 
   if (entityType === "city" && city) {
     return [
-      { question: `How many healthcare providers are in ${city.name}?`, answer: `${city.name} has numerous registered healthcare providers including hospitals, clinics, dental practices, and specialty centers. Use our directory to browse all providers by category and area.` },
-      { question: `What are the best-rated hospitals in ${city.name}?`, answer: `The top-rated hospitals in ${city.name} can be found by sorting our hospital listings by Google rating. Many hospitals maintain ratings above 4.5 stars.` },
-      { question: `How do I find a doctor near me in ${city.name}?`, answer: `Use our search feature and enable location access to find healthcare providers nearest to you in ${city.name}. You can filter by specialty, area, and rating.` },
-      { question: `Which insurance providers are accepted in ${city.name}?`, answer: `Most healthcare providers in ${city.name} accept major insurance plans including Daman, Thiqa, Dubai Insurance Company (DIC), AXA, Cigna, and others. Check individual provider listings for specifics.` },
+      { question: `How many healthcare providers are in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, ${city.name} has numerous registered healthcare providers including hospitals, clinics, dental practices, and specialty centers. Browse the UAE Open Healthcare Directory to find all providers by category and area.` },
+      { question: `What are the best-rated hospitals in ${city.name}?`, answer: `The top-rated hospitals in ${city.name} can be found by sorting the UAE Open Healthcare Directory hospital listings by Google rating. Many hospitals maintain ratings above 4.5 stars.` },
+      { question: `How do I find a doctor near me in ${city.name}?`, answer: `Use the search feature on the UAE Open Healthcare Directory and enable location access to find healthcare providers nearest to you in ${city.name}. You can filter by specialty, area, and rating.` },
+      { question: `Which insurance providers are accepted in ${city.name}?`, answer: `Most healthcare providers in ${city.name} accept major insurance plans including Daman, Thiqa, Dubai Insurance Company (DIC), AXA, Cigna, and others. Check individual provider listings on the UAE Open Healthcare Directory for specifics.` },
     ];
   }
 
   if (entityType === "category" && cat) {
     return [
-      { question: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`, answer: `Browse our ${cat.name.toLowerCase()} directory to compare providers across all UAE cities. Sort by rating, read Google reviews, and check accepted insurance plans.` },
+      { question: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`, answer: `Browse the UAE Open Healthcare Directory ${cat.name.toLowerCase()} listings to compare providers across all UAE cities. Sort by rating, read Google reviews, and check accepted insurance plans.` },
       { question: `Are ${cat.name.toLowerCase()} services covered by insurance in the UAE?`, answer: `Most major insurance plans in the UAE cover ${cat.name.toLowerCase()} services. Coverage varies by plan. Check with your insurance provider and verify at individual clinics.` },
     ];
   }

@@ -1,10 +1,21 @@
 import { Metadata } from "next";
 import { SearchBar } from "@/components/search/SearchBar";
 import { Shield, FileCheck, Edit, CheckCircle } from "lucide-react";
+import { getBaseUrl } from "@/lib/helpers";
 
 export const metadata: Metadata = {
   title: "Claim Your Listing",
   description: "Healthcare providers can claim their listing to update information, add photos, and manage their presence in the UAE Open Healthcare Directory.",
+  alternates: {
+    canonical: `${getBaseUrl()}/claim`,
+  },
+  openGraph: {
+    title: 'Claim Your Healthcare Listing',
+    description: 'Healthcare providers can claim their listing to update information, add photos, and manage their presence in the UAE Open Healthcare Directory.',
+    type: 'website',
+    locale: 'en_AE',
+    siteName: 'UAE Open Healthcare Directory',
+  },
 };
 
 export default function ClaimPage() {

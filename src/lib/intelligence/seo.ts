@@ -31,7 +31,14 @@ export function articleSchema(article: JournalArticle) {
     keywords: article.tags.join(", "),
     wordCount: Math.round(article.readTimeMinutes * 200),
     ...(article.imageUrl
-      ? { image: { "@type": "ImageObject", url: article.imageUrl } }
+      ? {
+          image: {
+            "@type": "ImageObject",
+            url: article.imageUrl,
+            width: 1200,
+            height: 630,
+          },
+        }
       : {}),
   };
 }

@@ -93,9 +93,11 @@
     @apply inline-flex items-center justify-center border-2 border-dark text-dark px-6 py-3 text-sm font-bold hover:bg-dark hover:text-white transition-colors;
   }
 
-  /* Answer block for AEO */
+  /* Answer block for AEO — logical props for RTL */
   .answer-block {
-    @apply border-l-4 border-accent pl-5 py-2 bg-accent-muted;
+    border-inline-start: 4px solid var(--accent, #00c853);
+    padding-inline-start: 1.25rem;
+    @apply py-2 bg-accent-muted;
   }
 
   /* Provider card */
@@ -118,7 +120,9 @@
     @apply text-[20px] font-bold text-dark mt-10 mb-4 leading-snug;
   }
   .prose-journal blockquote {
-    @apply border-l-4 border-accent pl-6 py-2 my-8 text-dark/70;
+    border-inline-start: 4px solid var(--accent, #00c853);
+    padding-inline-start: 1.5rem;
+    @apply py-2 my-8 text-dark/70;
     font-family: var(--font-lora), Georgia, serif;
     font-style: italic;
   }

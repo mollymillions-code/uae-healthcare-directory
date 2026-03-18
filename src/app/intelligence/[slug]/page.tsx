@@ -7,10 +7,11 @@ import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
 import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles } from "@/lib/intelligence/data";
-import { articleSchema } from "@/lib/intelligence/seo";
+import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
+import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
 import { SEED_ARTICLES } from "@/lib/intelligence/seed-articles";
 
@@ -46,6 +47,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     alternates: {
       canonical: `${base}/intelligence/${article.slug}`,
+      languages: {
+        'en-AE': `${base}/intelligence/${article.slug}`,
+        'ar-AE': `${base}/intelligence/${article.slug}`,
+      },
     },
   };
 }
@@ -57,6 +62,7 @@ export default function ArticlePage({ params }: PageProps) {
   const category = getJournalCategory(article.category);
   const related = getRelatedArticles(article, 4);
   const tags = getAllTags();
+  const articleFaqs = generateArticleFaqs(article);
 
   return (
     <>
@@ -197,6 +203,8 @@ export default function ArticlePage({ params }: PageProps) {
                 </div>
               </div>
             )}
+
+            <FaqSection faqs={articleFaqs} title="FAQ" />
           </div>
 
           {/* Sidebar */}

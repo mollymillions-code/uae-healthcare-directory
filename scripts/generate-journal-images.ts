@@ -97,7 +97,7 @@ async function generateImage(
   slug: string,
   force: boolean
 ): Promise<boolean> {
-  const outPath = `public/images/journal/${slug}.jpg`;
+  const outPath = `public/images/intelligence/${slug}.jpg`;
 
   if (!force && existsSync(outPath)) {
     console.log(`  [skip] ${slug}`);

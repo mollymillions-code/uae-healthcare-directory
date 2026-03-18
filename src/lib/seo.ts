@@ -120,7 +120,8 @@ export function breadcrumbSchema(
 export function itemListSchema(
   name: string,
   providers: LocalProvider[],
-  cityName: string
+  cityName: string,
+  baseUrl?: string
 ) {
   return {
     "@context": "https://schema.org",
@@ -131,7 +132,8 @@ export function itemListSchema(
       "@type": "ListItem",
       position: i + 1,
       item: {
-        "@type": "MedicalOrganization",
+        "@type": "MedicalBusiness",
+        ...(baseUrl ? { "@id": `${baseUrl}/directory/${p.citySlug}/${p.categorySlug}/${p.slug}` } : {}),
         name: p.name,
         address: {
           "@type": "PostalAddress",
@@ -161,6 +163,16 @@ export function organizationSchema() {
     url: "https://zavis.ae",
     description:
       "AI-powered patient success platform and healthcare intelligence for the UAE",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://zavis.ae/logo.png",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: "info@zavis.ae",
+      contactType: "customer service",
+    },
+    foundingDate: "2025",
     knowsAbout: [
       "UAE healthcare",
       "Dubai Health Authority",
@@ -324,19 +336,19 @@ export function generateFacetFaqs(
   return [
     {
       question: `How many ${catLower} are there in ${loc}?`,
-      answer: `There are ${providerCount} ${catLower} listed in ${loc}, UAE. Browse our directory to compare providers by rating, insurance acceptance, and services offered.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${providerCount} ${catLower} listed in ${loc}, UAE. Browse the UAE Open Healthcare Directory to compare providers by rating, insurance acceptance, and services offered.`,
     },
     {
       question: `What are the best ${catLower} in ${loc}?`,
-      answer: `The best ${catLower} in ${loc} can be found by sorting our listings by Google rating. Top-rated providers maintain ratings above 4.5 stars with hundreds of patient reviews.`,
+      answer: `The best ${catLower} in ${loc} can be found by sorting the UAE Open Healthcare Directory listings by Google rating. Top-rated providers maintain ratings above 4.5 stars with hundreds of patient reviews.`,
     },
     {
       question: `Do ${catLower} in ${loc} accept insurance?`,
-      answer: `Most ${catLower} in ${loc} accept major UAE insurance plans including Daman, Thiqa, AXA, Cigna, and Dubai Insurance Company. Check individual listings for specific insurance acceptance.`,
+      answer: `Most ${catLower} in ${loc} accept major UAE insurance plans including Daman, Thiqa, AXA, Cigna, and Dubai Insurance Company. Check individual listings on the UAE Open Healthcare Directory for specific insurance acceptance.`,
     },
     {
       question: `How do I book an appointment at a ${catLower.replace(/s$/, "")} in ${loc}?`,
-      answer: `You can book by calling the provider directly using the phone number on their listing page, or visit their website for online booking. Many ${catLower} in ${loc} also accept walk-in appointments.`,
+      answer: `You can book by calling the provider directly using the phone number on their listing page in the UAE Open Healthcare Directory, or visit their website for online booking. Many ${catLower} in ${loc} also accept walk-in appointments.`,
     },
   ];
 }

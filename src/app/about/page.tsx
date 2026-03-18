@@ -1,10 +1,25 @@
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Heart, Shield, MapPin, Star } from "lucide-react";
+import { getBaseUrl } from "@/lib/helpers";
 
 export const metadata: Metadata = {
   title: "About the UAE Open Healthcare Directory",
   description: "The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents.",
+  alternates: {
+    canonical: `${getBaseUrl()}/about`,
+    languages: {
+      'en-AE': `${getBaseUrl()}/about`,
+      'ar-AE': `${getBaseUrl()}/ar/about`,
+    },
+  },
+  openGraph: {
+    title: 'About the UAE Open Healthcare Directory',
+    description: 'The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents.',
+    type: 'website',
+    locale: 'en_AE',
+    siteName: 'UAE Open Healthcare Directory',
+  },
 };
 
 export default function AboutPage() {

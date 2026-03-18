@@ -110,7 +110,7 @@ export default function ConditionPage({ params }: Props) {
         { name: condition.name },
       ])} />
       {providers.length > 0 && (
-        <JsonLd data={itemListSchema(`${condition.name} Treatment Providers in ${city.name}`, providers, city.name)} />
+        <JsonLd data={itemListSchema(`${condition.name} Treatment Providers in ${city.name}`, providers, city.name, base)} />
       )}
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />

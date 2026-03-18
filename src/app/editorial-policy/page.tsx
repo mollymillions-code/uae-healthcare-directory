@@ -10,6 +10,17 @@ export const metadata: Metadata = {
     "Learn about the data sources, verification process, editorial independence, and update schedule behind the UAE Open Healthcare Directory.",
   alternates: {
     canonical: `${getBaseUrl()}/editorial-policy`,
+    languages: {
+      'en-AE': `${getBaseUrl()}/editorial-policy`,
+      'ar-AE': `${getBaseUrl()}/ar/editorial-policy`,
+    },
+  },
+  openGraph: {
+    title: 'Editorial Policy | UAE Open Healthcare Directory',
+    description: 'Learn about the data sources, verification process, editorial independence, and update schedule behind the UAE Open Healthcare Directory.',
+    type: 'website',
+    locale: 'en_AE',
+    siteName: 'UAE Open Healthcare Directory',
   },
 };
 

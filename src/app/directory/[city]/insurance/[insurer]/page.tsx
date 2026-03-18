@@ -84,7 +84,7 @@ export default function InsuranceProviderPage({ params }: Props) {
         { name: insurer.name },
       ])} />
       {providers.length > 0 && (
-        <JsonLd data={itemListSchema(`Healthcare Providers Accepting ${insurer.name} in ${city.name}`, providers, city.name)} />
+        <JsonLd data={itemListSchema(`Healthcare Providers Accepting ${insurer.name} in ${city.name}`, providers, city.name, base)} />
       )}
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />

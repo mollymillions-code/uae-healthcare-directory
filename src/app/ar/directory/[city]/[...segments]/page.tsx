@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { StarRating } from "@/components/shared/StarRating";
-import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
+import dynamic from "next/dynamic";
+const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
@@ -181,7 +182,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
           { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
           { name: catNameAr },
         ])} />
-        <JsonLd data={itemListSchema(`${catNameAr} في ${cityNameAr}`, providers, city.name)} />
+        <JsonLd data={itemListSchema(`${catNameAr} في ${cityNameAr}`, providers, city.name, base)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
         {/* Breadcrumb */}
@@ -349,7 +350,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
           { name: areaNameAr, url: `${base}/ar/directory/${city.slug}/${area.slug}` },
           { name: catNameAr },
         ])} />
-        <JsonLd data={itemListSchema(`${catNameAr} في ${areaNameAr}، ${cityNameAr}`, providers, city.name)} />
+        <JsonLd data={itemListSchema(`${catNameAr} في ${areaNameAr}، ${cityNameAr}`, providers, city.name, base)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
         {/* Breadcrumb */}
@@ -413,7 +414,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
     const areaNameAr = area?.nameAr || area?.name || "";
     const nearbyProviders = getTopRatedProviders(city.slug, 4).filter((p) => p.id !== provider.id);
 
-    const answerBlock = `${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${provider.operatingHours?.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} آخر تحقق: ${provider.lastVerified}.`;
+    const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${provider.operatingHours?.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${provider.lastVerified}.`;
 
     return (
       <div className="container-tc py-8">

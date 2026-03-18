@@ -84,7 +84,7 @@ export default function LanguageProviderPage({ params }: Props) {
         { name: language.name },
       ])} />
       {providers.length > 0 && (
-        <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, providers, city.name)} />
+        <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, providers, city.name, base)} />
       )}
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />

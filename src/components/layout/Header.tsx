@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
 
@@ -18,6 +19,7 @@ const NAV_LINKS = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="bg-dark text-white sticky top-0 z-50">
@@ -54,6 +56,10 @@ export function Header() {
             <Link href="/about" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               About
             </Link>
+            <span className="w-px h-5 bg-white/20 mx-2" />
+            <Link href={pathname.startsWith('/ar') ? pathname.replace('/ar', '') || '/' : `/ar${pathname}`} className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+              {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
+            </Link>
           </nav>
 
           {/* Right side */}
@@ -87,11 +93,14 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            <div className="border-t border-white/10 pt-3 flex gap-4">
+            <div className="border-t border-white/10 pt-3 flex flex-wrap gap-4">
               <Link href="/search" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Search</Link>
               <Link href="/intelligence" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Insights</Link>
               <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
               <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
+              <Link href={pathname.startsWith('/ar') ? pathname.replace('/ar', '') || '/' : `/ar${pathname}`} className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>
+                {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
+              </Link>
             </div>
           </div>
         </div>
