@@ -51,24 +51,25 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     <div className="container-tc py-8">
       {/* Search Bar */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Search Healthcare Providers</h1>
+        <h1 className="text-3xl font-bold text-dark mb-4">Search Healthcare Providers</h1>
         <SearchBar defaultQuery={q} defaultCity={city} defaultCategory={category} />
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-gray-600">
+      <div className="mb-6">
+        <div className="section-header">
+          <h2>
             {total} result{total !== 1 ? "s" : ""} found
             {q && <span> for &ldquo;{q}&rdquo;</span>}
             {cityName && <span> in {cityName}</span>}
             {categoryName && <span> in {categoryName}</span>}
-          </p>
+          </h2>
+          <span className="arrows">&gt;&gt;&gt;</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Sort by:</span>
+        <div className="flex items-center gap-2 mt-3">
+          <span className="text-sm text-muted">Sort by:</span>
           <select
-            className="input text-sm py-1.5 w-auto"
+            className="input-tc text-sm py-1.5 w-auto"
             defaultValue={sort || "rating"}
             onChange={(e) => {
               const url = new URL(window.location.href);
@@ -105,14 +106,17 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">No results found</h2>
-          <p className="text-gray-500 mb-6">
+        <div className="text-center py-16 border border-light-200 bg-light-50">
+          <div className="w-12 h-12 bg-accent-muted flex items-center justify-center mx-auto mb-4">
+            <span className="text-accent text-xl font-bold">?</span>
+          </div>
+          <h2 className="text-xl font-bold text-dark mb-2">No results found</h2>
+          <p className="text-muted mb-6">
             Try adjusting your search terms or filters.
           </p>
           <div className="flex justify-center gap-3">
             <a href="/search" className="btn-accent">Clear Search</a>
-            <a href="/" className="btn-secondary">Browse Directory</a>
+            <a href="/" className="btn-dark">Browse Directory</a>
           </div>
         </div>
       )}

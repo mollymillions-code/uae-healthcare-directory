@@ -9,18 +9,18 @@ interface ReviewCardProps {
 
 export function ReviewCard({ authorName, rating, text, relativeTime }: ReviewCardProps) {
   return (
-    <div className="card p-4">
+    <div className="border border-light-200 p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-brand-50 flex items-center justify-center">
-            <span className="text-sm font-semibold text-brand-700">
+          <div className="h-8 w-8 bg-accent-muted flex items-center justify-center">
+            <span className="text-sm font-semibold text-accent">
               {authorName.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{authorName}</p>
+            <p className="text-sm font-medium text-dark">{authorName}</p>
             {relativeTime && (
-              <p className="text-xs text-gray-500">{relativeTime}</p>
+              <p className="text-xs text-muted">{relativeTime}</p>
             )}
           </div>
         </div>
@@ -29,14 +29,14 @@ export function ReviewCard({ authorName, rating, text, relativeTime }: ReviewCar
             <Star
               key={i}
               className={`h-3.5 w-3.5 ${
-                i < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"
+                i < rating ? "fill-yellow-400 text-yellow-400" : "fill-light-200 text-light-200"
               }`}
             />
           ))}
         </div>
       </div>
       {text && (
-        <p className="text-sm text-gray-600 leading-relaxed line-clamp-4">
+        <p className="text-sm text-muted leading-relaxed line-clamp-4">
           {text}
         </p>
       )}

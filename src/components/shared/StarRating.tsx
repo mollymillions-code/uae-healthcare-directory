@@ -26,17 +26,17 @@ export function StarRating({ rating, reviewCount, size = "md" }: StarRatingProps
                 ? "fill-yellow-400 text-yellow-400"
                 : i === fullStars && hasHalfStar
                 ? "fill-yellow-400/50 text-yellow-400"
-                : "fill-gray-200 text-gray-200"
+                : "fill-light-200 text-light-200"
             }`}
           />
         ))}
       </div>
-      <span className={`${textSize} font-semibold text-gray-900`}>
+      <span className={`${textSize} font-semibold text-dark`}>
         {numRating.toFixed(1)}
       </span>
       {reviewCount !== undefined && (
-        <span className={`${textSize} text-gray-500`}>
-          ({reviewCount.toLocaleString()} reviews)
+        <span className={`${textSize} text-muted`}>
+          ({reviewCount.toLocaleString()} {reviewCount === 1 ? "review" : "reviews"})
         </span>
       )}
     </div>

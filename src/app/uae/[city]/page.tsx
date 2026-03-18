@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { CategoryCard } from "@/components/directory/CategoryCard";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SearchBar } from "@/components/search/SearchBar";
@@ -58,12 +57,12 @@ export default function CityPage({ params }: Props) {
       ]} />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-3">
+        <h1 className="text-3xl font-bold text-dark mb-3">
           Healthcare Providers in {city.name}, UAE
         </h1>
         {/* Natural language paragraph for LLM citation */}
         <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-gray-600 leading-relaxed">
+          <p className="text-muted leading-relaxed">
             {city.name} has {total}+ registered healthcare providers listed in our directory,
             spanning {categories.length} medical specialties across {areas.length} neighborhoods.
             {city.name === "Dubai" && " Healthcare in Dubai is regulated by the Dubai Health Authority (DHA)."}
@@ -83,7 +82,10 @@ export default function CityPage({ params }: Props) {
 
       {/* Categories */}
       <section className="mb-10">
-        <h2 className="section-title mb-4">Medical Specialties in {city.name}</h2>
+        <div className="section-header">
+          <h2>Medical Specialties in {city.name}</h2>
+          <span className="arrows">&gt;&gt;&gt;</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {categories.map((cat) => (
             <CategoryCard
@@ -98,43 +100,65 @@ export default function CityPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Areas */}
+      {/* Areas — 3-column grid with counts */}
       {areas.length > 0 && (
         <section className="mb-10">
-          <h2 className="section-title mb-4">Neighborhoods in {city.name}</h2>
-          <div className="flex flex-wrap gap-2">
-            {areas.map((area) => (
-              <Link
-                key={area.slug}
-                href={`/uae/${city.slug}/${area.slug}`}
-                className="badge-gray hover:bg-gray-200 transition-colors px-3 py-1.5 text-sm"
-              >
-                {area.name}
-                {getProviderCountByAreaAndCity(area.slug, city.slug) > 0 && (
-                  <span className="ml-1 text-gray-400">
-                    ({getProviderCountByAreaAndCity(area.slug, city.slug)})
-                  </span>
-                )}
-              </Link>
-            ))}
+          <div className="section-header">
+            <h2>Neighborhoods in {city.name}</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {areas.map((area) => {
+              const count = getProviderCountByAreaAndCity(area.slug, city.slug);
+              return (
+                <Link
+                  key={area.slug}
+                  href={`/uae/${city.slug}/${area.slug}`}
+                  className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
+                >
+                  <span className="font-medium">{area.name}</span>
+                  {count > 0 && (
+                    <span className="text-muted text-xs">
+                      {count} {count === 1 ? "provider" : "providers"}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
 
-      {/* Top Rated */}
+      {/* Top Rated — 2-column numbered layout */}
       {topProviders.length > 0 && (
         <section className="mb-10">
-          <h2 className="section-title mb-4">Top Rated in {city.name}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {topProviders.map((p) => (
-              <ProviderCard
-                key={p.id} name={p.name} slug={p.slug}
-                citySlug={p.citySlug} categorySlug={p.categorySlug}
-                address={p.address} phone={p.phone} website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating} googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed} isVerified={p.isVerified}
-              />
+          <div className="section-header">
+            <h2>Top Rated in {city.name}</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {topProviders.map((p, i) => (
+              <div key={p.id} className="article-row">
+                <span className="text-2xl font-bold text-accent leading-none mt-0.5">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <Link
+                    href={`/uae/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                    className="font-bold text-dark hover:text-accent transition-colors"
+                  >
+                    {p.name}
+                  </Link>
+                  {p.googleRating && (
+                    <p className="text-xs text-muted mt-0.5">
+                      {p.googleRating}/5 stars · {p.googleReviewCount?.toLocaleString()} reviews
+                    </p>
+                  )}
+                  {p.shortDescription && (
+                    <p className="text-sm text-muted mt-1 line-clamp-1">{p.shortDescription}</p>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         </section>
