@@ -92,18 +92,24 @@ export async function generateStaticParams() {
   const categories = getCategories();
 
   for (const city of cities) {
-    // City + Category
+    // City + Category pages (8 × 26 = 208)
     for (const cat of categories) {
       params.push({ city: city.slug, segments: [cat.slug] });
     }
-    // City + Area
+    // City + Area pages (62 total)
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       params.push({ city: city.slug, segments: [area.slug] });
-      // Area + Category facets
+      // Area + Category facet pages (62 × 26 = 1,612)
       for (const cat of categories) {
         params.push({ city: city.slug, segments: [area.slug, cat.slug] });
       }
+    }
+
+    // Individual listing pages — every provider gets a page at /directory/{city}/{category}/{slug}
+    const { providers: cityProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    for (const provider of cityProviders) {
+      params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
     }
   }
 
