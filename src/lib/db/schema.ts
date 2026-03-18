@@ -268,6 +268,59 @@ export const claimRequests = pgTable(
   })
 );
 
+// ─── Journal Articles ─────────────────────────────────────────────────────────
+
+export const journalArticles = pgTable(
+  "journal_articles",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull(),
+    body: text("body").notNull(),
+    category: text("category").notNull(),
+    tags: jsonb("tags").$type<string[]>().default([]),
+    source: text("source").notNull().default("original"),
+    sourceUrl: text("source_url"),
+    sourceName: text("source_name"),
+    authorName: text("author_name").notNull().default("Journal Staff"),
+    authorRole: text("author_role"),
+    imageUrl: text("image_url"),
+    imageCaption: text("image_caption"),
+    isFeatured: boolean("is_featured").default(false),
+    isBreaking: boolean("is_breaking").default(false),
+    readTimeMinutes: integer("read_time_minutes").notNull().default(3),
+    status: text("status").notNull().default("published"), // draft | published | archived
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    slugUnique: uniqueIndex("uq_journal_slug").on(table.slug),
+    categoryIdx: index("idx_journal_category").on(table.category),
+    statusIdx: index("idx_journal_status").on(table.status),
+    publishedIdx: index("idx_journal_published").on(table.publishedAt),
+    featuredIdx: index("idx_journal_featured").on(table.isFeatured),
+  })
+);
+
+// ─── Journal Newsletter Subscribers ───────────────────────────────────────────
+
+export const journalSubscribers = pgTable(
+  "journal_subscribers",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    subscribedAt: timestamp("subscribed_at", { withTimezone: true }).notNull().defaultNow(),
+    unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+    status: text("status").notNull().default("active"), // active | unsubscribed
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("uq_journal_subscribers_email").on(table.email),
+    statusIdx: index("idx_journal_subscribers_status").on(table.status),
+  })
+);
+
 // ─── FAQs ──────────────────────────────────────────────────────────────────────
 
 export const faqs = pgTable(

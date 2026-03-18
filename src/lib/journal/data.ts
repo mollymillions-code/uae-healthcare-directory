@@ -1,6 +1,82 @@
 import type { JournalArticle, JournalCategory, JournalEvent, SocialPost } from "./types";
 import { SEED_ARTICLES, SEED_EVENTS, SEED_SOCIAL_POSTS } from "./seed-articles";
 
+// ─── DB Integration ─────────────────────────────────────────────────────────────
+// Try to read from Neon Postgres. Fall back to seed data if DB unavailable.
+
+let _dbArticles: JournalArticle[] | null = null;
+
+async function getDbArticles(): Promise<JournalArticle[]> {
+  if (_dbArticles !== null) return _dbArticles;
+
+  if (!process.env.DATABASE_URL) {
+    _dbArticles = [];
+    return _dbArticles;
+  }
+
+  try {
+    const { db } = await import("@/lib/db");
+    const { journalArticles } = await import("@/lib/db/schema");
+    const { desc, eq } = await import("drizzle-orm");
+
+    const rows = await db
+      .select()
+      .from(journalArticles)
+      .where(eq(journalArticles.status, "published"))
+      .orderBy(desc(journalArticles.publishedAt));
+
+    _dbArticles = rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      excerpt: row.excerpt,
+      body: row.body,
+      category: row.category as JournalCategory,
+      tags: (row.tags || []) as string[],
+      source: row.source as JournalArticle["source"],
+      sourceUrl: row.sourceUrl || undefined,
+      sourceName: row.sourceName || undefined,
+      author: {
+        name: row.authorName,
+        role: row.authorRole || undefined,
+      },
+      imageUrl: row.imageUrl || undefined,
+      imageCaption: row.imageCaption || undefined,
+      isFeatured: row.isFeatured || false,
+      isBreaking: row.isBreaking || false,
+      readTimeMinutes: row.readTimeMinutes,
+      publishedAt: row.publishedAt.toISOString(),
+      updatedAt: row.updatedAt?.toISOString(),
+    }));
+
+    return _dbArticles;
+  } catch {
+    console.log("[Journal] DB unavailable, using seed data only");
+    _dbArticles = [];
+    return _dbArticles;
+  }
+}
+
+// Merge DB articles with seed articles. DB articles take priority (newer).
+function getAllArticlesMerged(dbArticles: JournalArticle[]): JournalArticle[] {
+  const slugs = new Set(dbArticles.map((a) => a.slug));
+  const seedOnly = SEED_ARTICLES.filter((a) => !slugs.has(a.slug));
+  return [...dbArticles, ...seedOnly].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+// ─── Sync wrapper for SSG compatibility ─────────────────────────────────────────
+// Next.js SSG pages call these synchronously. We use seed data for static generation
+// and DB data for ISR/dynamic requests.
+
+function getAllArticlesSync(): JournalArticle[] {
+  // During static generation, _dbArticles may not be loaded yet.
+  // Return seed + cached DB articles.
+  const db = _dbArticles || [];
+  return getAllArticlesMerged(db);
+}
+
 // ─── Articles ───────────────────────────────────────────────────────────────────
 
 export function getArticles(opts?: {
@@ -10,9 +86,7 @@ export function getArticles(opts?: {
   offset?: number;
   excludeSlug?: string;
 }): { articles: JournalArticle[]; total: number } {
-  let list = [...SEED_ARTICLES].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  let list = getAllArticlesSync();
 
   if (opts?.category) {
     list = list.filter((a) => a.category === opts.category);
@@ -35,37 +109,31 @@ export function getArticles(opts?: {
 }
 
 export function getArticleBySlug(slug: string): JournalArticle | undefined {
-  return SEED_ARTICLES.find((a) => a.slug === slug);
+  return getAllArticlesSync().find((a) => a.slug === slug);
 }
 
 export function getFeaturedArticles(limit = 3): JournalArticle[] {
-  return [...SEED_ARTICLES]
+  return getAllArticlesSync()
     .filter((a) => a.isFeatured)
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, limit);
 }
 
 export function getBreakingArticles(): JournalArticle[] {
-  return [...SEED_ARTICLES]
-    .filter((a) => a.isBreaking)
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  return getAllArticlesSync().filter((a) => a.isBreaking);
 }
 
 export function getLatestArticles(limit = 10): JournalArticle[] {
-  return [...SEED_ARTICLES]
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-    .slice(0, limit);
+  return getAllArticlesSync().slice(0, limit);
 }
 
 export function getRelatedArticles(article: JournalArticle, limit = 4): JournalArticle[] {
-  // Score by tag overlap, same category, recency
-  const scored = SEED_ARTICLES.filter((a) => a.id !== article.id).map((a) => {
+  const all = getAllArticlesSync().filter((a) => a.id !== article.id);
+  const scored = all.map((a) => {
     let score = 0;
     if (a.category === article.category) score += 3;
     for (const tag of a.tags) {
       if (article.tags.includes(tag)) score += 2;
     }
-    // Recency bonus (within last 14 days)
     const daysDiff =
       (Date.now() - new Date(a.publishedAt).getTime()) / (1000 * 60 * 60 * 24);
     if (daysDiff < 14) score += 1;
@@ -79,15 +147,14 @@ export function getRelatedArticles(article: JournalArticle, limit = 4): JournalA
 }
 
 export function getArticlesByTag(tag: string, limit = 20): JournalArticle[] {
-  return [...SEED_ARTICLES]
+  return getAllArticlesSync()
     .filter((a) => a.tags.includes(tag))
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, limit);
 }
 
 export function getAllTags(): { tag: string; count: number }[] {
   const tagMap = new Map<string, number>();
-  for (const article of SEED_ARTICLES) {
+  for (const article of getAllArticlesSync()) {
     for (const tag of article.tags) {
       tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
     }
@@ -95,6 +162,12 @@ export function getAllTags(): { tag: string; count: number }[] {
   return Array.from(tagMap.entries())
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
+}
+
+// ─── Async data loader (call from API routes / server actions) ──────────────────
+
+export async function loadDbArticles(): Promise<void> {
+  await getDbArticles();
 }
 
 // ─── Events ─────────────────────────────────────────────────────────────────────
@@ -118,16 +191,17 @@ export function getLatestSocialPosts(limit = 5): SocialPost[] {
 // ─── Stats ──────────────────────────────────────────────────────────────────────
 
 export function getJournalStats() {
+  const all = getAllArticlesSync();
   const now = new Date();
-  const thisMonth = SEED_ARTICLES.filter((a) => {
+  const thisMonth = all.filter((a) => {
     const d = new Date(a.publishedAt);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
   return {
-    totalArticles: SEED_ARTICLES.length,
+    totalArticles: all.length,
     thisMonthCount: thisMonth.length,
-    categoryCounts: SEED_ARTICLES.reduce(
+    categoryCounts: all.reduce(
       (acc, a) => {
         acc[a.category] = (acc[a.category] || 0) + 1;
         return acc;

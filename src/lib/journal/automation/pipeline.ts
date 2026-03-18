@@ -22,6 +22,61 @@ import { getLatestArticles } from "../data";
 import type { JournalArticle } from "../types";
 import { nanoid } from "nanoid";
 
+// ─── DB Persistence ─────────────────────────────────────────────────────────────
+
+async function persistArticle(article: JournalArticle): Promise<boolean> {
+  if (!process.env.DATABASE_URL) {
+    console.log(`[Pipeline] No DATABASE_URL — skipping DB persist for: ${article.slug}`);
+    return false;
+  }
+
+  try {
+    const { db } = await import("@/lib/db");
+    const { journalArticles } = await import("@/lib/db/schema");
+
+    await db.insert(journalArticles).values({
+      id: article.id,
+      slug: article.slug,
+      title: article.title,
+      excerpt: article.excerpt,
+      body: article.body,
+      category: article.category,
+      tags: article.tags,
+      source: article.source,
+      sourceUrl: article.sourceUrl || null,
+      sourceName: article.sourceName || null,
+      authorName: article.author.name,
+      authorRole: article.author.role || null,
+      imageUrl: article.imageUrl || null,
+      isFeatured: article.isBreaking, // breaking stories auto-feature
+      isBreaking: article.isBreaking,
+      readTimeMinutes: article.readTimeMinutes,
+      status: "published",
+      publishedAt: new Date(article.publishedAt),
+    });
+
+    return true;
+  } catch (error) {
+    console.error(`[Pipeline] DB persist failed for ${article.slug}:`, error);
+    return false;
+  }
+}
+
+async function triggerRevalidation(): Promise<void> {
+  const secret = process.env.REVALIDATION_SECRET;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!secret || !baseUrl) return;
+
+  const paths = ["/journal"];
+  for (const path of paths) {
+    try {
+      await fetch(`${baseUrl}/api/revalidate?secret=${secret}&path=${path}`);
+    } catch {
+      // Revalidation is best-effort
+    }
+  }
+}
+
 export interface PipelineResult {
   feedItemsFetched: number;
   relevantItems: number;
@@ -105,11 +160,17 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     id: `j-auto-${nanoid(8)}`,
   }));
 
-  if (fullArticles.length > 0) {
-    console.log(`[Pipeline] Articles ready for publishing:`);
-    for (const article of fullArticles) {
-      console.log(`  - [${article.category}] ${article.title}`);
-    }
+  // 7. Persist to database and trigger revalidation
+  let persisted = 0;
+  for (const article of fullArticles) {
+    const ok = await persistArticle(article);
+    if (ok) persisted++;
+    console.log(`[Pipeline] ${ok ? "Published" : "Logged"}: [${article.category}] ${article.title}`);
+  }
+
+  if (persisted > 0) {
+    await triggerRevalidation();
+    console.log(`[Pipeline] Revalidation triggered for ${persisted} new articles`);
   }
 
   return {

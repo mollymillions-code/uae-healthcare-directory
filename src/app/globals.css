@@ -137,6 +137,21 @@
     @apply text-gold underline underline-offset-2 hover:text-gold-dark transition-colors;
   }
 
+  .prose-journal h3 {
+    @apply text-lg font-bold text-ink mt-8 mb-3;
+  }
+
+  /* Social embeds in articles */
+  .prose-journal iframe {
+    max-width: 100%;
+  }
+
+  .prose-journal .twitter-tweet,
+  .prose-journal .instagram-media {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
   /* Footer column heading */
   .footer-col-heading {
     font-family: var(--font-oswald), system-ui, sans-serif;

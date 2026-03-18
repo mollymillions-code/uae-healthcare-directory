@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { ArticleCard } from "@/components/journal/ArticleCard";
 import { NewsletterSignup } from "@/components/journal/NewsletterSignup";
 import { TagCloud } from "@/components/journal/TagCloud";
+import { ArticleBody } from "@/components/journal/SocialEmbed";
 import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles } from "@/lib/journal/data";
 import { articleSchema } from "@/lib/journal/seo";
 import { getJournalCategory } from "@/lib/journal/categories";
@@ -124,10 +125,7 @@ export default function ArticlePage({ params }: PageProps) {
             </div>
 
             {/* Article body */}
-            <div
-              className="prose-journal"
-              dangerouslySetInnerHTML={{ __html: article.body }}
-            />
+            <ArticleBody html={article.body} />
 
             {/* Tags */}
             <div className="rule mt-10 pt-6">
