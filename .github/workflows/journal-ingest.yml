@@ -1,0 +1,29 @@
+name: Journal content pipeline
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger content pipeline
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.SITE_URL }}/api/intelligence/ingest")
+
+          http_code=$(echo "$response" | tail -1)
+          body=$(echo "$response" | head -1)
+
+          echo "Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Pipeline returned $http_code"
+            exit 1
+          fi
