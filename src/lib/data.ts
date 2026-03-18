@@ -62,7 +62,32 @@ export interface LocalProvider {
   email?: string;
 }
 
-// Sample providers embedded for zero-DB local dev
+// ─── Load scraped providers if available ────────────────────────────────────────
+
+let SCRAPED_PROVIDERS: LocalProvider[] = [];
+try {
+  // At build time, try to load the scraped MOHAP data
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const scraped = require("./providers-scraped.json") as Array<{
+    id: string; name: string; slug: string; citySlug: string; categorySlug: string;
+    facilityType?: string; specialty?: string | null; address: string;
+    description: string; shortDescription: string; services: string[];
+    languages: string[]; insurance: string[]; operatingHours: Record<string, { open: string; close: string }>;
+    amenities: string[]; lastVerified: string; googleRating: string | null;
+    googleReviewCount: number; isClaimed: boolean; isVerified: boolean;
+  }>;
+  SCRAPED_PROVIDERS = scraped.map((p) => ({
+    ...p,
+    googleRating: p.googleRating || "0",
+    googleReviewCount: p.googleReviewCount || 0,
+    latitude: "0",
+    longitude: "0",
+  }));
+} catch {
+  // No scraped data yet — that's fine
+}
+
+// Sample providers embedded for zero-DB local dev (used as fallback + enriched data)
 const SAMPLE_PROVIDERS: LocalProvider[] = [
   { id: "prov_1", name: "Mediclinic City Hospital", slug: "mediclinic-city-hospital-dubai", citySlug: "dubai", areaSlug: "healthcare-city", categorySlug: "hospitals", subcategorySlug: "private-hospitals", address: "Building 37, Dubai Healthcare City, Dubai", phone: "+971-4-435-9999", website: "https://www.mediclinic.ae", latitude: "25.2265", longitude: "55.3195", googleRating: "4.5", googleReviewCount: 1842, description: "Mediclinic City Hospital is a state-of-the-art multi-specialty hospital in Dubai Healthcare City offering comprehensive medical services including cardiology, oncology, orthopedics, and women's health.", shortDescription: "State-of-the-art multi-specialty hospital in Dubai Healthcare City offering comprehensive medical services.", isClaimed: true, isVerified: true, services: ["Emergency", "Cardiology", "Oncology", "Orthopedics", "Women's Health", "Pediatrics"], languages: ["English", "Arabic", "Hindi", "Urdu"], insurance: ["Daman", "Thiqa", "AXA", "Dubai Insurance", "Cigna", "MetLife"], operatingHours: { mon: { open: "00:00", close: "23:59" }, tue: { open: "00:00", close: "23:59" }, wed: { open: "00:00", close: "23:59" }, thu: { open: "00:00", close: "23:59" }, fri: { open: "00:00", close: "23:59" }, sat: { open: "00:00", close: "23:59" }, sun: { open: "00:00", close: "23:59" } }, amenities: ["Parking", "Wheelchair Accessible", "WiFi", "Pharmacy", "Cafeteria"], lastVerified: "2026-03-15" },
   { id: "prov_2", name: "American Hospital Dubai", slug: "american-hospital-dubai-dubai", citySlug: "dubai", areaSlug: "al-barsha", categorySlug: "hospitals", subcategorySlug: "private-hospitals", address: "19th Street, Oud Metha, Dubai", phone: "+971-4-336-7777", website: "https://www.ahdubai.com", latitude: "25.2289", longitude: "55.3117", googleRating: "4.4", googleReviewCount: 2156, description: "American Hospital Dubai is a premier JCI-accredited hospital providing world-class healthcare since 1996. Known for exceptional patient care and advanced medical technology.", shortDescription: "Premier JCI-accredited hospital providing world-class healthcare since 1996.", isClaimed: true, isVerified: true, services: ["Emergency", "Surgery", "Cardiology", "Neurology", "Oncology", "Maternity"], languages: ["English", "Arabic", "French"], insurance: ["Daman", "Thiqa", "AXA", "Cigna", "Allianz"], operatingHours: { mon: { open: "00:00", close: "23:59" }, tue: { open: "00:00", close: "23:59" }, wed: { open: "00:00", close: "23:59" }, thu: { open: "00:00", close: "23:59" }, fri: { open: "00:00", close: "23:59" }, sat: { open: "00:00", close: "23:59" }, sun: { open: "00:00", close: "23:59" } }, amenities: ["Parking", "Wheelchair Accessible", "WiFi", "Pharmacy", "Helipad"], lastVerified: "2026-03-15" },
@@ -79,6 +104,20 @@ const SAMPLE_PROVIDERS: LocalProvider[] = [
   { id: "prov_13", name: "Aster Pharmacy", slug: "aster-pharmacy-dubai", citySlug: "dubai", areaSlug: "al-barsha", categorySlug: "pharmacy", address: "Al Barsha 1, Dubai", phone: "+971-4-347-5253", website: "https://www.asterpharmacy.com", latitude: "25.1140", longitude: "55.2010", googleRating: "4.3", googleReviewCount: 234, description: "Leading pharmacy chain in the UAE with wide range of medications, health products, and wellness supplements.", shortDescription: "Leading pharmacy chain with wide range of medications and health products.", isClaimed: false, isVerified: false, services: ["Prescription Medications", "OTC Products", "Health Supplements", "Medical Devices", "Delivery Service"], languages: ["English", "Arabic", "Hindi", "Malayalam"], insurance: ["Daman", "Dubai Insurance"], operatingHours: { mon: { open: "08:00", close: "00:00" }, tue: { open: "08:00", close: "00:00" }, wed: { open: "08:00", close: "00:00" }, thu: { open: "08:00", close: "00:00" }, fri: { open: "08:00", close: "00:00" }, sat: { open: "08:00", close: "00:00" }, sun: { open: "08:00", close: "00:00" } }, amenities: ["Parking", "Delivery"], lastVerified: "2026-03-10" },
   { id: "prov_14", name: "Tawam Hospital", slug: "tawam-hospital-al-ain", citySlug: "al-ain", areaSlug: "tawam", categorySlug: "hospitals", subcategorySlug: "government-hospitals", address: "Tawam Area, Al Ain", phone: "+971-3-707-7444", website: "https://www.seha.ae", latitude: "24.2320", longitude: "55.7720", googleRating: "4.4", googleReviewCount: 1234, description: "Tawam Hospital is the primary government hospital in Al Ain, operated by SEHA, specializing in oncology, surgery, and emergency care.", shortDescription: "Primary government hospital in Al Ain, operated by SEHA.", isClaimed: false, isVerified: true, services: ["Oncology", "Emergency", "Surgery", "Internal Medicine", "Pediatrics", "Radiology"], languages: ["English", "Arabic", "Hindi", "Urdu"], insurance: ["Thiqa", "Daman"], operatingHours: { mon: { open: "00:00", close: "23:59" }, tue: { open: "00:00", close: "23:59" }, wed: { open: "00:00", close: "23:59" }, thu: { open: "00:00", close: "23:59" }, fri: { open: "00:00", close: "23:59" }, sat: { open: "00:00", close: "23:59" }, sun: { open: "00:00", close: "23:59" } }, amenities: ["Parking", "Wheelchair Accessible", "Pharmacy", "Cafeteria", "Prayer Room"], lastVerified: "2026-03-15" },
   { id: "prov_15", name: "Bourn Hall Fertility Centre", slug: "bourn-hall-fertility-centre-dubai", citySlug: "dubai", areaSlug: "healthcare-city", categorySlug: "fertility-ivf", subcategorySlug: "ivf-centers", address: "Building 52, DHCC, Dubai", phone: "+971-4-364-4400", website: "https://www.bournhallfertility.ae", latitude: "25.2270", longitude: "55.3205", googleRating: "4.4", googleReviewCount: 287, description: "Pioneers of IVF treatment. Bourn Hall brings world-class fertility care to Dubai with over 40 years of experience.", shortDescription: "Pioneers of IVF with 40+ years of experience in fertility treatment.", isClaimed: true, isVerified: true, services: ["IVF", "ICSI", "Egg Freezing", "Genetic Testing", "Male Fertility", "Fertility Assessment"], languages: ["English", "Arabic", "Hindi"], insurance: ["Daman", "AXA", "Cigna"], operatingHours: { mon: { open: "08:00", close: "18:00" }, tue: { open: "08:00", close: "18:00" }, wed: { open: "08:00", close: "18:00" }, thu: { open: "08:00", close: "18:00" }, fri: { open: "09:00", close: "14:00" }, sat: { open: "09:00", close: "16:00" }, sun: { open: "09:00", close: "16:00" } }, amenities: ["Parking", "WiFi", "Private Consultation Rooms"], lastVerified: "2026-03-13" },
+];
+
+// ─── Merged Provider List ──────────────────────────────────────────────────────
+
+// Combine scraped data with sample data. Sample data provides enriched examples
+// (with ratings, reviews, full details). Scraped data provides comprehensive coverage.
+const ALL_PROVIDERS: LocalProvider[] = [
+  ...SAMPLE_PROVIDERS,
+  // Add scraped providers that don't duplicate sample ones (by name match)
+  ...SCRAPED_PROVIDERS.filter((sp) =>
+    !SAMPLE_PROVIDERS.some((sample) =>
+      sample.name.toLowerCase() === sp.name.toLowerCase()
+    )
+  ),
 ];
 
 // ─── Data Access Functions ─────────────────────────────────────────────────────
@@ -125,7 +164,7 @@ export function getProviders(filters?: {
   limit?: number;
   sort?: "rating" | "name" | "relevance";
 }): { providers: LocalProvider[]; total: number; page: number; totalPages: number } {
-  let filtered = [...SAMPLE_PROVIDERS];
+  let filtered = [...ALL_PROVIDERS];
 
   if (filters?.citySlug) {
     filtered = filtered.filter((p) => p.citySlug === filters.citySlug);
@@ -167,27 +206,27 @@ export function getProviders(filters?: {
 }
 
 export function getProviderBySlug(slug: string): LocalProvider | undefined {
-  return SAMPLE_PROVIDERS.find((p) => p.slug === slug);
+  return ALL_PROVIDERS.find((p) => p.slug === slug);
 }
 
 export function getProviderCountByCity(citySlug: string): number {
-  return SAMPLE_PROVIDERS.filter((p) => p.citySlug === citySlug).length;
+  return ALL_PROVIDERS.filter((p) => p.citySlug === citySlug).length;
 }
 
 export function getProviderCountByCategoryAndCity(categorySlug: string, citySlug: string): number {
-  return SAMPLE_PROVIDERS.filter((p) => p.categorySlug === categorySlug && p.citySlug === citySlug).length;
+  return ALL_PROVIDERS.filter((p) => p.categorySlug === categorySlug && p.citySlug === citySlug).length;
 }
 
 export function getProviderCountByCategory(categorySlug: string): number {
-  return SAMPLE_PROVIDERS.filter((p) => p.categorySlug === categorySlug).length;
+  return ALL_PROVIDERS.filter((p) => p.categorySlug === categorySlug).length;
 }
 
 export function getProviderCountByAreaAndCity(areaSlug: string, citySlug: string): number {
-  return SAMPLE_PROVIDERS.filter((p) => p.areaSlug === areaSlug && p.citySlug === citySlug).length;
+  return ALL_PROVIDERS.filter((p) => p.areaSlug === areaSlug && p.citySlug === citySlug).length;
 }
 
 export function getTopRatedProviders(citySlug?: string, limit = 5): LocalProvider[] {
-  let filtered = [...SAMPLE_PROVIDERS];
+  let filtered = [...ALL_PROVIDERS];
   if (citySlug) {
     filtered = filtered.filter((p) => p.citySlug === citySlug);
   }
