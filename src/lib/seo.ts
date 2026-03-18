@@ -15,14 +15,16 @@ export function medicalOrganizationSchema(
   provider: LocalProvider,
   city: LocalCity,
   category: LocalCategory,
-  area?: LocalArea | null
+  area?: LocalArea | null,
+  citySlug?: string
 ) {
+  const resolvedCitySlug = citySlug || city.slug;
   return {
     "@context": "https://schema.org",
-    "@type": "MedicalOrganization",
-    "@id": `${getBaseUrl()}/uae/${city.slug}/${category.slug}/${provider.slug}`,
+    "@type": "MedicalBusiness",
+    "@id": `${getBaseUrl()}/directory/${city.slug}/${category.slug}/${provider.slug}`,
     name: provider.name,
-    url: `${getBaseUrl()}/uae/${city.slug}/${category.slug}/${provider.slug}`,
+    url: `${getBaseUrl()}/directory/${city.slug}/${category.slug}/${provider.slug}`,
     telephone: provider.phone,
     email: provider.email || undefined,
     description: provider.description,
@@ -39,6 +41,15 @@ export function medicalOrganizationSchema(
       latitude: parseFloat(provider.latitude),
       longitude: parseFloat(provider.longitude),
     },
+    hasCredential: {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "Health Authority License",
+      recognizedBy: {
+        "@type": "Organization",
+        name: getRegulator(resolvedCitySlug),
+      },
+    },
+    isBasedOn: "Official UAE health authority licensed facilities register",
     ...(provider.googleRating
       ? {
           aggregateRating: {
@@ -142,6 +153,61 @@ export function itemListSchema(
   };
 }
 
+export function organizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Zavis",
+    url: "https://zavis.ae",
+    description:
+      "AI-powered patient success platform and healthcare intelligence for the UAE",
+    knowsAbout: [
+      "UAE healthcare",
+      "Dubai Health Authority",
+      "Department of Health Abu Dhabi",
+      "MOHAP",
+      "UAE health insurance",
+      "Healthcare directory",
+      "Medical facilities UAE",
+    ],
+    areaServed: {
+      "@type": "Country",
+      name: "United Arab Emirates",
+    },
+    sameAs: ["https://zavis.ae"],
+  };
+}
+
+export function speakableSchema(cssSelectors: string[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: cssSelectors,
+    },
+  };
+}
+
+export function medicalWebPageSchema(
+  name: string,
+  description: string,
+  lastReviewed: string
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name,
+    description,
+    lastReviewed,
+    reviewedBy: {
+      "@type": "Organization",
+      name: "Zavis",
+      url: "https://zavis.ae",
+    },
+  };
+}
+
 // ─── Natural Language Content Generators ────────────────────────────────────────
 
 /**
@@ -229,13 +295,16 @@ export function generateFacetAnswerBlock(
 ): string {
   const locationDesc = area ? `${area.name}, ${city.name}` : city.name;
 
-  let answer = `There are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
+  let answer = `According to the UAE Healthcare Directory, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
 
   if (topProvider) {
-    answer += ` The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${topProvider.googleReviewCount?.toLocaleString()} reviews.`;
+    const reviewPart = topProvider.googleReviewCount
+      ? ` based on ${topProvider.googleReviewCount.toLocaleString()} patient reviews`
+      : "";
+    answer += ` The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating${reviewPart}.`;
   }
 
-  answer += ` All listings include contact details, operating hours, accepted insurance plans, and directions. Healthcare in ${city.name} is regulated by the ${getRegulator(city.slug)}.`;
+  answer += ` All listings include contact details, operating hours, accepted insurance plans, and directions. Healthcare in ${city.name} is regulated by the ${getRegulator(city.slug)}. Data sourced from official government registers, last verified March 2026.`;
 
   return answer;
 }

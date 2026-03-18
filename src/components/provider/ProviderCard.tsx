@@ -22,7 +22,7 @@ export function ProviderCard({
 }: ProviderCardProps) {
   return (
     <Link
-      href={`/uae/${citySlug}/${categorySlug}/${slug}`}
+      href={`/directory/${citySlug}/${categorySlug}/${slug}`}
       className="provider-card group block"
     >
       <div className="flex items-start justify-between gap-3">

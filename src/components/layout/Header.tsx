@@ -6,14 +6,14 @@ import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
 
 const NAV_LINKS = [
-  { label: "Dubai", href: "/uae/dubai" },
-  { label: "Abu Dhabi", href: "/uae/abu-dhabi" },
-  { label: "Sharjah", href: "/uae/sharjah" },
-  { label: "Ajman", href: "/uae/ajman" },
-  { label: "RAK", href: "/uae/ras-al-khaimah" },
-  { label: "Fujairah", href: "/uae/fujairah" },
-  { label: "UAQ", href: "/uae/umm-al-quwain" },
-  { label: "Al Ain", href: "/uae/al-ain" },
+  { label: "Dubai", href: "/directory/dubai" },
+  { label: "Abu Dhabi", href: "/directory/abu-dhabi" },
+  { label: "Sharjah", href: "/directory/sharjah" },
+  { label: "Ajman", href: "/directory/ajman" },
+  { label: "RAK", href: "/directory/ras-al-khaimah" },
+  { label: "Fujairah", href: "/directory/fujairah" },
+  { label: "UAQ", href: "/directory/umm-al-quwain" },
+  { label: "Al Ain", href: "/directory/al-ain" },
 ];
 
 export function Header() {
@@ -26,10 +26,10 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="bg-accent w-7 h-7 flex items-center justify-center text-white font-bold text-xs">
-              UH
+              Z
             </span>
             <span className="font-bold text-base tracking-tight hidden sm:inline">
-              UAE Health Directory
+              UAE Healthcare Directory
             </span>
           </Link>
 
@@ -47,6 +47,9 @@ export function Header() {
             <span className="w-px h-5 bg-white/20 mx-2" />
             <Link href="/search" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               Search
+            </Link>
+            <Link href="/intelligence" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+              Intelligence
             </Link>
             <Link href="/about" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               About
@@ -76,7 +79,7 @@ export function Header() {
               {CITIES.map((city) => (
                 <Link
                   key={city.slug}
-                  href={`/uae/${city.slug}`}
+                  href={`/directory/${city.slug}`}
                   className="text-sm text-white/70 hover:text-white py-1.5 px-2"
                   onClick={() => setMobileOpen(false)}
                 >
@@ -86,6 +89,7 @@ export function Header() {
             </div>
             <div className="border-t border-white/10 pt-3 flex gap-4">
               <Link href="/search" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Search</Link>
+              <Link href="/intelligence" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Intelligence</Link>
               <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
               <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
             </div>

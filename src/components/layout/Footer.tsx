@@ -8,19 +8,19 @@ export function Footer() {
         {/* Top — logo + tagline */}
         <div className="flex items-center gap-3 mb-8">
           <span className="bg-accent w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
-            UH
+            Z
           </span>
-          <span className="font-bold text-lg">UAE Health Directory</span>
+          <span className="font-bold text-lg">UAE Healthcare Directory</span>
         </div>
 
         {/* Columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 border-t border-white/10 pt-8 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
               {CITIES.map((city) => (
                 <li key={city.slug}>
-                  <Link href={`/uae/${city.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">
+                  <Link href={`/directory/${city.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">
                     {city.name}
                   </Link>
                 </li>
@@ -46,6 +46,15 @@ export function Footer() {
             </ul>
           </div>
           <div>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Intelligence</h5>
+            <ul className="space-y-2">
+              <li><Link href="/intelligence" className="text-sm text-white/60 hover:text-white transition-colors">Intelligence Home</Link></li>
+              <li><span className="text-sm text-white/60">Newsletter</span></li>
+              <li><Link href="/intelligence/feed.xml" className="text-sm text-white/60 hover:text-white transition-colors">RSS Feed</Link></li>
+              <li><Link href="/editorial-policy" className="text-sm text-white/60 hover:text-white transition-colors">Editorial Policy</Link></li>
+            </ul>
+          </div>
+          <div>
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">For AI Agents</h5>
             <ul className="space-y-2">
               <li><Link href="/directory-skill.md" className="text-sm text-white/60 hover:text-white transition-colors">Platform Guide</Link></li>
@@ -57,7 +66,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <span className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} UAE Healthcare Directory. Free for all UAE residents.
+            &copy; {new Date().getFullYear()} UAE Healthcare Directory &amp; Intelligence. Free for all UAE residents.
           </span>
           <span className="text-xs text-white/40">
             by{" "}

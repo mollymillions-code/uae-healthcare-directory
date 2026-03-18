@@ -17,7 +17,7 @@ export function CategoryCard({
   citySlug,
   providerCount,
 }: CategoryCardProps) {
-  const href = citySlug ? `/uae/${citySlug}/${slug}` : `/uae/dubai/${slug}`;
+  const href = citySlug ? `/directory/${citySlug}/${slug}` : `/directory/dubai/${slug}`;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (Icons as any)[icon] || Icons.Stethoscope;

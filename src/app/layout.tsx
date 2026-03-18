@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { DM_Sans, Space_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationSchema } from "@/lib/seo";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -20,17 +22,24 @@ const spaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "UAE Healthcare Directory | Find Doctors, Clinics & Hospitals",
+    default: "UAE Healthcare Directory | Find Doctors, Clinics & Hospitals in UAE",
     template: "%s | UAE Healthcare Directory",
   },
   description:
-    "The most comprehensive free healthcare directory for the UAE. Find hospitals, clinics, dentists, and specialists in Dubai, Abu Dhabi, Sharjah, and all Emirates with ratings, reviews, and contact details.",
+    "The UAE Healthcare Directory — the most comprehensive free directory of licensed healthcare providers across the UAE. Find hospitals, clinics, dentists, and specialists in Dubai, Abu Dhabi, Sharjah, and all Emirates with ratings, reviews, and contact details.",
   openGraph: {
     type: "website",
     locale: "en_AE",
     siteName: "UAE Healthcare Directory",
   },
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+    languages: {
+      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+      'ar-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+    },
+  },
 };
 
 export default function RootLayout({
@@ -41,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${spaceMono.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-white text-dark">
+        <JsonLd data={organizationSchema()} />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -7,7 +7,7 @@
  */
 
 import { writeFileSync, existsSync, unlinkSync } from "fs";
-import { SEED_ARTICLES } from "../src/lib/journal/seed-articles";
+import { SEED_ARTICLES } from "../src/lib/intelligence/seed-articles";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 if (!API_KEY) {

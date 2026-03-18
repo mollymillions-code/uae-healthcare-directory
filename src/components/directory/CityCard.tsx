@@ -15,7 +15,7 @@ export function CityCard({ name, slug, emirate, providerCount }: CityCardProps) 
 
   return (
     <Link
-      href={`/uae/${slug}`}
+      href={`/directory/${slug}`}
       className="group relative overflow-hidden border border-light-200 hover:border-accent transition-colors"
     >
       {/* City image or gradient background */}

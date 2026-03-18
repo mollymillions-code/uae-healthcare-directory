@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getCities, getCategories, getAreasByCity, getProviders } from "@/lib/data";
-import { getLatestArticles } from "@/lib/journal/data";
-import { JOURNAL_CATEGORIES } from "@/lib/journal/categories";
+import { getLatestArticles } from "@/lib/intelligence/data";
+import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 import { getBaseUrl } from "@/lib/helpers";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const city of cities) {
     // City pages
     entries.push({
-      url: `${baseUrl}/uae/${city.slug}`,
+      url: `${baseUrl}/directory/${city.slug}`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // City + Category pages
     for (const cat of categories) {
       entries.push({
-        url: `${baseUrl}/uae/${city.slug}/${cat.slug}`,
+        url: `${baseUrl}/directory/${city.slug}/${cat.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly",
         priority: 0.8,
@@ -50,7 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       entries.push({
-        url: `${baseUrl}/uae/${city.slug}/${area.slug}`,
+        url: `${baseUrl}/directory/${city.slug}/${area.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly",
         priority: 0.7,
@@ -59,7 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // Area + Category facet pages (every permutation — the AEO surface area)
       for (const cat of categories) {
         entries.push({
-          url: `${baseUrl}/uae/${city.slug}/${area.slug}/${cat.slug}`,
+          url: `${baseUrl}/directory/${city.slug}/${area.slug}/${cat.slug}`,
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 0.7,
@@ -72,7 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const { providers } = getProviders({ limit: 10000 });
   for (const provider of providers) {
     entries.push({
-      url: `${baseUrl}/uae/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`,
+      url: `${baseUrl}/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
@@ -92,7 +92,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Journal category pages
   for (const cat of JOURNAL_CATEGORIES) {
     entries.push({
-      url: `${baseUrl}/journal/category/${cat.slug}`,
+      url: `${baseUrl}/intelligence/category/${cat.slug}`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
@@ -103,7 +103,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const journalArticles = getLatestArticles(100);
   for (const article of journalArticles) {
     entries.push({
-      url: `${baseUrl}/journal/${article.slug}`,
+      url: `${baseUrl}/intelligence/${article.slug}`,
       lastModified: new Date(article.updatedAt || article.publishedAt),
       changeFrequency: "weekly",
       priority: 0.7,
@@ -112,7 +112,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Journal RSS feed
   entries.push({
-    url: `${baseUrl}/journal/feed.xml`,
+    url: `${baseUrl}/intelligence/feed.xml`,
     lastModified: new Date(),
     changeFrequency: "hourly",
     priority: 0.3,

@@ -5,6 +5,9 @@
 
 import { CITIES, AREAS } from "./constants/cities";
 import { CATEGORIES, SUBCATEGORIES } from "./constants/categories";
+import { INSURANCE_PROVIDERS, InsuranceProvider } from "./constants/insurance";
+import { LANGUAGES, LanguageInfo } from "./constants/languages";
+import { CONDITIONS, Condition } from "./constants/conditions";
 
 // Types for local data
 export interface LocalCity {
@@ -256,4 +259,73 @@ export function getFaqs(entityType: string, entitySlug: string): { question: str
   }
 
   return [];
+}
+
+// ─── Insurance Data Access Functions ──────────────────────────────────────────
+
+export type { InsuranceProvider };
+
+export function getInsuranceProviders(): InsuranceProvider[] {
+  return [...INSURANCE_PROVIDERS];
+}
+
+export function getProvidersByInsurance(insurerSlug: string, citySlug?: string): LocalProvider[] {
+  const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+  if (!insurer) return [];
+
+  const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+
+  let filtered = ALL_PROVIDERS.filter((p) =>
+    p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
+  );
+
+  if (citySlug) {
+    filtered = filtered.filter((p) => p.citySlug === citySlug);
+  }
+
+  return filtered;
+}
+
+export function getProviderCountByInsurance(insurerSlug: string, citySlug: string): number {
+  return getProvidersByInsurance(insurerSlug, citySlug).length;
+}
+
+// ─── Language Data Access Functions ───────────────────────────────────────────
+
+export type { LanguageInfo };
+
+export function getLanguages(): LanguageInfo[] {
+  return [...LANGUAGES];
+}
+
+/** Alias matching the naming convention used by consumer code */
+export const getLanguagesList = getLanguages;
+
+export function getProvidersByLanguage(languageSlug: string, citySlug?: string): LocalProvider[] {
+  const language = LANGUAGES.find((l) => l.slug === languageSlug);
+  if (!language) return [];
+
+  const matchName = language.name.toLowerCase();
+
+  let filtered = ALL_PROVIDERS.filter((p) =>
+    p.languages.some((lang) => lang.toLowerCase() === matchName)
+  );
+
+  if (citySlug) {
+    filtered = filtered.filter((p) => p.citySlug === citySlug);
+  }
+
+  return filtered;
+}
+
+export function getProviderCountByLanguage(languageSlug: string, citySlug: string): number {
+  return getProvidersByLanguage(languageSlug, citySlug).length;
+}
+
+// ─── Condition Data Access Functions ──────────────────────────────────────────
+
+export type { Condition };
+
+export function getConditions(): Condition[] {
+  return [...CONDITIONS];
 }
