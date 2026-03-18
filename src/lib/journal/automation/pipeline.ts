@@ -16,7 +16,7 @@
  */
 
 import { fetchAllFeeds, isUAEHealthcareRelevant, type RawFeedItem } from "./feeds";
-import { generateArticleBatch } from "./summarize";
+import { generateArticleBatch, generateArticleImage } from "./summarize";
 import { sendDailyBriefing } from "./newsletter";
 import { getLatestArticles } from "../data";
 import type { JournalArticle } from "../types";
@@ -86,14 +86,25 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     errors.push(`Article generation failed: ${String(error)}`);
   }
 
-  // 5. Assign IDs and store
+  // 5. Generate images for articles
+  for (const article of articles) {
+    try {
+      const imageData = await generateArticleImage(article.title, article.category);
+      if (imageData) {
+        article.imageUrl = imageData;
+        console.log(`[Pipeline] Generated image for: ${article.title}`);
+      }
+    } catch {
+      console.log(`[Pipeline] Image generation skipped for: ${article.title}`);
+    }
+  }
+
+  // 6. Assign IDs and store
   const fullArticles: JournalArticle[] = articles.map((a) => ({
     ...a,
     id: `j-auto-${nanoid(8)}`,
   }));
 
-  // In production, this would write to the database.
-  // For now, log the generated articles.
   if (fullArticles.length > 0) {
     console.log(`[Pipeline] Articles ready for publishing:`);
     for (const article of fullArticles) {

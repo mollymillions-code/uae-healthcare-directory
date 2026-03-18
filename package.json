@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.79.0",
+    "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.0.2",
     "@vis.gl/react-google-maps": "^1.7.1",
     "drizzle-orm": "^0.45.1",
