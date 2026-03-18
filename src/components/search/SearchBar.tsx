@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
 
@@ -13,12 +13,7 @@ interface SearchBarProps {
   compact?: boolean;
 }
 
-export function SearchBar({
-  defaultCity,
-  defaultCategory,
-  defaultQuery,
-  compact,
-}: SearchBarProps) {
+export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultQuery || "");
   const [city, setCity] = useState(defaultCity || "");
@@ -35,76 +30,65 @@ export function SearchBar({
 
   if (compact) {
     return (
-      <form onSubmit={handleSearch} className="flex gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-cream-300" />
+      <form onSubmit={handleSearch} className="flex gap-3 items-end">
+        <div className="flex-1">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search healthcare providers..."
-            className="input pl-10"
+            placeholder="Search providers..."
+            className="input"
           />
         </div>
         <button type="submit" className="btn-primary">
-          Search
+          <Search className="h-4 w-4" />
         </button>
       </form>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSearch}
-      className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12)] border border-white/50 p-4 sm:p-5"
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-        {/* Search Input */}
-        <div className="relative sm:col-span-5">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-cream-300" />
+    <form onSubmit={handleSearch}>
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-end">
+        <div className="sm:col-span-5">
+          <label className="label mb-2 block">Search</label>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Doctors, clinics, hospitals..."
-            className="input pl-10"
+            placeholder="Doctor, clinic, hospital..."
+            className="input"
           />
         </div>
-
-        {/* City Select */}
-        <div className="relative sm:col-span-3">
-          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-cream-300" />
+        <div className="sm:col-span-3">
+          <label className="label mb-2 block">City</label>
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="input pl-10 appearance-none cursor-pointer"
+            className="input cursor-pointer"
           >
-            <option value="">All Cities</option>
+            <option value="">All cities</option>
             {CITIES.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.name}
-              </option>
+              <option key={c.slug} value={c.slug}>{c.name}</option>
             ))}
           </select>
         </div>
-
-        {/* Category + Button */}
-        <div className="flex gap-2 sm:col-span-4">
+        <div className="sm:col-span-3">
+          <label className="label mb-2 block">Specialty</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="input flex-1 appearance-none cursor-pointer"
+            className="input cursor-pointer"
           >
-            <option value="">All Specialties</option>
+            <option value="">All specialties</option>
             {CATEGORIES.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.name}
-              </option>
+              <option key={c.slug} value={c.slug}>{c.name}</option>
             ))}
           </select>
-          <button type="submit" className="btn-primary whitespace-nowrap">
-            <Search className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Search</span>
+        </div>
+        <div className="sm:col-span-1">
+          <button type="submit" className="btn-primary w-full">
+            <Search className="h-4 w-4" />
           </button>
         </div>
       </div>
