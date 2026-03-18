@@ -15,6 +15,7 @@ import type { RawFeedItem } from "./feeds";
 import { classifyCategory } from "./feeds";
 import {
   getArticleSystemPrompt,
+  getReviewEditorSystemPrompt,
   getSocialDigestSystemPrompt,
 } from "./skills/news-story-writer";
 
@@ -65,13 +66,23 @@ The body must be ORIGINAL writing based on the source facts. Add UAE healthcare 
     const jsonStr = text.replace(/```json\n?|\n?```/g, "").trim();
     const parsed = JSON.parse(jsonStr);
 
-    return {
+    // Pass 2: Review and improve before publishing
+    const reviewed = await reviewAndImprove({
       slug: parsed.slug,
       title: parsed.title,
       excerpt: parsed.excerpt,
       body: parsed.body,
-      category,
       tags: parsed.tags || [],
+      readTimeMinutes: parsed.readTimeMinutes || 3,
+    });
+
+    return {
+      slug: reviewed.slug,
+      title: reviewed.title,
+      excerpt: reviewed.excerpt,
+      body: reviewed.body,
+      category,
+      tags: reviewed.tags,
       source: item.contentSource,
       sourceUrl: item.link,
       sourceName: item.source,
@@ -79,11 +90,55 @@ The body must be ORIGINAL writing based on the source facts. Add UAE healthcare 
       publishedAt: new Date().toISOString(),
       isFeatured: false,
       isBreaking: false,
-      readTimeMinutes: parsed.readTimeMinutes || 3,
+      readTimeMinutes: reviewed.readTimeMinutes,
     };
   } catch (error) {
     console.error(`[Summarize] Error generating article for: ${item.title}`, error);
     return null;
+  }
+}
+
+// ─── Review Pass (Pass 2) ───────────────────────────────────────────────────────
+
+async function reviewAndImprove(draft: {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  tags: string[];
+  readTimeMinutes: number;
+}): Promise<typeof draft> {
+  try {
+    const genAI = getGemini();
+    const reviewer = genAI.getGenerativeModel({
+      model: "gemini-3.1-flash-lite-preview",
+      systemInstruction: getReviewEditorSystemPrompt(),
+    });
+
+    const prompt = `Review and improve this draft article. Fix all issues found.
+
+DRAFT:
+${JSON.stringify(draft, null, 2)}
+
+Return the improved version as JSON with the same fields (slug, title, excerpt, body, tags, readTimeMinutes). JSON only, no markdown fences. If the draft is already strong, make targeted improvements — don't rewrite from scratch.`;
+
+    const result = await reviewer.generateContent(prompt);
+    const text = result.response.text();
+    const jsonStr = text.replace(/```json\n?|\n?```/g, "").trim();
+    const improved = JSON.parse(jsonStr);
+
+    console.log(`[Review] Improved: "${draft.title}" → "${improved.title}"`);
+    return {
+      slug: improved.slug || draft.slug,
+      title: improved.title || draft.title,
+      excerpt: improved.excerpt || draft.excerpt,
+      body: improved.body || draft.body,
+      tags: improved.tags || draft.tags,
+      readTimeMinutes: improved.readTimeMinutes || draft.readTimeMinutes,
+    };
+  } catch (error) {
+    console.error("[Review] Review pass failed, using draft as-is:", error);
+    return draft;
   }
 }
 
