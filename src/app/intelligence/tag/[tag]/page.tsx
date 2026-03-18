@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { CategoryNav } from "@/components/intelligence/CategoryNav";
 import { TagCloud } from "@/components/intelligence/TagCloud";
-import { getArticlesByTag, getAllTags } from "@/lib/intelligence/data";
+import { getArticlesByTag, getAllTags, loadDbArticles } from "@/lib/intelligence/data";
 import { getBaseUrl } from "@/lib/helpers";
 import { ArrowLeft } from "lucide-react";
 
@@ -30,7 +30,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function TagPage({ params }: PageProps) {
+export default async function TagPage({ params }: PageProps) {
+  await loadDbArticles();
   const tag = decodeURIComponent(params.tag);
   const articles = getArticlesByTag(tag);
   const allTags = getAllTags();

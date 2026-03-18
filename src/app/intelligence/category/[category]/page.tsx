@@ -5,7 +5,7 @@ import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { CategoryNav } from "@/components/intelligence/CategoryNav";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { EventsSidebar } from "@/components/intelligence/EventsSidebar";
-import { getArticles, getUpcomingEvents, getAllTags } from "@/lib/intelligence/data";
+import { getArticles, getUpcomingEvents, getAllTags, loadDbArticles } from "@/lib/intelligence/data";
 import { getJournalCategory, JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 import type { JournalCategory } from "@/lib/intelligence/types";
 import { getBaseUrl } from "@/lib/helpers";
@@ -36,7 +36,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({ params }: PageProps) {
+  await loadDbArticles();
   const cat = getJournalCategory(params.category);
   if (!cat) notFound();
 

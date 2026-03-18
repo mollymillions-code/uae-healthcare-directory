@@ -16,6 +16,7 @@ import {
   getLatestSocialPosts,
   getAllTags,
   getArticles,
+  loadDbArticles,
 } from "@/lib/intelligence/data";
 import { journalListingSchema } from "@/lib/intelligence/seo";
 import { speakableSchema } from "@/lib/seo";
@@ -45,7 +46,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  // Load articles from DB before rendering
+  await loadDbArticles();
+
   const featured = getFeaturedArticles(2);
   const breaking = getBreakingArticles();
   const latest = getLatestArticles(20);

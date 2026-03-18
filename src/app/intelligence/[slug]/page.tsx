@@ -6,7 +6,7 @@ import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
-import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles, getLatestArticles } from "@/lib/intelligence/data";
+import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles, getLatestArticles, loadDbArticles } from "@/lib/intelligence/data";
 import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
@@ -55,7 +55,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function ArticlePage({ params }: PageProps) {
+export default async function ArticlePage({ params }: PageProps) {
+  await loadDbArticles();
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
 
