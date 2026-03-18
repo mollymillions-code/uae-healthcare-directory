@@ -113,24 +113,33 @@ export default function LanguageProviderPage({ params }: Props) {
       </div>
 
       {providers.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {providers.map((p) => (
-            <ProviderCard
-              key={p.id}
-              name={p.name}
-              slug={p.slug}
-              citySlug={p.citySlug}
-              categorySlug={p.categorySlug}
-              address={p.address}
-              phone={p.phone}
-              website={p.website}
-              shortDescription={p.shortDescription}
-              googleRating={p.googleRating}
-              googleReviewCount={p.googleReviewCount}
-              isClaimed={p.isClaimed}
-              isVerified={p.isVerified}
-            />
-          ))}
+        <div className="mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {providers.slice(0, 48).map((p) => (
+              <ProviderCard
+                key={p.id}
+                name={p.name}
+                slug={p.slug}
+                citySlug={p.citySlug}
+                categorySlug={p.categorySlug}
+                address={p.address}
+                phone={p.phone}
+                website={p.website}
+                shortDescription={p.shortDescription}
+                googleRating={p.googleRating}
+                googleReviewCount={p.googleReviewCount}
+                isClaimed={p.isClaimed}
+                isVerified={p.isVerified}
+              />
+            ))}
+          </div>
+          {providers.length > 48 && (
+            <div className="text-center mt-6 py-4 border-t border-light-200">
+              <Link href={`/search?city=${city.slug}&q=${language.name}`} className="btn-accent">
+                View all {count} {language.name}-speaking providers
+              </Link>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-12">
