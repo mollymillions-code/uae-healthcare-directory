@@ -198,6 +198,20 @@ Write 3-5 paragraphs of HTML (<p>, <h3> tags). Weave the posts into a narrative.
   }
 }
 
+// ─── Category visual styles ─────────────────────────────────────────────────────
+
+const CATEGORY_VISUALS: Record<string, string> = {
+  regulatory: "Government/regulation: sleek modern government building or regulatory office in Abu Dhabi/Dubai. Marble, glass, official screens. Muted blue-gray with gold accents. Institutional authority.",
+  "new-openings": "Architecture: striking new healthcare facility, glass curtain wall, dramatic lobby, construction crane. Bright natural light, white and teal. Sense of scale.",
+  financial: "Financial data: Bloomberg terminal aesthetic, rising charts, currency, dark background with glowing green/amber data. DIFC trading floor at night.",
+  events: "Conference: aerial view of exhibition floor, keynote stage, crowds of professionals. Warm tungsten lighting. Arab Health exhibition feel.",
+  "social-pulse": "Social media: smartphone screens with social feeds, conversation bubbles, cool blue-white screen glow in dim environment.",
+  "thought-leadership": "Leadership portrait: professional silhouette against floor-to-ceiling windows, Gulf city skyline. Golden hour, contemplative. Monocle magazine style.",
+  "market-intelligence": "Analytics dashboard: large screen showing healthcare heat maps, UAE geographic data, patient flow viz. Dark UI with accent colors.",
+  technology: "Health tech: close-up of medical technology — robotic arm, AI diagnostic screen, holographic display. Futuristic, blue-white lighting.",
+  workforce: "Healthcare workers: nurses at modern station, diverse medical team in hospital corridor. Natural, warm professional lighting. Documentary style.",
+};
+
 // ─── Image Generation (Gemini 3.1 Flash Image Preview) ──────────────────────────
 
 export async function generateArticleImage(
@@ -205,27 +219,41 @@ export async function generateArticleImage(
   category: string
 ): Promise<string | null> {
   try {
-    const genAI = getGemini();
-    const imageModel = genAI.getGenerativeModel({
-      model: "gemini-3.1-flash-image-preview",
-    });
+    const style = CATEGORY_VISUALS[category] || CATEGORY_VISUALS.regulatory;
 
-    const prompt = `Generate a high-quality editorial photograph for a UAE healthcare journal article.
+    const API_KEY = process.env.GEMINI_API_KEY;
+    if (!API_KEY) return null;
 
-Article: "${title}"
-Category: ${category}
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Create a photorealistic editorial image for a healthcare journal.
 
-Style: editorial photography, NOT stock photo. High contrast, scroll-stopping composition. UAE/Middle East healthcare context (modern architecture, diverse professionals, Gulf setting). Muted warm tones with one strong color accent. No text overlays, no watermarks, no logos. 16:9 aspect ratio. Financial Times or New York Times photo desk quality.`;
+Title: "${title}"
 
-    const result = await imageModel.generateContent(prompt);
-    const response = result.response;
+VISUAL: ${style}
 
-    const candidate = response.candidates?.[0];
-    if (candidate?.content?.parts) {
-      for (const part of candidate.content.parts) {
-        if (part.inlineData) {
-          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-        }
+RULES: NO text/words/numbers/watermarks/logos. 16:9 landscape. Professional color grading. Must feel specific to a place, not generic. LinkedIn scroll-stopping quality.`,
+            }],
+          }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+      }
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    for (const part of parts) {
+      if (part.inlineData) {
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
 
