@@ -136,9 +136,28 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   const scored = getTopItems(newItems, 25);
   console.log(`[Pipeline] Top 25 scored. #1: "${scored[0]?.item.title.slice(0, 60)}" (score: ${scored[0]?.score})`);
 
-  // Generate top 3 articles per run (Vercel Hobby = 60s timeout)
+  // 5. Apply absolute quality threshold — minimum score of 35/100 to publish
+  // This prevents low-quality or generic articles from being published just
+  // because they ranked highest in a weak batch.
+  const MINIMUM_SCORE = 35;
+  const qualified = scored.filter((s) => s.score >= MINIMUM_SCORE);
+  console.log(`[Pipeline] ${qualified.length} items above minimum threshold (${MINIMUM_SCORE}/100)`);
+
+  if (qualified.length === 0) {
+    console.log("[Pipeline] No items met quality threshold — skipping generation");
+    return {
+      feedItemsFetched: feedItems.length,
+      relevantItems: relevant.length,
+      newItems: newItems.length,
+      articlesGenerated: 0,
+      errors,
+      timestamp,
+    };
+  }
+
+  // Generate top 3 qualified articles per run (Vercel Hobby = 60s timeout)
   // Runs every 2 hours = ~36 articles/day. Remaining scored items picked up next run.
-  const toProcess = scored.slice(0, 3).map((s) => s.item);
+  const toProcess = qualified.slice(0, 3).map((s) => s.item);
   let articles: Omit<JournalArticle, "id">[] = [];
   try {
     articles = await generateArticleBatch(toProcess, 3);
