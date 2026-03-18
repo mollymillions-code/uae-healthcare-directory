@@ -9,7 +9,11 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const API_KEY = "AIzaSyBlb-6SaGxmdcf1AhOc5tImzVTsDqd0ptY";
+const API_KEY = process.env.GEMINI_API_KEY;
+if (!API_KEY) {
+  console.error("❌ Set GEMINI_API_KEY environment variable first");
+  process.exit(1);
+}
 const MODEL = "gemini-2.0-flash-preview-image-generation";
 const OUTPUT_DIR = path.resolve("public/images");
 
