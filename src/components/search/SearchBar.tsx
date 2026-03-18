@@ -30,17 +30,15 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
 
   if (compact) {
     return (
-      <form onSubmit={handleSearch} className="flex gap-3 items-end">
-        <div className="flex-1">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search providers..."
-            className="input"
-          />
-        </div>
-        <button type="submit" className="btn-subscribe">
+      <form onSubmit={handleSearch} className="flex gap-2 items-center">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search providers..."
+          className="input-tc flex-1"
+        />
+        <button type="submit" className="btn-accent px-4 py-3">
           <Search className="h-4 w-4" />
         </button>
       </form>
@@ -49,24 +47,20 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
 
   return (
     <form onSubmit={handleSearch}>
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 items-end">
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
         <div className="sm:col-span-5">
-          <label className="kicker mb-2 block text-[0.65rem]">Search</label>
+          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">Search</label>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Doctor, clinic, hospital..."
-            className="input"
+            className="input-tc"
           />
         </div>
         <div className="sm:col-span-3">
-          <label className="kicker mb-2 block text-[0.65rem]">City</label>
-          <select
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="input cursor-pointer"
-          >
+          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">City</label>
+          <select value={city} onChange={(e) => setCity(e.target.value)} className="input-tc cursor-pointer">
             <option value="">All cities</option>
             {CITIES.map((c) => (
               <option key={c.slug} value={c.slug}>{c.name}</option>
@@ -74,12 +68,8 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           </select>
         </div>
         <div className="sm:col-span-3">
-          <label className="kicker mb-2 block text-[0.65rem]">Specialty</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="input cursor-pointer"
-          >
+          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">Specialty</label>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-tc cursor-pointer">
             <option value="">All specialties</option>
             {CATEGORIES.map((c) => (
               <option key={c.slug} value={c.slug}>{c.name}</option>
@@ -87,7 +77,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           </select>
         </div>
         <div className="sm:col-span-1">
-          <button type="submit" className="btn-subscribe w-full py-3">
+          <button type="submit" className="btn-accent w-full py-3">
             <Search className="h-4 w-4" />
           </button>
         </div>

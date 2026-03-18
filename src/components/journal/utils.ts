@@ -34,7 +34,7 @@ export function platformIcon(platform: "linkedin" | "x" | "instagram"): string {
     case "linkedin":
       return "in";
     case "x":
-      return "𝕏";
+      return "\u{1D54F}";
     case "instagram":
       return "ig";
   }
@@ -45,7 +45,7 @@ export function platformColor(platform: "linkedin" | "x" | "instagram"): string 
     case "linkedin":
       return "text-blue-700";
     case "x":
-      return "text-ink";
+      return "text-dark";
     case "instagram":
       return "text-pink-600";
   }

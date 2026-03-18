@@ -1,29 +1,21 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Oswald, Inter } from "next/font/google";
+import { DM_Sans, Space_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-cormorant",
+  variable: "--font-dm-sans",
   display: "swap",
-  weight: ["300", "400", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const oswald = Oswald({
+const spaceMono = Space_Mono({
   subsets: ["latin"],
-  variable: "--font-oswald",
+  variable: "--font-space-mono",
   display: "swap",
-  weight: ["400", "500", "600"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  weight: ["400", "500", "600"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -47,11 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${oswald.variable} ${inter.variable}`}
-    >
-      <body className="font-body antialiased min-h-screen flex flex-col bg-canvas text-ink">
+    <html lang="en" className={`${dmSans.variable} ${spaceMono.variable}`}>
+      <body className="font-sans antialiased min-h-screen flex flex-col bg-white text-dark">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

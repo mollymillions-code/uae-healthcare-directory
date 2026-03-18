@@ -15,10 +15,10 @@ export function TagCloud({ tags, limit = 20, activeTag }: TagCloudProps) {
         <Link
           key={tag}
           href={`/journal/tag/${tag}`}
-          className={`inline-block px-2.5 py-1 text-xs font-kicker transition-colors ${
+          className={`inline-block px-2.5 py-1 text-xs font-mono transition-colors ${
             activeTag === tag
-              ? "bg-ink text-canvas"
-              : "bg-canvas-200 text-ink-muted hover:bg-ink hover:text-canvas"
+              ? "bg-dark text-white"
+              : "bg-canvas-200 text-muted hover:bg-dark hover:text-white"
           }`}
         >
           {tag}

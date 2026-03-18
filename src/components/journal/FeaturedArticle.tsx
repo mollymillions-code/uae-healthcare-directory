@@ -16,7 +16,7 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
       <article className="group">
         <Link href={`/journal/${article.slug}`} className="block">
           <div className="flex items-center gap-2 mb-3">
-            <span className="label text-gold">{category?.name}</span>
+            <span className="label text-accent">{category?.name}</span>
             {article.isBreaking && (
               <span className="inline-flex items-center gap-1 label text-red-600">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -24,17 +24,17 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
               </span>
             )}
           </div>
-          <h2 className="font-display text-display font-bold text-ink leading-tight group-hover:text-gold transition-colors mb-4">
+          <h2 className="font-sans text-2xl font-bold text-dark leading-tight group-hover:text-accent transition-colors mb-4">
             {article.title}
           </h2>
-          <p className="font-display text-lg text-ink-muted leading-relaxed mb-5 max-w-2xl">
+          <p className="font-sans text-lg text-muted leading-relaxed mb-5 max-w-2xl">
             {article.excerpt}
           </p>
           <div className="flex items-center gap-3">
             <span className="label">{article.author.name}</span>
-            <span className="text-ink-muted">·</span>
+            <span className="text-muted">·</span>
             <span className="label">{formatDate(article.publishedAt)}</span>
-            <span className="text-ink-muted">·</span>
+            <span className="text-muted">·</span>
             <span className="label">{article.readTimeMinutes} min read</span>
           </div>
         </Link>
@@ -47,17 +47,17 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
     <article className="group">
       <Link href={`/journal/${article.slug}`} className="block">
         <div className="flex items-center gap-2 mb-2">
-          <span className="label text-gold">{category?.name}</span>
+          <span className="label text-accent">{category?.name}</span>
         </div>
-        <h3 className="font-display text-xl font-semibold text-ink leading-snug group-hover:text-gold transition-colors mb-2">
+        <h3 className="font-sans text-xl font-semibold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
           {article.title}
         </h3>
-        <p className="text-sm text-ink-muted leading-relaxed line-clamp-3 mb-3">
+        <p className="text-sm text-muted leading-relaxed line-clamp-3 mb-3">
           {article.excerpt}
         </p>
         <div className="flex items-center gap-3">
           <span className="label">{formatDate(article.publishedAt)}</span>
-          <span className="text-ink-muted">·</span>
+          <span className="text-muted">·</span>
           <span className="label">{article.readTimeMinutes} min</span>
         </div>
       </Link>

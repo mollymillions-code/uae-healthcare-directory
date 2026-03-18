@@ -2,83 +2,92 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
+
+const NAV_LINKS = [
+  { label: "Dubai", href: "/uae/dubai" },
+  { label: "Abu Dhabi", href: "/uae/abu-dhabi" },
+  { label: "Sharjah", href: "/uae/sharjah" },
+  { label: "Ajman", href: "/uae/ajman" },
+  { label: "RAK", href: "/uae/ras-al-khaimah" },
+  { label: "Fujairah", href: "/uae/fujairah" },
+  { label: "UAQ", href: "/uae/umm-al-quwain" },
+  { label: "Al Ain", href: "/uae/al-ain" },
+];
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="bg-canvas">
-      {/* Masthead */}
-      <div className="container-wide">
-        <div className="grid grid-cols-3 items-center rule-bottom py-4">
-          {/* Left nav */}
-          <nav className="hidden md:flex gap-6 font-kicker text-[0.85rem] uppercase tracking-[0.05em]">
-            <Link href="/uae" className="text-ink hover:text-gold transition-colors">Directory</Link>
-            <Link href="/search" className="text-ink hover:text-gold transition-colors">Search</Link>
-            <Link href="/about" className="text-ink hover:text-gold transition-colors">About</Link>
+    <header className="bg-dark text-white sticky top-0 z-50">
+      <div className="container-tc">
+        <div className="flex items-center justify-between h-14">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <span className="bg-accent w-7 h-7 flex items-center justify-center text-white font-bold text-xs">
+              UH
+            </span>
+            <span className="font-bold text-base tracking-tight hidden sm:inline">
+              UAE Health Directory
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <span className="w-px h-5 bg-white/20 mx-2" />
+            <Link href="/search" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+              Search
+            </Link>
+            <Link href="/about" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+              About
+            </Link>
           </nav>
 
-          {/* Center logo */}
-          <div className="text-center col-start-2">
-            <Link href="/">
-              <span className="font-display text-3xl sm:text-[3rem] font-bold tracking-[-0.02em] leading-none uppercase text-ink">
-                UAE Health
-              </span>
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            <Link href="/claim" className="hidden sm:inline-flex items-center bg-accent hover:bg-accent-dark text-white text-xs font-bold px-4 py-2 transition-colors">
+              Claim Listing
             </Link>
-          </div>
-
-          {/* Right */}
-          <div className="hidden md:flex justify-end items-center gap-6">
-            <span className="font-display text-xl italic text-ink-muted">Est. 2026</span>
-            <Link href="/claim" className="btn-subscribe">Claim Listing</Link>
-          </div>
-
-          {/* Mobile hamburger */}
-          <div className="md:hidden flex justify-end col-start-3">
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="p-1">
+            <Link href="/search" className="lg:hidden p-2 text-white/70 hover:text-white">
+              <Search className="h-5 w-5" />
+            </Link>
+            <button className="lg:hidden p-2 text-white/70 hover:text-white" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* City nav bar */}
-      <div className="container-wide">
-        <nav className="hidden md:flex items-center border-b border-ink-light overflow-x-auto">
-          {CITIES.map((city) => (
-            <Link
-              key={city.slug}
-              href={`/uae/${city.slug}`}
-              className="px-4 py-2.5 font-kicker text-[0.8rem] uppercase tracking-[0.05em] text-ink-muted hover:text-ink border-b-2 border-transparent hover:border-gold transition-colors whitespace-nowrap"
-            >
-              {city.name}
-            </Link>
-          ))}
-        </nav>
-      </div>
-
       {/* Mobile nav */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-ink-light bg-white">
-          <div className="container-wide py-6 space-y-4">
-            <div className="grid grid-cols-2 gap-2">
+        <div className="lg:hidden bg-dark-800 border-t border-white/10">
+          <div className="container-tc py-4 space-y-3">
+            <div className="grid grid-cols-2 gap-1">
               {CITIES.map((city) => (
                 <Link
                   key={city.slug}
                   href={`/uae/${city.slug}`}
-                  className="text-sm text-ink-muted hover:text-gold py-1"
+                  className="text-sm text-white/70 hover:text-white py-1.5 px-2"
                   onClick={() => setMobileOpen(false)}
                 >
                   {city.name}
                 </Link>
               ))}
             </div>
-            <div className="border-t border-ink-light pt-4 flex flex-wrap gap-6">
-              <Link href="/search" className="font-kicker text-sm uppercase text-ink" onClick={() => setMobileOpen(false)}>Search</Link>
-              <Link href="/claim" className="font-kicker text-sm uppercase text-gold" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
-              <Link href="/about" className="font-kicker text-sm uppercase text-ink" onClick={() => setMobileOpen(false)}>About</Link>
+            <div className="border-t border-white/10 pt-3 flex gap-4">
+              <Link href="/search" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Search</Link>
+              <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
+              <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 interface ProviderCardProps {
   name: string;
@@ -17,52 +17,38 @@ interface ProviderCardProps {
 }
 
 export function ProviderCard({
-  name,
-  slug,
-  citySlug,
-  categorySlug,
-  address,
-  phone,
-  shortDescription,
-  googleRating,
-  googleReviewCount,
-  isVerified,
+  name, slug, citySlug, categorySlug, address, phone,
+  shortDescription, googleRating, googleReviewCount, isVerified,
 }: ProviderCardProps) {
   return (
     <Link
       href={`/uae/${citySlug}/${categorySlug}/${slug}`}
-      className="group block py-5 border-b border-ink-light"
+      className="provider-card group block"
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-display text-xl text-ink group-hover:text-gold transition-colors truncate">
+            <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
               {name}
             </h3>
             {isVerified && (
-              <span className="font-kicker text-[9px] uppercase tracking-wider text-gold border border-gold/30 px-1.5 py-0.5">
-                Verified
-              </span>
+              <span className="badge text-[9px]">Verified</span>
             )}
           </div>
-          <p className="text-xs text-ink-muted mb-2">{address}</p>
+          <p className="text-xs text-muted mb-1">{address}</p>
           {shortDescription && (
-            <p className="text-sm text-ink-muted line-clamp-2 leading-relaxed">
-              {shortDescription}
-            </p>
+            <p className="text-xs text-muted/70 line-clamp-1">{shortDescription}</p>
           )}
-          <div className="flex items-center gap-4 mt-3 meta">
+          <div className="flex items-center gap-3 mt-1.5">
             {googleRating && Number(googleRating) > 0 && (
-              <span>
-                {googleRating}★ ({googleReviewCount?.toLocaleString()})
+              <span className="text-xs font-bold text-accent">
+                {googleRating} ★ <span className="text-muted font-normal">({googleReviewCount?.toLocaleString()})</span>
               </span>
             )}
-            {phone && (
-              <span>{phone}</span>
-            )}
+            {phone && <span className="text-xs text-muted">{phone}</span>}
           </div>
         </div>
-        <ArrowUpRight className="h-4 w-4 text-ink-muted group-hover:text-gold transition-colors mt-1 flex-shrink-0" />
+        <ChevronRight className="h-4 w-4 text-light-300 group-hover:text-accent transition-colors mt-1 flex-shrink-0" />
       </div>
     </Link>
   );

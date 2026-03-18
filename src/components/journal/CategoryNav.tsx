@@ -7,14 +7,14 @@ interface CategoryNavProps {
 
 export function CategoryNav({ activeCategory }: CategoryNavProps) {
   return (
-    <nav className="rule-thick">
+    <nav className="border-b-2 border-dark">
       <div className="flex items-center gap-0 -mb-px overflow-x-auto">
         <Link
           href="/journal"
           className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
             !activeCategory
-              ? "text-ink border-gold"
-              : "text-ink-muted border-transparent hover:text-ink hover:border-gold"
+              ? "text-dark border-accent"
+              : "text-muted border-transparent hover:text-dark hover:border-accent"
           }`}
         >
           All
@@ -25,8 +25,8 @@ export function CategoryNav({ activeCategory }: CategoryNavProps) {
             href={`/journal/category/${cat.slug}`}
             className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               activeCategory === cat.slug
-                ? "text-ink border-gold"
-                : "text-ink-muted border-transparent hover:text-ink hover:border-gold"
+                ? "text-dark border-accent"
+                : "text-muted border-transparent hover:text-dark hover:border-accent"
             }`}
           >
             {cat.name}

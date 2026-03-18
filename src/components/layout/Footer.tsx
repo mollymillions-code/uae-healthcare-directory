@@ -3,65 +3,65 @@ import { CITIES } from "@/lib/constants/cities";
 
 export function Footer() {
   return (
-    <footer className="bg-ink text-canvas mt-20">
-      <div className="container-wide pt-20 pb-8">
-        {/* Brand + columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 border-b border-white/10 pb-16 mb-8">
-          <div className="col-span-2 sm:col-span-1">
-            <h2 className="font-display text-display-xl mb-4 uppercase">UAE<br />Health</h2>
-            <p className="font-kicker text-gold tracking-[0.1em] text-xs uppercase">
-              The definitive healthcare directory.
-            </p>
-          </div>
+    <footer className="bg-dark text-white mt-16">
+      <div className="container-tc pt-12 pb-6">
+        {/* Top — logo + tagline */}
+        <div className="flex items-center gap-3 mb-8">
+          <span className="bg-accent w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
+            UH
+          </span>
+          <span className="font-bold text-lg">UAE Health Directory</span>
+        </div>
 
+        {/* Columns */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
-            <h5 className="footer-col-heading">Cities</h5>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
               {CITIES.map((city) => (
                 <li key={city.slug}>
-                  <Link href={`/uae/${city.slug}`} className="text-sm text-canvas/70 hover:text-canvas transition-colors">
+                  <Link href={`/uae/${city.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">
                     {city.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-
           <div>
-            <h5 className="footer-col-heading">Directory</h5>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Directory</h5>
             <ul className="space-y-2">
-              <li><Link href="/search" className="text-sm text-canvas/70 hover:text-canvas transition-colors">Search</Link></li>
-              <li><Link href="/claim" className="text-sm text-canvas/70 hover:text-canvas transition-colors">Claim Listing</Link></li>
-              <li><Link href="/about" className="text-sm text-canvas/70 hover:text-canvas transition-colors">About</Link></li>
-              <li><Link href="/api/search" className="text-sm text-canvas/70 hover:text-canvas transition-colors">API</Link></li>
+              <li><Link href="/search" className="text-sm text-white/60 hover:text-white transition-colors">Search</Link></li>
+              <li><Link href="/claim" className="text-sm text-white/60 hover:text-white transition-colors">Claim Listing</Link></li>
+              <li><Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors">About</Link></li>
+              <li><Link href="/api/search" className="text-sm text-white/60 hover:text-white transition-colors">API</Link></li>
             </ul>
           </div>
-
           <div>
-            <h5 className="footer-col-heading">Data Sources</h5>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Data Sources</h5>
             <ul className="space-y-2">
-              <li><span className="text-sm text-canvas/70">DHA &mdash; Dubai</span></li>
-              <li><span className="text-sm text-canvas/70">DOH &mdash; Abu Dhabi</span></li>
-              <li><span className="text-sm text-canvas/70">MOHAP &mdash; Northern Emirates</span></li>
-              <li><span className="text-sm text-canvas/70">Google Places</span></li>
+              <li><span className="text-sm text-white/60">DHA — Dubai</span></li>
+              <li><span className="text-sm text-white/60">DOH — Abu Dhabi</span></li>
+              <li><span className="text-sm text-white/60">MOHAP — Northern Emirates</span></li>
+              <li><span className="text-sm text-white/60">Google Places</span></li>
             </ul>
-
-            <h5 className="footer-col-heading mt-8">For AI Agents</h5>
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">For AI Agents</h5>
             <ul className="space-y-2">
-              <li><Link href="/directory-skill.md" className="text-sm text-canvas/70 hover:text-canvas transition-colors">Platform Guide</Link></li>
-              <li><Link href="/sitemap.xml" className="text-sm text-canvas/70 hover:text-canvas transition-colors">Sitemap</Link></li>
+              <li><Link href="/directory-skill.md" className="text-sm text-white/60 hover:text-white transition-colors">Platform Guide</Link></li>
+              <li><Link href="/sitemap.xml" className="text-sm text-white/60 hover:text-white transition-colors">Sitemap</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-          <span className="font-kicker text-[0.7rem] text-canvas/40 tracking-[0.05em]">
+        {/* Bottom */}
+        <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <span className="text-xs text-white/40">
             &copy; {new Date().getFullYear()} UAE Healthcare Directory. Free for all UAE residents.
           </span>
-          <span className="font-kicker text-[0.7rem] text-canvas/40 tracking-[0.05em]">
+          <span className="text-xs text-white/40">
             by{" "}
-            <a href="https://zavis.ae" className="hover:text-canvas transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href="https://zavis.ae" className="text-accent hover:text-accent-light transition-colors" target="_blank" rel="noopener noreferrer">
               Zavis
             </a>
           </span>

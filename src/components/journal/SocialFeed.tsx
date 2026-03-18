@@ -10,26 +10,26 @@ export function SocialFeed({ posts }: SocialFeedProps) {
 
   return (
     <aside>
-      <h3 className="font-kicker text-[10px] uppercase tracking-[0.15em] text-gold mb-4">
+      <h3 className="font-mono text-[10px] uppercase tracking-[0.15em] text-accent mb-4">
         Social Pulse
       </h3>
       <div className="space-y-0">
         {posts.map((post, i) => (
           <div key={post.id}>
-            {i > 0 && <div className="rule my-3" />}
+            {i > 0 && <div className="border-b border-light-200 my-3" />}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`font-kicker text-[10px] font-bold uppercase ${platformColor(post.platform)}`}
+                    className={`font-mono text-[10px] font-bold uppercase ${platformColor(post.platform)}`}
                   >
                     {platformIcon(post.platform)}
                   </span>
-                  <span className="text-xs font-medium text-ink">{post.author}</span>
+                  <span className="text-xs font-medium text-dark">{post.author}</span>
                 </div>
                 <span className="label">{timeAgo(post.publishedAt)}</span>
               </div>
-              <p className="text-xs text-ink-muted leading-relaxed line-clamp-3">
+              <p className="text-xs text-muted leading-relaxed line-clamp-3">
                 {post.content}
               </p>
               <div className="flex items-center gap-3 mt-2">

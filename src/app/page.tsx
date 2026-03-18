@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SearchBar } from "@/components/search/SearchBar";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -10,14 +11,16 @@ import {
   getProviderCountByCategory,
 } from "@/lib/data";
 import { getBaseUrl } from "@/lib/helpers";
+import { ChevronRight } from "lucide-react";
 
 export const revalidate = 86400;
 
 export default function HomePage() {
   const cities = getCities();
   const categories = getCategories();
-  const topProviders = getTopRatedProviders(undefined, 6);
+  const topProviders = getTopRatedProviders(undefined, 8);
   const base = getBaseUrl();
+  const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -38,137 +41,75 @@ export default function HomePage() {
     { question: "Can clinics update their listing?", answer: "Yes. Healthcare providers can claim their listing for free with a DHA/DOH/MOHAP license. Once verified, update contact details, hours, and services." },
   ];
 
-  const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
+  // Top cities for hero cards
+  const heroCities = [
+    { slug: "dubai", name: "Dubai", count: getProviderCountByCity("dubai"), img: "/images/cities/dubai.png" },
+    { slug: "abu-dhabi", name: "Abu Dhabi", count: getProviderCountByCity("abu-dhabi"), img: "/images/cities/abu-dhabi.png" },
+    { slug: "sharjah", name: "Sharjah", count: getProviderCountByCity("sharjah"), img: "/images/cities/sharjah.png" },
+  ];
 
   return (
     <>
       <JsonLd data={websiteJsonLd} />
 
-      {/* ─── Data ticker bar ─── */}
-      <div className="data-bar">
-        <div className="animate-ticker inline-flex gap-12">
-          <div><span className="text-gold mr-2">DIR.01</span> {totalProviders.toLocaleString()}+ licensed healthcare providers across the UAE</div>
-          <div><span className="text-gold mr-2">DIR.02</span> Official data from DHA, DOH, and MOHAP government registers</div>
-          <div><span className="text-gold mr-2">DIR.03</span> Free and open — no login, no paywall, no booking fees</div>
-          <div><span className="text-gold mr-2">DIR.04</span> Covering all 7 Emirates: Dubai, Abu Dhabi, Sharjah, Ajman, RAK, Fujairah, UAQ</div>
-          {/* duplicate for seamless loop */}
-          <div><span className="text-gold mr-2">DIR.01</span> {totalProviders.toLocaleString()}+ licensed healthcare providers across the UAE</div>
-          <div><span className="text-gold mr-2">DIR.02</span> Official data from DHA, DOH, and MOHAP government registers</div>
-          <div><span className="text-gold mr-2">DIR.03</span> Free and open — no login, no paywall, no booking fees</div>
-          <div><span className="text-gold mr-2">DIR.04</span> Covering all 7 Emirates: Dubai, Abu Dhabi, Sharjah, Ajman, RAK, Fujairah, UAQ</div>
-        </div>
-      </div>
+      {/* ─── Hero Grid — TC style ─── */}
+      <section className="bg-dark">
+        <div className="container-tc py-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-dark-500">
+            {/* Main hero card — left half */}
+            <Link href="/uae/dubai" className="lg:col-span-6 card-hero min-h-[420px] lg:min-h-[500px] group">
+              <Image src="/images/cities/dubai.png" alt="Dubai Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="overlay" />
+              <div className="content">
+                <span className="badge mb-3 w-fit">Dubai</span>
+                <h1 className="text-hero text-white mb-2">
+                  Find Healthcare<br />Across the UAE
+                </h1>
+                <p className="text-white/70 text-base max-w-md">
+                  {totalProviders.toLocaleString()}+ licensed providers. 8 cities. 26 specialties. Sourced from official government registers.
+                </p>
+              </div>
+            </Link>
 
-      {/* ─── Hero ─── */}
-      <section className="container-wide py-16 sm:py-24 relative overflow-hidden">
-        {/* Giant background letters */}
-        <div className="absolute -top-[10%] -left-[5%] w-[110%] h-[120%] pointer-events-none z-0 overflow-hidden opacity-[0.04] text-green">
-          <span className="font-display text-[40vw] leading-[0.7] font-bold absolute top-[-10%] left-[10%] -rotate-[5deg]">U</span>
-          <span className="font-display text-[40vw] leading-[0.7] font-bold absolute top-[30%] left-[40%] rotate-[15deg] italic">A</span>
-          <span className="font-display text-[40vw] leading-[0.7] font-bold absolute top-[10%] right-[-5%] -rotate-[10deg]">E</span>
-        </div>
-
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          <div className="lg:col-span-5">
-            <span className="kicker mb-4 block">Healthcare Directory / All Emirates</span>
-            <h1 className="font-display text-hero font-bold text-ink mb-6">
-              Every Licensed<br />Provider
-            </h1>
-            <p className="text-lg text-ink-muted max-w-md mb-8 leading-relaxed">
-              The definitive directory of hospitals, clinics, pharmacies, and specialists across the
-              United Arab Emirates. Sourced from official government registers. Free and open.
-            </p>
-            <div className="meta">
-              <span><span className="highlight">{totalProviders.toLocaleString()}+</span> Providers</span>
-              <span><span className="highlight">8</span> Cities</span>
-              <span><span className="highlight">26</span> Specialties</span>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7">
-            <SearchBar />
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Cities — editorial grid ─── */}
-      <section className="container-wide py-12">
-        <div className="rule-heavy" />
-        <div className="flex items-baseline justify-between pt-4 pb-6">
-          <h2 className="font-display text-display uppercase tracking-[0.05em]">Browse by City</h2>
-          <span className="kicker">{cities.length} Emirates</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-0">
-          {cities.map((city) => {
-            const count = getProviderCountByCity(city.slug);
-            return (
-              <Link
-                key={city.slug}
-                href={`/uae/${city.slug}`}
-                className="group flex items-baseline justify-between py-3.5 border-b border-ink-light"
-              >
-                <div>
-                  <span className="font-display text-xl font-semibold text-ink group-hover:text-gold transition-colors">
-                    {city.name}
-                  </span>
-                  {city.emirate !== city.name && (
-                    <span className="text-xs text-ink-muted ml-2">{city.emirate}</span>
-                  )}
+            {/* Right column — 2 stacked cards */}
+            <div className="lg:col-span-3 flex flex-col gap-px">
+              <Link href="/uae/abu-dhabi" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
+                <Image src="/images/cities/abu-dhabi.png" alt="Abu Dhabi Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="overlay" />
+                <div className="content">
+                  <span className="badge mb-2 w-fit">Abu Dhabi</span>
+                  <h2 className="text-xl font-bold text-white leading-tight">
+                    {getProviderCountByCity("abu-dhabi")} providers in Abu Dhabi
+                  </h2>
+                  <p className="text-white/60 text-sm mt-1">DOH regulated</p>
                 </div>
-                <span className="font-display text-lg italic text-gold tabular-nums">
-                  {count}
-                </span>
               </Link>
-            );
-          })}
-        </div>
-      </section>
+              <Link href="/uae/sharjah" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
+                <Image src="/images/cities/sharjah.png" alt="Sharjah Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="overlay" />
+                <div className="content">
+                  <span className="badge mb-2 w-fit">Sharjah</span>
+                  <h2 className="text-xl font-bold text-white leading-tight">
+                    {getProviderCountByCity("sharjah").toLocaleString()} providers in Sharjah
+                  </h2>
+                  <p className="text-white/60 text-sm mt-1">MOHAP regulated</p>
+                </div>
+              </Link>
+            </div>
 
-      {/* ─── Editorial break ─── */}
-      <section className="bg-ink text-canvas py-20 sm:py-28 text-center relative overflow-hidden editorial-glow border-t border-b border-gold">
-        <div className="relative z-10">
-          <div className="font-display text-[7vw] sm:text-[5vw] leading-[0.85] uppercase tracking-[0.02em]">
-            <span className="block">The Source</span>
-            <span className="block text-gold italic">of Truth</span>
-            <span className="block">for Healthcare</span>
-          </div>
-          <div className="mt-8 font-kicker text-[0.85rem] tracking-[0.15em] text-canvas/60 uppercase">
-            All Emirates // Official Government Data // Free Access
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Categories — dense editorial list ─── */}
-      <section className="container-wide py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div>
-            <div className="rule-heavy" />
-            <h2 className="font-display text-display-lg mt-4 mb-2">Browse by<br />Specialty</h2>
-            <p className="font-kicker text-ink-muted tracking-[0.05em] text-sm max-w-xs">
-              26 medical categories covering every licensed healthcare discipline in the UAE.
-            </p>
-          </div>
-
-          <div className="lg:col-span-2">
-            <div className="rule-heavy" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 pt-4">
-              {categories.map((cat) => {
-                const count = getProviderCountByCategory(cat.slug);
+            {/* Far right — headline list */}
+            <div className="lg:col-span-3 bg-dark-800 p-5 flex flex-col">
+              <h3 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">All Emirates</h3>
+              {cities.map((city) => {
+                const count = getProviderCountByCity(city.slug);
                 return (
                   <Link
-                    key={cat.slug}
-                    href={`/uae/dubai/${cat.slug}`}
-                    className="group flex items-baseline justify-between py-2.5 border-b border-ink-light"
+                    key={city.slug}
+                    href={`/uae/${city.slug}`}
+                    className="headline-item text-white/80 hover:text-accent transition-colors text-sm"
                   >
-                    <span className="text-sm text-ink group-hover:text-gold transition-colors truncate pr-2">
-                      {cat.name}
-                    </span>
-                    {count > 0 && (
-                      <span className="font-display text-sm italic text-gold/60 tabular-nums flex-shrink-0">
-                        {count}
-                      </span>
-                    )}
+                    <span className="flex-1 font-medium">{city.name}</span>
+                    <span className="text-white/40 text-xs font-mono">{count}</span>
                   </Link>
                 );
               })}
@@ -177,48 +118,137 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Top Rated — index materia style ─── */}
-      <section className="container-wide py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div>
-            <div className="rule-heavy" />
-            <h2 className="font-display text-display-lg mt-4 mb-2">Index<br />Materia</h2>
-            <p className="font-kicker text-ink-muted tracking-[0.05em] text-sm max-w-xs">
-              The highest-rated healthcare facilities across the UAE, verified against official registers.
-            </p>
+      {/* ─── Search bar ─── */}
+      <section className="bg-light-50 border-b border-light-200">
+        <div className="container-tc py-6">
+          <SearchBar />
+        </div>
+      </section>
+
+      {/* ─── Browse by City — TC Latest News style ─── */}
+      <section className="container-tc py-10">
+        <div className="section-header">
+          <h2>Browse by City</h2>
+          <span className="arrows">&gt;&gt;&gt;</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {cities.map((city) => {
+            const count = getProviderCountByCity(city.slug);
+            const hasImage = ["dubai", "abu-dhabi", "sharjah", "ajman", "al-ain", "ras-al-khaimah", "fujairah", "umm-al-quwain"].includes(city.slug);
+            return (
+              <Link
+                key={city.slug}
+                href={`/uae/${city.slug}`}
+                className="group card-hero min-h-[160px] sm:min-h-[200px]"
+              >
+                {hasImage && (
+                  <Image
+                    src={`/images/cities/${city.slug}.png`}
+                    alt={city.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                <div className="overlay" />
+                <div className="content">
+                  <span className="badge mb-2 w-fit text-[10px]">{count} providers</span>
+                  <h3 className="text-lg font-bold text-white">{city.name}</h3>
+                  {city.emirate !== city.name && (
+                    <p className="text-white/50 text-xs">{city.emirate}</p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─── Green banner — The Source of Truth ─── */}
+      <section className="bg-accent py-10">
+        <div className="container-tc text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+            The Source of Truth for UAE Healthcare
+          </h2>
+          <p className="text-white/80 text-base max-w-2xl mx-auto">
+            {totalProviders.toLocaleString()}+ licensed providers from official DHA, DOH, and MOHAP government registers. Free. Open. No paywall.
+          </p>
+        </div>
+      </section>
+
+      {/* ─── Browse by Specialty — TC section style ─── */}
+      <section className="container-tc py-10">
+        <div className="section-header">
+          <h2>Specialties</h2>
+          <span className="arrows">&gt;&gt;&gt;</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
+          {categories.map((cat) => {
+            const count = getProviderCountByCategory(cat.slug);
+            return (
+              <Link
+                key={cat.slug}
+                href={`/uae/dubai/${cat.slug}`}
+                className="flex items-center justify-between py-3 px-2 border-b border-light-200 hover:bg-light-50 transition-colors group"
+              >
+                <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
+                  {cat.name}
+                </span>
+                <div className="flex items-center gap-2">
+                  {count > 0 && (
+                    <span className="text-xs text-muted font-mono">{count}</span>
+                  )}
+                  <ChevronRight className="h-3.5 w-3.5 text-light-300 group-hover:text-accent transition-colors" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─── Top Rated — TC Startups-style section ─── */}
+      <section className="bg-light-50 py-10">
+        <div className="container-tc">
+          <div className="section-header">
+            <h2>Highest Rated</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="rule-heavy" />
-            <div className="pt-4">
-              {topProviders.map((p, idx) => (
-                <Link
-                  key={p.id}
-                  href={`/uae/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                  className="list-item group"
-                >
-                  <div className="number">
-                    {String(idx + 1).padStart(2, "0")}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {topProviders.map((p, idx) => (
+              <Link
+                key={p.id}
+                href={`/uae/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                className="flex items-start gap-4 py-4 px-2 border-b border-light-200 hover:bg-white transition-colors group"
+              >
+                <span className="text-2xl font-bold text-accent/30 font-mono w-8 flex-shrink-0">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-bold text-dark group-hover:text-accent transition-colors truncate">
+                    {p.name}
+                  </h3>
+                  <p className="text-xs text-muted mt-0.5 truncate">{p.address}</p>
+                  <div className="flex items-center gap-3 mt-1">
+                    {Number(p.googleRating) > 0 && (
+                      <span className="text-xs font-bold text-accent">{p.googleRating} ★</span>
+                    )}
+                    {p.phone && (
+                      <span className="text-xs text-muted">{p.phone}</span>
+                    )}
                   </div>
-                  <div className="content">
-                    <h4 className="group-hover:text-gold transition-colors">{p.name}</h4>
-                    <div className="meta">
-                      <span>{p.address}</span>
-                      {Number(p.googleRating) > 0 && <span>{p.googleRating}★</span>}
-                    </div>
-                  </div>
-                  <span className="btn-outline text-xs">View</span>
-                </Link>
-              ))}
-            </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ─── AEO answer block ─── */}
-      <section className="container-wide py-12">
+      <section className="container-tc py-10">
         <div className="answer-block" data-answer-block="true">
-          <p className="text-ink-muted leading-relaxed">
+          <p className="text-dark/70 leading-relaxed text-sm">
             The United Arab Emirates has {totalProviders.toLocaleString()}+ licensed healthcare providers across 7 Emirates.
             Dubai (regulated by DHA), Abu Dhabi and Al Ain (DOH), and the Northern Emirates of
             Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain (MOHAP).
@@ -231,7 +261,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── FAQs ─── */}
-      <section className="container-wide pb-16">
+      <section className="container-tc pb-16">
         <FaqSection faqs={homeFaqs} />
       </section>
     </>

@@ -4,19 +4,11 @@ import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { JsonLd } from "./JsonLd";
 
-interface FaqItem {
-  question: string;
-  answer: string;
-}
+interface FaqItem { question: string; answer: string; }
+interface FaqSectionProps { title?: string; faqs: FaqItem[]; }
 
-interface FaqSectionProps {
-  title?: string;
-  faqs: FaqItem[];
-}
-
-export function FaqSection({ title = "Questions", faqs }: FaqSectionProps) {
+export function FaqSection({ title = "FAQ", faqs }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   if (faqs.length === 0) return null;
 
   const faqJsonLd = {
@@ -30,35 +22,31 @@ export function FaqSection({ title = "Questions", faqs }: FaqSectionProps) {
   };
 
   return (
-    <section className="mt-12">
+    <section className="mt-10">
       <JsonLd data={faqJsonLd} />
-      <div className="rule-heavy" />
-      <h2 className="font-display text-display-sm text-ink pt-4 pb-2">
-        {title}
-      </h2>
+      <div className="section-header">
+        <h2>{title}</h2>
+        <span className="arrows">&gt;&gt;&gt;</span>
+      </div>
       <div>
         {faqs.map((faq, index) => (
-          <div key={index} className="border-b border-ink-light">
+          <div key={index} className="border-b border-light-200">
             <button
-              onClick={() =>
-                setOpenIndex(openIndex === index ? null : index)
-              }
+              onClick={() => setOpenIndex(openIndex === index ? null : index)}
               className="flex w-full items-start justify-between py-4 text-left group"
             >
-              <span className="font-display text-lg text-ink pr-4 group-hover:text-gold transition-colors">
+              <span className="text-sm font-bold text-dark pr-4 group-hover:text-accent transition-colors">
                 {faq.question}
               </span>
               {openIndex === index ? (
-                <Minus className="h-4 w-4 text-gold flex-shrink-0 mt-1" />
+                <Minus className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
               ) : (
-                <Plus className="h-4 w-4 text-ink-muted flex-shrink-0 mt-1" />
+                <Plus className="h-4 w-4 text-muted flex-shrink-0 mt-0.5" />
               )}
             </button>
             {openIndex === index && (
               <div className="pb-4 -mt-1">
-                <p className="text-sm text-ink-muted leading-relaxed max-w-2xl">
-                  {faq.answer}
-                </p>
+                <p className="text-sm text-muted leading-relaxed max-w-2xl">{faq.answer}</p>
               </div>
             )}
           </div>

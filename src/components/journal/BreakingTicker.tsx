@@ -9,11 +9,11 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
   if (articles.length === 0) return null;
 
   return (
-    <div className="bg-ink text-canvas overflow-hidden">
-      <div className="container-wide flex items-center gap-4 py-2">
+    <div className="bg-dark text-white overflow-hidden">
+      <div className="container-tc flex items-center gap-4 py-2">
         <span className="shrink-0 flex items-center gap-1.5">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="font-kicker text-[10px] uppercase tracking-[0.15em] text-red-400 font-medium">
+          <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-red-400 font-medium">
             Breaking
           </span>
         </span>
@@ -23,7 +23,7 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
               <Link
                 key={article.id}
                 href={`/journal/${article.slug}`}
-                className="text-sm text-canvas/80 hover:text-canvas transition-colors"
+                className="text-sm text-white/80 hover:text-white transition-colors"
               >
                 {article.title}
               </Link>
@@ -33,7 +33,7 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
               <Link
                 key={`dup-${article.id}`}
                 href={`/journal/${article.slug}`}
-                className="text-sm text-canvas/80 hover:text-canvas transition-colors"
+                className="text-sm text-white/80 hover:text-white transition-colors"
               >
                 {article.title}
               </Link>

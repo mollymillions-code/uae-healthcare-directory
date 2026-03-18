@@ -50,10 +50,10 @@ export default function CategoryPage({ params }: PageProps) {
   return (
     <>
       {/* Back link */}
-      <div className="container-wide pt-6">
+      <div className="container-tc pt-6">
         <Link
           href="/journal"
-          className="inline-flex items-center gap-1.5 label hover:text-gold transition-colors"
+          className="inline-flex items-center gap-1.5 label hover:text-accent transition-colors"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to Journal
@@ -61,31 +61,31 @@ export default function CategoryPage({ params }: PageProps) {
       </div>
 
       {/* Category header */}
-      <div className="container-wide pt-8 pb-4">
-        <h1 className="font-display text-display font-bold text-ink">{cat.name}</h1>
-        <p className="font-display text-ink-muted mt-2 max-w-2xl">{cat.description}</p>
+      <div className="container-tc pt-8 pb-4">
+        <h1 className="font-sans text-2xl font-bold text-dark">{cat.name}</h1>
+        <p className="font-sans text-muted mt-2 max-w-2xl">{cat.description}</p>
         <span className="label mt-3 block">{total} articles</span>
       </div>
 
       {/* Category navigation */}
-      <div className="container-wide pb-8">
+      <div className="container-tc pb-8">
         <CategoryNav activeCategory={params.category} />
       </div>
 
       {/* Articles + sidebar */}
-      <section className="container-wide pb-16">
+      <section className="container-tc pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Article feed */}
           <div className="lg:col-span-2">
             {articles.length === 0 ? (
-              <p className="font-display text-ink-muted py-12">
+              <p className="font-sans text-muted py-12">
                 No articles in this category yet. Check back soon.
               </p>
             ) : (
               <div className="space-y-0">
                 {articles.map((article, i) => (
                   <div key={article.id}>
-                    {i > 0 && <div className="rule my-5" />}
+                    {i > 0 && <div className="border-b border-light-200 my-5" />}
                     <ArticleCard article={article} variant="horizontal" />
                   </div>
                 ))}
@@ -98,13 +98,13 @@ export default function CategoryPage({ params }: PageProps) {
             <NewsletterSignup />
 
             <div>
-              <div className="rule-thick mb-4" />
+              <div className="border-b-2 border-dark mb-4" />
               <EventsSidebar events={events} />
             </div>
 
             <div>
-              <div className="rule-thick mb-4" />
-              <h3 className="label text-gold mb-4">Topics</h3>
+              <div className="border-b-2 border-dark mb-4" />
+              <h3 className="label text-accent mb-4">Topics</h3>
               <TagCloud tags={tags} limit={20} />
             </div>
           </aside>
@@ -112,9 +112,9 @@ export default function CategoryPage({ params }: PageProps) {
       </section>
 
       {/* AEO block */}
-      <section className="container-wide pb-16">
+      <section className="container-tc pb-16">
         <div className="answer-block" data-answer-block="true">
-          <p className="font-display text-ink-muted leading-relaxed">
+          <p className="font-sans text-muted leading-relaxed">
             The UAE Healthcare Journal covers {cat.name.toLowerCase()} for the
             healthcare industry in the United Arab Emirates. {cat.description}{" "}
             Updated daily for healthcare professionals. Last updated March 2026.
