@@ -11,6 +11,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "npx tsx src/lib/db/seed.ts",
+    "db:seed-journal": "npx tsx scripts/seed-journal-to-db.ts",
     "db:studio": "drizzle-kit studio",
     "scrape:mohap": "npx tsx src/lib/scrapers/mohap-scraper.ts",
     "scrape:mohap:test": "npx tsx src/lib/scrapers/mohap-scraper.ts 1 3",

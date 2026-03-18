@@ -201,24 +201,29 @@ export default function CityPage({ params }: Props) {
       )}
 
       {/* Cross-link to intelligence */}
-      <section className="mb-10">
-        <div className="section-header">
-          <h2>Latest Healthcare News</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
-        </div>
-        <div className="space-y-3">
-          {getLatestArticles(3).map((article) => (
-            <Link
-              key={article.id}
-              href={`/intelligence/${article.slug}`}
-              className="block border-b border-light-200 pb-3 hover:text-accent transition-colors"
-            >
-              <p className="text-sm font-medium text-dark">{article.title}</p>
-              <p className="text-xs text-muted mt-1">{article.excerpt.slice(0, 120)}...</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {(() => {
+        const latestArticles = getLatestArticles(3);
+        return latestArticles.length > 0 ? (
+          <section className="mb-10">
+            <div className="section-header">
+              <h2>Latest Healthcare News</h2>
+              <span className="arrows">&gt;&gt;&gt;</span>
+            </div>
+            <div className="space-y-3">
+              {latestArticles.map((article) => (
+                <Link
+                  key={article.id}
+                  href={`/intelligence/${article.slug}`}
+                  className="block border-b border-light-200 pb-3 hover:text-accent transition-colors"
+                >
+                  <p className="text-sm font-medium text-dark">{article.title}</p>
+                  <p className="text-xs text-muted mt-1">{article.excerpt.slice(0, 120)}...</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null;
+      })()}
 
       <FaqSection faqs={faqs} title={`Healthcare in ${city.name} — FAQ`} />
     </div>

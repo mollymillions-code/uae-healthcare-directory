@@ -1,8 +1,7 @@
 import type { JournalArticle, JournalCategory, JournalEvent, SocialPost } from "./types";
-import { SEED_ARTICLES, SEED_EVENTS, SEED_SOCIAL_POSTS } from "./seed-articles";
 
 // ─── DB Integration ─────────────────────────────────────────────────────────────
-// Try to read from Neon Postgres. Fall back to seed data if DB unavailable.
+// Reads from Neon Postgres. Returns empty data if DB unavailable.
 
 let _dbArticles: JournalArticle[] | null = null;
 
@@ -51,30 +50,18 @@ async function getDbArticles(): Promise<JournalArticle[]> {
 
     return _dbArticles;
   } catch {
-    console.log("[Journal] DB unavailable, using seed data only");
+    console.log("[Journal] DB unavailable, no articles loaded");
     _dbArticles = [];
     return _dbArticles;
   }
 }
 
-// Merge DB articles with seed articles. DB articles take priority (newer).
-function getAllArticlesMerged(dbArticles: JournalArticle[]): JournalArticle[] {
-  const slugs = new Set(dbArticles.map((a) => a.slug));
-  const seedOnly = SEED_ARTICLES.filter((a) => !slugs.has(a.slug));
-  return [...dbArticles, ...seedOnly].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
-}
-
 // ─── Sync wrapper for SSG compatibility ─────────────────────────────────────────
-// Next.js SSG pages call these synchronously. We use seed data for static generation
-// and DB data for ISR/dynamic requests.
+// Next.js SSG pages call these synchronously. Returns only DB articles.
 
 function getAllArticlesSync(): JournalArticle[] {
-  // During static generation, _dbArticles may not be loaded yet.
-  // Return seed + cached DB articles.
   const db = _dbArticles || [];
-  return getAllArticlesMerged(db);
+  return db.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 }
 
 // ─── Articles ───────────────────────────────────────────────────────────────────
@@ -172,20 +159,16 @@ export async function loadDbArticles(): Promise<void> {
 
 // ─── Events ─────────────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getUpcomingEvents(limit = 6): JournalEvent[] {
-  const now = new Date().toISOString().split("T")[0];
-  return [...SEED_EVENTS]
-    .filter((e) => e.date >= now || (e.endDate && e.endDate >= now))
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, limit);
+  return []; // TODO: source from real event feed
 }
 
 // ─── Social Posts ───────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getLatestSocialPosts(limit = 5): SocialPost[] {
-  return [...SEED_SOCIAL_POSTS]
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-    .slice(0, limit);
+  return []; // TODO: source from real social API
 }
 
 // ─── Stats ──────────────────────────────────────────────────────────────────────

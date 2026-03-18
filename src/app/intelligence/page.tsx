@@ -93,6 +93,13 @@ export default function JournalPage() {
         <CategoryNav />
       </div>
 
+      {/* --- Empty state --- */}
+      {feedArticles.length === 0 && !hero && (
+        <div className="container-tc py-16 text-center">
+          <p className="text-muted text-lg">No articles published yet. Check back soon.</p>
+        </div>
+      )}
+
       {/* --- Hero + Secondary --- */}
       {hero && (
         <section className="container-tc pb-12">
@@ -128,12 +135,16 @@ export default function JournalPage() {
       )}
 
       {/* --- Main feed + Sidebar --- */}
+      {(feedArticles.length > 0 || tags.length > 0) && (
       <section className="container-tc pb-16">
         <div className="border-b-2 border-dark" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 pt-6">
           {/* Main article feed */}
           <div className="lg:col-span-2">
             <h2 className="label text-accent mb-6">Latest</h2>
+            {feedArticles.length === 0 ? (
+              <p className="text-muted py-8">No articles yet.</p>
+            ) : (
             <div className="space-y-0">
               {feedArticles.slice(0, 12).map((article, i) => (
                 <div key={article.id}>
@@ -142,6 +153,7 @@ export default function JournalPage() {
                 </div>
               ))}
             </div>
+            )}
 
             {feedArticles.length > 12 && (
               <div className="border-b border-light-200 mt-6 pt-6 text-center">
@@ -201,6 +213,7 @@ export default function JournalPage() {
           </aside>
         </div>
       </section>
+      )}
 
       {/* --- AEO Answer Block --- */}
       <section className="container-tc pb-16">

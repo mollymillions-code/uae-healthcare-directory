@@ -1,3 +1,5 @@
+// DEPRECATED: This file is no longer imported. Kept as reference for article format.
+// The automation pipeline (pipeline.ts) is now the sole source of articles via Neon DB.
 import type { JournalArticle, JournalEvent, SocialPost } from "./types";
 
 export const SEED_ARTICLES: JournalArticle[] = [

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
+import { getCategoryImagePath } from "@/lib/helpers";
 
 interface ProviderCardProps {
   name: string;
@@ -27,7 +29,16 @@ export function ProviderCard({
       href={`${basePath}/${citySlug}/${categorySlug}/${slug}`}
       className="provider-card group block"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start gap-3">
+        <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden">
+          <Image
+            src={getCategoryImagePath(categorySlug)}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="40px"
+          />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">

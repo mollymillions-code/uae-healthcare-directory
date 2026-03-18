@@ -6,14 +6,13 @@ import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
-import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles } from "@/lib/intelligence/data";
+import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles, getLatestArticles } from "@/lib/intelligence/data";
 import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
-import { SEED_ARTICLES } from "@/lib/intelligence/seed-articles";
 
 export const revalidate = 3600;
 
@@ -22,7 +21,8 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return SEED_ARTICLES.map((a) => ({ slug: a.slug }));
+  // Generate paths from real DB articles only
+  return getLatestArticles(100).map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ProviderCard } from "@/components/provider/ProviderCard";
-import { StarRating } from "@/components/shared/StarRating";
+// StarRating available if needed
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { FaqSection } from "@/components/seo/FaqSection";
@@ -20,7 +20,8 @@ import {
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
   generateProviderParagraph,
 } from "@/lib/seo";
-import { getBaseUrl } from "@/lib/helpers";
+import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
+import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar,
@@ -252,8 +253,21 @@ export default function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name }]} />
 
-        <h1 className="text-3xl font-bold text-dark mb-2">{category.name} in {city.name}, UAE</h1>
-        <p className="text-sm text-muted mb-4">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+        {/* Category hero banner */}
+        <div className="relative h-48 w-full mb-6 overflow-hidden">
+          <Image
+            src={getCategoryImagePath(category.slug)}
+            alt={`${category.name} in ${city.name}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1280px) 100vw, 1280px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h1 className="text-2xl font-bold text-white mb-1">{category.name} in {city.name}, UAE</h1>
+            <p className="text-sm text-white/80">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+          </div>
+        </div>
 
         <div className="answer-block mb-8" data-answer-block="true">
           <p className="text-muted leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
@@ -348,8 +362,21 @@ export default function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name, href: `/directory/${city.slug}/${area.slug}` }, { label: category.name }]} />
 
-        <h1 className="text-3xl font-bold text-dark mb-2">{category.name} in {area.name}, {city.name}</h1>
-        <p className="text-sm text-muted mb-4">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+        {/* Category hero banner */}
+        <div className="relative h-48 w-full mb-6 overflow-hidden">
+          <Image
+            src={getCategoryImagePath(category.slug)}
+            alt={`${category.name} in ${area.name}, ${city.name}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1280px) 100vw, 1280px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h1 className="text-2xl font-bold text-white mb-1">{category.name} in {area.name}, {city.name}</h1>
+            <p className="text-sm text-white/80">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+          </div>
+        </div>
 
         <div className="answer-block mb-8" data-answer-block="true">
           <p className="text-muted leading-relaxed">{generateFacetAnswerBlock(city, category, area, total, topProvider)}</p>
@@ -394,19 +421,37 @@ export default function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
 
+        {/* Listing hero banner with category image */}
+        <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden">
+          <Image
+            src={getCategoryImagePath(category.slug)}
+            alt={`${provider.name} — ${category.name} in ${city.name}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">{provider.name}</h1>
+              {provider.isVerified && <CheckCircle className="h-6 w-6 text-accent" />}
+            </div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="inline-block bg-accent text-white text-[11px] font-bold uppercase tracking-wide px-2 py-0.5">{category.name}</span>
+              {area && <span className="inline-block bg-white/20 text-white text-[11px] font-bold uppercase tracking-wide px-2 py-0.5">{area.name}</span>}
+            </div>
+            {provider.googleRating && Number(provider.googleRating) > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold text-accent">{provider.googleRating}/5 ★</span>
+                {provider.googleReviewCount && <span className="text-sm text-white/70">({provider.googleReviewCount.toLocaleString()} reviews)</span>}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-3xl font-bold text-dark">{provider.name}</h1>
-                {provider.isVerified && <CheckCircle className="h-6 w-6 text-accent" />}
-              </div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="badge">{category.name}</span>
-                {area && <span className="inline-block bg-light-100 text-dark text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 border border-light-200">{area.name}</span>}
-              </div>
-              {provider.googleRating && <StarRating rating={Number(provider.googleRating)} reviewCount={provider.googleReviewCount} size="lg" />}
-            </div>
 
             {/* 50-word LLM answer block */}
             <div className="answer-block mb-6" data-answer-block="true" data-last-verified={provider.lastVerified}>
