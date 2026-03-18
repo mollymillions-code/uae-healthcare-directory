@@ -134,10 +134,10 @@ export default function TermsOfServicePage() {
           <p className="text-sm text-muted leading-relaxed">
             For questions about these Terms of Service, please contact us at{" "}
             <a
-              href="mailto:legal@zavis.ae"
+              href="mailto:legal@zavis.ai"
               className="text-accent hover:underline"
             >
-              legal@zavis.ae
+              legal@zavis.ai
             </a>
             .
           </p>

@@ -17,6 +17,7 @@
 
 import { fetchAllFeeds, filterRelevantItems, type RawFeedItem } from "./feeds";
 import { generateArticleBatch, generateArticleImage } from "./summarize";
+import { getTopItems } from "./scoring";
 import { sendDailyBriefing } from "./newsletter";
 import { getLatestArticles } from "../data";
 import type { JournalArticle } from "../types";
@@ -131,8 +132,12 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     };
   }
 
-  // 4. Generate articles via Claude (max 10 per run to control costs)
-  const toProcess = newItems.slice(0, 10);
+  // 4. Score and rank by newsworthiness (virality, audience impact, specificity, timeliness)
+  const scored = getTopItems(newItems, 25);
+  console.log(`[Pipeline] Top 25 scored. #1: "${scored[0]?.item.title.slice(0, 60)}" (score: ${scored[0]?.score})`);
+
+  // Generate articles for top 25 by score
+  const toProcess = scored.slice(0, 25).map((s) => s.item);
   let articles: Omit<JournalArticle, "id">[] = [];
   try {
     articles = await generateArticleBatch(toProcess, 3);
@@ -154,10 +159,12 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     }
   }
 
-  // 6. Assign IDs and store
-  const fullArticles: JournalArticle[] = articles.map((a) => ({
+  // 6. Assign IDs, set featured/breaking based on score rank
+  const fullArticles: JournalArticle[] = articles.map((a, idx) => ({
     ...a,
     id: `j-auto-${nanoid(8)}`,
+    isFeatured: idx < 2,  // Top 2 by score = featured (hero + secondary)
+    isBreaking: idx === 0, // #1 by score = breaking
   }));
 
   // 7. Persist to database and trigger revalidation

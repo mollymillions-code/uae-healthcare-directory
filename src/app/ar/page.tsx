@@ -20,10 +20,10 @@ export const metadata: Metadata = {
   title: ar.siteName,
   description: ar.siteDescription,
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ae"}/ar`,
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ai"}/ar`,
     languages: {
-      "en-AE": process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ae",
-      "ar-AE": `${process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ae"}/ar`,
+      "en-AE": process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ai",
+      "ar-AE": `${process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ai"}/ar`,
     },
   },
 };

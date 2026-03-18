@@ -104,10 +104,10 @@ export default function EditorialPolicyPage() {
             We are committed to accuracy. If you find inaccurate information in any listing
             or article, please contact us at{" "}
             <a
-              href="mailto:corrections@zavis.ae"
+              href="mailto:corrections@zavis.ai"
               className="text-accent hover:underline"
             >
-              corrections@zavis.ae
+              corrections@zavis.ai
             </a>
             . We investigate all reports and issue corrections promptly. Corrected listings
             are updated with a new verification date.

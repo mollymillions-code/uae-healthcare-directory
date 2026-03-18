@@ -113,10 +113,10 @@ export default function PrivacyPolicyPage() {
             included in every email. You may also request deletion of your personal data
             by contacting us at{" "}
             <a
-              href="mailto:privacy@zavis.ae"
+              href="mailto:privacy@zavis.ai"
               className="text-accent hover:underline"
             >
-              privacy@zavis.ae
+              privacy@zavis.ai
             </a>
             . We will respond to all data deletion requests within 30 days.
           </p>
@@ -128,10 +128,10 @@ export default function PrivacyPolicyPage() {
           <p className="text-sm text-muted leading-relaxed">
             For questions or concerns about this privacy policy, please contact us at{" "}
             <a
-              href="mailto:privacy@zavis.ae"
+              href="mailto:privacy@zavis.ai"
               className="text-accent hover:underline"
             >
-              privacy@zavis.ae
+              privacy@zavis.ai
             </a>
             .
           </p>

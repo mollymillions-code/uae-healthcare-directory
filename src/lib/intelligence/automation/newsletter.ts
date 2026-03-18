@@ -19,7 +19,7 @@ async function getResend(): Promise<Resend> {
 }
 
 const FROM_EMAIL = "journal@uae-healthcare-directory.vercel.app";
-const REPLY_TO = "hello@zavis.ae";
+const REPLY_TO = "hello@zavis.ai";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://uae-healthcare-directory.vercel.app";
 
 // ─── Email Templates ────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ function buildDailyBriefingHTML(articles: JournalArticle[], date: string): strin
                 <a href="${BASE_URL}/intelligence" style="color: #b69a52; text-decoration: none;">Read all stories →</a>
               </p>
               <p style="font-family: 'Oswald', Helvetica, sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: #9a9a90; margin: 0;">
-                Zavis Healthcare Industry Insights · Powered by <a href="https://zavis.ae" style="color: #9a9a90;">Zavis</a>
+                Zavis Healthcare Industry Insights · Powered by <a href="https://zavis.ai" style="color: #9a9a90;">Zavis</a>
                 <br>
                 <a href="${BASE_URL}/intelligence/unsubscribe" style="color: #9a9a90;">Unsubscribe</a>
               </p>

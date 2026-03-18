@@ -204,9 +204,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, subcategorySlug: resolved.subcategory.slug, limit: 1 });
       return {
         title: `${resolved.subcategory.name} in ${city.name} | ${resolved.category.name}`,
-        description: `Find ${resolved.subcategory.name} specialists in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with ratings and reviews.`,
+        description: `Find ${resolved.subcategory.name} specialists in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with ratings and reviews. Last verified March 2026.`,
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
+          languages: {
+            'en-AE': `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
+            'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
+          },
         },
       };
     }

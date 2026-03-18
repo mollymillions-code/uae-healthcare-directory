@@ -162,16 +162,16 @@ export function organizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Zavis",
-    url: "https://zavis.ae",
+    url: "https://zavis.ai",
     description:
       "AI-powered patient success platform and healthcare intelligence for the UAE",
     logo: {
       "@type": "ImageObject",
-      url: "https://zavis.ae/logo.png",
+      url: "https://zavis.ai/logo.png",
     },
     contactPoint: {
       "@type": "ContactPoint",
-      email: "info@zavis.ae",
+      email: "info@zavis.ai",
       contactType: "customer service",
     },
     foundingDate: "2025",
@@ -188,7 +188,7 @@ export function organizationSchema() {
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    sameAs: ["https://zavis.ae"],
+    sameAs: ["https://zavis.ai"],
   };
 }
 
@@ -217,7 +217,7 @@ export function medicalWebPageSchema(
     reviewedBy: {
       "@type": "Organization",
       name: "Zavis",
-      url: "https://zavis.ae",
+      url: "https://zavis.ai",
     },
   };
 }

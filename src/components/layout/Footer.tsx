@@ -77,7 +77,7 @@ export function Footer() {
           </span>
           <span className="text-xs text-white/40">
             by{" "}
-            <a href="https://zavis.ae" className="text-accent hover:text-accent-light transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href="https://zavis.ai" className="text-accent hover:text-accent-light transition-colors" target="_blank" rel="noopener noreferrer">
               Zavis
             </a>
           </span>

@@ -43,10 +43,10 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
     languages: {
-      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae',
-      'ar-AE': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ae'}/ar`,
+      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
+      'ar-AE': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai'}/ar`,
     },
   },
 };
