@@ -17,7 +17,7 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
       <article className="group">
         <Link href={`/intelligence/${article.slug}`} className="block">
           {article.imageUrl && (
-            <div className="relative w-full aspect-[16/9] mb-4 overflow-hidden bg-light-200">
+            <div className="relative w-full aspect-[16/9] mb-5 overflow-hidden bg-light-100">
               <Image
                 src={article.imageUrl}
                 alt={article.title}
@@ -28,8 +28,8 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
               />
             </div>
           )}
-          <div className="flex items-center gap-2 mb-3">
-            <span className="badge">{category?.name}</span>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="category-ribbon">{category?.name}</span>
             {article.isBreaking && (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-red-600">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -37,17 +37,17 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
               </span>
             )}
           </div>
-          <h2 className="font-sans text-2xl font-bold text-dark leading-tight group-hover:text-accent transition-colors mb-3">
+          <h2 className="headline-serif-xl group-hover:text-accent transition-colors mb-3">
             {article.title}
           </h2>
-          <p className="text-sm text-muted leading-relaxed mb-4 max-w-2xl">
+          <p className="font-serif text-[16px] text-muted leading-relaxed mb-4 max-w-2xl">
             {article.excerpt}
           </p>
-          <div className="flex items-center gap-3 text-xs text-muted">
-            <span className="font-semibold text-dark">{article.author.name}</span>
-            <span>·</span>
+          <div className="byline">
+            <span className="author">{article.author.name}</span>
+            {" · "}
             <span>{formatDate(article.publishedAt)}</span>
-            <span>·</span>
+            {" · "}
             <span>{article.readTimeMinutes} min read</span>
           </div>
         </Link>
@@ -60,7 +60,7 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
     <article className="group">
       <Link href={`/intelligence/${article.slug}`} className="block">
         {article.imageUrl && (
-          <div className="relative w-full aspect-[16/9] mb-3 overflow-hidden bg-light-200">
+          <div className="relative w-full aspect-[16/9] mb-3 overflow-hidden bg-light-100">
             <Image
               src={article.imageUrl}
               alt={article.title}
@@ -70,18 +70,16 @@ export function FeaturedArticle({ article, variant = "hero" }: FeaturedArticlePr
             />
           </div>
         )}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="badge">{category?.name}</span>
-        </div>
-        <h3 className="font-sans text-lg font-bold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
+        <span className="category-ribbon mb-2 block">{category?.name}</span>
+        <h3 className="headline-serif-lg group-hover:text-accent transition-colors mb-2">
           {article.title}
         </h3>
         <p className="text-sm text-muted leading-relaxed line-clamp-2 mb-2">
           {article.excerpt}
         </p>
-        <div className="flex items-center gap-3 text-xs text-muted">
+        <div className="byline">
           <span>{formatDate(article.publishedAt)}</span>
-          <span>·</span>
+          {" · "}
           <span>{article.readTimeMinutes} min</span>
         </div>
       </Link>

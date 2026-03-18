@@ -285,7 +285,7 @@ async function seedFaqs() {
 }
 
 async function main() {
-  console.log("🏥 UAE Healthcare Directory — Seeding database...\n");
+  console.log("🏥 UAE Open Healthcare Directory — Seeding database...\n");
   await seedCities();
   await seedAreas();
   await seedCategories();

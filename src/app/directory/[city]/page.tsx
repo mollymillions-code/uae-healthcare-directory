@@ -65,7 +65,7 @@ export default function CityPage({ params }: Props) {
         {/* Natural language paragraph for LLM citation */}
         <div className="answer-block mb-6" data-answer-block="true">
           <p className="text-muted leading-relaxed">
-            According to the UAE Healthcare Directory, as of March 2026, {city.name} has {total}+ registered healthcare providers listed across {categories.length} medical specialties and {areas.length} neighborhoods.
+            According to the UAE Open Healthcare Directory, as of March 2026, {city.name} has {total}+ registered healthcare providers listed across {categories.length} medical specialties and {areas.length} neighborhoods.
             {city.name === "Dubai" && " Healthcare in Dubai is regulated by the Dubai Health Authority (DHA)."}
             {city.name === "Abu Dhabi" && " Healthcare in Abu Dhabi is regulated by the Department of Health (DOH)."}
             {city.name === "Al Ain" && " Healthcare in Al Ain falls under the Department of Health Abu Dhabi (DOH)."}

@@ -4,7 +4,7 @@ import { Shield, FileCheck, Edit, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Claim Your Listing",
-  description: "Healthcare providers can claim their listing to update information, add photos, and manage their presence in the UAE Healthcare Directory.",
+  description: "Healthcare providers can claim their listing to update information, add photos, and manage their presence in the UAE Open Healthcare Directory.",
 };
 
 export default function ClaimPage() {

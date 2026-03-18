@@ -109,12 +109,12 @@ export default function ArticlePage({ params }: PageProps) {
             )}
 
             {/* Headline */}
-            <h1 className="font-sans text-2xl font-bold text-dark leading-tight mb-5">
+            <h1 className="headline-serif-xl mb-5">
               {article.title}
             </h1>
 
             {/* Excerpt */}
-            <p className="font-sans text-lg text-muted leading-relaxed mb-6">
+            <p className="font-serif text-lg text-muted leading-relaxed mb-6">
               {article.excerpt}
             </p>
 

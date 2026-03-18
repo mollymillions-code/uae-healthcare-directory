@@ -15,16 +15,12 @@ export const metadata: Metadata = {
     template: `%s | ${ar.siteName}`,
   },
   description: ar.siteDescription,
-  openGraph: {
-    type: "website",
-    locale: "ar_AE",
-    siteName: ar.siteName,
-  },
+  openGraph: { type: "website", locale: "ar_AE", siteName: ar.siteName },
 };
 
 export default function ArabicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div dir="rtl" lang="ar" className={`${notoArabic.variable} font-arabic`}>
+    <div dir="rtl" lang="ar" className={`${notoArabic.variable}`} style={{ fontFamily: "'Noto Sans Arabic', sans-serif" }}>
       {children}
     </div>
   );

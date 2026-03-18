@@ -5,9 +5,9 @@ import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const metadata: Metadata = {
-  title: "Editorial Policy | UAE Healthcare Directory",
+  title: "Editorial Policy | UAE Open Healthcare Directory",
   description:
-    "Learn about the data sources, verification process, editorial independence, and update schedule behind the UAE Healthcare Directory.",
+    "Learn about the data sources, verification process, editorial independence, and update schedule behind the UAE Open Healthcare Directory.",
   alternates: {
     canonical: `${getBaseUrl()}/editorial-policy`,
   },
@@ -39,7 +39,7 @@ export default function EditorialPolicyPage() {
         <section>
           <h2 className="text-lg font-medium text-dark mb-3">Data Sources</h2>
           <p className="text-sm text-muted leading-relaxed">
-            All healthcare provider listings in the UAE Healthcare Directory are sourced from
+            All healthcare provider listings in the UAE Open Healthcare Directory are sourced from
             official government licensed facility registers maintained by the Dubai Health
             Authority (DHA), the Department of Health Abu Dhabi (DOH), and the Ministry of
             Health and Prevention (MOHAP). Provider ratings and review counts are obtained
@@ -52,7 +52,7 @@ export default function EditorialPolicyPage() {
         <section>
           <h2 className="text-lg font-medium text-dark mb-3">Editorial Independence</h2>
           <p className="text-sm text-muted leading-relaxed">
-            The UAE Healthcare Directory editorial content is produced independently from
+            The UAE Open Healthcare Directory editorial content is produced independently from
             any commercial operations. Listings are not influenced by advertising
             relationships or sponsorship arrangements. Provider rankings are determined
             solely by publicly available Google ratings and review volume. Our intelligence

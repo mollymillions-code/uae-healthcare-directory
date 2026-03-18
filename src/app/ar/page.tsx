@@ -11,7 +11,7 @@ import {
   getProviderCountByCity,
   getProviderCountByCategory,
 } from "@/lib/data";
-import { ar, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import { ChevronLeft } from "lucide-react";
 
 export const revalidate = 86400;
@@ -37,6 +37,19 @@ export default function ArabicHomePage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: ar.siteName,
+        url: `${base}/ar`,
+        description: ar.siteDescription,
+        inLanguage: "ar",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${base}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      }} />
       <JsonLd data={speakableSchema([".answer-block"])} />
 
       {/* Hero Grid */}
@@ -48,7 +61,7 @@ export default function ArabicHomePage() {
               <Image src="/images/cities/dubai.png" alt="الرعاية الصحية في دبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="overlay" />
               <div className="content">
-                <span className="badge mb-3 w-fit">دبي</span>
+                <span className="badge mb-3 w-fit">{getArabicCityName("dubai")}</span>
                 <h1 className="text-hero text-white mb-2">
                   {ar.findHealthcare}
                 </h1>
@@ -64,9 +77,9 @@ export default function ArabicHomePage() {
                 <Image src="/images/cities/abu-dhabi.png" alt="الرعاية الصحية في أبوظبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
-                  <span className="badge mb-2 w-fit">أبوظبي</span>
+                  <span className="badge mb-2 w-fit">{getArabicCityName("abu-dhabi")}</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("abu-dhabi")} {ar.providers} في أبوظبي
+                    {getProviderCountByCity("abu-dhabi")} {ar.providers} في {getArabicCityName("abu-dhabi")}
                   </h2>
                   <p className="text-white/60 text-sm mt-1">{getArabicRegulator("abu-dhabi")}</p>
                 </div>
@@ -75,9 +88,9 @@ export default function ArabicHomePage() {
                 <Image src="/images/cities/sharjah.png" alt="الرعاية الصحية في الشارقة" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
-                  <span className="badge mb-2 w-fit">الشارقة</span>
+                  <span className="badge mb-2 w-fit">{getArabicCityName("sharjah")}</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("sharjah").toLocaleString("ar-AE")} {ar.providers} في الشارقة
+                    {getProviderCountByCity("sharjah").toLocaleString("ar-AE")} {ar.providers} في {getArabicCityName("sharjah")}
                   </h2>
                   <p className="text-white/60 text-sm mt-1">{getArabicRegulator("sharjah")}</p>
                 </div>
@@ -95,7 +108,7 @@ export default function ArabicHomePage() {
                     href={`/ar/directory/${city.slug}`}
                     className="headline-item text-white/80 hover:text-accent transition-colors text-sm"
                   >
-                    <span className="flex-1 font-medium">{city.nameAr}</span>
+                    <span className="flex-1 font-medium">{getArabicCityName(city.slug)}</span>
                     <span className="text-white/40 text-xs font-mono">{count}</span>
                   </Link>
                 );
@@ -125,7 +138,7 @@ export default function ArabicHomePage() {
                 {hasImage && (
                   <Image
                     src={`/images/cities/${city.slug}.png`}
-                    alt={city.nameAr || city.name}
+                    alt={getArabicCityName(city.slug)}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -133,7 +146,7 @@ export default function ArabicHomePage() {
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit text-[10px]">{count} {ar.providers}</span>
-                  <h3 className="text-lg font-bold text-white">{city.nameAr}</h3>
+                  <h3 className="text-lg font-bold text-white">{getArabicCityName(city.slug)}</h3>
                   {city.emirate !== city.name && (
                     <p className="text-white/50 text-xs">{city.emirate}</p>
                   )}
@@ -151,7 +164,7 @@ export default function ArabicHomePage() {
             {ar.sourceOfTruth}
           </h2>
           <p className="text-white/80 text-base max-w-2xl mx-auto">
-            +{totalProviders.toLocaleString("ar-AE")} {ar.verifiedProviders} من سجلات هيئة الصحة بدبي ودائرة الصحة أبوظبي ووزارة الصحة ووقاية المجتمع الرسمية. {ar.freeAndOpen}.
+            +{totalProviders.toLocaleString("ar-AE")} {ar.verifiedProviders} من سجلات هيئة الصحة بدبي ودائرة الصحة أبوظبي ووزارة الصحة ووقاية المجتمع الرسمية. {ar.freeOpenNoPaywall}.
           </p>
         </div>
       </section>

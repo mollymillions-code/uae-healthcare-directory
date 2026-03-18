@@ -10,7 +10,7 @@ export function Footer() {
           <span className="bg-accent w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
             Z
           </span>
-          <span className="font-bold text-lg">UAE Healthcare Directory</span>
+          <span className="font-bold text-lg">UAE Open Healthcare Directory</span>
         </div>
 
         {/* Columns */}
@@ -66,7 +66,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <span className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} UAE Healthcare Directory &amp; Intelligence. Free for all UAE residents.
+            &copy; {new Date().getFullYear()} UAE Open Healthcare Directory. Free for all UAE residents.
           </span>
           <span className="text-xs text-white/40">
             by{" "}

@@ -63,11 +63,11 @@ export default function LanguageProviderPage({ params }: Props) {
   const faqs = [
     {
       question: `How do I find a ${language.name}-speaking doctor in ${city.name}?`,
-      answer: `The UAE Healthcare Directory lists ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} with ${language.name}-speaking staff. Browse the listings above to find hospitals, clinics, and specialists where staff speak ${language.name}.`,
+      answer: `The UAE Open Healthcare Directory lists ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} with ${language.name}-speaking staff. Browse the listings above to find hospitals, clinics, and specialists where staff speak ${language.name}.`,
     },
     {
       question: `How many healthcare providers in ${city.name} have ${language.name}-speaking staff?`,
-      answer: `According to the UAE Healthcare Directory, there are ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} with ${language.name}-speaking staff. This includes hospitals, clinics, dental practices, and specialist centers. Last verified March 2026.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} with ${language.name}-speaking staff. This includes hospitals, clinics, dental practices, and specialist centers. Last verified March 2026.`,
     },
     {
       question: `Can I get medical care in ${language.name} in ${city.name}?`,
@@ -105,7 +105,7 @@ export default function LanguageProviderPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} with {language.name}-speaking staff. The UAE&apos;s multicultural healthcare system ensures patients can receive care in their preferred language. Data from official government registers, last verified March 2026.
+          According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} with {language.name}-speaking staff. The UAE&apos;s multicultural healthcare system ensures patients can receive care in their preferred language. Data from official government registers, last verified March 2026.
         </p>
       </div>
 

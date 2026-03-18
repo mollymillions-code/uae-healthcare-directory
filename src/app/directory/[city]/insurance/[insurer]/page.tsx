@@ -67,7 +67,7 @@ export default function InsuranceProviderPage({ params }: Props) {
     },
     {
       question: `How many providers accept ${insurer.name} in ${city.name}?`,
-      answer: `According to the UAE Healthcare Directory, there are ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, and specialist centers. Last verified March 2026.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, and specialist centers. Last verified March 2026.`,
     },
     {
       question: `What specialists accept ${insurer.name} insurance in ${city.name}?`,
@@ -105,7 +105,7 @@ export default function InsuranceProviderPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} that accept {insurer.name} insurance. {insurer.description} Data from official government registers, last verified March 2026.
+          According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} that accept {insurer.name} insurance. {insurer.description} Data from official government registers, last verified March 2026.
         </p>
       </div>
 

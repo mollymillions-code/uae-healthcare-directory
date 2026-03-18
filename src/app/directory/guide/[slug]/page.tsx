@@ -174,7 +174,7 @@ const GUIDE_ARTICLES: GuideArticle[] = [
       {
         question: "How do I check if a clinic is licensed by MOHAP?",
         answer:
-          "You can verify a facility's licence through the MOHAP website or the UAE Healthcare Directory. All licensed facilities are listed in MOHAP's official register.",
+          "You can verify a facility's licence through the MOHAP website or the UAE Open Healthcare Directory. All licensed facilities are listed in MOHAP's official register.",
       },
     ],
   },
@@ -184,7 +184,7 @@ const GUIDE_ARTICLES: GuideArticle[] = [
     metaDescription:
       "Tips on choosing a doctor in the UAE — checking credentials via DHA/DOH licence lookup, verifying insurance networks, reading Google reviews, and getting referrals.",
     body: [
-      "Finding the right doctor in the UAE starts with understanding your needs. If you require a general check-up, a general practitioner (GP) at a nearby clinic is usually sufficient. For specialist care — such as cardiology, orthopaedics, or dermatology — you will need a referral from your GP or can book directly with a specialist if your insurance plan allows direct access. Use the <a href=\"/directory/dubai\" class=\"text-accent hover:underline\">UAE Healthcare Directory</a> to search by city, specialty, and area.",
+      "Finding the right doctor in the UAE starts with understanding your needs. If you require a general check-up, a general practitioner (GP) at a nearby clinic is usually sufficient. For specialist care — such as cardiology, orthopaedics, or dermatology — you will need a referral from your GP or can book directly with a specialist if your insurance plan allows direct access. Use the <a href=\"/directory/dubai\" class=\"text-accent hover:underline\">UAE Open Healthcare Directory</a> to search by city, specialty, and area.",
       "Always verify that your chosen doctor is licensed by the relevant authority: DHA for <a href=\"/directory/dubai\" class=\"text-accent hover:underline\">Dubai</a>, DOH for <a href=\"/directory/abu-dhabi\" class=\"text-accent hover:underline\">Abu Dhabi</a> and <a href=\"/directory/al-ain\" class=\"text-accent hover:underline\">Al Ain</a>, or MOHAP for the Northern Emirates. You can check licensing status through each authority's website or app. It is also important to confirm that the doctor and facility are within your insurance network — visiting an out-of-network provider can result in significantly higher out-of-pocket costs or no coverage at all.",
       "Patient ratings and Google reviews provide useful signals, but should be considered alongside credentials and experience. Look for doctors with relevant board certifications, adequate experience in your condition, and a communication style that makes you comfortable. Many UAE clinics now offer online appointment booking and telemedicine consultations, making it easier to access care without long waits.",
     ],
@@ -295,7 +295,7 @@ export function generateMetadata({
   const article = GUIDE_ARTICLES.find((a) => a.slug === params.slug);
   if (!article) return {};
   return {
-    title: `${article.title} | UAE Healthcare Directory`,
+    title: `${article.title} | UAE Open Healthcare Directory`,
     description: article.metaDescription,
   };
 }

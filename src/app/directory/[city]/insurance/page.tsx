@@ -26,7 +26,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Health Insurance Providers in ${city.name} | UAE Healthcare Directory`,
+    title: `Health Insurance Providers in ${city.name} | UAE Open Healthcare Directory`,
     description: `Browse health insurance providers accepted by healthcare facilities in ${city.name}, UAE. Find clinics and hospitals by insurance plan — Daman, Thiqa, AXA, Cigna, and more. Last verified March 2026.`,
     alternates: { canonical: `${base}/directory/${city.slug}/insurance` },
   };
@@ -60,7 +60,7 @@ export default function InsuranceIndexPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, healthcare providers in {city.name} accept a wide range of insurance plans.
+          According to the UAE Open Healthcare Directory, healthcare providers in {city.name} accept a wide range of insurance plans.
           {city.name === "Dubai" && " Dubai mandates health insurance for all residents under DHA regulations."}
           {city.name === "Abu Dhabi" && " Abu Dhabi requires mandatory health insurance (Daman/Thiqa) for all residents and nationals under DOH regulations."}
           {!["Dubai", "Abu Dhabi"].includes(city.name) && ` Health insurance coverage in ${city.name} follows UAE federal regulations under MOHAP.`}

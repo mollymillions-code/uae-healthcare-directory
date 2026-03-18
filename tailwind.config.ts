@@ -36,7 +36,9 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-lora)", "Georgia", "serif"],
         mono: ["var(--font-space-mono)", "monospace"],
+        arabic: ["var(--font-noto-arabic)", "Noto Sans Arabic", "sans-serif"],
       },
       fontSize: {
         "hero": ["3.5rem", { lineHeight: "1.08", letterSpacing: "-0.02em", fontWeight: "700" }],

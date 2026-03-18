@@ -70,16 +70,16 @@ export default function JournalPage() {
       {/* Breaking ticker */}
       <BreakingTicker articles={breaking} />
 
-      {/* Journal masthead */}
+      {/* Journal masthead — STAT News style */}
       <div className="container-tc pt-10 pb-4">
         <div className="text-center">
           <Link href="/intelligence">
-            <h1 className="font-sans text-3xl font-bold text-dark tracking-tight">
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-dark tracking-tight">
               UAE Healthcare Journal
             </h1>
           </Link>
-          <p className="font-sans text-muted mt-1">
-            UAE Healthcare Industry News, Analysis &amp; Market Data
+          <p className="text-sm text-muted mt-2 tracking-wide uppercase font-sans">
+            Industry news, analysis &amp; market data
           </p>
         </div>
       </div>

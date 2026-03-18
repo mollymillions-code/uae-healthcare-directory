@@ -26,7 +26,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Languages Spoken by Healthcare Providers in ${city.name} | UAE Healthcare Directory`,
+    title: `Languages Spoken by Healthcare Providers in ${city.name} | UAE Open Healthcare Directory`,
     description: `Find healthcare providers in ${city.name} by language spoken. Browse doctors and clinics with staff speaking Arabic, English, Hindi, Urdu, and 15+ other languages. Last verified March 2026.`,
     alternates: { canonical: `${base}/directory/${city.slug}/language` },
   };
@@ -60,7 +60,7 @@ export default function LanguageIndexPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, healthcare providers in {city.name} offer services in {languages.length}+ languages, reflecting the UAE&apos;s diverse multicultural population. Whether you need a doctor who speaks Arabic, English, Hindi, Urdu, or another language, our directory helps you find the right provider. Data sourced from official government registers, last verified March 2026.
+          According to the UAE Open Healthcare Directory, healthcare providers in {city.name} offer services in {languages.length}+ languages, reflecting the UAE&apos;s diverse multicultural population. Whether you need a doctor who speaks Arabic, English, Hindi, Urdu, or another language, our directory helps you find the right provider. Data sourced from official government registers, last verified March 2026.
         </p>
       </div>
 

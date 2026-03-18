@@ -14,15 +14,17 @@ interface ProviderCardProps {
   googleReviewCount?: number | null;
   isClaimed?: boolean | null;
   isVerified?: boolean | null;
+  basePath?: string;
 }
 
 export function ProviderCard({
   name, slug, citySlug, categorySlug, address, phone,
   shortDescription, googleRating, googleReviewCount, isVerified,
+  basePath = "/directory",
 }: ProviderCardProps) {
   return (
     <Link
-      href={`/directory/${citySlug}/${categorySlug}/${slug}`}
+      href={`${basePath}/${citySlug}/${categorySlug}/${slug}`}
       className="provider-card group block"
     >
       <div className="flex items-start justify-between gap-3">

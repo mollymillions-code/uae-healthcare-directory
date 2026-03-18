@@ -29,7 +29,7 @@ export function Header() {
               Z
             </span>
             <span className="font-bold text-base tracking-tight hidden sm:inline">
-              UAE Healthcare Directory
+              UAE Open Healthcare Directory
             </span>
           </Link>
 

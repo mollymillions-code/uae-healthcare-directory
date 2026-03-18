@@ -4,7 +4,7 @@ import { Heart, Shield, MapPin, Star } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "The UAE Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents.",
+  description: "The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents.",
 };
 
 export default function AboutPage() {
@@ -14,13 +14,13 @@ export default function AboutPage() {
 
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-dark mb-6">
-          About the UAE Healthcare Directory
+          About the UAE Open Healthcare Directory
         </h1>
 
         <div className="max-w-none">
           <div className="answer-block mb-8" data-answer-block="true">
             <p className="text-muted leading-relaxed text-lg">
-              The UAE Healthcare Directory is a free, open, and comprehensive directory of
+              The UAE Open Healthcare Directory is a free, open, and comprehensive directory of
               healthcare providers across all seven Emirates of the UAE. Our mission is to help
               every resident find the right healthcare provider based on their location, specialty
               needs, insurance coverage, and ratings.

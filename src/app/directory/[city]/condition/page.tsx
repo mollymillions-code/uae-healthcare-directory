@@ -23,7 +23,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Common Health Conditions & Treatments in ${city.name} | UAE Healthcare Directory`,
+    title: `Common Health Conditions & Treatments in ${city.name} | UAE Open Healthcare Directory`,
     description: `Find specialists and treatment options for common health conditions in ${city.name}, UAE. Browse verified providers for back pain, dental implants, LASIK, IVF, and more. Last verified March 2026.`,
     alternates: { canonical: `${base}/directory/${city.slug}/condition` },
   };
@@ -57,7 +57,7 @@ export default function ConditionIndexPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, {city.name} has verified healthcare providers offering treatment for {conditions.length}+ common health conditions. From dental implants and LASIK surgery to fertility treatments and mental health care, find the right specialist for your needs. All providers are sourced from official government registers, last verified March 2026.
+          According to the UAE Open Healthcare Directory, {city.name} has verified healthcare providers offering treatment for {conditions.length}+ common health conditions. From dental implants and LASIK surgery to fertility treatments and mental health care, find the right specialist for your needs. All providers are sourced from official government registers, last verified March 2026.
         </p>
       </div>
 

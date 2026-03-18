@@ -295,7 +295,7 @@ export function generateFacetAnswerBlock(
 ): string {
   const locationDesc = area ? `${area.name}, ${city.name}` : city.name;
 
-  let answer = `According to the UAE Healthcare Directory, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
+  let answer = `According to the UAE Open Healthcare Directory, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
 
   if (topProvider) {
     const reviewPart = topProvider.googleReviewCount

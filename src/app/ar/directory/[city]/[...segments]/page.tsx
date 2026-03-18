@@ -1,0 +1,567 @@
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ProviderCard } from "@/components/provider/ProviderCard";
+import { StarRating } from "@/components/shared/StarRating";
+import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Pagination } from "@/components/shared/Pagination";
+import {
+  getCityBySlug, getCities, getCategoryBySlug, getCategories,
+  getAreaBySlug, getAreasByCity,
+  getProviderBySlug, getProviders, getTopRatedProviders,
+} from "@/lib/data";
+import {
+  medicalOrganizationSchema, breadcrumbSchema,
+  itemListSchema, speakableSchema,
+} from "@/lib/seo";
+import { getBaseUrl } from "@/lib/helpers";
+import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import {
+  MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
+  CheckCircle, ExternalLink, Calendar,
+} from "lucide-react";
+
+export const revalidate = 21600;
+
+interface Props {
+  params: { city: string; segments: string[] };
+  searchParams: { page?: string };
+}
+
+/**
+ * Resolve URL segments (same logic as English version).
+ */
+function resolveSegments(citySlug: string, segments: string[]) {
+  const [seg1, seg2, seg3] = segments;
+
+  if (segments.length === 1) {
+    const category = getCategoryBySlug(seg1);
+    if (category) return { type: "city-category" as const, category };
+    const area = getAreaBySlug(citySlug, seg1);
+    if (area) return { type: "city-area" as const, area };
+    return null;
+  }
+
+  if (segments.length === 2) {
+    const cat1 = getCategoryBySlug(seg1);
+    if (cat1) {
+      const provider = getProviderBySlug(seg2);
+      if (provider) return { type: "listing" as const, category: cat1, provider };
+      return null;
+    }
+    const area = getAreaBySlug(citySlug, seg1);
+    if (area) {
+      const cat2 = getCategoryBySlug(seg2);
+      if (cat2) return { type: "area-category" as const, area, category: cat2 };
+      return null;
+    }
+    return null;
+  }
+
+  if (segments.length === 3) {
+    const area = getAreaBySlug(citySlug, seg1);
+    const cat = getCategoryBySlug(seg2);
+    const provider = getProviderBySlug(seg3);
+    if (area && cat && provider) return { type: "listing" as const, area, category: cat, provider };
+    return null;
+  }
+
+  return null;
+}
+
+export async function generateStaticParams() {
+  const params: { city: string; segments: string[] }[] = [];
+  const cities = getCities();
+  const categories = getCategories();
+
+  for (const city of cities) {
+    for (const cat of categories) {
+      params.push({ city: city.slug, segments: [cat.slug] });
+    }
+    const areas = getAreasByCity(city.slug);
+    for (const area of areas) {
+      params.push({ city: city.slug, segments: [area.slug] });
+      for (const cat of categories) {
+        params.push({ city: city.slug, segments: [area.slug, cat.slug] });
+      }
+    }
+  }
+
+  return params;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const city = getCityBySlug(params.city);
+  if (!city) return {};
+  const resolved = resolveSegments(city.slug, params.segments);
+  if (!resolved) return {};
+  const base = getBaseUrl();
+  const cityNameAr = getArabicCityName(city.slug);
+
+  switch (resolved.type) {
+    case "city-category": {
+      const catNameAr = getArabicCategoryName(resolved.category.slug);
+      const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      return {
+        title: `${catNameAr} في ${cityNameAr} | ${total} ${ar.provider}`,
+        description: `ابحث عن أفضل ${catNameAr} في ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد مع تقييمات Google ومراجعات وتفاصيل الاتصال. آخر تحقق مارس 2026.`,
+        alternates: {
+          canonical: `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+          languages: {
+            "en-AE": `${base}/directory/${city.slug}/${resolved.category.slug}`,
+            "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+          },
+        },
+      };
+    }
+    case "city-area": {
+      const areaNameAr = resolved.area.nameAr || resolved.area.name;
+      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
+      return {
+        title: `الرعاية الصحية في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
+        description: `ابحث عن مقدمي الرعاية الصحية في ${areaNameAr}، ${cityNameAr}، الإمارات. مستشفيات وعيادات ومتخصصون مع تقييمات.`,
+        alternates: {
+          canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+        },
+      };
+    }
+    case "area-category": {
+      const catNameAr = getArabicCategoryName(resolved.category.slug);
+      const areaNameAr = resolved.area.nameAr || resolved.area.name;
+      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
+      return {
+        title: `${catNameAr} في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
+        description: `ابحث عن ${catNameAr} في ${areaNameAr}، ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد.`,
+        alternates: {
+          canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+        },
+      };
+    }
+    case "listing": {
+      const catNameAr = getArabicCategoryName(resolved.category.slug);
+      return {
+        title: `${resolved.provider.name} | ${catNameAr} في ${cityNameAr}`,
+        description: `${resolved.provider.shortDescription} التقييم: ${resolved.provider.googleRating}/5. آخر تحقق ${resolved.provider.lastVerified}.`,
+      };
+    }
+    default:
+      return {};
+  }
+}
+
+export default function ArabicCatchAllPage({ params, searchParams }: Props) {
+  const city = getCityBySlug(params.city);
+  if (!city) notFound();
+
+  const resolved = resolveSegments(city.slug, params.segments);
+  if (!resolved) notFound();
+
+  const page = Number(searchParams.page) || 1;
+  const base = getBaseUrl();
+  const cityNameAr = getArabicCityName(city.slug);
+
+  // --- City + Category Page ---
+  if (resolved.type === "city-category") {
+    const { category } = resolved;
+    const catNameAr = getArabicCategoryName(category.slug);
+    const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
+    const areas = getAreasByCity(city.slug);
+    const regulator = getArabicRegulator(city.slug);
+
+    return (
+      <div className="container-tc py-8">
+        <JsonLd data={breadcrumbSchema([
+          { name: ar.home, url: `${base}/ar` },
+          { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
+          { name: catNameAr },
+        ])} />
+        <JsonLd data={itemListSchema(`${catNameAr} في ${cityNameAr}`, providers, city.name)} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+          <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}`} className="hover:text-accent transition-colors">{cityNameAr}</Link>
+          <span>/</span>
+          <span className="text-dark font-medium">{catNameAr}</span>
+        </nav>
+
+        <h1 className="text-3xl font-bold text-dark mb-2">{catNameAr} في {cityNameAr}</h1>
+        <p className="text-sm text-muted mb-4">{total} {ar.provider} معتمد · {ar.lastUpdated}</p>
+
+        <div className="answer-block mb-8" data-answer-block="true">
+          <p className="text-muted leading-relaxed">
+            وفقاً لدليل الرعاية الصحية في الإمارات، تضم {cityNameAr} {total} مقدم خدمة في تخصص {catNameAr}، مسجلين لدى {regulator}. تشمل القوائم تفاصيل الاتصال الموثقة وتقييمات Google والتأمين المقبول وساعات العمل. البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق مارس 2026.
+          </p>
+        </div>
+
+        {areas.length > 0 && (
+          <div className="mb-6">
+            <p className="text-sm font-medium text-dark mb-2">{ar.browseByArea}:</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {areas.map((a) => (
+                <Link
+                  key={a.slug}
+                  href={`/ar/directory/${city.slug}/${a.slug}/${category.slug}`}
+                  className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+                >
+                  {a.nameAr || a.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {providers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {providers.map((p) => (
+              <ProviderCard
+                key={p.id}
+                name={p.name}
+                slug={p.slug}
+                citySlug={p.citySlug}
+                categorySlug={p.categorySlug}
+                address={p.address}
+                phone={p.phone}
+                website={p.website}
+                shortDescription={p.shortDescription}
+                googleRating={p.googleRating}
+                googleReviewCount={p.googleReviewCount}
+                isClaimed={p.isClaimed}
+                isVerified={p.isVerified}
+                basePath="/ar/directory"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted">{ar.noProvidersFound} {catNameAr} في {cityNameAr}.</p>
+          </div>
+        )}
+
+        <Pagination currentPage={page} totalPages={totalPages} baseUrl={`/ar/directory/${city.slug}/${category.slug}`} />
+
+        <div className="text-center pt-4">
+          <Link href={`/directory/${city.slug}/${category.slug}`} className="text-accent text-sm hover:underline">
+            View in English / عرض بالإنجليزية
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // --- City + Area Page ---
+  if (resolved.type === "city-area") {
+    const { area } = resolved;
+    const areaNameAr = area.nameAr || area.name;
+    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
+    const categories = getCategories();
+
+    return (
+      <div className="container-tc py-8">
+        <JsonLd data={breadcrumbSchema([
+          { name: ar.home, url: `${base}/ar` },
+          { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
+          { name: areaNameAr },
+        ])} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+          <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}`} className="hover:text-accent transition-colors">{cityNameAr}</Link>
+          <span>/</span>
+          <span className="text-dark font-medium">{areaNameAr}</span>
+        </nav>
+
+        <h1 className="text-3xl font-bold text-dark mb-2">الرعاية الصحية في {areaNameAr}، {cityNameAr}</h1>
+        <div className="answer-block mb-8" data-answer-block="true">
+          <p className="text-muted">
+            تضم منطقة {areaNameAr} في {cityNameAr} عدد {total} مقدم رعاية صحية. تصفح حسب التخصص أدناه. البيانات من سجلات هيئات الصحة الإماراتية الرسمية. آخر تحقق مارس 2026.
+          </p>
+        </div>
+
+        <div className="mb-8">
+          <div className="section-header">
+            <h2>{ar.specialties} في {areaNameAr}</h2>
+            <span className="arrows">&lt;&lt;&lt;</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/ar/directory/${city.slug}/${area.slug}/${cat.slug}`}
+                className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+              >
+                {getArabicCategoryName(cat.slug)}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {providers.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {providers.map((p) => (
+              <ProviderCard
+                key={p.id}
+                name={p.name}
+                slug={p.slug}
+                citySlug={p.citySlug}
+                categorySlug={p.categorySlug}
+                address={p.address}
+                phone={p.phone}
+                website={p.website}
+                shortDescription={p.shortDescription}
+                googleRating={p.googleRating}
+                googleReviewCount={p.googleReviewCount}
+                isClaimed={p.isClaimed}
+                isVerified={p.isVerified}
+                basePath="/ar/directory"
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- Area + Category Facet Page ---
+  if (resolved.type === "area-category") {
+    const { area, category } = resolved;
+    const catNameAr = getArabicCategoryName(category.slug);
+    const areaNameAr = area.nameAr || area.name;
+    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
+    const regulator = getArabicRegulator(city.slug);
+
+    return (
+      <div className="container-tc py-8">
+        <JsonLd data={breadcrumbSchema([
+          { name: ar.home, url: `${base}/ar` },
+          { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
+          { name: areaNameAr, url: `${base}/ar/directory/${city.slug}/${area.slug}` },
+          { name: catNameAr },
+        ])} />
+        <JsonLd data={itemListSchema(`${catNameAr} في ${areaNameAr}، ${cityNameAr}`, providers, city.name)} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+          <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}`} className="hover:text-accent transition-colors">{cityNameAr}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}/${area.slug}`} className="hover:text-accent transition-colors">{areaNameAr}</Link>
+          <span>/</span>
+          <span className="text-dark font-medium">{catNameAr}</span>
+        </nav>
+
+        <h1 className="text-3xl font-bold text-dark mb-2">{catNameAr} في {areaNameAr}، {cityNameAr}</h1>
+        <p className="text-sm text-muted mb-4">{total} {ar.provider} معتمد · {ar.lastUpdated}</p>
+
+        <div className="answer-block mb-8" data-answer-block="true">
+          <p className="text-muted leading-relaxed">
+            تضم منطقة {areaNameAr} في {cityNameAr} عدد {total} مقدم خدمة في تخصص {catNameAr}، مسجلين لدى {regulator}. البيانات من السجلات الحكومية الرسمية. آخر تحقق مارس 2026.
+          </p>
+        </div>
+
+        {providers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {providers.map((p) => (
+              <ProviderCard
+                key={p.id}
+                name={p.name}
+                slug={p.slug}
+                citySlug={p.citySlug}
+                categorySlug={p.categorySlug}
+                address={p.address}
+                phone={p.phone}
+                website={p.website}
+                shortDescription={p.shortDescription}
+                googleRating={p.googleRating}
+                googleReviewCount={p.googleReviewCount}
+                isClaimed={p.isClaimed}
+                isVerified={p.isVerified}
+                basePath="/ar/directory"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted mb-2">{ar.noProvidersFound} {catNameAr} في {areaNameAr}.</p>
+            <Link href={`/ar/directory/${city.slug}/${category.slug}`} className="text-accent text-sm">
+              {ar.viewAll} {catNameAr} في {cityNameAr} &larr;
+            </Link>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- Individual Listing Page ---
+  if (resolved.type === "listing") {
+    const { category, provider } = resolved;
+    const catNameAr = getArabicCategoryName(category.slug);
+    const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
+    const areaNameAr = area?.nameAr || area?.name || "";
+    const nearbyProviders = getTopRatedProviders(city.slug, 4).filter((p) => p.id !== provider.id);
+
+    const answerBlock = `${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${provider.operatingHours?.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} آخر تحقق: ${provider.lastVerified}.`;
+
+    return (
+      <div className="container-tc py-8">
+        <JsonLd data={medicalOrganizationSchema(provider, city, category, area, city.slug)} />
+        <JsonLd data={breadcrumbSchema([
+          { name: ar.home, url: `${base}/ar` },
+          { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
+          { name: catNameAr, url: `${base}/ar/directory/${city.slug}/${category.slug}` },
+          { name: provider.name },
+        ])} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted mb-6 flex-wrap">
+          <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}`} className="hover:text-accent transition-colors">{cityNameAr}</Link>
+          <span>/</span>
+          <Link href={`/ar/directory/${city.slug}/${category.slug}`} className="hover:text-accent transition-colors">{catNameAr}</Link>
+          <span>/</span>
+          <span className="text-dark font-medium">{provider.name}</span>
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-3xl font-bold text-dark">{provider.name}</h1>
+                {provider.isVerified && <CheckCircle className="h-6 w-6 text-accent" />}
+              </div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="badge">{catNameAr}</span>
+                {area && <span className="inline-block bg-light-100 text-dark text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 border border-light-200">{areaNameAr}</span>}
+              </div>
+              {provider.googleRating && <StarRating rating={Number(provider.googleRating)} reviewCount={provider.googleReviewCount} size="lg" />}
+            </div>
+
+            {/* Answer block */}
+            <div className="answer-block mb-6" data-answer-block="true" data-last-verified={provider.lastVerified}>
+              <p className="text-dark/80 leading-relaxed font-medium">{answerBlock}</p>
+            </div>
+
+            {/* About */}
+            <div className="border border-light-200 p-6 mb-6" data-section="about">
+              <h2 className="font-semibold text-dark mb-3">{ar.aboutProvider} {provider.name}</h2>
+              <p className="text-muted leading-relaxed">{provider.description}</p>
+              <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {provider.lastVerified}.</p>
+            </div>
+
+            {/* Services */}
+            {provider.services.length > 0 && (
+              <div className="border border-light-200 p-6 mb-6" data-section="services">
+                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Stethoscope className="h-5 w-5 text-accent" /> {ar.services}</h2>
+                <p className="text-sm text-muted mb-3">يقدم {provider.name} هذه الخدمات في {cityNameAr}:</p>
+                <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="badge-outline px-3 py-1">{s}</span>))}</div>
+              </div>
+            )}
+
+            {/* Operating Hours */}
+            {provider.operatingHours && (
+              <div className="border border-light-200 p-6 mb-6" data-section="hours">
+                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> {ar.operatingHours}</h2>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                  {Object.entries(provider.operatingHours).map(([d, h]) => (
+                    <div key={d} className="flex justify-between text-sm py-1 border-b border-light-200 last:border-b-0">
+                      <span className="text-muted">{ar.days[d] || d}</span>
+                      <span className="font-medium text-dark">{h.open === "00:00" && h.close === "23:59" ? ar.hours24 : `${h.open} – ${h.close}`}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Insurance */}
+            {provider.insurance.length > 0 && (
+              <div className="border border-light-200 p-6 mb-6" data-section="insurance">
+                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Shield className="h-5 w-5 text-accent" /> {ar.acceptedInsurance}</h2>
+                <p className="text-sm text-muted mb-3">يقبل {provider.name} خطط التأمين التالية:</p>
+                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200">{i}</span>))}</div>
+              </div>
+            )}
+
+            {/* Languages */}
+            {provider.languages.length > 0 && (
+              <div className="border border-light-200 p-6 mb-6" data-section="languages">
+                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Languages className="h-5 w-5 text-accent" /> {ar.languagesSpoken}</h2>
+                <p className="text-sm text-muted">يتحدث طاقم {provider.name}: {provider.languages.join("، ")}.</p>
+              </div>
+            )}
+
+            {/* Map */}
+            <div className="border border-light-200 p-6 mb-6" data-section="location">
+              <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MapPin className="h-5 w-5 text-accent" /> {ar.location}</h2>
+              <GoogleMapEmbed query={`${provider.name}, ${provider.address}`} />
+              <p className="text-sm text-muted mt-3">{provider.address}</p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted mb-6">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>آخر تحقق: {provider.lastVerified} · البيانات من سجل هيئة الصحة الإماراتية الرسمي</span>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-20 space-y-4">
+              <div className="border border-light-200 p-6">
+                <h2 className="font-semibold text-dark mb-4">{ar.contact}</h2>
+                <div className="space-y-3">
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-3 text-sm text-dark/70 hover:text-accent transition-colors"><Phone className="h-4 w-4" /> {provider.phone}</a>}
+                  {provider.website && <a href={provider.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-dark/70 hover:text-accent transition-colors"><Globe className="h-4 w-4" /> {ar.website} <ExternalLink className="h-3 w-3" /></a>}
+                  <div className="flex items-center gap-3 text-sm text-dark/70"><MapPin className="h-4 w-4" /> {provider.address}</div>
+                </div>
+                <div className="mt-4 space-y-2">
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-accent w-full"><Phone className="h-4 w-4 ml-2" /> {ar.callNow}</a>}
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`} target="_blank" rel="noopener noreferrer" className="btn-dark w-full"><MapPin className="h-4 w-4 ml-2" /> {ar.directions}</a>
+                </div>
+              </div>
+
+              {!provider.isClaimed && (
+                <div className="border border-light-200 p-6 bg-accent-muted">
+                  <h3 className="font-semibold text-dark mb-2">{ar.isThisYourBusiness}</h3>
+                  <p className="text-sm text-muted mb-4">{ar.claimYourListing}</p>
+                  <Link href={`/claim/${provider.id}`} className="btn-accent w-full">{ar.claimListing}</Link>
+                </div>
+              )}
+
+              {nearbyProviders.length > 0 && (
+                <div className="border border-light-200 p-6">
+                  <h3 className="font-semibold text-dark mb-3">{ar.nearby}</h3>
+                  <div className="space-y-3">
+                    {nearbyProviders.map((np) => (
+                      <Link key={np.id} href={`/ar/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block text-sm hover:text-accent transition-colors">
+                        <p className="font-medium text-dark">{np.name}</p>
+                        <p className="text-xs text-muted">{np.googleRating} {ar.stars}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Language Switch */}
+        <div className="text-center pt-6 pb-4">
+          <Link href={`/directory/${city.slug}/${category.slug}/${provider.slug}`} className="text-accent text-sm hover:underline">
+            View in English / عرض بالإنجليزية
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  notFound();
+}

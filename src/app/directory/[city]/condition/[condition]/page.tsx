@@ -89,7 +89,7 @@ export default function ConditionPage({ params }: Props) {
   const faqs = [
     {
       question: `Where can I get ${condition.name.toLowerCase()} treatment in ${city.name}?`,
-      answer: `The UAE Healthcare Directory lists ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} offering ${condition.name.toLowerCase()} treatment. These include ${relatedCats.map((c) => c.name.toLowerCase()).join(", ")} specialists. Browse the listings above to compare providers by rating and services offered.`,
+      answer: `The UAE Open Healthcare Directory lists ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} offering ${condition.name.toLowerCase()} treatment. These include ${relatedCats.map((c) => c.name.toLowerCase()).join(", ")} specialists. Browse the listings above to compare providers by rating and services offered.`,
     },
     {
       question: `How much does ${condition.name.toLowerCase()} treatment cost in ${city.name}?`,
@@ -131,7 +131,7 @@ export default function ConditionPage({ params }: Props) {
 
       <div className="answer-block mb-8" data-answer-block="true">
         <p className="text-muted leading-relaxed">
-          According to the UAE Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} offering treatment for {condition.name.toLowerCase()}. {condition.description} Related specialties include {relatedCats.map((c) => c.name.toLowerCase()).join(", ")}. Data from official government registers, last verified March 2026.
+          According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} offering treatment for {condition.name.toLowerCase()}. {condition.description} Related specialties include {relatedCats.map((c) => c.name.toLowerCase()).join(", ")}. Data from official government registers, last verified March 2026.
         </p>
       </div>
 

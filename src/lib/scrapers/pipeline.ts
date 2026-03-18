@@ -43,7 +43,7 @@ interface ScrapedProvider {
  */
 export async function runPipeline() {
   console.log("═══════════════════════════════════════════════════════");
-  console.log("  UAE Healthcare Directory — Data Pipeline");
+  console.log("  UAE Open Healthcare Directory — Data Pipeline");
   console.log("═══════════════════════════════════════════════════════\n");
 
   // Step 1: Scrape all sources
