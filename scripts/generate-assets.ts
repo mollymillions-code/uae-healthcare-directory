@@ -14,7 +14,7 @@ if (!API_KEY) {
   console.error("❌ Set GEMINI_API_KEY environment variable first");
   process.exit(1);
 }
-const MODEL = "gemini-2.0-flash-preview-image-generation";
+const MODEL = "gemini-3.1-flash-image-preview";
 const OUTPUT_DIR = path.resolve("public/images");
 
 const STYLE = `Fine art editorial photography. Muted desaturated palette: warm ivory, deep forest green, antique gold tones. Soft diffused natural lighting with slight film grain texture. Elegant, calming, comforting. No text, no logos, no watermarks, no recognizable faces. Abstract and suggestive rather than literal. Magazine editorial quality.`;
