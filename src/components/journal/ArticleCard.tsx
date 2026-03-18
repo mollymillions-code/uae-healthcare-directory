@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { JournalArticle } from "@/lib/journal/types";
 import { getJournalCategory } from "@/lib/journal/categories";
 import { formatDate } from "./utils";
@@ -16,14 +17,14 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
       <article className="group">
         <Link href={`/journal/${article.slug}`} className="block">
           <div className="flex items-start gap-3">
-            <span className="label text-accent shrink-0 pt-0.5">
+            <span className="text-accent text-[11px] font-bold uppercase shrink-0 pt-0.5">
               {category?.icon}
             </span>
             <div className="min-w-0">
               <h3 className="font-sans text-sm font-semibold text-dark leading-snug group-hover:text-accent transition-colors line-clamp-2">
                 {article.title}
               </h3>
-              <span className="label mt-1 block">{formatDate(article.publishedAt)}</span>
+              <span className="text-xs text-muted mt-1 block">{formatDate(article.publishedAt)}</span>
             </div>
           </div>
         </Link>
@@ -38,22 +39,33 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
           <div className="flex gap-5">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="label text-accent">{category?.name}</span>
+                <span className="badge">{category?.name}</span>
                 {article.isBreaking && (
-                  <span className="label text-red-600">Breaking</span>
+                  <span className="text-[11px] font-bold uppercase text-red-600">Breaking</span>
                 )}
               </div>
-              <h3 className="font-sans text-lg font-semibold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
+              <h3 className="font-sans text-base font-bold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
                 {article.title}
               </h3>
               <p className="text-sm text-muted leading-relaxed line-clamp-2">
                 {article.excerpt}
               </p>
-              <div className="flex items-center gap-3 mt-3">
-                <span className="label">{formatDate(article.publishedAt)}</span>
-                <span className="label">{article.readTimeMinutes} min read</span>
+              <div className="flex items-center gap-3 mt-3 text-xs text-muted">
+                <span>{formatDate(article.publishedAt)}</span>
+                <span>{article.readTimeMinutes} min read</span>
               </div>
             </div>
+            {article.imageUrl && (
+              <div className="relative w-[140px] h-[90px] shrink-0 overflow-hidden bg-light-200">
+                <Image
+                  src={article.imageUrl}
+                  alt={article.title}
+                  fill
+                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                  sizes="140px"
+                />
+              </div>
+            )}
           </div>
         </Link>
       </article>
@@ -64,24 +76,35 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
   return (
     <article className="group">
       <Link href={`/journal/${article.slug}`} className="block">
+        {article.imageUrl && (
+          <div className="relative w-full aspect-[16/9] mb-3 overflow-hidden bg-light-200">
+            <Image
+              src={article.imageUrl}
+              alt={article.title}
+              fill
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          </div>
+        )}
         <div className="flex items-center gap-2 mb-2">
-          <span className="label text-accent">{category?.name}</span>
+          <span className="badge">{category?.name}</span>
           {article.isBreaking && (
-            <span className="label text-red-600">Breaking</span>
+            <span className="text-[11px] font-bold uppercase text-red-600">Breaking</span>
           )}
         </div>
-        <h3 className="font-sans text-xl font-semibold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
+        <h3 className="font-sans text-lg font-bold text-dark leading-snug group-hover:text-accent transition-colors mb-2">
           {article.title}
         </h3>
         <p className="text-sm text-muted leading-relaxed line-clamp-3 mb-3">
           {article.excerpt}
         </p>
-        <div className="flex items-center gap-3">
-          <span className="label">{article.author.name}</span>
-          <span className="text-muted">·</span>
-          <span className="label">{formatDate(article.publishedAt)}</span>
-          <span className="text-muted">·</span>
-          <span className="label">{article.readTimeMinutes} min</span>
+        <div className="flex items-center gap-3 text-xs text-muted">
+          <span className="font-semibold text-dark">{article.author.name}</span>
+          <span>·</span>
+          <span>{formatDate(article.publishedAt)}</span>
+          <span>·</span>
+          <span>{article.readTimeMinutes} min</span>
         </div>
       </Link>
     </article>

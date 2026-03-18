@@ -6,6 +6,7 @@ import { ArticleCard } from "@/components/journal/ArticleCard";
 import { NewsletterSignup } from "@/components/journal/NewsletterSignup";
 import { TagCloud } from "@/components/journal/TagCloud";
 import { ArticleBody } from "@/components/journal/SocialEmbed";
+import Image from "next/image";
 import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles } from "@/lib/journal/data";
 import { articleSchema } from "@/lib/journal/seo";
 import { getJournalCategory } from "@/lib/journal/categories";
@@ -92,6 +93,20 @@ export default function ArticlePage({ params }: PageProps) {
                 </span>
               )}
             </div>
+
+            {/* Hero image */}
+            {article.imageUrl && (
+              <div className="relative w-full aspect-[16/9] mb-6 overflow-hidden bg-light-200">
+                <Image
+                  src={article.imageUrl}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 66vw"
+                  priority
+                />
+              </div>
+            )}
 
             {/* Headline */}
             <h1 className="font-sans text-2xl font-bold text-dark leading-tight mb-5">
