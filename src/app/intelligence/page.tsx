@@ -8,7 +8,6 @@ import { BreakingTicker } from "@/components/intelligence/BreakingTicker";
 import { EventsSidebar } from "@/components/intelligence/EventsSidebar";
 import { SocialFeed } from "@/components/intelligence/SocialFeed";
 import { TagCloud } from "@/components/intelligence/TagCloud";
-import { NewsletterSignup } from "@/components/intelligence/NewsletterSignup";
 import {
   getFeaturedArticles,
   getBreakingArticles,
@@ -153,8 +152,6 @@ export default function JournalPage() {
 
           {/* Sidebar */}
           <aside className="space-y-8">
-            <NewsletterSignup />
-
             {/* Section index */}
             <div>
               <h3 className="label text-accent mb-4">Sections</h3>

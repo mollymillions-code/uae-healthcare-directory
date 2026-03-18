@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ArticleCard } from "@/components/intelligence/ArticleCard";
-import { NewsletterSignup } from "@/components/intelligence/NewsletterSignup";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
@@ -202,8 +201,6 @@ export default function ArticlePage({ params }: PageProps) {
 
           {/* Sidebar */}
           <aside className="space-y-8">
-            <NewsletterSignup />
-
             <div>
               <div className="border-b-2 border-dark mb-4" />
               <h3 className="label text-accent mb-4">Topics</h3>

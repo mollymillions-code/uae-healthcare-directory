@@ -138,7 +138,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Provider listing pages ───────────────────────────────────────────────
-  const { providers } = getProviders({ limit: 10000 });
+  const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {
     entries.push({
       url: `${baseUrl}/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`,
@@ -219,7 +219,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   });
 
-  // Arabic city pages + city+category pages
+  // Arabic city pages + city+category pages + individual provider listings
   for (const city of cities) {
     entries.push({
       url: `${baseUrl}/ar/directory/${city.slug}`,
@@ -238,18 +238,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  // Arabic individual provider listing pages
+  for (const provider of providers) {
+    entries.push({
+      url: `${baseUrl}/ar/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    });
+  }
+
   return entries;
 }
-
-// ─── Estimated page count ──────────────────────────────────────────────────
-// Homepage (1) + LLM skill (1)
-// + cities * (1 city + N categories + N areas + N areas*categories)
-// + cities * (1 insurance index + 13 insurers)
-// + cities * (1 language index + 20 languages)
-// + cities * (1 condition index + 20 conditions)
-// + provider listings (~10,000 max)
-// + guide index (1) + 8 guide articles
-// + journal landing (1) + journal categories (~9) + journal articles (~100) + RSS (1)
-// + static pages (3: about, claim, editorial-policy)
-// + Arabic: 1 homepage + cities * (1 + N categories)
-// Rough estimate: ~12,000–15,000 URLs depending on city/area/category/provider counts

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { CategoryNav } from "@/components/intelligence/CategoryNav";
-import { NewsletterSignup } from "@/components/intelligence/NewsletterSignup";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { EventsSidebar } from "@/components/intelligence/EventsSidebar";
 import { getArticles, getUpcomingEvents, getAllTags } from "@/lib/intelligence/data";
@@ -95,8 +94,6 @@ export default function CategoryPage({ params }: PageProps) {
 
           {/* Sidebar */}
           <aside className="space-y-8">
-            <NewsletterSignup />
-
             <div>
               <div className="border-b-2 border-dark mb-4" />
               <EventsSidebar events={events} />

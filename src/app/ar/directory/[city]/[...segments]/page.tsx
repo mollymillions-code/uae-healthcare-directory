@@ -86,6 +86,11 @@ export async function generateStaticParams() {
         params.push({ city: city.slug, segments: [area.slug, cat.slug] });
       }
     }
+    // Individual provider listing pages — Arabic mirror of every provider
+    const { providers: cityProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    for (const provider of cityProviders) {
+      params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
+    }
   }
 
   return params;
