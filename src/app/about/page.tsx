@@ -5,7 +5,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { getCities, getCategories, getProviders, getProviderCountByCity } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "About the UAE Open Healthcare Directory",
+  title: "About Us — 12,500+ Providers Across the UAE",
   description: "The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents. 12,500+ providers across 8 cities.",
   alternates: {
     canonical: `${getBaseUrl()}/about`,

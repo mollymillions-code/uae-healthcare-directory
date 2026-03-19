@@ -28,24 +28,41 @@ const lora = Lora({
   style: ["normal", "italic"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: {
     default: "UAE Open Healthcare Directory | Find Doctors, Clinics & Hospitals",
     template: "%s | UAE Open Healthcare Directory",
   },
   description:
-    "The UAE Open Healthcare Directory — the most comprehensive free directory of licensed healthcare providers across the UAE. Find hospitals, clinics, dentists, and specialists in Dubai, Abu Dhabi, Sharjah, and all Emirates with ratings, reviews, and contact details. By Zavis.",
+    "Free directory of 12,500+ licensed healthcare providers across the UAE. Find hospitals, clinics, dentists in Dubai, Abu Dhabi, Sharjah with ratings and contact details.",
   openGraph: {
     type: "website",
     locale: "en_AE",
     siteName: "UAE Open Healthcare Directory",
+    url: baseUrl,
+    images: [
+      {
+        url: `${baseUrl}/images/og-default.png`,
+        width: 1200,
+        height: 630,
+        alt: "UAE Open Healthcare Directory — 12,500+ Licensed Providers",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@zaaborz",
+    images: [`${baseUrl}/images/og-default.png`],
   },
   robots: { index: true, follow: true },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
+    canonical: baseUrl,
     languages: {
-      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
-      'ar-AE': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai'}/ar`,
+      "en-AE": baseUrl,
+      "ar-AE": `${baseUrl}/ar`,
     },
   },
 };

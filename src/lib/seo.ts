@@ -52,14 +52,14 @@ export function medicalOrganizationSchema(
       },
     },
     isBasedOn: "Official UAE health authority licensed facilities register",
-    ...(provider.googleRating
+    ...(provider.googleRating && Number(provider.googleRating) > 0
       ? {
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: provider.googleRating,
             bestRating: "5",
             worstRating: "1",
-            reviewCount: provider.googleReviewCount,
+            reviewCount: provider.googleReviewCount || 1,
           },
         }
       : {}),
@@ -143,12 +143,12 @@ export function itemListSchema(
           addressLocality: cityName,
           addressCountry: "AE",
         },
-        ...(p.googleRating
+        ...(p.googleRating && Number(p.googleRating) > 0
           ? {
               aggregateRating: {
                 "@type": "AggregateRating",
                 ratingValue: p.googleRating,
-                reviewCount: p.googleReviewCount,
+                reviewCount: p.googleReviewCount || 1,
               },
             }
           : {}),
