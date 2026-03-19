@@ -1,0 +1,31 @@
+name: Full content pipeline (with review + images)
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run full pipeline with review + images
+        run: npx tsx scripts/run-pipeline-persist.ts
+
+      - name: Trigger site revalidation
+        run: |
+          curl -s "https://uae-healthcare-directory.vercel.app/api/revalidate?secret=${{ secrets.CRON_SECRET }}&path=/intelligence" || true

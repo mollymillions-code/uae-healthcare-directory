@@ -58,13 +58,6 @@ export const metadata: Metadata = {
     images: [`${baseUrl}/images/og-default.png`],
   },
   robots: { index: true, follow: true },
-  alternates: {
-    canonical: baseUrl,
-    languages: {
-      "en-AE": baseUrl,
-      "ar-AE": `${baseUrl}/ar`,
-    },
-  },
 };
 
 export default function RootLayout({

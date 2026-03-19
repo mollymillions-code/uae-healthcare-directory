@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 export default function ArabicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div dir="rtl" lang="ar" className={`${notoArabic.variable}`} style={{ fontFamily: "'Noto Sans Arabic', sans-serif" }}>
+      <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang="ar";document.documentElement.dir="rtl";' }} />
       <SetArabicLang />
       {children}
     </div>

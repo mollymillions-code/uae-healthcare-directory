@@ -1,52 +1,139 @@
 /**
- * Run pipeline AND persist to database.
+ * Full autonomous pipeline — runs on GitHub Actions every 2 hours.
+ * No timeouts. Full 3-pass quality (draft + review + anti-AI-tells).
+ * Generates images. Persists to DB. Zero human intervention.
+ *
  * Usage: npx tsx scripts/run-pipeline-persist.ts
  */
 
 import { neon } from "@neondatabase/serverless";
+import { writeFileSync, existsSync, mkdirSync } from "fs";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import { fetchAllFeeds, filterRelevantItems } from "../src/lib/intelligence/automation/feeds";
 import { generateArticleBatch } from "../src/lib/intelligence/automation/summarize";
 import { getTopItems } from "../src/lib/intelligence/automation/scoring";
-import { getLatestArticles } from "../src/lib/intelligence/data";
 import { nanoid } from "nanoid";
 
 const MINIMUM_SCORE = 35;
+const MAX_ARTICLES_PER_RUN = 25;
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const IMG_DIR = "public/images/intelligence";
+
+// ─── OG Image Fetcher ───────────────────────────────────────────────────────────
+
+async function fetchOgImage(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) return null;
+    const html = await response.text();
+
+    const ogMatch = html.match(/<meta\s+(?:property|name)="og:image"\s+content="([^"]+)"/i)
+      || html.match(/content="([^"]+)"\s+(?:property|name)="og:image"/i);
+
+    if (ogMatch?.[1]) {
+      const img = ogMatch[1];
+      if (img.includes("googleusercontent.com") || img.includes("gstatic") ||
+          img.includes("favicon") || img.includes("logo") || img.length < 30) return null;
+      return img;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Gemini Image Generator (contextual, unique per article) ────────────────────
+
+async function generateImage(slug: string, title: string): Promise<string | null> {
+  if (!GEMINI_KEY) return null;
+  const outPath = `${IMG_DIR}/${slug}.jpg`;
+  if (existsSync(outPath)) return `/images/intelligence/${slug}.jpg`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are a photo editor. Generate ONE unique photorealistic image for this healthcare article. Depict the SPECIFIC subject, NOT a generic skyline.
+
+ARTICLE: "${title}"
+
+1. IPO/stock → stock exchange floor. Insurance → billing desk. Nursing → nurses. Drug law → pharmacy. Acquisition → boardroom. Funding → startup office. Tourism → airport/luxury hospital. Mental health → counseling room.
+2. Vary composition: close-up, wide, overhead, portrait.
+3. Vary color: warm for human stories, cool for tech, dark for financial, bright for openings.
+
+NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Visually unique.` }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+      }
+    );
+
+    if (!response.ok) return null;
+    const data = await response.json();
+    for (const part of data.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData) {
+        if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
+        writeFileSync(outPath, Buffer.from(part.inlineData.data, "base64"));
+        return `/images/intelligence/${slug}.jpg`;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Main Pipeline ──────────────────────────────────────────────────────────────
 
 async function main() {
   const sql = neon(process.env.DATABASE_URL!);
-  console.log("=== Full Pipeline + DB Persist ===\n");
+  console.log("=== Full Autonomous Pipeline ===\n");
 
-  // Fetch
+  // 1. Fetch all feeds
   const feedItems = await fetchAllFeeds();
   console.log(`Fetched: ${feedItems.length}`);
 
-  // Filter
+  // 2. Filter for relevance
   const relevant = filterRelevantItems(feedItems);
   console.log(`Relevant: ${relevant.length}`);
 
-  // Dedup against seed + DB
-  const existing = getLatestArticles(200);
-  const existingTitles = new Set(
-    existing.map((a) => a.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50))
-  );
-  // Also dedup against DB
-  const dbArticles = await sql`SELECT title FROM journal_articles`;
-  for (const row of dbArticles) {
-    existingTitles.add((row.title as string).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50));
+  // 3. Dedup against DB (direct query)
+  const dbRows = await sql`SELECT title, source_url FROM journal_articles`;
+  const existingTitles = new Set<string>();
+  const existingUrls = new Set<string>();
+  for (const row of dbRows) {
+    if (row.title) existingTitles.add((row.title as string).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50));
+    if (row.source_url) existingUrls.add(row.source_url as string);
   }
+  console.log(`DB has ${dbRows.length} existing articles`);
 
   const newItems = relevant.filter((item) => {
     if (!item.title || typeof item.title !== "string") return false;
     const normalized = item.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50);
-    return normalized && !existingTitles.has(normalized);
+    if (!normalized || existingTitles.has(normalized)) return false;
+    if (item.link && existingUrls.has(item.link)) return false;
+    return true;
   });
-  console.log(`New after dedup: ${newItems.length}`);
 
-  // Score
-  const scored = getTopItems(newItems, 100);
+  // Dedup within batch
+  const seenUrls = new Set<string>();
+  const dedupedItems = newItems.filter((item) => {
+    if (item.link && seenUrls.has(item.link)) return false;
+    if (item.link) seenUrls.add(item.link);
+    return true;
+  });
+  console.log(`New after dedup: ${dedupedItems.length}`);
+
+  // 4. Score and threshold
+  const scored = getTopItems(dedupedItems, 50);
   const qualified = scored.filter((s) => s.score >= MINIMUM_SCORE);
   console.log(`Qualified (>= ${MINIMUM_SCORE}): ${qualified.length}`);
 
@@ -55,34 +142,57 @@ async function main() {
     return;
   }
 
-  // Generate
-  const toProcess = qualified.map((s) => s.item);
-  console.log(`\nGenerating ${toProcess.length} articles...\n`);
+  // 5. Generate articles (full 3-pass: draft + review + anti-AI-tells)
+  const toProcess = qualified.slice(0, MAX_ARTICLES_PER_RUN).map((s) => s.item);
+  console.log(`\nGenerating ${toProcess.length} articles (full 3-pass pipeline)...\n`);
   const articles = await generateArticleBatch(toProcess, 2);
   console.log(`Generated: ${articles.length}`);
 
-  // Persist to DB
-  let persisted = 0;
+  // 6. Fetch/generate images for each article
+  console.log("\nFetching images...");
   for (const article of articles) {
+    // Try real OG image from source first
+    if (article.sourceUrl) {
+      const ogImage = await fetchOgImage(article.sourceUrl);
+      if (ogImage) {
+        article.imageUrl = ogImage;
+        console.log(`  [og] ${article.slug.slice(0, 40)}`);
+        continue;
+      }
+    }
+    // Fallback: Gemini generation
+    const genImage = await generateImage(article.slug, article.title);
+    if (genImage) {
+      article.imageUrl = genImage;
+      console.log(`  [gen] ${article.slug.slice(0, 40)}`);
+    } else {
+      console.log(`  [none] ${article.slug.slice(0, 40)}`);
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+
+  // 7. Persist to DB
+  console.log("\nPersisting to DB...");
+  let persisted = 0;
+  for (const [idx, article] of articles.entries()) {
     const id = `j-auto-${nanoid(8)}`;
+    const isFeatured = idx < 2;
+    const isBreaking = idx === 0;
     try {
       await sql`
-        INSERT INTO journal_articles (id, slug, title, excerpt, body, category, tags, source, source_url, source_name, author_name, author_role, is_featured, is_breaking, read_time_minutes, status, published_at)
-        VALUES (${id}, ${article.slug}, ${article.title}, ${article.excerpt}, ${article.body}, ${article.category}, ${JSON.stringify(article.tags)}, ${article.source}, ${article.sourceUrl || null}, ${article.sourceName || null}, ${article.author.name}, ${article.author.role || null}, ${false}, ${false}, ${article.readTimeMinutes}, 'published', NOW())
+        INSERT INTO journal_articles (id, slug, title, excerpt, body, category, tags, source, source_url, source_name, author_name, author_role, image_url, is_featured, is_breaking, read_time_minutes, status, published_at)
+        VALUES (${id}, ${article.slug}, ${article.title}, ${article.excerpt}, ${article.body}, ${article.category}, ${JSON.stringify(article.tags)}, ${article.source}, ${article.sourceUrl || null}, ${article.sourceName || null}, ${article.author.name}, ${article.author.role || null}, ${article.imageUrl || null}, ${isFeatured}, ${isBreaking}, ${article.readTimeMinutes}, 'published', NOW())
         ON CONFLICT (slug) DO NOTHING
       `;
       persisted++;
-      console.log(`  [DB] ${article.slug}`);
+      console.log(`  [ok] ${article.slug.slice(0, 50)}`);
     } catch (err) {
-      console.log(`  [SKIP] ${article.slug} — ${String(err).slice(0, 60)}`);
+      console.log(`  [skip] ${article.slug.slice(0, 50)} — ${String(err).slice(0, 50)}`);
     }
   }
 
-  console.log(`\n=== Done: ${persisted} articles persisted to DB ===`);
-
-  // Verify
-  const count = await sql`SELECT COUNT(*) FROM journal_articles`;
-  console.log(`Total articles in DB: ${count[0].count}`);
+  const finalCount = await sql`SELECT COUNT(*) FROM journal_articles`;
+  console.log(`\n=== Done: ${persisted} new articles. Total in DB: ${finalCount[0].count} ===`);
 }
 
 main().catch(console.error);

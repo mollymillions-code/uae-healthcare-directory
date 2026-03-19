@@ -101,7 +101,7 @@ export default function CityPage({ params }: Props) {
           <span className="arrows">&gt;&gt;&gt;</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {categories.map((cat) => (
+          {categories.filter((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0).map((cat) => (
             <CategoryCard
               key={cat.slug}
               name={cat.name}

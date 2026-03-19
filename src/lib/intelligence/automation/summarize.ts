@@ -28,7 +28,8 @@ function getGemini() {
 // ─── Article Generation ─────────────────────────────────────────────────────────
 
 export async function generateArticle(
-  item: RawFeedItem
+  item: RawFeedItem,
+  opts?: { skipReview?: boolean }
 ): Promise<Omit<JournalArticle, "id"> | null> {
   const category = classifyCategory(item);
 
@@ -66,23 +67,24 @@ The body must be ORIGINAL writing based on the source facts. Add UAE healthcare 
     const jsonStr = text.replace(/```json\n?|\n?```/g, "").trim();
     const parsed = JSON.parse(jsonStr);
 
-    // Pass 2: Review and improve before publishing
-    const reviewed = await reviewAndImprove({
+    // Pass 2: Review and improve (skippable for serverless timeout)
+    const draft = {
       slug: parsed.slug,
       title: parsed.title,
       excerpt: parsed.excerpt,
       body: parsed.body,
       tags: parsed.tags || [],
       readTimeMinutes: parsed.readTimeMinutes || 3,
-    });
+    };
+    const final = opts?.skipReview ? draft : await reviewAndImprove(draft);
 
     return {
-      slug: reviewed.slug,
-      title: reviewed.title,
-      excerpt: reviewed.excerpt,
-      body: reviewed.body,
+      slug: final.slug,
+      title: final.title,
+      excerpt: final.excerpt,
+      body: final.body,
       category,
-      tags: reviewed.tags,
+      tags: final.tags,
       source: item.contentSource,
       sourceUrl: item.link,
       sourceName: item.source,
@@ -90,7 +92,7 @@ The body must be ORIGINAL writing based on the source facts. Add UAE healthcare 
       publishedAt: new Date().toISOString(),
       isFeatured: false,
       isBreaking: false,
-      readTimeMinutes: reviewed.readTimeMinutes,
+      readTimeMinutes: final.readTimeMinutes,
     };
   } catch (error) {
     console.error(`[Summarize] Error generating article for: ${item.title}`, error);
@@ -146,14 +148,15 @@ Return the improved version as JSON with the same fields (slug, title, excerpt, 
 
 export async function generateArticleBatch(
   items: RawFeedItem[],
-  maxConcurrent = 3
+  maxConcurrent = 3,
+  opts?: { skipReview?: boolean }
 ): Promise<Omit<JournalArticle, "id">[]> {
   const articles: Omit<JournalArticle, "id">[] = [];
 
   for (let i = 0; i < items.length; i += maxConcurrent) {
     const batch = items.slice(i, i + maxConcurrent);
     const results = await Promise.allSettled(
-      batch.map((item) => generateArticle(item))
+      batch.map((item) => generateArticle(item, opts))
     );
 
     for (const result of results) {

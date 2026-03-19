@@ -47,10 +47,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     alternates: {
       canonical: `${base}/intelligence/${article.slug}`,
-      languages: {
-        'en-AE': `${base}/intelligence/${article.slug}`,
-        'ar-AE': `${base}/intelligence/${article.slug}`,
-      },
     },
   };
 }

@@ -36,10 +36,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: `${getBaseUrl()}/intelligence`,
-    languages: {
-      'en-AE': `${getBaseUrl()}/intelligence`,
-      'ar-AE': `${getBaseUrl()}/intelligence`,
-    },
     types: {
       "application/rss+xml": `${getBaseUrl()}/intelligence/feed.xml`,
     },

@@ -232,8 +232,8 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     };
   }
 
-  // Generate top 3 qualified articles per run (Vercel Hobby = 60s timeout)
-  // Runs every 2 hours = ~36 articles/day. Remaining scored items picked up next run.
+  // Serverless: generate top 3 with full 3-pass pipeline (within 60s timeout)
+  // Heavy generation (10-25 articles) runs via GitHub Actions with full review
   const toProcess = qualified.slice(0, 3).map((s) => s.item);
   let articles: Omit<JournalArticle, "id">[] = [];
   try {

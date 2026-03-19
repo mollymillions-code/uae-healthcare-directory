@@ -142,6 +142,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: `ابحث عن مقدمي الرعاية الصحية في ${areaNameAr}، ${cityNameAr}، الإمارات. مستشفيات وعيادات ومتخصصون مع تقييمات.`,
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+          languages: {
+            "en-AE": `${base}/directory/${city.slug}/${resolved.area.slug}`,
+            "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+          },
         },
       };
     }
@@ -154,6 +158,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: `ابحث عن ${catNameAr} في ${areaNameAr}، ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد.`,
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+          languages: {
+            "en-AE": `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+            "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+          },
         },
       };
     }
@@ -487,7 +495,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
             )}
 
             {/* Operating Hours */}
-            {provider.operatingHours && (
+            {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
               <div className="border border-light-200 p-6 mb-6" data-section="hours">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> {ar.operatingHours}</h2>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">

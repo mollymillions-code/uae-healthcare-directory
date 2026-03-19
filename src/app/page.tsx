@@ -17,10 +17,10 @@ import { ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
+    canonical: getBaseUrl(),
     languages: {
-      'en-AE': process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai',
-      'ar-AE': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://zavis.ai'}/ar`,
+      'en-AE': getBaseUrl(),
+      'ar-AE': `${getBaseUrl()}/ar`,
     },
   },
 };

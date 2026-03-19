@@ -208,10 +208,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: `Find ${resolved.subcategory.name} specialists in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with ratings and reviews. Last verified March 2026.`,
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
-          languages: {
-            'en-AE': `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
-            'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
-          },
         },
       };
     }
@@ -475,7 +471,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
             )}
 
             {/* Hours -- compact 2-column grid */}
-            {provider.operatingHours && (
+            {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
               <div className="border border-light-200 p-6 mb-6" data-section="hours">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> Operating Hours</h2>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">

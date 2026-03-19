@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   description: "The UAE Open Healthcare Directory is a free, comprehensive healthcare provider directory for all UAE residents. 12,500+ providers across 8 cities.",
   alternates: {
     canonical: `${getBaseUrl()}/about`,
-    languages: { 'en-AE': `${getBaseUrl()}/about`, 'ar-AE': `${getBaseUrl()}/ar/about` },
   },
 };
 
