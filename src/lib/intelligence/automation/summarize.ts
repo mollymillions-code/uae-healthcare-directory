@@ -198,29 +198,17 @@ Write 3-5 paragraphs of HTML (<p>, <h3> tags). Weave the posts into a narrative.
   }
 }
 
-// ─── Category visual styles ─────────────────────────────────────────────────────
-
-const CATEGORY_VISUALS: Record<string, string> = {
-  regulatory: "Government/regulation: sleek modern government building or regulatory office in Abu Dhabi/Dubai. Marble, glass, official screens. Muted blue-gray with gold accents. Institutional authority.",
-  "new-openings": "Architecture: striking new healthcare facility, glass curtain wall, dramatic lobby, construction crane. Bright natural light, white and teal. Sense of scale.",
-  financial: "Financial data: Bloomberg terminal aesthetic, rising charts, currency, dark background with glowing green/amber data. DIFC trading floor at night.",
-  events: "Conference: aerial view of exhibition floor, keynote stage, crowds of professionals. Warm tungsten lighting. Arab Health exhibition feel.",
-  "social-pulse": "Social media: smartphone screens with social feeds, conversation bubbles, cool blue-white screen glow in dim environment.",
-  "thought-leadership": "Leadership portrait: professional silhouette against floor-to-ceiling windows, Gulf city skyline. Golden hour, contemplative. Monocle magazine style.",
-  "market-intelligence": "Analytics dashboard: large screen showing healthcare heat maps, UAE geographic data, patient flow viz. Dark UI with accent colors.",
-  technology: "Health tech: close-up of medical technology — robotic arm, AI diagnostic screen, holographic display. Futuristic, blue-white lighting.",
-  workforce: "Healthcare workers: nurses at modern station, diverse medical team in hospital corridor. Natural, warm professional lighting. Documentary style.",
-};
-
 // ─── Image Generation (Gemini 3.1 Flash Image Preview) ──────────────────────────
+//
+// CRITICAL: Every image must be UNIQUE and CONTEXTUAL to the specific article.
+// Never produce generic skyline/cityscape images. Extract the specific subject
+// from the title and depict THAT subject.
 
 export async function generateArticleImage(
   title: string,
   category: string
 ): Promise<string | null> {
   try {
-    const style = CATEGORY_VISUALS[category] || CATEGORY_VISUALS.regulatory;
-
     const API_KEY = process.env.GEMINI_API_KEY;
     if (!API_KEY) return null;
 
@@ -232,13 +220,24 @@ export async function generateArticleImage(
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `Create a photorealistic editorial image for a healthcare journal.
+              text: `You are a photo editor for a healthcare industry journal. Generate ONE unique photorealistic image for this specific article. The image MUST depict the specific subject of the article, NOT a generic cityscape or skyline.
 
-Title: "${title}"
+ARTICLE TITLE: "${title}"
+CATEGORY: ${category}
 
-VISUAL: ${style}
+INSTRUCTIONS:
+1. Read the title carefully. Identify the SPECIFIC subject: Is it about an IPO? Show a stock exchange. Insurance premiums? Show an insurance document or hospital billing desk. A nursing shortage? Show nurses. A drug law? Show a pharmacy or courtroom. An acquisition? Show a corporate handshake or boardroom.
+2. The image must be DIFFERENT from any other article's image. No two articles should look the same.
+3. Include contextual details from the title — if it mentions "Burjeel" show a hospital group setting, if it mentions "$50 billion" show financial scale, if it mentions "mental health" show a therapy or counseling setting.
+4. Vary the composition: some close-ups, some wide shots, some overhead, some eye-level. Not everything should be the same framing.
+5. Vary the color palette: warm for human stories, cool for tech, dark for financial, bright for openings, muted for regulatory.
 
-RULES: NO text/words/numbers/watermarks/logos. 16:9 landscape. Professional color grading. Must feel specific to a place, not generic. LinkedIn scroll-stopping quality.`,
+HARD RULES:
+- NO text, words, numbers, watermarks, or logos in the image
+- NO generic Dubai/Abu Dhabi skyline unless the article is specifically about real estate
+- 16:9 landscape aspect ratio
+- Photorealistic, editorial quality
+- Each image must be visually distinct from every other image on the site`,
             }],
           }],
           generationConfig: { responseModalities: ["TEXT", "IMAGE"] },

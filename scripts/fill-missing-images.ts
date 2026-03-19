@@ -61,7 +61,17 @@ async function generateImage(slug: string, title: string, category: string): Pro
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `Photorealistic editorial photo for: "${title}". Style: ${style}. NO text, NO watermarks, NO logos. 16:9 landscape. Professional quality.` }] }],
+          contents: [{ parts: [{ text: `You are a photo editor. Generate ONE unique photorealistic image for this specific healthcare article. The image MUST depict the SPECIFIC subject of the article, NOT a generic cityscape.
+
+ARTICLE: "${title}"
+
+INSTRUCTIONS:
+1. Identify the specific subject from the title. IPO? Show stock exchange. Insurance? Show billing desk. Nursing shortage? Show nurses. Drug law? Show pharmacy. Acquisition? Show boardroom.
+2. Include contextual details from the title.
+3. Vary composition: close-ups, wide shots, overhead, eye-level.
+4. Vary color: warm for human stories, cool for tech, dark for financial, bright for openings.
+
+RULES: NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Must be visually unique — not the same as any other article's image.` }] }],
           generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
         }),
       }
