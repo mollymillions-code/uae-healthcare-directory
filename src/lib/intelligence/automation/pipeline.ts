@@ -80,25 +80,51 @@ async function triggerRevalidation(): Promise<void> {
 
 // ─── OG Image Fetcher ───────────────────────────────────────────────────────────
 
+// Images to reject — generic platform logos, not real article photos
+const BLOCKED_IMAGE_PATTERNS = [
+  "lh3.googleusercontent.com",
+  "google.com/images",
+  "gstatic.com",
+  "favicon",
+  "logo",
+  "icon",
+  "default-source",
+  "placeholder",
+];
+
+function isRealImage(url: string): boolean {
+  const lower = url.toLowerCase();
+  return !BLOCKED_IMAGE_PATTERNS.some((p) => lower.includes(p)) && url.length > 30;
+}
+
 async function fetchSourceOgImage(url: string): Promise<string | null> {
   try {
+    // Google News URLs are redirects — follow to get the real publisher URL
     const response = await fetch(url, {
       redirect: "follow",
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; Zavis/1.0)" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
       signal: AbortSignal.timeout(8000),
     });
     if (!response.ok) return null;
     const html = await response.text();
 
+    // Try og:image first
     const ogMatch = html.match(/<meta\s+(?:property|name)="og:image"\s+content="([^"]+)"/i)
       || html.match(/content="([^"]+)"\s+(?:property|name)="og:image"/i);
-    if (ogMatch?.[1] && !ogMatch[1].includes("favicon") && ogMatch[1].length > 20) {
+    if (ogMatch?.[1] && isRealImage(ogMatch[1])) {
       return ogMatch[1];
     }
 
+    // Fallback: twitter:image
     const twitterMatch = html.match(/<meta\s+(?:property|name)="twitter:image"\s+content="([^"]+)"/i)
       || html.match(/content="([^"]+)"\s+(?:property|name)="twitter:image"/i);
-    return twitterMatch?.[1] || null;
+    if (twitterMatch?.[1] && isRealImage(twitterMatch[1])) {
+      return twitterMatch[1];
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -135,19 +161,34 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   const relevant = filterRelevantItems(feedItems);
   console.log(`[Pipeline] ${relevant.length} items passed relevance filter`);
 
-  // 3. Deduplicate against existing articles
-  const existing = getLatestArticles(100);
+  // 3. Deduplicate against existing articles (by title AND source URL)
+  const existing = getLatestArticles(200);
   const existingTitles = new Set(
     existing.map((a) => a.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50))
   );
+  const existingSourceUrls = new Set(
+    existing.filter((a) => a.sourceUrl).map((a) => a.sourceUrl)
+  );
 
   const newItems = relevant.filter((item) => {
+    if (!item.title || typeof item.title !== "string") return false;
     const normalized = item.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50);
-    return !existingTitles.has(normalized);
+    if (!normalized || existingTitles.has(normalized)) return false;
+    if (item.link && existingSourceUrls.has(item.link)) return false;
+    return true;
   });
-  console.log(`[Pipeline] ${newItems.length} new items after dedup`);
 
-  if (newItems.length === 0) {
+  // Also dedup within the batch itself (same source URL = same story)
+  const seenUrls = new Set<string>();
+  const dedupedItems = newItems.filter((item) => {
+    if (item.link && seenUrls.has(item.link)) return false;
+    if (item.link) seenUrls.add(item.link);
+    return true;
+  });
+
+  console.log(`[Pipeline] ${dedupedItems.length} new items after dedup (from ${newItems.length})`);
+
+  if (dedupedItems.length === 0) {
     return {
       feedItemsFetched: feedItems.length,
       relevantItems: relevant.length,
@@ -159,7 +200,7 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   }
 
   // 4. Score and rank by newsworthiness (virality, audience impact, specificity, timeliness)
-  const scored = getTopItems(newItems, 25);
+  const scored = getTopItems(dedupedItems, 25);
   console.log(`[Pipeline] Top 25 scored. #1: "${scored[0]?.item.title.slice(0, 60)}" (score: ${scored[0]?.score})`);
 
   // 5. Apply absolute quality threshold — minimum score of 35/100 to publish
