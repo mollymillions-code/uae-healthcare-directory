@@ -42,3 +42,4 @@ next-env.d.ts
 /.ai-collab/
 /.claude/
 /data/parsed/*.json
+.env.local

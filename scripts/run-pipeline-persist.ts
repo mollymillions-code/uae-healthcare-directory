@@ -50,10 +50,8 @@ async function fetchOgImage(url: string): Promise<string | null> {
 
 // ─── Gemini Image Generator (contextual, unique per article) ────────────────────
 
-async function generateImage(slug: string, title: string): Promise<string | null> {
+async function generateImage(title: string): Promise<string | null> {
   if (!GEMINI_KEY) return null;
-  const outPath = `${IMG_DIR}/${slug}.jpg`;
-  if (existsSync(outPath)) return `/images/intelligence/${slug}.jpg`;
 
   try {
     const response = await fetch(
@@ -66,7 +64,7 @@ async function generateImage(slug: string, title: string): Promise<string | null
 
 ARTICLE: "${title}"
 
-1. IPO/stock → stock exchange floor. Insurance → billing desk. Nursing → nurses. Drug law → pharmacy. Acquisition → boardroom. Funding → startup office. Tourism → airport/luxury hospital. Mental health → counseling room.
+1. IPO/stock: stock exchange floor. Insurance: billing desk. Nursing: nurses. Drug law: pharmacy. Acquisition: boardroom. Funding: startup office. Tourism: airport/luxury hospital. Mental health: counseling room.
 2. Vary composition: close-up, wide, overhead, portrait.
 3. Vary color: warm for human stories, cool for tech, dark for financial, bright for openings.
 
@@ -80,9 +78,8 @@ NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Visually
     const data = await response.json();
     for (const part of data.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
-        if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
-        writeFileSync(outPath, Buffer.from(part.inlineData.data, "base64"));
-        return `/images/intelligence/${slug}.jpg`;
+        // Return as data URI — stored directly in DB, no file system needed
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
     return null;
