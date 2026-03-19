@@ -206,7 +206,13 @@ export function getTopRatedProviders(citySlug?: string, limit = 5): LocalProvide
     filtered = filtered.filter((p) => p.citySlug === citySlug);
   }
   return filtered
-    .sort((a, b) => Number(b.googleRating) - Number(a.googleRating))
+    .sort((a, b) => {
+      const ratingA = Number(a.googleRating) || 0;
+      const ratingB = Number(b.googleRating) || 0;
+      // Providers with ratings first, then by rating desc, then alphabetical
+      if (ratingB !== ratingA) return ratingB - ratingA;
+      return a.name.localeCompare(b.name);
+    })
     .slice(0, limit);
 }
 

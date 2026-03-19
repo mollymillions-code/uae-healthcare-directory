@@ -254,8 +254,8 @@ export function generateProviderParagraph(
     parts.push(`The facility offers services in ${serviceList}.`);
   }
 
-  // Rating
-  if (provider.googleRating) {
+  // Rating — only show if genuinely rated
+  if (provider.googleRating && Number(provider.googleRating) > 0) {
     parts.push(
       `It holds a ${provider.googleRating}-star rating on Google based on ${provider.googleReviewCount?.toLocaleString()} patient reviews.`
     );
@@ -311,11 +311,13 @@ export function generateFacetAnswerBlock(
 
   let answer = `According to the UAE Open Healthcare Directory, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
 
-  if (topProvider) {
+  if (topProvider && topProvider.googleRating && Number(topProvider.googleRating) > 0) {
     const reviewPart = topProvider.googleReviewCount
       ? ` based on ${topProvider.googleReviewCount.toLocaleString()} patient reviews`
       : "";
     answer += ` The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating${reviewPart}.`;
+  } else if (topProvider) {
+    answer += ` Providers include ${topProvider.name} and others.`;
   }
 
   answer += ` All listings include contact details, operating hours, accepted insurance plans, and directions. Healthcare in ${city.name} is regulated by the ${getRegulator(city.slug)}. Data sourced from official government registers, last verified March 2026.`;
