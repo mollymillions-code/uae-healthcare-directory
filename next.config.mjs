@@ -16,6 +16,7 @@ const nextConfig = {
       { protocol: "https", hostname: "**.wamda.com" },
       { protocol: "https", hostname: "**.mobihealthnews.com" },
       { protocol: "https", hostname: "**.fiercehealthcare.com" },
+      { protocol: "https", hostname: "pub-12b97f7acbe84e70aacc715287b58c72.r2.dev" },
     ],
   },
 };
