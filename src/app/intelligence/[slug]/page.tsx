@@ -11,6 +11,7 @@ import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
+import { faqPageSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
 
@@ -64,6 +65,7 @@ export default async function ArticlePage({ params }: PageProps) {
   return (
     <>
       <JsonLd data={articleSchema(article)} />
+      <JsonLd data={faqPageSchema(articleFaqs)} />
 
       {/* Back link */}
       <div className="container-tc pt-6">

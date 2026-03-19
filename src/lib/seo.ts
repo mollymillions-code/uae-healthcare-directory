@@ -79,7 +79,6 @@ export function medicalOrganizationSchema(
       "@type": "MedicalProcedure",
       name: s,
     })),
-    isAcceptingNewPatients: true,
     ...(provider.insurance.length > 0
       ? {
           paymentAccepted: provider.insurance.join(", "),
@@ -158,16 +157,17 @@ export function itemListSchema(
 }
 
 export function organizationSchema() {
+  const base = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Zavis",
-    url: "https://zavis.ai",
+    url: base,
     description:
       "AI-powered patient success platform and healthcare intelligence for the UAE",
     logo: {
       "@type": "ImageObject",
-      url: "https://zavis.ai/logo.png",
+      url: `${base}/logo.png`,
     },
     contactPoint: {
       "@type": "ContactPoint",
@@ -188,7 +188,7 @@ export function organizationSchema() {
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    sameAs: ["https://zavis.ai"],
+    sameAs: [base],
   };
 }
 
@@ -217,7 +217,7 @@ export function medicalWebPageSchema(
     reviewedBy: {
       "@type": "Organization",
       name: "Zavis",
-      url: "https://zavis.ai",
+      url: getBaseUrl(),
     },
   };
 }
@@ -343,8 +343,8 @@ export function generateFacetFaqs(
       answer: `According to the UAE Open Healthcare Directory, there are ${providerCount} ${catLower} listed in ${loc}, UAE. Browse the UAE Open Healthcare Directory to compare providers by rating, insurance acceptance, and services offered.`,
     },
     {
-      question: `What are the best ${catLower} in ${loc}?`,
-      answer: `The best ${catLower} in ${loc} can be found by sorting the UAE Open Healthcare Directory listings by Google rating. Top-rated providers maintain ratings above 4.5 stars with hundreds of patient reviews.`,
+      question: `How do I find ${catLower} in ${loc}?`,
+      answer: `Browse ${providerCount} ${catLower} in ${loc} on the UAE Open Healthcare Directory. Compare providers by services offered, accepted insurance plans, operating hours, and patient reviews where available.`,
     },
     {
       question: `Do ${catLower} in ${loc} accept insurance?`,

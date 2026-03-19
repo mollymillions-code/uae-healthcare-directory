@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { getCategoryImagePath } from "@/lib/helpers";
+import { getCategoryBySlug } from "@/lib/data";
 
 interface ProviderCardProps {
   name: string;
@@ -24,11 +25,28 @@ export function ProviderCard({
   shortDescription, googleRating, googleReviewCount, isVerified,
   basePath = "/directory",
 }: ProviderCardProps) {
+  const rating = Number(googleRating) || 0;
+  const category = getCategoryBySlug(categorySlug);
+  const categoryName = category?.name || categorySlug;
+
+  // Rating badge color
+  const ratingBgClass = rating >= 4 ? "bg-green-600" : rating >= 3 ? "bg-yellow-500" : "bg-light-300";
+
   return (
     <Link
       href={`${basePath}/${citySlug}/${categorySlug}/${slug}`}
-      className="provider-card group block"
+      className="provider-card group block relative"
     >
+      {/* Facility type tag + Rating badge row */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="badge text-[9px]">{categoryName}</span>
+        {rating > 0 && (
+          <span className={`${ratingBgClass} text-white text-[10px] font-bold px-1.5 py-0.5`}>
+            {googleRating} ★
+          </span>
+        )}
+      </div>
+
       <div className="flex items-start gap-3">
         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden">
           <Image
@@ -53,12 +71,14 @@ export function ProviderCard({
             <p className="text-xs text-muted/70 line-clamp-1">{shortDescription}</p>
           )}
           <div className="flex items-center gap-3 mt-1.5">
-            {googleRating && Number(googleRating) > 0 && (
+            {rating > 0 && (
               <span className="text-xs font-bold text-accent">
                 {googleRating} ★ <span className="text-muted font-normal">({googleReviewCount?.toLocaleString()})</span>
               </span>
             )}
-            {phone && <span className="text-xs text-muted">{phone}</span>}
+            {phone && (
+              <span className="text-xs text-muted">{phone}</span>
+            )}
           </div>
         </div>
         <ChevronRight className="h-4 w-4 text-light-300 group-hover:text-accent transition-colors mt-1 flex-shrink-0" />

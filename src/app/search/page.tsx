@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { SearchBar } from "@/components/search/SearchBar";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { Pagination } from "@/components/shared/Pagination";
@@ -67,20 +68,27 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
           <span className="arrows">&gt;&gt;&gt;</span>
         </div>
         <div className="flex items-center gap-2 mt-3">
-          <span className="text-sm text-muted">Sort by:</span>
-          <select
-            className="input-tc text-sm py-1.5 w-auto"
-            defaultValue={sort || "rating"}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              url.searchParams.set("sort", e.target.value);
-              window.location.href = url.toString();
-            }}
-          >
-            <option value="rating">Highest Rated</option>
-            <option value="name">Name A-Z</option>
-            <option value="relevance">Relevance</option>
-          </select>
+          <span className="text-xs text-muted">Sort:</span>
+          {[
+            { value: "name", label: "A-Z" },
+            { value: "rating", label: "Top Rated" },
+          ].map((s) => {
+            const sortParams = new URLSearchParams();
+            if (q) sortParams.set("q", q);
+            if (city) sortParams.set("city", city);
+            if (category) sortParams.set("category", category);
+            if (area) sortParams.set("area", area);
+            sortParams.set("sort", s.value);
+            return (
+              <Link
+                key={s.value}
+                href={`/search?${sortParams.toString()}`}
+                className={`text-xs px-3 py-1.5 border ${sort === s.value ? "bg-accent text-white border-accent" : "border-light-300 text-muted hover:border-dark"} transition-colors`}
+              >
+                {s.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
 

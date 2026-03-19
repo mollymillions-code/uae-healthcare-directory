@@ -11,9 +11,9 @@ import {
   getProviderCountByCity,
   getProviderCountByCategory,
 } from "@/lib/data";
-import { speakableSchema } from "@/lib/seo";
+import { speakableSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Search, BarChart3, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
   alternates: {
@@ -30,9 +30,22 @@ export const revalidate = 21600;
 export default function HomePage() {
   const cities = getCities();
   const categories = getCategories();
-  const topProviders = getTopRatedProviders(undefined, 8);
   const base = getBaseUrl();
   const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
+
+  // Top 8 categories sorted by provider count
+  const categoriesWithCount = categories
+    .map((cat) => ({ ...cat, count: getProviderCountByCategory(cat.slug) }))
+    .sort((a, b) => b.count - a.count);
+  const top8Categories = categoriesWithCount.slice(0, 8);
+
+  // Featured providers: only those with ratings > 0, otherwise first 8 alphabetically
+  const topProviders = getTopRatedProviders(undefined, 20);
+  const ratedProviders = topProviders.filter((p) => Number(p.googleRating) > 0);
+  const hasRatings = ratedProviders.length > 0;
+  const featuredProviders = hasRatings
+    ? ratedProviders.slice(0, 8)
+    : topProviders.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 8);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -58,6 +71,7 @@ export default function HomePage() {
     <>
       <JsonLd data={websiteJsonLd} />
       <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd data={faqPageSchema(homeFaqs)} />
 
       {/* ─── Hero Grid — TC style ─── */}
       <section className="bg-dark">
@@ -132,42 +146,79 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Browse by City — TC Latest News style ─── */}
+      {/* ─── AEO answer block — moved up for visibility ─── */}
+      <section className="container-tc py-10">
+        <div className="answer-block" data-answer-block="true">
+          <p className="text-dark/70 leading-relaxed text-sm">
+            According to the UAE Open Healthcare Directory, as of March 2026, there are {totalProviders.toLocaleString()}+ licensed healthcare providers listed across all seven emirates of the United Arab Emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Al Ain, Ras Al Khaimah, Fujairah, and Umm Al Quwain. These facilities are regulated by three government health authorities: the Dubai Health Authority (DHA) oversees Dubai, the Department of Health (DOH) regulates Abu Dhabi and Al Ain, and the Ministry of Health and Prevention (MOHAP) governs Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. The directory covers 26 medical specialties including hospitals, dental clinics, dermatology, cardiology, ophthalmology, mental health, pharmacy, and pediatrics, with each listing providing verified contact details, Google ratings from patient reviews, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
+          </p>
+        </div>
+      </section>
+
+      {/* ─── How It Works ─── */}
+      <section className="bg-light-50 py-10">
+        <div className="container-tc">
+          <div className="section-header">
+            <h2>How It Works</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+              <div className="flex items-center justify-center w-12 h-12 bg-accent/10 border border-accent/20 mb-3">
+                <Search className="h-6 w-6 text-accent" />
+              </div>
+              <h3 className="text-sm font-bold text-dark mb-1">1. Search by city or specialty</h3>
+              <p className="text-xs text-muted">Browse 8 cities and 26 medical specialties to find the right provider.</p>
+            </div>
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+              <div className="flex items-center justify-center w-12 h-12 bg-accent/10 border border-accent/20 mb-3">
+                <BarChart3 className="h-6 w-6 text-accent" />
+              </div>
+              <h3 className="text-sm font-bold text-dark mb-1">2. Compare providers</h3>
+              <p className="text-xs text-muted">Check Google ratings, patient reviews, accepted insurance, and services.</p>
+            </div>
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+              <div className="flex items-center justify-center w-12 h-12 bg-accent/10 border border-accent/20 mb-3">
+                <Phone className="h-6 w-6 text-accent" />
+              </div>
+              <h3 className="text-sm font-bold text-dark mb-1">3. Call, get directions, or visit</h3>
+              <p className="text-xs text-muted">Contact the provider directly with phone, map directions, or website links.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Browse by Specialty — Top 8 only ─── */}
       <section className="container-tc py-10">
         <div className="section-header">
-          <h2>Browse by City</h2>
+          <h2>Specialties</h2>
           <span className="arrows">&gt;&gt;&gt;</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {cities.map((city) => {
-            const count = getProviderCountByCity(city.slug);
-            const hasImage = ["dubai", "abu-dhabi", "sharjah", "ajman", "al-ain", "ras-al-khaimah", "fujairah", "umm-al-quwain"].includes(city.slug);
-            return (
-              <Link
-                key={city.slug}
-                href={`/directory/${city.slug}`}
-                className="group card-hero min-h-[160px] sm:min-h-[200px]"
-              >
-                {hasImage && (
-                  <Image
-                    src={`/images/cities/${city.slug}.png`}
-                    alt={city.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
+          {top8Categories.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={`/directory/dubai/${cat.slug}`}
+              className="flex items-center justify-between py-3 px-2 border-b border-light-200 hover:bg-light-50 transition-colors group"
+            >
+              <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
+                {cat.name}
+              </span>
+              <div className="flex items-center gap-2">
+                {cat.count > 0 && (
+                  <span className="text-xs text-muted font-mono">{cat.count}</span>
                 )}
-                <div className="overlay" />
-                <div className="content">
-                  <span className="badge mb-2 w-fit text-[10px]">{count} providers</span>
-                  <h3 className="text-lg font-bold text-white">{city.name}</h3>
-                  {city.emirate !== city.name && (
-                    <p className="text-white/50 text-xs">{city.emirate}</p>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+                <ChevronRight className="h-3.5 w-3.5 text-light-300 group-hover:text-accent transition-colors" />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          <Link href="/search" className="text-sm font-medium text-accent hover:underline">
+            View all 26 specialties &rarr;
+          </Link>
         </div>
       </section>
 
@@ -178,52 +229,21 @@ export default function HomePage() {
             The Source of Truth for UAE Healthcare
           </h2>
           <p className="text-white/80 text-base max-w-2xl mx-auto">
-            {totalProviders.toLocaleString()}+ licensed providers from official DHA, DOH, and MOHAP government registers. Free. Open. No paywall. 
+            {totalProviders.toLocaleString()}+ licensed providers from official DHA, DOH, and MOHAP government registers. Free. Open. No paywall.
           </p>
         </div>
       </section>
 
-      {/* ─── Browse by Specialty — TC section style ─── */}
-      <section className="container-tc py-10">
-        <div className="section-header">
-          <h2>Specialties</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
-          {categories.map((cat) => {
-            const count = getProviderCountByCategory(cat.slug);
-            return (
-              <Link
-                key={cat.slug}
-                href={`/directory/dubai/${cat.slug}`}
-                className="flex items-center justify-between py-3 px-2 border-b border-light-200 hover:bg-light-50 transition-colors group"
-              >
-                <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
-                  {cat.name}
-                </span>
-                <div className="flex items-center gap-2">
-                  {count > 0 && (
-                    <span className="text-xs text-muted font-mono">{count}</span>
-                  )}
-                  <ChevronRight className="h-3.5 w-3.5 text-light-300 group-hover:text-accent transition-colors" />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ─── Top Rated — TC Startups-style section ─── */}
+      {/* ─── Featured Providers — TC Startups-style section ─── */}
       <section className="bg-light-50 py-10">
         <div className="container-tc">
           <div className="section-header">
-            <h2>Highest Rated</h2>
+            <h2>Featured Providers</h2>
             <span className="arrows">&gt;&gt;&gt;</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {topProviders.map((p, idx) => (
+            {featuredProviders.map((p, idx) => (
               <Link
                 key={p.id}
                 href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
@@ -238,7 +258,7 @@ export default function HomePage() {
                   </h3>
                   <p className="text-xs text-muted mt-0.5 truncate">{p.address}</p>
                   <div className="flex items-center gap-3 mt-1">
-                    {Number(p.googleRating) > 0 && (
+                    {hasRatings && Number(p.googleRating) > 0 && (
                       <span className="text-xs font-bold text-accent">{p.googleRating} ★</span>
                     )}
                     {p.phone && (
@@ -249,15 +269,6 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ─── AEO answer block ─── */}
-      <section className="container-tc py-10">
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-dark/70 leading-relaxed text-sm">
-            According to the UAE Open Healthcare Directory, as of March 2026, there are {totalProviders.toLocaleString()}+ licensed healthcare providers listed across all seven emirates of the United Arab Emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Al Ain, Ras Al Khaimah, Fujairah, and Umm Al Quwain. These facilities are regulated by three government health authorities: the Dubai Health Authority (DHA) oversees Dubai, the Department of Health (DOH) regulates Abu Dhabi and Al Ain, and the Ministry of Health and Prevention (MOHAP) governs Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. The directory covers 26 medical specialties including hospitals, dental clinics, dermatology, cardiology, ophthalmology, mental health, pharmacy, and pediatrics, with each listing providing verified contact details, Google ratings from patient reviews, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
-          </p>
         </div>
       </section>
 

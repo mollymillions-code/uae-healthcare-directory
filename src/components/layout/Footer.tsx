@@ -13,8 +13,8 @@ export function Footer() {
           <span className="font-bold text-lg">UAE Open Healthcare Directory</span>
         </div>
 
-        {/* Columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 border-t border-white/10 pt-8 mb-8">
+        {/* Columns — 4 columns: Cities, Directory, Data Sources, Insights */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
@@ -34,6 +34,9 @@ export function Footer() {
               <li><Link href="/claim" className="text-sm text-white/60 hover:text-white transition-colors">Claim Listing</Link></li>
               <li><Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors">About</Link></li>
               <li><Link href="/api/search" className="text-sm text-white/60 hover:text-white transition-colors">API</Link></li>
+              <li><Link href="/privacy-policy" className="text-sm text-white/60 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/directory-skill.md" className="text-sm text-white/60 hover:text-white transition-colors">Developers</Link></li>
             </ul>
           </div>
           <div>
@@ -52,20 +55,6 @@ export function Footer() {
               <li><span className="text-sm text-white/60">Newsletter</span></li>
               <li><Link href="/intelligence/feed.xml" className="text-sm text-white/60 hover:text-white transition-colors">RSS Feed</Link></li>
               <li><Link href="/editorial-policy" className="text-sm text-white/60 hover:text-white transition-colors">Editorial Policy</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Legal</h5>
-            <ul className="space-y-2">
-              <li><Link href="/privacy-policy" className="text-sm text-white/60 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">For AI Agents</h5>
-            <ul className="space-y-2">
-              <li><Link href="/directory-skill.md" className="text-sm text-white/60 hover:text-white transition-colors">Platform Guide</Link></li>
-              <li><Link href="/sitemap.xml" className="text-sm text-white/60 hover:text-white transition-colors">Sitemap</Link></li>
             </ul>
           </div>
         </div>

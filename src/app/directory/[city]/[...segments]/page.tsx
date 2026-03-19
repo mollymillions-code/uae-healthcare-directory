@@ -249,8 +249,8 @@ export default function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name }]} />
 
-        {/* Category hero banner */}
-        <div className="relative h-48 w-full mb-6 overflow-hidden">
+        {/* Category hero banner — compact */}
+        <div className="relative h-32 w-full mb-6 overflow-hidden">
           <Image
             src={getCategoryImagePath(category.slug)}
             alt={`${category.name} in ${city.name}`}
@@ -314,6 +314,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
       <div className="container-tc py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: area.name }])} />
         <JsonLd data={speakableSchema([".answer-block"])} />
+        <JsonLd data={faqPageSchema(areaFaqs)} />
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name }]} />
 
         <h1 className="text-3xl font-bold text-dark mb-2">Healthcare in {area.name}, {city.name}</h1>
@@ -358,8 +359,8 @@ export default function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name, href: `/directory/${city.slug}/${area.slug}` }, { label: category.name }]} />
 
-        {/* Category hero banner */}
-        <div className="relative h-48 w-full mb-6 overflow-hidden">
+        {/* Category hero banner — compact */}
+        <div className="relative h-32 w-full mb-6 overflow-hidden">
           <Image
             src={getCategoryImagePath(category.slug)}
             alt={`${category.name} in ${area.name}, ${city.name}`}
@@ -399,7 +400,8 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
     const nearbyProviders = getTopRatedProviders(city.slug, 4).filter((p) => p.id !== provider.id);
 
-    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${provider.operatingHours?.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${provider.googleRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${provider.lastVerified}.`;
+    const hasValidRating = Number(provider.googleRating) > 0;
+    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${provider.operatingHours?.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${provider.lastVerified}.`;
 
     const providerFaqs = [
       { question: `What are the operating hours of ${provider.name}?`, answer: provider.operatingHours ? `${provider.name}: ${Object.entries(provider.operatingHours).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24h" : `${h.open}–${h.close}`}`).join(". ")}. Verified ${provider.lastVerified}.` : `Contact ${provider.name} for hours.` },
@@ -514,7 +516,9 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               <span>Last verified: {provider.lastVerified} · Data from official UAE health authority register</span>
             </div>
 
-            <FaqSection faqs={providerFaqs} title={`${provider.name} — FAQ`} />
+            <div className="bg-accent-muted p-6">
+              <FaqSection faqs={providerFaqs} title={`${provider.name} — FAQ`} />
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -548,7 +552,9 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                     {nearbyProviders.map((np) => (
                       <Link key={np.id} href={`/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block text-sm hover:text-accent transition-colors">
                         <p className="font-medium text-dark">{np.name}</p>
-                        <p className="text-xs text-muted">{np.googleRating} stars</p>
+                        {Number(np.googleRating) > 0 && (
+                          <p className="text-xs text-muted">{np.googleRating} stars</p>
+                        )}
                       </Link>
                     ))}
                   </div>
@@ -556,6 +562,26 @@ export default function CatchAllPage({ params, searchParams }: Props) {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Sticky mobile CTA bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-light-200 p-3 flex gap-2 z-40 lg:hidden">
+          {provider.phone && (
+            <a
+              href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
+              className="btn-accent flex-1 flex items-center justify-center gap-2"
+            >
+              <Phone className="h-4 w-4" /> Call
+            </a>
+          )}
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-dark flex-1 flex items-center justify-center gap-2"
+          >
+            <MapPin className="h-4 w-4" /> Directions
+          </a>
         </div>
       </div>
     );
