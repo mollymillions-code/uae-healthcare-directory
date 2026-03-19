@@ -54,6 +54,25 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-dark mb-4">Search Healthcare Providers</h1>
         <SearchBar defaultQuery={q} defaultCity={city} defaultCategory={category} />
+
+        {/* Popular searches — show when no active query */}
+        {!q && !city && !category && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="text-xs text-muted">Popular:</span>
+            {[
+              { label: "Hospitals in Dubai", href: "/directory/dubai/hospitals" },
+              { label: "Dental in Abu Dhabi", href: "/directory/abu-dhabi/dental" },
+              { label: "Pharmacies in Sharjah", href: "/directory/sharjah/pharmacy" },
+              { label: "Clinics in Dubai", href: "/directory/dubai/clinics" },
+              { label: "Eye Care in Dubai", href: "/directory/dubai/ophthalmology" },
+              { label: "Pediatrics in Abu Dhabi", href: "/directory/abu-dhabi/pediatrics" },
+            ].map((s) => (
+              <Link key={s.href} href={s.href} className="text-xs px-3 py-1.5 border border-light-300 text-muted hover:border-accent hover:text-accent transition-colors">
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Results Header */}

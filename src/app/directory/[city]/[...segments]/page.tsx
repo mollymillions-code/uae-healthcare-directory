@@ -22,6 +22,24 @@ import {
 } from "@/lib/seo";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
 import Image from "next/image";
+
+function getCategoryImageUrl(categorySlug: string, base: string): string {
+  const CATEGORY_IMAGE_MAP: Record<string, string> = {
+    "hospitals": "hospitals", "clinics": "clinics", "dental": "dental",
+    "dermatology": "dermatology", "ophthalmology": "ophthalmology",
+    "cardiology": "cardiology", "orthopedics": "orthopedics",
+    "mental-health": "mental-health", "pediatrics": "pediatrics",
+    "ob-gyn": "obstetrics-gynecology", "ent": "ent",
+    "fertility-ivf": "fertility", "physiotherapy": "physiotherapy",
+    "pharmacy": "pharmacy", "labs-diagnostics": "laboratory",
+    "radiology-imaging": "radiology", "home-healthcare": "home-healthcare",
+    "alternative-medicine": "alternative-medicine", "neurology": "neurology",
+    "urology": "urology", "gastroenterology": "gastroenterology",
+    "oncology": "oncology", "emergency-care": "hospitals",
+  };
+  const file = CATEGORY_IMAGE_MAP[categorySlug] || "clinics";
+  return `${base}/images/categories/${file}.png`;
+}
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar,
@@ -140,13 +158,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
       return {
         title: `${resolved.category.name} in ${city.name}, UAE | ${total} ${total === 1 ? "Provider" : "Providers"}`,
-        description: `Find the best ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with Google ratings, reviews, and contact details. Last verified March 2026.`,
+        description: `Find ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with contact details. Last verified March 2026.`,
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.category.slug}`,
           languages: {
             'en-AE': `${base}/directory/${city.slug}/${resolved.category.slug}`,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
           },
+        },
+        openGraph: {
+          title: `${resolved.category.name} in ${city.name}, UAE`,
+          description: `${total} ${resolved.category.name.toLowerCase()} in ${city.name}. Browse verified listings.`,
+          type: 'website',
+          locale: 'en_AE',
+          siteName: 'UAE Open Healthcare Directory',
+          url: `${base}/directory/${city.slug}/${resolved.category.slug}`,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.category.name} in ${city.name}` }],
         },
       };
     }
@@ -198,6 +225,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
+          url: listingCanonical,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.provider.name} — ${resolved.category.name} in ${city.name}` }],
         },
       };
     }

@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${getBaseUrl()}/about`,
   },
+  openGraph: {
+    title: "About the UAE Open Healthcare Directory",
+    description: "Free directory of 12,500+ licensed healthcare providers across all 7 UAE emirates. Sourced from DHA, DOH, and MOHAP official registers.",
+    url: `${getBaseUrl()}/about`,
+    images: [{ url: `${getBaseUrl()}/images/og-default.png`, width: 1200, height: 630 }],
+  },
 };
 
 export default function AboutPage() {
