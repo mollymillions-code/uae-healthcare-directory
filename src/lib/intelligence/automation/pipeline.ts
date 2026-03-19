@@ -78,6 +78,32 @@ async function triggerRevalidation(): Promise<void> {
   }
 }
 
+// ─── OG Image Fetcher ───────────────────────────────────────────────────────────
+
+async function fetchSourceOgImage(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; Zavis/1.0)" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) return null;
+    const html = await response.text();
+
+    const ogMatch = html.match(/<meta\s+(?:property|name)="og:image"\s+content="([^"]+)"/i)
+      || html.match(/content="([^"]+)"\s+(?:property|name)="og:image"/i);
+    if (ogMatch?.[1] && !ogMatch[1].includes("favicon") && ogMatch[1].length > 20) {
+      return ogMatch[1];
+    }
+
+    const twitterMatch = html.match(/<meta\s+(?:property|name)="twitter:image"\s+content="([^"]+)"/i)
+      || html.match(/content="([^"]+)"\s+(?:property|name)="twitter:image"/i);
+    return twitterMatch?.[1] || null;
+  } catch {
+    return null;
+  }
+}
+
 export interface PipelineResult {
   feedItemsFetched: number;
   relevantItems: number;
@@ -166,8 +192,20 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     errors.push(`Article generation failed: ${String(error)}`);
   }
 
-  // 5. Skip image generation in serverless (too slow for function timeout)
-  // Images generated via separate script: npm run journal:images
+  // 5. Fetch real OG images from source article URLs
+  for (const article of articles) {
+    if (article.sourceUrl) {
+      try {
+        const imgUrl = await fetchSourceOgImage(article.sourceUrl);
+        if (imgUrl) {
+          article.imageUrl = imgUrl;
+          console.log(`[Pipeline] Image: ${article.slug} → ${imgUrl.slice(0, 60)}`);
+        }
+      } catch {
+        // Image fetch is best-effort
+      }
+    }
+  }
 
   // 6. Assign IDs, set featured/breaking based on score rank
   const fullArticles: JournalArticle[] = articles.map((a, idx) => ({
