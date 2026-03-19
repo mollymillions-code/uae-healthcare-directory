@@ -161,14 +161,24 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   const relevant = filterRelevantItems(feedItems);
   console.log(`[Pipeline] ${relevant.length} items passed relevance filter`);
 
-  // 3. Deduplicate against existing articles (by title AND source URL)
-  const existing = getLatestArticles(200);
-  const existingTitles = new Set(
-    existing.map((a) => a.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50))
-  );
-  const existingSourceUrls = new Set(
-    existing.filter((a) => a.sourceUrl).map((a) => a.sourceUrl)
-  );
+  // 3. Deduplicate against existing DB articles (direct query, not cached)
+  const existingTitles = new Set<string>();
+  const existingSourceUrls = new Set<string>();
+
+  if (process.env.DATABASE_URL) {
+    try {
+      const { neon } = await import("@neondatabase/serverless");
+      const sql = neon(process.env.DATABASE_URL);
+      const dbRows = await sql`SELECT title, source_url FROM journal_articles`;
+      for (const row of dbRows) {
+        if (row.title) existingTitles.add((row.title as string).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50));
+        if (row.source_url) existingSourceUrls.add(row.source_url as string);
+      }
+      console.log(`[Pipeline] Loaded ${dbRows.length} existing articles from DB for dedup`);
+    } catch {
+      console.log("[Pipeline] DB dedup failed, using empty set");
+    }
+  }
 
   const newItems = relevant.filter((item) => {
     if (!item.title || typeof item.title !== "string") return false;
