@@ -108,23 +108,24 @@ async function scrapeProvider(page, provider) {
   }
 }
 
-async function main() {
+async function newBrowser() {
   const browser = await chromium.launch({
-    headless: true,  // HEADLESS — does NOT touch user's browser
-    args: ["--disable-blink-features=AutomationControlled"],
+    headless: true,
+    args: ["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-setuid-sandbox"],
   });
-
   const context = await browser.newContext({
     viewport: { width: rand(1366, 1920), height: rand(768, 1080) },
     locale: "en-AE",
     timezoneId: "Asia/Dubai",
     userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
   });
-
-  // Block images and fonts for speed
   await context.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,ttf}", route => route.abort());
-
   const page = await context.newPage();
+  return { browser, page };
+}
+
+async function main() {
+  let { browser, page } = await newBrowser();
 
   let ok = 0, fail = 0, skip = 0;
   const t0 = Date.now();
@@ -133,7 +134,24 @@ async function main() {
     const p = batch[i];
     if (enrichment[p.id]) { skip++; continue; }
 
-    const data = await scrapeProvider(page, p);
+    let data = null;
+    try {
+      data = await scrapeProvider(page, p);
+    } catch (err) {
+      console.error(`  [crash] ${p.name}: ${err.message}`);
+      // Try to recover with a fresh browser
+      try { await browser.close(); } catch {}
+      await sleep(rand(5000, 10000));
+      try {
+        const fresh = await newBrowser();
+        browser = fresh.browser;
+        page = fresh.page;
+        data = await scrapeProvider(page, p);
+      } catch (err2) {
+        console.error(`  [crash2] ${p.name}: ${err2.message}`);
+      }
+    }
+
     if (data) {
       enrichment[p.id] = data;
       ok++;
@@ -141,23 +159,34 @@ async function main() {
       fail++;
     }
 
-    if ((ok + fail) % 10 === 0 && (ok + fail) > 0) {
-      const min = ((Date.now() - t0) / 60000).toFixed(1);
-      console.log(`[${startIdx + i + 1}] ✓${ok} ✗${fail} ⏭${skip} | ${min}m | ${p.name.slice(0, 35)}${data ? " → " + data.rating + "★" : ""}`);
+    // Save every 5 entries to reduce I/O contention
+    if ((ok + fail + skip) % 5 === 0) {
       fs.writeFileSync(ENRICHMENT_FILE, JSON.stringify(enrichment));
     }
 
-    // Stealth delays
-    await sleep(rand(1500, 3500));
-    if ((ok + fail) % 50 === 0 && (ok + fail) > 0) {
+    if ((ok + fail) % 10 === 0 && (ok + fail) > 0) {
+      const min = ((Date.now() - t0) / 60000).toFixed(1);
+      console.log(`[${startIdx + i + 1}] ✓${ok} ✗${fail} ⏭${skip} | ${min}m | ${p.name.slice(0, 35)}${data ? " → " + data.rating + "★" : ""}`);
+    }
+
+    // Stealth delays — reduced for speed
+    await sleep(rand(400, 1000));
+    if ((ok + fail) % 120 === 0 && (ok + fail) > 0) {
       console.log("  💤 stealth break...");
-      await sleep(rand(10000, 20000));
+      await sleep(rand(5000, 10000));
     }
   }
 
-  fs.writeFileSync(ENRICHMENT_FILE, JSON.stringify(enrichment));
-  await browser.close();
+  try { await browser.close(); } catch {}
   console.log(`\nDone in ${((Date.now() - t0) / 60000).toFixed(1)}m | ✓${ok} ✗${fail} ⏭${skip} | Total: ${Object.keys(enrichment).length}`);
 }
 
-main();
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection (non-fatal):', reason);
+  // Do NOT exit — the main loop has its own error recovery
+});
+
+main().catch(err => {
+  console.error('Fatal error:', err.message, err.stack);
+  // Don't exit — keep the process running if possible
+});
