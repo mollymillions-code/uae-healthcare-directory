@@ -184,6 +184,7 @@ const CATEGORY_SCENE: Record<string, string> = {
   "social-pulse": "a smartphone showing healthcare social media posts, clean minimalist desk, coffee cup",
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function generateArticleImage(title: string, category: string): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
