@@ -78,6 +78,44 @@ async function triggerRevalidation(): Promise<void> {
   }
 }
 
+// ─── Search Engine Notifications ────────────────────────────────────────────────
+
+async function pingGoogleSitemap(): Promise<void> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!baseUrl) return;
+
+  try {
+    await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(`${baseUrl}/sitemap.xml`)}`);
+    console.log("[Pipeline] Google sitemap ping sent");
+  } catch {
+    // Best-effort
+  }
+}
+
+async function notifyIndexNow(slugs: string[]): Promise<void> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const key = process.env.INDEXNOW_KEY;
+  if (!baseUrl || !key || slugs.length === 0) return;
+
+  const urls = slugs.map((slug) => `${baseUrl}/intelligence/${slug}`);
+
+  try {
+    const response = await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        host: new URL(baseUrl).host,
+        key,
+        keyLocation: `${baseUrl}/${key}.txt`,
+        urlList: urls,
+      }),
+    });
+    console.log(`[Pipeline] IndexNow notified for ${urls.length} URLs (status: ${response.status})`);
+  } catch {
+    // Best-effort
+  }
+}
+
 // ─── OG Image Fetcher ───────────────────────────────────────────────────────────
 
 // Images to reject — generic platform logos, not real article photos
@@ -354,17 +392,25 @@ export async function runContentPipeline(): Promise<PipelineResult> {
     isBreaking: idx === 0, // #1 by score = breaking
   }));
 
-  // 7. Persist to database and trigger revalidation
+  // 7. Persist to database, trigger revalidation, and notify search engines
   let persisted = 0;
+  const publishedSlugs: string[] = [];
   for (const article of fullArticles) {
     const ok = await persistArticle(article);
-    if (ok) persisted++;
+    if (ok) {
+      persisted++;
+      publishedSlugs.push(article.slug);
+    }
     console.log(`[Pipeline] ${ok ? "Published" : "Logged"}: [${article.category}] ${article.title}`);
   }
 
   if (persisted > 0) {
-    await triggerRevalidation();
-    console.log(`[Pipeline] Revalidation triggered for ${persisted} new articles`);
+    await Promise.all([
+      triggerRevalidation(),
+      pingGoogleSitemap(),
+      notifyIndexNow(publishedSlugs),
+    ]);
+    console.log(`[Pipeline] Revalidation + search engine notifications sent for ${persisted} new articles`);
   }
 
   return {
