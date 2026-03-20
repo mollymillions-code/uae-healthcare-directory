@@ -327,13 +327,9 @@ export async function runContentPipeline(): Promise<PipelineResult> {
       } catch { /* best effort */ }
     }
 
-    // Try 2: Generate with Gemini
-    if (!imageUrl && process.env.GEMINI_API_KEY) {
-      try {
-        imageUrl = await generateArticleImage(article.title, article.category);
-        if (imageUrl) console.log(`[Pipeline] Image (Gemini): ${article.slug}`);
-      } catch { /* best effort */ }
-    }
+    // Try 2: Gemini generation is skipped in serverless — returns base64 which
+    // can't be stored as a URL. Gemini images are generated in the local/GH Actions
+    // script which can upload to R2. In serverless, go straight to fallback.
 
     // Try 3: Use a category-default R2 image
     if (!imageUrl) {
