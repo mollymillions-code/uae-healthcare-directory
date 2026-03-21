@@ -80,18 +80,6 @@ async function triggerRevalidation(): Promise<void> {
 
 // ─── Search Engine Notifications ────────────────────────────────────────────────
 
-async function pingGoogleSitemap(): Promise<void> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!baseUrl) return;
-
-  try {
-    await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(`${baseUrl}/sitemap.xml`)}`);
-    console.log("[Pipeline] Google sitemap ping sent");
-  } catch {
-    // Best-effort
-  }
-}
-
 async function notifyIndexNow(slugs: string[]): Promise<void> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const key = process.env.INDEXNOW_KEY;
@@ -408,7 +396,6 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   if (persisted > 0) {
     await Promise.all([
       triggerRevalidation(),
-      pingGoogleSitemap(),
       notifyIndexNow(publishedSlugs),
     ]);
     console.log(`[Pipeline] Revalidation + search engine notifications sent for ${persisted} new articles`);

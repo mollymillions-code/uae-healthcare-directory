@@ -25,6 +25,8 @@ export const CATEGORIES = [
   { slug: "oncology", name: "Oncology & Cancer Care", icon: "Shield", sortOrder: 24 },
   { slug: "emergency-care", name: "Emergency & Urgent Care", icon: "Siren", sortOrder: 25 },
   { slug: "wellness-spas", name: "Wellness Centers & Medical Spas", icon: "Waves", sortOrder: 26 },
+  { slug: "nephrology", name: "Nephrology", icon: "Kidney", sortOrder: 27 },
+  { slug: "medical-equipment", name: "Medical Equipment & Supplies", icon: "Package", sortOrder: 28 },
 ] as const;
 
 export const SUBCATEGORIES: Record<string, { slug: string; name: string; sortOrder: number }[]> = {

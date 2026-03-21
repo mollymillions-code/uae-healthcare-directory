@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
@@ -32,6 +32,15 @@ function getArabicPath(pathname: string): string | null {
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
 
   return (
     <header className="bg-dark text-white sticky top-0 z-50">
@@ -86,7 +95,7 @@ export function Header() {
             <Link href="/search" className="lg:hidden p-2 text-white/70 hover:text-white">
               <Search className="h-5 w-5" />
             </Link>
-            <button className="lg:hidden p-2 text-white/70 hover:text-white" onClick={() => setMobileOpen(!mobileOpen)}>
+            <button className="lg:hidden p-2 text-white/70 hover:text-white" onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-label="Toggle navigation menu">
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>

@@ -6,14 +6,14 @@
 2. Click **Add Property** → choose **URL prefix** → enter `https://zavis.ai`
 3. Select **HTML tag** verification method
 4. Copy the `content` value from the meta tag they provide
-5. Add it to `.env.local` (and production env vars):
+5. Add it to `.env.local` (and Vercel production env vars):
    ```
    NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_code_here
    ```
    The root layout already reads this env var and renders the meta tag automatically.
 6. Deploy the site, then click **Verify** in GSC
 
-> Also verify `https://www.zavis.ai` if it redirects to the root domain — GSC treats them as separate properties.
+> If `www.zavis.ai` redirects to `zavis.ai`, add both as separate URL prefix properties in GSC.
 
 ## 2. Submit Sitemap
 

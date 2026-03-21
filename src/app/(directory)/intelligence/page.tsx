@@ -33,6 +33,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_AE",
     siteName: "Zavis Healthcare Industry Insights",
+    url: `${getBaseUrl()}/intelligence`,
+    images: [{ url: `${getBaseUrl()}/images/og-default.png`, width: 1200, height: 630, alt: "Zavis Healthcare Industry Insights" }],
   },
   alternates: {
     canonical: `${getBaseUrl()}/intelligence`,

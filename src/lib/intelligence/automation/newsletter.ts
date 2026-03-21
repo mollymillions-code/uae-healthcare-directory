@@ -18,9 +18,9 @@ async function getResend(): Promise<Resend> {
   return _resend;
 }
 
-const FROM_EMAIL = "journal@uae-healthcare-directory.vercel.app";
+const FROM_EMAIL = "insights@zavis.ai";
 const REPLY_TO = "hello@zavis.ai";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://uae-healthcare-directory.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
 
 // ─── Email Templates ────────────────────────────────────────────────────────────
 

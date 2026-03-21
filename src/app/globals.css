@@ -2,14 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Degular Display Demo font family */
+@font-face {
+  font-family: "Degular Display Demo";
+  src: url("/fonts/degular/DegularDisplayDemo-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Degular Display Demo";
+  src: url("/fonts/degular/DegularDisplayDemo-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Degular Display Demo";
+  src: url("/fonts/degular/DegularDisplayDemo-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Degular Display Demo";
+  src: url("/fonts/degular/DegularDisplayDemo-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-display: swap;
+}
+
 @layer base {
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: rgba(0, 168, 68, 0.2);
+    background-color: rgba(0, 200, 83, 0.2);
   }
+}
+
+/* ─── Landing Site Styles ──────────────────────────────────── */
+
+/* Navbar Gradient Mesh Keyframes */
+@keyframes mesh-blob-1 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  25%      { transform: translate(40%, -30%) scale(1.15); }
+  50%      { transform: translate(-15%, 35%) scale(0.9); }
+  75%      { transform: translate(-35%, -15%) scale(1.1); }
+}
+@keyframes mesh-blob-2 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  25%      { transform: translate(-35%, 25%) scale(1.1); }
+  50%      { transform: translate(30%, -20%) scale(1.15); }
+  75%      { transform: translate(15%, 30%) scale(0.9); }
+}
+@keyframes mesh-blob-3 {
+  0%, 100% { transform: translate(0%, 0%) scale(1.1); }
+  33%      { transform: translate(25%, 30%) scale(0.9); }
+  66%      { transform: translate(-30%, -25%) scale(1.15); }
+}
+@keyframes mesh-blob-4 {
+  0%, 100% { transform: translate(0%, 0%) scale(0.95); }
+  33%      { transform: translate(-25%, -30%) scale(1.15); }
+  66%      { transform: translate(30%, 20%) scale(1.05); }
+}
+
+/* Shimmer Button Keyframes */
+@keyframes shimmer-slide {
+  to { transform: translate(calc(100cqw - 100%), 0); }
+}
+@keyframes spin-around {
+  0%          { transform: translateZ(0) rotate(0); }
+  15%, 35%    { transform: translateZ(0) rotate(90deg); }
+  65%, 85%    { transform: translateZ(0) rotate(270deg); }
+  100%        { transform: translateZ(0) rotate(360deg); }
+}
+
+/* Zavis Shadow System */
+.shadow-card {
+  box-shadow:
+    0px 0.7px 0.7px -0.4px rgba(0,0,0,0.03),
+    0px 1.8px 1.8px -0.8px rgba(0,0,0,0.03),
+    0px 3.6px 3.6px -1.25px rgba(0,0,0,0.03),
+    0px 6.9px 6.9px -1.7px rgba(0,0,0,0.03),
+    0px 13.6px 13.6px -2.1px rgba(0,0,0,0.03),
+    0px 30px 30px -2.5px rgba(0,0,0,0.03);
+}
+
+.shadow-cta {
+  box-shadow:
+    0px 0.7px 0.7px -0.4px rgba(0,0,0,0.13),
+    0px 1.8px 1.8px -0.8px rgba(0,0,0,0.13),
+    0px 3.6px 3.6px -1.1px rgba(0,0,0,0.13),
+    0px 6.9px 6.9px -1.4px rgba(0,0,0,0.13),
+    0px 13.6px 13.6px -1.8px rgba(0,0,0,0.13),
+    0px 25px 25px -2.1px rgba(0,0,0,0.13),
+    0px 38px 38px -2.4px rgba(0,0,0,0.13),
+    0px 50px 50px -2.8px rgba(0,0,0,0.13);
+}
+
+.shadow-hero-btn {
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.8);
+}
+
+/* Hide scrollbar */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Infinite logo ticker */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker var(--ticker-duration, 20s) linear infinite;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Focus-visible for landing interactive elements */
+.landing-theme a:focus-visible,
+.landing-theme button:focus-visible,
+.landing-theme [role="menuitem"]:focus-visible {
+  outline: 2px solid #006828;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @layer components {

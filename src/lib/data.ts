@@ -78,13 +78,14 @@ try {
     languages: string[]; insurance: string[]; operatingHours: Record<string, { open: string; close: string }>;
     amenities: string[]; lastVerified: string; googleRating: string | null;
     googleReviewCount: number; isClaimed: boolean; isVerified: boolean;
+    latitude?: string | null; longitude?: string | null;
   }>;
   SCRAPED_PROVIDERS = scraped.map((p) => ({
     ...p,
     googleRating: p.googleRating || "0",
     googleReviewCount: p.googleReviewCount || 0,
-    latitude: "0",
-    longitude: "0",
+    latitude: p.latitude || "0",
+    longitude: p.longitude || "0",
   }));
 } catch {
   // No scraped data yet — that's fine

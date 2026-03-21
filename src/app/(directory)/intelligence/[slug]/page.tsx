@@ -45,6 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       section: category?.name,
       tags: article.tags,
       url: `${base}/intelligence/${article.slug}`,
+      images: article.imageUrl ? [{ url: article.imageUrl, width: 1200, height: 630, alt: article.title }] : [{ url: `${getBaseUrl()}/images/og-default.png`, width: 1200, height: 630, alt: article.title }],
     },
     alternates: {
       canonical: `${base}/intelligence/${article.slug}`,

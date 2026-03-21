@@ -1,20 +1,6 @@
-export type ClassValue = string | number | null | undefined | false | ClassDictionary | Array<ClassValue>
-export interface ClassDictionary {
-  [id: string]: unknown
-}
-
-function toVal(mix: ClassValue): string {
-  if (mix === null || mix === undefined || mix === false) return ""
-  if (typeof mix === "string" || typeof mix === "number") return String(mix)
-  if (Array.isArray(mix)) return mix.map(toVal).filter(Boolean).join(" ")
-  if (typeof mix === "object") {
-    return Object.keys(mix)
-      .filter((k) => (mix as ClassDictionary)[k])
-      .join(" ")
-  }
-  return ""
-}
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return inputs.map(toVal).filter(Boolean).join(" ")
+  return twMerge(clsx(inputs));
 }

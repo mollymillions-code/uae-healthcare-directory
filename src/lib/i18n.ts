@@ -85,6 +85,8 @@ export const ar = {
     "cosmetic-plastic": "الجراحة التجميلية والترميمية",
     "emergency-care": "الطوارئ والرعاية العاجلة",
     "wellness-spas": "مراكز العافية والسبا الطبي",
+    "nephrology": "أمراض الكلى",
+    "medical-equipment": "المعدات والمستلزمات الطبية",
   } as Record<string, string>,
 
   // Extra labels used in existing pages

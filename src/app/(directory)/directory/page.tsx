@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   title: "UAE Open Healthcare Directory | Find Doctors, Clinics & Hospitals",
   description:
     "Free directory of 12,500+ licensed healthcare providers across the UAE. Find hospitals, clinics, dentists in Dubai, Abu Dhabi, Sharjah with ratings and contact details.",
+  openGraph: {
+    type: "website",
+    title: "UAE Open Healthcare Directory | Find Doctors, Clinics & Hospitals",
+    description: "Free directory of 12,500+ licensed healthcare providers across the UAE. Find hospitals, clinics, dentists in Dubai, Abu Dhabi, Sharjah with ratings and contact details.",
+    locale: "en_AE",
+    siteName: "UAE Open Healthcare Directory by Zavis",
+    url: `${getBaseUrl()}/directory`,
+    images: [{ url: `${getBaseUrl()}/images/og-default.png`, width: 1200, height: 630, alt: "UAE Open Healthcare Directory" }],
+  },
   alternates: {
     canonical: `${getBaseUrl()}/directory`,
     languages: {

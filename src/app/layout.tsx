@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DM_Sans, Space_Mono, Lora } from "next/font/google";
+import { DM_Sans, Space_Mono, Lora, Bricolage_Grotesque } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -22,6 +23,19 @@ const lora = Lora({
   display: "swap",
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-bricolage",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const geist = localFont({
+  src: "../app/fonts/GeistVF.woff",
+  variable: "--font-geist",
+  display: "swap",
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
@@ -65,7 +79,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable}`}>
       <head>
         {/* Google Tag Manager */}
         <script dangerouslySetInnerHTML={{ __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9N3FDMQ');` }} />

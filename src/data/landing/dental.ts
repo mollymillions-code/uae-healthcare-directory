@@ -1,0 +1,61 @@
+export const dentalFeatures = [
+  {
+    label: "Omnichannel Patient Inbox",
+    title: "Unified Patient Communication Across Every Channel",
+    subtitle: "Every channel, one patient timeline",
+    description: "WhatsApp, Instagram, phone, and web chat consolidated into one inbox. One coordinator handles all channels with full context. No lost leads, no tool switching.",
+    image: "/assets/shared-omnichannel-inbox.webp",
+    align: "right" as const,
+  },
+  {
+    label: "AI-Powered Booking Engine",
+    title: "Intelligent Appointment Booking with Real-Time EMR Sync",
+    subtitle: "From inquiry to confirmed appointment in seconds",
+    description: "AI qualifies intent, checks live availability, and confirms appointments in your EMR. Automated WhatsApp reminders with one-tap reschedule cut no-shows and eliminate manual entry.",
+    image: "/assets/shared-patient-booking.webp",
+    align: "left" as const,
+  },
+  {
+    label: "Smart Recall & Follow-Up",
+    title: "Automated Patient Reactivation and Lifecycle Engagement",
+    subtitle: "Bring dormant patients back on autopilot",
+    description: "Post-visit follow-ups, 6-month hygiene recalls, and dormant patient reactivation fire automatically via WhatsApp. Revenue from your existing patient base, zero manual effort.",
+    image: "/assets/shared-patient-followup.webp",
+    align: "right" as const,
+  },
+  {
+    label: "Revenue & Attribution Analytics",
+    title: "Full Revenue Attribution from Ad Click to Collected Payment",
+    subtitle: "Know exactly what your marketing spend delivers",
+    description: "Every lead traced from ad click to collected revenue. Real CAC, ROAS, and conversion rates by doctor, service, and campaign. Fully accountable marketing spend.",
+    image: "/assets/shared-analytics-dashboard.webp",
+    align: "left" as const,
+  },
+  {
+    label: "Native CRM & Pipeline",
+    title: "Complete Patient Profiles with Unified History",
+    subtitle: "Full patient context at a glance",
+    description: "Chat history, call recordings, bookings, invoices, and preferences in one profile. AI-generated summaries help your team respond faster. Patients never repeat themselves.",
+    image: "/assets/shared-team-collaboration.webp",
+    align: "right" as const,
+  },
+  {
+    label: "EMR & System Integration",
+    title: "Bidirectional EMR Integration with Zero Double Entry",
+    subtitle: "Enter data once, it flows everywhere",
+    description: "Bidirectional sync with your EMR, payments, and ad platforms. Data entered once propagates everywhere. One platform, one contract, zero middleware.",
+    image: "/assets/dental-emr-integration.webp",
+    align: "left" as const,
+  },
+];
+
+export const comparisonRows = [
+  { label: "Time to value", zavis: "Day 3: First live workflow", traditional: "3-6 months", diy: "Months of dev", status: "Never" },
+  { label: "Response time", zavis: "Instant AI reply, 24/7", traditional: "Office hours only", diy: "Depends on staff", status: "Missed calls pile up" },
+  { label: "Booking conversion", zavis: "AI qualifies & books in seconds", traditional: "Manual callbacks", diy: "Custom build needed", status: "Leads lost" },
+  { label: "Channel coverage", zavis: "WhatsApp, calls, Instagram, web, SMS", traditional: "Phone + email", diy: "One channel at a time", status: "Phone only" },
+  { label: "Software cost", zavis: "One platform, one contract", traditional: "Multiple vendors", diy: "Dev + maintenance", status: "Manual workarounds" },
+  { label: "Attribution", zavis: "Ad click to collected revenue", traditional: "Basic reporting", diy: "Manual stitching", status: "No visibility" },
+  { label: "Staff adoption", zavis: "15 min ramp, built for coordinators", traditional: "Weeks of training", diy: "Varies by tool", status: "Workarounds persist" },
+  { label: "Compliance", zavis: "Immutable audit trail, consent tracking", traditional: "Basic logging", diy: "Build your own", status: "No trail" },
+];

@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Zavis green system — darker shade as requested
+        // Zavis green system — unified brand green
         accent: {
-          DEFAULT: "#00a844",   // Darker Zavis green
-          light: "#00c853",     // Original Zavis green for highlights
-          dark: "#008c38",      // Deep green
+          DEFAULT: "#00c853",   // Zavis brand green (unified)
+          light: "#00e676",     // Lighter green for highlights
+          dark: "#00a844",      // Darker green for hover states
           muted: "#e6f7ed",     // Very light green bg
         },
         // TechCrunch-style dark/light
@@ -39,6 +39,8 @@ const config: Config = {
         serif: ["var(--font-lora)", "Georgia", "serif"],
         mono: ["var(--font-space-mono)", "monospace"],
         arabic: ["var(--font-noto-arabic)", "Noto Sans Arabic", "sans-serif"],
+        degular: ["Degular Display Demo", "system-ui", "sans-serif"],
+        inter: ["Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
         "hero": ["3.5rem", { lineHeight: "1.08", letterSpacing: "-0.02em", fontWeight: "700" }],
