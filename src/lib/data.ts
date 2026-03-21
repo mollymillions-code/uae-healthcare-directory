@@ -1,6 +1,6 @@
 /**
  * Data access layer — uses real scraped provider data from MOHAP/DHA/DOH.
- * No sample/seed data. Neon Postgres used in production (when DATABASE_URL is set).
+ * Pre-builds index maps at module load for O(1) lookups instead of O(n) scans.
  */
 
 import { CITIES, AREAS } from "./constants/cities";
@@ -9,7 +9,8 @@ import { INSURANCE_PROVIDERS, InsuranceProvider } from "./constants/insurance";
 import { LANGUAGES, LanguageInfo } from "./constants/languages";
 import { CONDITIONS, Condition } from "./constants/conditions";
 
-// Types for local data
+// ─── Types ──────────────────────────────────────────────────────────────────────
+
 export interface LocalCity {
   slug: string;
   name: string;
@@ -61,45 +62,84 @@ export interface LocalProvider {
   insurance: string[];
   operatingHours: Record<string, { open: string; close: string }>;
   amenities: string[];
-  lastVerified: string; // ISO date — freshness signal for LLMs
+  lastVerified: string;
   email?: string;
 }
 
-// ─── Load scraped providers if available ────────────────────────────────────────
+// ─── Load scraped providers ─────────────────────────────────────────────────────
 
-let SCRAPED_PROVIDERS: LocalProvider[] = [];
+let ALL_PROVIDERS: LocalProvider[] = [];
 try {
-  // At build time, try to load the scraped MOHAP data
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const scraped = require("./providers-scraped.json") as Array<{
-    id: string; name: string; slug: string; citySlug: string; categorySlug: string;
-    facilityType?: string; specialty?: string | null; address: string;
-    description: string; shortDescription: string; services: string[];
-    languages: string[]; insurance: string[]; operatingHours: Record<string, { open: string; close: string }>;
-    amenities: string[]; lastVerified: string; googleRating: string | null;
-    googleReviewCount: number; isClaimed: boolean; isVerified: boolean;
-    latitude?: string | null; longitude?: string | null;
-  }>;
-  SCRAPED_PROVIDERS = scraped.map((p) => ({
-    ...p,
-    googleRating: p.googleRating || "0",
-    googleReviewCount: p.googleReviewCount || 0,
-    latitude: p.latitude || "0",
-    longitude: p.longitude || "0",
+  const scraped = require("./providers-scraped.json") as Record<string, unknown>[];
+  ALL_PROVIDERS = scraped.map((p: Record<string, unknown>) => ({
+    ...(p as unknown as LocalProvider),
+    googleRating: (p.googleRating as string) || "0",
+    googleReviewCount: (p.googleReviewCount as number) || 0,
+    latitude: (p.latitude as string) || "0",
+    longitude: (p.longitude as string) || "0",
   }));
 } catch {
-  // No scraped data yet — that's fine
+  // No scraped data yet
 }
 
-// ─── Provider List ─────────────────────────────────────────────────────────────
+// ─── Pre-built Index Maps (O(1) lookups) ────────────────────────────────────────
 
-// Only real scraped data from MOHAP/DHA/DOH registers. No sample/seed providers.
-const ALL_PROVIDERS: LocalProvider[] = [...SCRAPED_PROVIDERS];
+const byCity = new Map<string, LocalProvider[]>();
+const byCityCategory = new Map<string, LocalProvider[]>();
+const byCityCategoryArea = new Map<string, LocalProvider[]>();
+const byCityArea = new Map<string, LocalProvider[]>();
+const bySlug = new Map<string, LocalProvider>();
 
-// ─── Data Access Functions ─────────────────────────────────────────────────────
+for (const p of ALL_PROVIDERS) {
+  // By city
+  const cityArr = byCity.get(p.citySlug);
+  if (cityArr) cityArr.push(p);
+  else byCity.set(p.citySlug, [p]);
+
+  // By city+category
+  const ccKey = `${p.citySlug}:${p.categorySlug}`;
+  const ccArr = byCityCategory.get(ccKey);
+  if (ccArr) ccArr.push(p);
+  else byCityCategory.set(ccKey, [p]);
+
+  // By city+area (if area exists)
+  if (p.areaSlug) {
+    const caKey = `${p.citySlug}:${p.areaSlug}`;
+    const caArr = byCityArea.get(caKey);
+    if (caArr) caArr.push(p);
+    else byCityArea.set(caKey, [p]);
+
+    // By city+category+area
+    const ccaKey = `${p.citySlug}:${p.categorySlug}:${p.areaSlug}`;
+    const ccaArr = byCityCategoryArea.get(ccaKey);
+    if (ccaArr) ccaArr.push(p);
+    else byCityCategoryArea.set(ccaKey, [p]);
+  }
+
+  // By slug (first wins for duplicates)
+  if (!bySlug.has(p.slug)) {
+    bySlug.set(p.slug, p);
+  }
+}
+
+// Pre-computed categories (avoid re-mapping on every call)
+const MAPPED_CATEGORIES: LocalCategory[] = CATEGORIES.map((c) => ({
+  slug: c.slug,
+  name: c.name,
+  icon: c.icon,
+  sortOrder: c.sortOrder,
+}));
+
+const CATEGORY_BY_SLUG = new Map(MAPPED_CATEGORIES.map((c) => [c.slug, c]));
+
+// Pre-computed top-rated by city
+const topRatedCache = new Map<string, LocalProvider[]>();
+
+// ─── Data Access Functions ──────────────────────────────────────────────────────
 
 export function getCities(): LocalCity[] {
-  return [...CITIES];
+  return CITIES as unknown as LocalCity[];
 }
 
 export function getCityBySlug(slug: string): LocalCity | undefined {
@@ -118,12 +158,11 @@ export function getAreaBySlug(citySlug: string, areaSlug: string): LocalArea | u
 }
 
 export function getCategories(): LocalCategory[] {
-  return CATEGORIES.map((c) => ({ slug: c.slug, name: c.name, icon: c.icon, sortOrder: c.sortOrder }));
+  return MAPPED_CATEGORIES;
 }
 
 export function getCategoryBySlug(slug: string): LocalCategory | undefined {
-  const cat = CATEGORIES.find((c) => c.slug === slug);
-  return cat ? { slug: cat.slug, name: cat.name, icon: cat.icon, sortOrder: cat.sortOrder } : undefined;
+  return CATEGORY_BY_SLUG.get(slug);
 }
 
 export function getSubcategoriesByCategory(categorySlug: string) {
@@ -140,19 +179,24 @@ export function getProviders(filters?: {
   limit?: number;
   sort?: "rating" | "name" | "relevance";
 }): { providers: LocalProvider[]; total: number; page: number; totalPages: number } {
-  let filtered = [...ALL_PROVIDERS];
+  // Use index maps for the common filter combinations
+  let filtered: LocalProvider[];
 
-  if (filters?.citySlug) {
-    filtered = filtered.filter((p) => p.citySlug === filters.citySlug);
+  if (filters?.citySlug && filters?.categorySlug && filters?.areaSlug) {
+    filtered = byCityCategoryArea.get(`${filters.citySlug}:${filters.categorySlug}:${filters.areaSlug}`) || [];
+  } else if (filters?.citySlug && filters?.categorySlug) {
+    filtered = byCityCategory.get(`${filters.citySlug}:${filters.categorySlug}`) || [];
+  } else if (filters?.citySlug && filters?.areaSlug) {
+    filtered = byCityArea.get(`${filters.citySlug}:${filters.areaSlug}`) || [];
+  } else if (filters?.citySlug) {
+    filtered = byCity.get(filters.citySlug) || [];
+  } else {
+    filtered = ALL_PROVIDERS;
   }
-  if (filters?.categorySlug) {
-    filtered = filtered.filter((p) => p.categorySlug === filters.categorySlug);
-  }
+
+  // Apply remaining filters that aren't in the index
   if (filters?.subcategorySlug) {
     filtered = filtered.filter((p) => p.subcategorySlug === filters.subcategorySlug);
-  }
-  if (filters?.areaSlug) {
-    filtered = filtered.filter((p) => p.areaSlug === filters.areaSlug);
   }
   if (filters?.query) {
     const q = filters.query.toLowerCase();
@@ -164,11 +208,11 @@ export function getProviders(filters?: {
     );
   }
 
-  // Sort
+  // Sort (only copy when we need to mutate)
   if (filters?.sort === "rating") {
-    filtered.sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
+    filtered = [...filtered].sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
   } else if (filters?.sort === "name") {
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
+    filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
   }
 
   const page = filters?.page || 1;
@@ -182,39 +226,54 @@ export function getProviders(filters?: {
 }
 
 export function getProviderBySlug(slug: string): LocalProvider | undefined {
-  return ALL_PROVIDERS.find((p) => p.slug === slug);
+  return bySlug.get(slug);
 }
 
 export function getProviderCountByCity(citySlug: string): number {
-  return ALL_PROVIDERS.filter((p) => p.citySlug === citySlug).length;
+  return (byCity.get(citySlug) || []).length;
 }
 
 export function getProviderCountByCategoryAndCity(categorySlug: string, citySlug: string): number {
-  return ALL_PROVIDERS.filter((p) => p.categorySlug === categorySlug && p.citySlug === citySlug).length;
+  return (byCityCategory.get(`${citySlug}:${categorySlug}`) || []).length;
 }
 
 export function getProviderCountByCategory(categorySlug: string): number {
-  return ALL_PROVIDERS.filter((p) => p.categorySlug === categorySlug).length;
+  let count = 0;
+  byCityCategory.forEach((arr, key) => {
+    if (key.split(":")[1] === categorySlug) {
+      count += arr.length;
+    }
+  });
+  return count;
 }
 
 export function getProviderCountByAreaAndCity(areaSlug: string, citySlug: string): number {
-  return ALL_PROVIDERS.filter((p) => p.areaSlug === areaSlug && p.citySlug === citySlug).length;
+  return (byCityArea.get(`${citySlug}:${areaSlug}`) || []).length;
 }
 
 export function getTopRatedProviders(citySlug?: string, limit = 5): LocalProvider[] {
-  let filtered = [...ALL_PROVIDERS];
-  if (citySlug) {
-    filtered = filtered.filter((p) => p.citySlug === citySlug);
-  }
-  return filtered
+  const cacheKey = `${citySlug || "all"}:${limit}`;
+  const cached = topRatedCache.get(cacheKey);
+  if (cached) return cached;
+
+  const source = citySlug ? (byCity.get(citySlug) || []) : ALL_PROVIDERS;
+  const result = [...source]
+    .filter((p) => Number(p.googleRating) > 0)
     .sort((a, b) => {
-      const ratingA = Number(a.googleRating) || 0;
-      const ratingB = Number(b.googleRating) || 0;
-      // Providers with ratings first, then by rating desc, then alphabetical
-      if (ratingB !== ratingA) return ratingB - ratingA;
-      return a.name.localeCompare(b.name);
+      const ratingDiff = Number(b.googleRating) - Number(a.googleRating);
+      if (ratingDiff !== 0) return ratingDiff;
+      return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
     })
     .slice(0, limit);
+
+  topRatedCache.set(cacheKey, result);
+  return result;
+}
+
+/** Get all provider slugs for a city (for generateStaticParams — avoids loading full objects) */
+export function getProviderSlugsByCity(citySlug: string): { categorySlug: string; slug: string }[] {
+  const cityProviders = byCity.get(citySlug) || [];
+  return cityProviders.map((p) => ({ categorySlug: p.categorySlug, slug: p.slug }));
 }
 
 export function getFaqs(entityType: string, entitySlug: string): { question: string; answer: string }[] {
@@ -240,7 +299,7 @@ export function getFaqs(entityType: string, entitySlug: string): { question: str
   return [];
 }
 
-// ─── Insurance Data Access Functions ──────────────────────────────────────────
+// ─── Insurance Data Access Functions ────────────────────────────────────────────
 
 export type { InsuranceProvider };
 
@@ -253,23 +312,18 @@ export function getProvidersByInsurance(insurerSlug: string, citySlug?: string):
   if (!insurer) return [];
 
   const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+  const source = citySlug ? (byCity.get(citySlug) || []) : ALL_PROVIDERS;
 
-  let filtered = ALL_PROVIDERS.filter((p) =>
+  return source.filter((p) =>
     p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
   );
-
-  if (citySlug) {
-    filtered = filtered.filter((p) => p.citySlug === citySlug);
-  }
-
-  return filtered;
 }
 
 export function getProviderCountByInsurance(insurerSlug: string, citySlug: string): number {
   return getProvidersByInsurance(insurerSlug, citySlug).length;
 }
 
-// ─── Language Data Access Functions ───────────────────────────────────────────
+// ─── Language Data Access Functions ─────────────────────────────────────────────
 
 export type { LanguageInfo };
 
@@ -277,7 +331,6 @@ export function getLanguages(): LanguageInfo[] {
   return [...LANGUAGES];
 }
 
-/** Alias matching the naming convention used by consumer code */
 export const getLanguagesList = getLanguages;
 
 export function getProvidersByLanguage(languageSlug: string, citySlug?: string): LocalProvider[] {
@@ -285,23 +338,18 @@ export function getProvidersByLanguage(languageSlug: string, citySlug?: string):
   if (!language) return [];
 
   const matchName = language.name.toLowerCase();
+  const source = citySlug ? (byCity.get(citySlug) || []) : ALL_PROVIDERS;
 
-  let filtered = ALL_PROVIDERS.filter((p) =>
+  return source.filter((p) =>
     p.languages.some((lang) => lang.toLowerCase() === matchName)
   );
-
-  if (citySlug) {
-    filtered = filtered.filter((p) => p.citySlug === citySlug);
-  }
-
-  return filtered;
 }
 
 export function getProviderCountByLanguage(languageSlug: string, citySlug: string): number {
   return getProvidersByLanguage(languageSlug, citySlug).length;
 }
 
-// ─── Condition Data Access Functions ──────────────────────────────────────────
+// ─── Condition Data Access Functions ────────────────────────────────────────────
 
 export type { Condition };
 
