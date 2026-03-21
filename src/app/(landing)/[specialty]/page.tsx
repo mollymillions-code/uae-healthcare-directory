@@ -15,6 +15,8 @@ const SPECIALTY_SLUGS = [
   "longevity-wellness",
 ] as const;
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return SPECIALTY_SLUGS.map((slug) => ({ specialty: slug }));
 }
