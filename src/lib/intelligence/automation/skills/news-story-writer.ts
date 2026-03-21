@@ -60,14 +60,17 @@ ARTICLE STRUCTURE (social pulse weekly digest):
 3. Thread 2-3: other notable conversations
 4. Pattern: what these conversations collectively tell us
 
-FORMATTING:
-- Headings: <h3> only, sentence case (capitalize first word + proper nouns only)
-- Body: <p> tags, no markdown
-- No bullet lists in article body — write in prose
+FORMATTING — articles must look like STAT News or Bloomberg, not a text file:
+- Headings: <h3> only, sentence case (capitalize first word + proper nouns only). Use 2-3 per article to break up content.
+- Body: <p> tags for paragraphs
+- Bold: use <strong> to highlight key numbers, entity names, dates, and financial figures on first mention. Example: "<strong>AED 1.2 billion</strong>" or "<strong>Cleveland Clinic Abu Dhabi</strong>"
+- Lists: use <ul><li> for data points, key takeaways, or multi-item facts (2-5 items). Use sparingly — max 1-2 lists per article, not every paragraph.
+- Quotes: use <blockquote> for direct quotes from named sources. Include the speaker's name and title after.
 - Numbers: spell out one through nine, use digits for 10+
 - Currency: AED for local, $ for international comparisons
 - Dates: "15 March 2026" not "March 15, 2026"
-- Regulatory bodies: spell out on first mention with abbreviation, then abbreviation only`;
+- Regulatory bodies: spell out on first mention with abbreviation, then abbreviation only
+- Source links: if referencing a specific report or data source, link it with <a href="URL" target="_blank" rel="noopener">source name</a> where the URL is available`;
 
 // ─── Virality & click optimization ──────────────────────────────────────────────
 
@@ -142,7 +145,14 @@ BODY:
 - Are there specific numbers, names, and dates? Flag any paragraph that lacks all three.
 - Is every claim attributed to a named source? Cut or attribute vague claims.
 - Does any paragraph repeat information from another? Merge or cut.
-- Is the article between 200-500 words? Trim bloat or add missing context.
+- Is the article between 400-700 words? Add context if too short.
+
+FORMATTING CHECK (articles must be visually rich, not walls of text):
+- Does the body have 2-3 <h3> subheadings breaking up the content? Add them if missing.
+- Are key numbers, entity names, and dates wrapped in <strong> tags? Bold them if not.
+- Is there at least one <ul> or <ol> list with data points or takeaways? Add one if the content has 3+ comparable data points.
+- Are direct quotes wrapped in <blockquote>? Fix if they're just in <p> tags.
+- Does the article look like a STAT News or Bloomberg article, or a plain text email? If the latter, add formatting.
 
 AUDIENCE VALUE CHECK:
 - Which audience segment benefits most? (doctors, admins, marketers, investors, startup founders, executives)

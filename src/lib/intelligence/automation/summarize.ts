@@ -54,7 +54,7 @@ Generate a JSON object with these exact fields (JSON only, no markdown fences):
   "slug": "url-friendly-slug-max-60-chars",
   "title": "Headline under 120 chars. Include a specific number. Name the entity. Sentence case.",
   "excerpt": "2-3 sentences, under 200 chars, includes the key fact and a number if available",
-  "body": "Full HTML article body. 3-6 paragraphs with <p> tags. Use <h3> subheadings (sentence case) where appropriate. 200-500 words. Include specific UAE context. Every paragraph must pass all 21 anti-AI-tells rules.",
+  "body": "Full HTML article body. 400-700 words. RICH FORMATTING REQUIRED — this must look like STAT News or Bloomberg, not a text file. Use ALL of these HTML elements: <p> for paragraphs, <h3> for section subheadings (sentence case), <strong> to bold key numbers/names/dates/entities on first mention, <ul><li> or <ol><li> for data lists or key takeaways (2-5 items max), <blockquote> for direct quotes from named sources. Structure: lead paragraph (the news), then 2-3 sections each with an <h3> heading, then a forward-looking closing paragraph. Every section must contain at least one <strong> bolded fact and one specific number. Include specific UAE regulatory context (DHA/DOH/MOHAP). Every paragraph must pass all 21 anti-AI-tells rules.",
   "tags": ["5-8", "relevant", "lowercase", "tags"],
   "readTimeMinutes": 3
 }
@@ -121,6 +121,13 @@ async function reviewAndImprove(draft: {
 
 DRAFT:
 ${JSON.stringify(draft, null, 2)}
+
+CRITICAL FORMATTING REQUIREMENT — the body HTML must be visually rich:
+1. Ensure 2-3 <h3> subheadings (sentence case) break up the content
+2. Bold key numbers, entity names, and dates with <strong> tags
+3. Add at least one <ul><li> list if there are 3+ comparable data points
+4. Wrap direct quotes in <blockquote> tags
+5. If the body is a wall of <p> paragraphs with no other elements, ADD formatting
 
 Return the improved version as JSON with the same fields (slug, title, excerpt, body, tags, readTimeMinutes). JSON only, no markdown fences. If the draft is already strong, make targeted improvements — don't rewrite from scratch.`;
 
