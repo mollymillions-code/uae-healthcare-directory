@@ -23,7 +23,9 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-export const revalidate = 1800; // 30 min ISR — fresh enough for news, fast for crawlers
+// force-dynamic: Vercel Hobby has 19MB ISR limit — even 20 articles exceed it with RSC payload.
+// CDN edge caching via Cache-Control headers in vercel.json handles SEO crawl speed.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
