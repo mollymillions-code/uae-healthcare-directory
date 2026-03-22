@@ -21,10 +21,11 @@ interface PageProps {
   params: { slug: string };
 }
 
-export async function generateStaticParams() {
-  // Generate paths from real DB articles only
-  return getLatestArticles(100).map((a) => ({ slug: a.slug }));
-}
+// Disabled: pre-rendering 90+ articles exceeds Vercel Hobby 19MB limit.
+// Articles are rendered on-demand with CDN edge caching via vercel.json headers.
+// export async function generateStaticParams() {
+//   return getLatestArticles(100).map((a) => ({ slug: a.slug }));
+// }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const article = getArticleBySlug(params.slug);

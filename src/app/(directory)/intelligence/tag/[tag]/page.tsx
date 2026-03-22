@@ -14,7 +14,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return getAllTags().slice(0, 50).map((t) => ({ tag: t.tag }));
+  return getAllTags().slice(0, 10).map((t) => ({ tag: t.tag }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
