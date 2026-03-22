@@ -23,7 +23,7 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-export const revalidate = 3600; // 1 hour
+export const dynamic = "force-dynamic"; // Avoid ISR oversized page error — always fresh
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
@@ -50,7 +50,7 @@ export default async function JournalPage() {
 
   const featured = getFeaturedArticles(2);
   const breaking = getBreakingArticles();
-  const latest = getLatestArticles(20);
+  const latest = getLatestArticles(12);
   const events = getUpcomingEvents(5);
   const socialPosts = getLatestSocialPosts(4);
   const tags = getAllTags();
