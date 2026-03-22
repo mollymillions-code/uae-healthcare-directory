@@ -23,7 +23,7 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-export const dynamic = "force-dynamic"; // Avoid ISR oversized page error — always fresh
+export const revalidate = 1800; // 30 min ISR — fresh enough for news, fast for crawlers
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
