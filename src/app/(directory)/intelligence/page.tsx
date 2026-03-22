@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FeaturedArticle } from "@/components/intelligence/FeaturedArticle";
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export default async function JournalPage() {
-  // Load articles from DB before rendering
+  noStore(); // Prevent static pre-rendering — avoids Vercel's 19MB fallback limit
   await loadDbArticles();
 
   const featured = getFeaturedArticles(2);
