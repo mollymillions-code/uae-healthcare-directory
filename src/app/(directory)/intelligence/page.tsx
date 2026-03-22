@@ -50,7 +50,7 @@ export default async function JournalPage() {
 
   const featured = getFeaturedArticles(2);
   const breaking = getBreakingArticles();
-  const latest = getLatestArticles(12);
+  const latest = getLatestArticles(50);
   const events = getUpcomingEvents(5);
   const socialPosts = getLatestSocialPosts(4);
   const tags = getAllTags();
