@@ -16,7 +16,7 @@ import {
   getUpcomingEvents,
   getLatestSocialPosts,
   getAllTags,
-  getArticles,
+
   loadDbArticles,
 } from "@/lib/intelligence/data";
 import { journalListingSchema } from "@/lib/intelligence/seo";
