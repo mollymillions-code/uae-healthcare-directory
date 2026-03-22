@@ -6,7 +6,7 @@ import { ArticleCard } from "@/components/intelligence/ArticleCard";
 import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
-import { getArticleBySlug, getRelatedArticles, getAllTags, getArticles, getLatestArticles, loadDbArticles } from "@/lib/intelligence/data";
+import { getArticleBySlug, getArticleBodyBySlug, getRelatedArticles, getAllTags, getArticles, getLatestArticles, loadDbArticles } from "@/lib/intelligence/data";
 import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
@@ -58,7 +58,11 @@ export default async function ArticlePage({ params }: PageProps) {
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
 
-  const category = getJournalCategory(article.category);
+  // Fetch full body separately (not included in listing queries to avoid 20MB page bloat)
+  const body = await getArticleBodyBySlug(params.slug);
+  const fullArticle = { ...article, body: body || article.body };
+
+  const category = getJournalCategory(fullArticle.category);
   const related = getRelatedArticles(article, 4);
   const tags = getAllTags();
   const articleFaqs = generateArticleFaqs(article);
@@ -145,7 +149,7 @@ export default async function ArticlePage({ params }: PageProps) {
             </div>
 
             {/* Article body */}
-            <ArticleBody html={article.body} />
+            <ArticleBody html={fullArticle.body} />
 
             {/* Author bio */}
             <div className="border border-light-200 p-4 mt-10 flex items-center gap-3">
