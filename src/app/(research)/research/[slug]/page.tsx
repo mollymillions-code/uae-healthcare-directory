@@ -145,7 +145,7 @@ export default function ReportPage({ params }: Props) {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between text-[12px] text-black/25">
             <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-black/40">Zavis Research</span>
-            <span>2025 Zavis Inc.</span>
+            <span>2026 Zavis Inc.</span>
           </div>
         </div>
       </footer>

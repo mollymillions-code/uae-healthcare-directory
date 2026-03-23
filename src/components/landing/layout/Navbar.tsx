@@ -23,6 +23,7 @@ import {
   Mail,
   MapPin,
   Newspaper,
+  BookOpen,
 } from "lucide-react";
 import svgPaths from "@/imports/svg-a821gkm5bu";
 
@@ -624,6 +625,12 @@ export function Navbar() {
               >
                 Intelligence
               </a>
+              <a
+                href="/research"
+                className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
+              >
+                Research
+              </a>
             </div>
 
             <div className="hidden lg:block">
@@ -828,6 +835,15 @@ export function Navbar() {
             >
               <Newspaper className="w-4 h-4 opacity-50" />
               Intelligence
+            </a>
+          </div>
+          <div className="border-b border-black/5">
+            <a
+              href="/research"
+              className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
+            >
+              <BookOpen className="w-4 h-4 opacity-50" />
+              Research
             </a>
           </div>
           <div className="mt-6">

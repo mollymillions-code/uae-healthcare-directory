@@ -74,6 +74,9 @@ export function Header() {
             <Link href="/intelligence" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               Insights
             </Link>
+            <Link href="/research" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+              Research
+            </Link>
             <Link href="/about" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
               About
             </Link>
@@ -121,6 +124,7 @@ export function Header() {
             <div className="border-t border-white/10 pt-3 flex flex-wrap gap-4">
               <Link href="/search" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Search</Link>
               <Link href="/intelligence" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Insights</Link>
+              <Link href="/research" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Research</Link>
               <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
               <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
               {getArabicPath(pathname) && (

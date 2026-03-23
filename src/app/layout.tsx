@@ -69,6 +69,10 @@ export const metadata: Metadata = {
     site: "@zaaborz",
     images: [`${baseUrl}/images/og-default.png`],
   },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
   robots: { index: true, follow: true },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,

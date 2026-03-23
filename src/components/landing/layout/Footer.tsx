@@ -67,6 +67,7 @@ const footerLinks = [
     links: [
       { label: "UAE Directory", href: "/directory" },
       { label: "Intelligence", href: "/intelligence" },
+      { label: "Research", href: "/research" },
     ],
   },
   {
@@ -109,7 +110,7 @@ export function Footer() {
               </h4>
               <ul className="space-y-2 text-white/60 font-['Geist',sans-serif] text-sm">
                 {section.links.map((link) => {
-                  const isExternal = link.href.startsWith("/directory") || link.href.startsWith("/intelligence");
+                  const isExternal = link.href.startsWith("/directory") || link.href.startsWith("/intelligence") || link.href.startsWith("/research");
                   return (
                     <li key={link.href}>
                       {isExternal ? (

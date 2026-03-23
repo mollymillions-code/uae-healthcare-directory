@@ -223,7 +223,7 @@ export default function HomePage() {
               <Link href="/" className="hover:text-black/60 transition-colors">zavis.ai</Link>
               <a href="https://www.linkedin.com/company/zavis" target="_blank" rel="noopener noreferrer" className="hover:text-black/60 transition-colors">LinkedIn</a>
               <a href="https://www.zavis.ai/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-black/60 transition-colors">Privacy</a>
-              <span>2025 Zavis Inc.</span>
+              <span>2026 Zavis Inc.</span>
             </div>
           </div>
         </div>

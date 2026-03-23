@@ -52,6 +52,7 @@ export function Footer() {
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Insights</h5>
             <ul className="space-y-2">
               <li><Link href="/intelligence" className="text-sm text-white/60 hover:text-white transition-colors">Industry Insights</Link></li>
+              <li><Link href="/research" className="text-sm text-white/60 hover:text-white transition-colors">Research Reports</Link></li>
               <li><span className="text-sm text-white/60">Newsletter</span></li>
               <li><Link href="/intelligence/feed.xml" className="text-sm text-white/60 hover:text-white transition-colors">RSS Feed</Link></li>
               <li><Link href="/editorial-policy" className="text-sm text-white/60 hover:text-white transition-colors">Editorial Policy</Link></li>
