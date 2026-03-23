@@ -12,10 +12,7 @@ interface Props {
   params: { slug: string }
 }
 
-export async function generateStaticParams() {
-  const reports = getAllPublishedReports()
-  return reports.map(r => ({ slug: r.slug }))
-}
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const report = getReportBySlug(params.slug)

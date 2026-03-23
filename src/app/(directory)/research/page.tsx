@@ -4,7 +4,7 @@ import { Clock, ArrowRight, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 function getReports(): ReportMeta[] {
   const fsReports = getAllPublishedReports()
