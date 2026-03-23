@@ -1,0 +1,436 @@
+{
+  "report": "clinics-aesthetics",
+  "timestamp": "2026-03-22T10:27:44.473Z",
+  "grade": "A",
+  "averageScore": 98,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 14,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 100,
+    "contrast": 100,
+    "visibility": 98,
+    "overlay": 100,
+    "contentDensity": 95,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 89
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Business & AI Report — 2025",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 92,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30"
+      ]
+    },
+    {
+      "slide": 2,
+      "title": "Industry Growth Snapshot",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 15,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 3,
+      "title": "Patient Behavior Insights",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 14,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "Digital Adoption",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 24,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 5,
+      "title": "Lead Capture & WhatsApp Funnel",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 96,
+        "overlay": 100,
+        "contentDensity": 95,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 90
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 26,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.48",
+        "26 text elements — slide is overcrowded",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 6,
+      "title": "AI Reception Models",
+      "score": 95,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 85,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 28,
+      "criticalIssues": [],
+      "warnings": [
+        "28 text elements — slide is overcrowded",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 7,
+      "title": "EMR + Automation",
+      "score": 93,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 86,
+        "overlay": 100,
+        "contentDensity": 85,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 28,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30",
+        "opacity: 0.30",
+        "opacity: 0.30",
+        "opacity: 0.30",
+        "28 text elements — slide is overcrowded",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 8,
+      "title": "Case Study",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 20,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 9,
+      "title": "ROI Analysis",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 90
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 10,
+      "title": "AI Follow-up & Retention",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 11,
+      "title": "Compliance & Security",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 80
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 24,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 12,
+      "title": "Aesthetic Industry Comparison",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 60,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 33,
+      "criticalIssues": [],
+      "warnings": [
+        "33 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 13,
+      "title": "2025–2030 Projection",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 52
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 17,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 14,
+      "title": "(untitled)",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 94,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 18,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

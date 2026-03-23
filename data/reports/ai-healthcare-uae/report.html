@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI in UAE Healthcare — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--blue:#5B8DEF;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── SPECIAL: METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── SPECIAL: TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Full-bleed image, title, counters
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-healthcare-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Research — 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:14em">
+      AI in UAE Healthcare:<br><span class="accent">From Reactive Care<br>to Predictive Precision</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:32em;margin-top:16px;color:var(--t2)">
+      Exploring the transformative impact of artificial intelligence on healthcare delivery systems across the United Arab Emirates
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">0%</div>
+        <div class="stat-label">CAGR Growth</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">AI Adoption</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">Cost Reduction</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)" id="c4">0%</div>
+        <div class="stat-label">Better Accuracy</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — THE BIG NUMBER: $138M market, single dominant stat
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-market.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Market Landscape</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--green)">$138<span style="font-size:.45em;color:var(--t2);font-weight:400">M</span></div>
+        <div class="h3" style="color:var(--t1)">Projected UAE Healthcare AI Market by 2030</div>
+        <p class="body" style="max-width:28em">Growing at a 34.6% CAGR, the UAE's healthcare AI market is one of the fastest-expanding in the world. Government initiatives under UAE Vision 2031, combined with AED 74 billion in healthcare expenditure, are fueling unprecedented adoption.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">34.6%</div><div class="stat-label">CAGR 2024-2030</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">AED 74B</div><div class="stat-label">Healthcare Expenditure</div></div>
+        <div class="g2">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">77+</div><div class="stat-label">Digital Health Startups</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">42%</div><div class="stat-label">Current AI Adoption</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — PUBLIC SENTIMENT: 82% positive attitudes
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-public.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Public Readiness</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--teal);margin-top:24px">82%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">of UAE residents express positive attitudes toward AI in healthcare</div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:30em;margin-top:16px">
+      With 77% of healthcare providers already implementing AI solutions, the UAE leads the GCC region in both institutional readiness and public acceptance of AI-driven healthcare.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">77%</div>
+        <div class="stat-label">Providers with AI</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">89%</div>
+        <div class="stat-label">Patient Satisfaction</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(91,141,239,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">98%</div>
+        <div class="stat-label">Internet Penetration</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — USE CASES: 4 key applications with real metrics
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-usecases.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Applications</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Transforming Every Layer of <span class="accent">Care Delivery</span></div>
+    <div class="g2 rv rv-d2" style="width:100%">
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--green)">PREDICTIVE SCHEDULING</div>
+        <div class="h3">27% fewer no-shows</div>
+        <p class="body-sm">AI appointment optimization forecasts patient demand with 92% accuracy, automatically adjusting physician schedules based on historical patterns.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">92%</div><div class="stat-label" style="font-size:11px">Forecast Accuracy</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">-27%</div><div class="stat-label" style="font-size:11px">No-show Rate</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--teal)">WORKFLOW AUTOMATION</div>
+        <div class="h3">70% less admin work</div>
+        <p class="body-sm">Automated documentation saves 15.5 hours per week per clinician. Smart EMR integration with real-time data synchronization across departments.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">15.5h</div><div class="stat-label" style="font-size:11px">Saved Weekly</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">-70%</div><div class="stat-label" style="font-size:11px">Admin Tasks</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--gold)">AI DIAGNOSTICS</div>
+        <div class="h3">98.5% TB detection</div>
+        <p class="body-sm">AIRIS-TB achieves 98.5% accuracy in tuberculosis detection. AI reduces diagnostic errors by 36% across UAE hospitals, improving treatment outcomes by 43%.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">-36%</div><div class="stat-label" style="font-size:11px">Diagnostic Errors</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">+43%</div><div class="stat-label" style="font-size:11px">Better Outcomes</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--blue)">VIRTUAL ASSISTANTS</div>
+        <div class="h3">78% inquiries automated</div>
+        <p class="body-sm">24/7 multilingual patient support reduces call center volume by 42%. AI handles routine inquiries without human intervention across Arabic and English.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--blue)">-42%</div><div class="stat-label" style="font-size:11px">Call Volume</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--blue)">24/7</div><div class="stat-label" style="font-size:11px">Availability</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — BUSINESS IMPACT: Measured outcomes with bars
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-impact.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Business Impact</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Measured Outcomes <span class="accent">Across the System</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">AI adoption in UAE healthcare is delivering measurable returns across key performance indicators. Institutions report cost reductions of 17-23% within the first 18 months.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-md">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">32%+</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Clinical Efficiency Improvement</div>
+          <p class="body-sm" style="margin-top:8px;text-align:center;font-size:12px">Average across UAE hospitals with AI diagnostic tools</p>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">1.7B</div>
+            <div class="stat-label">AED Annual Savings</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">89%</div>
+            <div class="stat-label">Patient Satisfaction</div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="bar-row"><div class="bar-lbl">Efficiency</div><div class="bar-track"><div class="bar-fill" data-w="82%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">32%+</div></div>
+        <div class="bar-row"><div class="bar-lbl">Admin Reduction</div><div class="bar-track"><div class="bar-fill" data-w="90%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">70%+</div></div>
+        <div class="bar-row"><div class="bar-lbl">Cost Savings</div><div class="bar-track"><div class="bar-fill" data-w="58%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">23%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Satisfaction</div><div class="bar-track"><div class="bar-fill" data-w="89%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">89%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Diagnostic Acc.</div><div class="bar-track"><div class="bar-fill" data-w="78%" style="background:linear-gradient(90deg,var(--coral),#FF6B6B)"></div></div><div class="bar-val" style="color:var(--coral)">31%+</div></div>
+        <div class="callout" style="margin-top:8px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">SOURCE</div>
+          <p class="body-sm" style="font-size:14px">DHA Digital Transformation Report, PwC Middle East Healthcare Economics, Emirates Health Services Survey</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — CASE STUDY: Cleveland Clinic (image bg)
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-healthcare-cleveland.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:500px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Cleveland Clinic <span class="accent">Abu Dhabi</span></div>
+        <p class="body">Implemented AI Scribe, an ambient clinical intelligence solution that automatically documents patient encounters in real-time with voice-activated listening and automatic clinical note generation.</p>
+        <div class="callout">
+          <p class="body-sm" style="font-style:italic">"AI has transformed our workflows by removing the burden of documentation and allowing physicians to focus on patient care."</p>
+          <p class="caption" style="margin-top:8px">— Chief Digital Officer, Cleveland Clinic Abu Dhabi</p>
+        </div>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">86%</div>
+            <div class="stat-label">Physician Adoption</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">2.1h</div>
+            <div class="stat-label">Saved Daily</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">93%</div>
+            <div class="stat-label">Same-day Charts</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — CASE STUDY: Mediclinic + Geneyx
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-healthcare-diagnostics.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:500px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Mediclinic <span class="accent">Middle East</span></div>
+        <p class="body">Deployed Geneyx AI for genomic analysis, transforming the diagnosis of rare and germline diseases through advanced AI algorithms across 7 hospitals and 20+ clinics.</p>
+        <div class="callout">
+          <p class="body-sm" style="font-style:italic">"Geneyx AI has transformed our ability to diagnose complex genetic disorders and provide personalized treatment plans."</p>
+          <p class="caption" style="margin-top:8px">— Clinical Genomics Director, Mediclinic Middle East</p>
+        </div>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">83%</div>
+            <div class="stat-label">Faster Analysis</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">+42%</div>
+            <div class="stat-label">Detection Rate</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">68%</div>
+            <div class="stat-label">Better Coordination</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — FRAUD DETECTION: DHA's AED 1M finding
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-fraud.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">AI Auditing</div>
+    <div class="rv rv-d1" style="margin-top:clamp(16px,3vh,32px)">
+      <div class="mono" style="font-size:clamp(12px,1vw,16px);color:var(--t3);letter-spacing:2px">DUBAI HEALTH AUTHORITY</div>
+    </div>
+    <div class="metric-mega rv rv-d2" style="color:var(--gold);margin-top:12px">AED 1M</div>
+    <div class="h3 rv rv-d3" style="max-width:18em;text-align:center;margin-top:12px">in potentially fraudulent claims identified <span class="accent">per audit cycle</span></div>
+    <p class="body rv rv-d4" style="text-align:center;max-width:32em;margin-top:16px">
+      The DHA's AI-powered auditing system automatically screens healthcare claims for anomalies, identifying billing irregularities that manual review consistently missed. The system has transformed revenue integrity across Dubai's public healthcare network.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — DRIVERS & BARRIERS: Dual analysis
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-barriers.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Adoption Factors</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">What Drives — and Blocks — <span class="accent">AI Adoption</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">KEY ENABLERS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Government Initiatives</div><p class="body-sm">UAE Vision 2031 and National AI Strategy with healthcare as a priority sector</p></div>
+        <div class="info-card" style="border-left:3px solid var(--teal)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Digital Infrastructure</div><p class="body-sm">98% internet penetration. World-class hospital IT systems ready for AI integration</p></div>
+        <div class="info-card" style="border-left:3px solid var(--blue)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Public-Private Partnerships</div><p class="body-sm">Oracle-Cleveland Clinic-G42 collaborations creating transformative AI ecosystems</p></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--coral);margin-bottom:4px">MAIN BARRIERS</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Data Privacy Concerns</div><p class="body-sm">77% of providers cite data protection as primary concern. Cross-border data flows remain complex</p></div>
+        <div class="info-card" style="border-left:3px solid var(--gold)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Implementation Costs</div><p class="body-sm">High initial investment required, especially challenging for smaller facilities and clinics</p></div>
+        <div class="info-card" style="border-left:3px solid var(--t3)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Skills Gap</div><p class="body-sm">56% of organizations report AI talent shortages. Competition from fintech and energy sectors</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — REGULATORY TIMELINE
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-regulatory.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Regulatory Evolution</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Building the <span class="accent">Governance Framework</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md" style="max-width:500px">
+        <div class="tl-row"><div class="tl-yr">2017</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">UAE AI Strategy 2031</div><p class="body-sm">National AI strategy launched with healthcare as priority. $1.5B committed to AI R&D.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2019</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">DOH AI Policy</div><p class="body-sm">Abu Dhabi issues first comprehensive AI policy covering clinical tools, data governance, consent.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2021</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">DHA Smart Health</div><p class="body-sm">Dubai Health Authority integrates AI across all public hospitals. Mandatory AI training for staff.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2023</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Federal Data Protection</div><p class="body-sm">Clear guidelines for health data processing, cross-border transfers, and AI model training.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2025</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">AI Medical Device Regulation</div><p class="body-sm">New classification for AI medical devices. Streamlined approval for local AI diagnostics.</p></div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="callout">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">LOOKING AHEAD: 2025-2030</div>
+          <p class="body-sm">Unified GCC AI medical device classification. Expanded insurance coverage for AI diagnoses. Streamlined approval pathways for validated AI systems.</p>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--gold);margin-bottom:8px">WORKFORCE FORECAST</div>
+          <div class="bar-row"><div class="bar-lbl" style="font-size:11px">AI Specialists</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:var(--green)"></div></div><div class="bar-val" style="color:var(--green);font-size:11px">+30%</div></div>
+          <p class="body-sm" style="margin-top:6px;font-size:11px">30% growth in healthcare AI specialists by 2027. New hybrid roles combining clinical and data science expertise.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — STRATEGIC RECOMMENDATIONS
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-strategy.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Strategic Recommendations</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">The Implementation <span class="accent">Roadmap</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">SHORT-TERM: 0-1 YEAR</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Foundation</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Conduct AI readiness assessment across departments</p>
+          <p class="body-sm">Prioritize low-risk, high-impact automation pilots</p>
+          <p class="body-sm">Implement staff training in AI literacy</p>
+          <p class="body-sm">Establish baseline metrics for measuring ROI</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">MEDIUM-TERM: 1-3 YEARS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Scale</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Scale successful pilots across clinical departments</p>
+          <p class="body-sm">Develop data governance with federated learning</p>
+          <p class="body-sm">Foster cross-functional AI innovation teams</p>
+          <p class="body-sm">Implement ethical AI oversight committees</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">LONG-TERM: 3-5 YEARS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Lead</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Create AI Centers of Excellence with academic partners</p>
+          <p class="body-sm">Develop UAE-specific healthcare AI benchmarks</p>
+          <p class="body-sm">Participate in GCC-wide AI healthcare initiatives</p>
+          <p class="body-sm">Pioneer sovereign health data infrastructure</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — FUTURE OUTLOOK (image bg)
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-healthcare-future.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">2030 Horizon</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:18em">The Future of <span class="accent">Healthcare AI</span> in the UAE</div>
+    <div class="g3 rv rv-d2" style="margin-top:clamp(20px,3vh,36px);max-width:800px;width:100%">
+      <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--green)">01</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Ambient Clinical AI</div><p class="body-sm" style="font-size:14px;margin-top:4px">AI that listens, documents, and suggests during patient encounters in real-time</p></div>
+      <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--teal)">02</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Population Genomics</div><p class="body-sm" style="font-size:14px;margin-top:4px">500K+ genomes sequenced. Personalized treatment protocols at national scale</p></div>
+      <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--gold)">03</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">AI-First Primary Care</div><p class="body-sm" style="font-size:14px;margin-top:4px">Fully automated clinics with AI triage, diagnostics, and treatment recommendation</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — CONCLUSION
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-hc-conclusion.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Conclusion</div>
+    <div class="h1 rv rv-d1" style="text-align:center;max-width:16em;margin-top:20px;font-size:clamp(28px,4vw,56px)">
+      The UAE Is Not Just Adopting AI.<br><span class="accent">It Is Defining What AI Healthcare Looks Like.</span>
+    </div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:20px;font-size:clamp(15px,1.2vw,18px)">
+      With 28-35% efficiency gains, 42% reduction in administrative workload, and a progressive regulatory framework, the Emirates is creating sustainable competitive advantages for healthcare institutions embracing this transformation.
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">$138M</div><div class="stat-label">Market 2030</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">34.6%</div><div class="stat-label">CAGR</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">1.7B</div><div class="stat-label">AED Saved</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">89%</div><div class="stat-label">Satisfaction</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ABOUT / SOURCES
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/ai-healthcare-uae/ai-healthcare-hero.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">Zavis is the AI-powered patient engagement platform built for healthcare. AI agents handle 60-90% of routine patient operations across WhatsApp, Instagram, web chat, and voice. Every inquiry answered, every appointment booked, every follow-up sent. 24 hours a day, 7 days a week.</p>
+        <p class="body" style="max-width:28em;margin-top:12px">One conversation thread per patient across every channel. Two-way EMR writeback in real-time. Full attribution from ad click to booked appointment to collected revenue. Go live in 24 hours.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:10px 24px;border-radius:100px;font-family:var(--display);font-size:14px;font-weight:600;text-decoration:none;letter-spacing:.5px">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">SOURCES & REFERENCES</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.8">
+          Smart Dubai / Digital Dubai Authority<br>
+          UAE AI Council / Ministry of AI<br>
+          PwC Middle East AI Impact Research<br>
+          Dubai Health Authority Reports 2024-2025<br>
+          Cleveland Clinic Abu Dhabi Case Studies<br>
+          Emirates Health Services Patient Experience Survey<br>
+          UAE Health Information System Report 2025<br>
+          Mediclinic Middle East Genomics Program<br>
+          UAE Ministry of Health Digital Transformation Survey
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published September 2025</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){aN(document.getElementById('c1'),34.6,1800,'%','');aN(document.getElementById('c2'),77,1500,'%','');aN(document.getElementById('c3'),23,1200,'%','');aN(document.getElementById('c4'),31,1400,'%','');hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

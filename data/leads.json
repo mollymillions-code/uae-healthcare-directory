@@ -1,0 +1,122 @@
+[
+  {
+    "email": "Mo@zavis.ai",
+    "firstName": "Mo",
+    "lastName": "J",
+    "company": "Zavis",
+    "companySize": "1-10",
+    "title": "Product Manager",
+    "country": "IN",
+    "reportId": "1",
+    "reportTitle": "51 Trading Strategies",
+    "timestamp": "2025-10-13T22:28:27.127Z"
+  },
+  {
+    "email": "mo@zavis.ai",
+    "firstName": "M",
+    "lastName": "J",
+    "company": "Zavis",
+    "companySize": "1-10",
+    "title": "Manager",
+    "country": "IN",
+    "reportId": "1",
+    "reportTitle": "51 Trading Strategies",
+    "timestamp": "2025-10-15T10:09:35.526Z"
+  },
+  {
+    "email": "mo@zavis.ai",
+    "firstName": "Mo",
+    "lastName": "J",
+    "company": "Zavis",
+    "companySize": "1-10",
+    "title": "Manager",
+    "country": "IN",
+    "reportId": "real-estate-protech",
+    "reportTitle": "Real Estate & PropTech: Smart Property Solutions",
+    "timestamp": "2025-10-15T14:47:20.153Z"
+  },
+  {
+    "email": "jain.mohit.1312000@gmail.com",
+    "firstName": "Mo",
+    "lastName": "J",
+    "company": "Zavis",
+    "companySize": "11-50",
+    "title": "CXO",
+    "country": "IN",
+    "reportId": "hospitality-dubai",
+    "reportTitle": "Hospitality in Dubai: AI-Driven Guest Experiences",
+    "timestamp": "2025-10-15T14:49:01.619Z"
+  },
+  {
+    "email": "mo@zavis.ai",
+    "firstName": "Mo",
+    "lastName": "J",
+    "company": "Zavis",
+    "companySize": "11-50",
+    "title": "manager",
+    "country": "IN",
+    "reportId": "hospitality-dubai",
+    "reportTitle": "Hospitality in Dubai: AI-Driven Guest Experiences",
+    "timestamp": "2025-10-15T14:50:32.347Z"
+  },
+  {
+    "email": "integration@test.com",
+    "firstName": "Integration",
+    "lastName": "Test",
+    "company": "Test Corp",
+    "companySize": "1-10",
+    "title": "Manager",
+    "country": "UAE",
+    "reportId": "hospitality-dubai",
+    "reportTitle": "Hospitality in Dubai",
+    "timestamp": "2025-10-21T09:48:18.457Z"
+  },
+  {
+    "email": "sagar@gmail.com",
+    "firstName": "Sagar",
+    "lastName": "Chamle",
+    "company": "Zavis",
+    "companySize": "1-10",
+    "title": "PM",
+    "country": "IN",
+    "reportId": "hospitality-dubai",
+    "reportTitle": "Hospitality in Dubai: AI-Driven Guest Experiences",
+    "timestamp": "2025-10-21T09:49:11.173Z"
+  },
+  {
+    "email": "mapping@test.com",
+    "firstName": "Mapping",
+    "lastName": "Test",
+    "company": "Mapping Corp",
+    "companySize": "11-50",
+    "title": "CTO",
+    "country": "USA",
+    "reportId": "ai-healthcare-uae",
+    "reportTitle": "AI in UAE Healthcare",
+    "timestamp": "2025-10-21T09:51:26.891Z"
+  },
+  {
+    "email": "sagar@gmail.com",
+    "firstName": "Sagar",
+    "lastName": "Chamle",
+    "company": "Zavis",
+    "companySize": "1-10",
+    "title": "PM",
+    "country": "IN",
+    "reportId": "future-retail-ai",
+    "reportTitle": "Future of Retail AI: Customer Experience Revolution",
+    "timestamp": "2025-10-21T09:54:43.487Z"
+  },
+  {
+    "email": "final@test.com",
+    "firstName": "Final",
+    "lastName": "Test",
+    "company": "Final Corp",
+    "companySize": "51-200",
+    "title": "Director",
+    "country": "Canada",
+    "reportId": "fintech-banking-uae",
+    "reportTitle": "Fintech and Banking in UAE",
+    "timestamp": "2025-10-21T09:55:55.210Z"
+  }
+]

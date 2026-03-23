@@ -1,0 +1,434 @@
+{
+  "report": "real-estate-protech",
+  "timestamp": "2026-03-22T10:25:50.438Z",
+  "grade": "A",
+  "averageScore": 98,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 14,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 100,
+    "contrast": 99,
+    "visibility": 99,
+    "overlay": 100,
+    "contentDensity": 97,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 84
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Research — October 2025",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 92,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30"
+      ]
+    },
+    {
+      "slide": 2,
+      "title": "Market Landscape",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 3,
+      "title": "Residential Real Estate",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 14,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "AI in Real Estate",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 24,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 5,
+      "title": "PropTech Solutions",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 6,
+      "title": "Customer Experience",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 7,
+      "title": "Smart Buildings",
+      "score": 89,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 70,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 20
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 31,
+      "criticalIssues": [],
+      "warnings": [
+        "31 text elements — slide is overcrowded",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 8,
+      "title": "Blockchain & Transparency",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 80
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 9,
+      "title": "Case Study",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 10,
+      "title": "Case Study",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 11,
+      "title": "SME Opportunities",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 90,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 27,
+      "criticalIssues": [],
+      "warnings": [
+        "27 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 12,
+      "title": "Risks & Regulation",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 18,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 13,
+      "title": "2030 Outlook",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 100
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 17,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 14,
+      "title": "(untitled)",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 92,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Future of Retail AI: Customer Experience Revolution — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* SLIDE SYSTEM */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+.ov-right .s-bg::after{background:linear-gradient(270deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-gradient .s-bg::after{background:linear-gradient(135deg,rgba(8,11,18,.88) 0%,rgba(0,168,107,.08) 50%,rgba(8,11,18,.92) 100%)}
+
+/* PROGRESS & NAV */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* TYPOGRAPHY */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.accent-teal{color:var(--teal)}
+.accent-gold{color:var(--gold)}
+.mono{font-family:var(--mono)}
+
+/* ANIMATIONS */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* DATA VIZ */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* DONUT CHART */
+.donut-wrap{position:relative;width:clamp(140px,12vw,200px);height:clamp(140px,12vw,200px)}
+.donut-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut-wrap .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* LAYOUTS */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* METRIC MEGA */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* TIMELINE */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* PHASE CONNECTOR */
+.phase-arrow{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:20px;color:var(--t3)}
+
+/* QUOTE BLOCK */
+.quote-block{position:relative;padding-left:24px;border-left:2px solid var(--green)}
+.quote-block::before{content:'\201C';position:absolute;top:-16px;left:8px;font-family:var(--display);font-size:64px;color:rgba(0,168,107,.15);line-height:1}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Cinematic title with market snapshot
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Insight Series — Dubai 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:14em">
+      Future of Retail AI:<br><span class="accent">Customer Experience<br>Revolution</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      How AI &amp; Automation Are Transforming Business in the UAE — From Personalization to Autonomous Operations
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:740px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">0%</div>
+        <div class="stat-label">CAGR Growth</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">AI Adoption</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">Efficiency Gain</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c4">0%</div>
+        <div class="stat-label">Sales Lift</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE &#8595;</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — MARKET LANDSCAPE: $157.86M projection with growth curve
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-warehouse.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Market Landscape</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--green)">$157<span style="font-size:.4em;color:var(--t2);font-weight:400">M</span></div>
+        <div class="h3" style="color:var(--t1)">UAE AI in Retail Market by 2032</div>
+        <p class="body" style="max-width:28em">Growing from $16.82M in 2023 at a staggering 28.21% CAGR. The broader UAE retail market stands at $145.3B in 2024, projected to reach $227.1B by 2033 — creating massive runway for AI transformation.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">28.21%</div><div class="stat-label">CAGR 2023-2032</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">$145.3B</div><div class="stat-label">Total Retail Market 2024</div></div>
+        <div class="g2">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">~5.1%</div><div class="stat-label">Retail CAGR</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">$16.8M</div><div class="stat-label">AI Market 2023</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — ADOPTION SNAPSHOT: 80% usage, big centered stat
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-ar.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Adoption Snapshot</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--teal);margin-top:24px">80%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">of UAE retail professionals now use AI in their workflows</div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:32em;margin-top:16px">
+      Up from 56% in previous years, AI adoption has accelerated across every retail sub-sector. E-commerce leads at 90% impact projection, while even convenience retail hits 55%.
+    </p>
+    <div class="g4 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:760px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">90%</div>
+        <div class="stat-label">E-commerce</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">75%</div>
+        <div class="stat-label">Luxury Retail</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">65%</div>
+        <div class="stat-label">Dept. Stores</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(255,255,255,.07)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--t1)">55%</div>
+        <div class="stat-label">Convenience</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — DIGITAL MATURITY: Horizontal bars by sub-sector
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-warehouse.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Industry Landscape</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Digital Transformation Maturity <span class="accent">in UAE Retail</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md">
+        <p class="body" style="max-width:28em">With over 65 major malls, e-commerce growing at 15% annually, and a high-spending tourist market fueling luxury retail, the UAE retail landscape is primed for AI disruption.</p>
+        <div class="stack gap-sm">
+          <div class="bar-row"><div class="bar-lbl">E-commerce</div><div class="bar-track"><div class="bar-fill" data-w="92%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">92%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Mall Operators</div><div class="bar-track"><div class="bar-fill" data-w="78%" style="background:linear-gradient(90deg,var(--teal),var(--green))"></div></div><div class="bar-val" style="color:var(--teal)">78%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Dept. Stores</div><div class="bar-track"><div class="bar-fill" data-w="65%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">65%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Independent</div><div class="bar-track"><div class="bar-fill" data-w="43%" style="background:linear-gradient(90deg,var(--t3),var(--t2))"></div></div><div class="bar-val" style="color:var(--t2)">43%</div></div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">MAJOR PLAYERS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Majid Al Futtaim</div>
+          <div class="caption" style="color:var(--green);margin-top:2px">AI ADOPTION: HIGH</div>
+          <p class="body-sm">Carrefour franchise, Mall of the Emirates, City Centre malls</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Noon.com</div>
+          <div class="caption" style="color:var(--teal);margin-top:2px">AI ADOPTION: VERY HIGH</div>
+          <p class="body-sm">Leading e-commerce with AI-powered recommendations</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Emaar Malls</div>
+          <div class="caption" style="color:var(--gold);margin-top:2px">AI ADOPTION: MEDIUM-HIGH</div>
+          <p class="body-sm">Dubai Mall, Dubai Hills Mall, app-based experiences</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — AI USE CASES: 4 key transformation areas
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-ar.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Applications</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Transforming Every Layer of <span class="accent">Retail Operations</span></div>
+    <div class="g2 rv rv-d2" style="width:100%">
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--green)">PERSONALIZED MARKETING</div>
+        <div class="h3">25-35% higher conversion</div>
+        <p class="body-sm">AI recommendation systems analyze customer data for hyper-personalized offers. Chatbots handle 60% of customer inquiries 24/7.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">+35%</div><div class="stat-label" style="font-size:11px">Conversion Rate</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">60%</div><div class="stat-label" style="font-size:11px">Inquiries Automated</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--teal)">DEMAND FORECASTING</div>
+        <div class="h3">85% prediction accuracy</div>
+        <p class="body-sm">Advanced AI predicts consumer demand, reducing stockouts by 30%. Dynamic pricing engines adjust in real-time using 20+ variables.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">85%</div><div class="stat-label" style="font-size:11px">Forecast Accuracy</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">-30%</div><div class="stat-label" style="font-size:11px">Stockouts</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--gold)">INVENTORY &amp; SUPPLY CHAIN</div>
+        <div class="h3">18% lower holding costs</div>
+        <p class="body-sm">AI-driven inventory management maintains optimal stock levels. Smart logistics cut delivery times by 22% through route optimization.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">-18%</div><div class="stat-label" style="font-size:11px">Holding Costs</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">-22%</div><div class="stat-label" style="font-size:11px">Delivery Time</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--coral)">OPERATIONAL AUTOMATION</div>
+        <div class="h3">40% faster checkout</div>
+        <p class="body-sm">Automated checkout cuts transaction times by 40% and labor costs by 15%. Video analytics optimize staffing and store layout.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--coral)">-15%</div><div class="stat-label" style="font-size:11px">Labor Costs</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--coral)">+22%</div><div class="stat-label" style="font-size:11px">Productivity</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — BUSINESS IMPACT: Measured outcomes with bars + stats
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Business Impact</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Measured Outcomes <span class="accent">Across UAE Retail</span></div>
+    <p class="body rv rv-d2" style="max-width:38em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">UAE retailers leveraging AI report dramatically higher performance. Leading players see 15-20% revenue growth and up to 30% operational cost reduction.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-md">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">20-25%</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Operational Efficiency Increase</div>
+          <p class="body-sm" style="margin-top:8px;text-align:center;font-size:12px">Reported by leading UAE retailers with AI integration</p>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">+20%</div>
+            <div class="stat-label">Sales Conversions</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">2-4pp</div>
+            <div class="stat-label">Margin Improvement</div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="bar-row"><div class="bar-lbl">Revenue Growth</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">15-20%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Op. Efficiency</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--teal),var(--green))"></div></div><div class="bar-val" style="color:var(--teal)">25%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Cost Reduction</div><div class="bar-track"><div class="bar-fill" data-w="70%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">30%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Satisfaction</div><div class="bar-track"><div class="bar-fill" data-w="68%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">+18%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Time-to-Market</div><div class="bar-track"><div class="bar-fill" data-w="65%" style="background:linear-gradient(90deg,var(--coral),#FF6B6B)"></div></div><div class="bar-val" style="color:var(--coral)">-35%</div></div>
+        <div class="callout" style="margin-top:8px">
+          <p class="body-sm" style="font-style:italic;font-size:12px">"AI is no longer optional for UAE retailers. It has become a strategic imperative to remain competitive in an increasingly digital marketplace."</p>
+          <p class="caption" style="margin-top:6px">-- UAE Retail Innovation Council, 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — DRIVERS & BARRIERS: Dual-column analysis
+     ════════════════════════════════════════════ -->
+<section class="s ov-gradient" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-warehouse.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Adoption Factors</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">What Drives — and Blocks — <span class="accent">AI Adoption</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">KEY ENABLERS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Government Vision</div><p class="body-sm">UAE National Strategy for AI 2031 provides strong policy support and funding for AI initiatives across sectors</p></div>
+        <div class="info-card" style="border-left:3px solid var(--teal)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Talent Ecosystem</div><p class="body-sm">Growing AI specialist pool, tech-focused educational programs, and favorable immigration policies for skilled workers</p></div>
+        <div class="info-card" style="border-left:3px solid var(--gold)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Advanced Infrastructure</div><p class="body-sm">World-class digital infrastructure, high connectivity, and state-of-the-art data centers supporting AI deployment</p></div>
+        <div class="info-card" style="border-left:3px solid var(--t1)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Competitive Pressure</div><p class="body-sm">Market competition driving retailers to adopt AI solutions to remain relevant and meet customer expectations</p></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--coral);margin-bottom:4px">MAIN BARRIERS</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Implementation Costs</div><p class="body-sm">High initial investment for AI solutions, particularly challenging for small and medium retailers</p></div>
+        <div class="info-card" style="border-left:3px solid var(--gold)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Data Privacy Concerns</div><p class="body-sm">Consumer hesitation about data collection requiring transparent policies and robust protection</p></div>
+        <div class="info-card" style="border-left:3px solid var(--t3)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Regulatory Compliance</div><p class="body-sm">Evolving AI regulations and UAE's data protection framework create implementation challenges</p></div>
+        <div class="info-card" style="border-left:3px solid var(--t2)"><div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Change Management</div><p class="body-sm">Organizational resistance requiring cultural shifts and employee upskilling programs</p></div>
+        <div class="callout" style="margin-top:4px">
+          <p class="body-sm" style="font-style:italic">"80% of UAE professionals now use AI in their workflows."</p>
+          <p class="caption" style="margin-top:4px">-- LinkedIn UAE, 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — CASE STUDY: Majid Al Futtaim & Carrefour
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Majid Al Futtaim <span class="accent">&amp; Carrefour</span></div>
+        <p class="body">A leading example of successful AI integration in UAE retail. Azure OpenAI powers customer insights and personalization at scale, while AI-driven engagement reduced feedback processing from 7 days to just 3 hours.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2vw,32px)">
+            <div class="stat-num" style="font-size:clamp(32px,4vw,56px);color:var(--gold)">$1M</div>
+            <div class="stat-label">Annual Cost Savings</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2vw,32px)">
+            <div class="stat-num" style="font-size:clamp(32px,4vw,56px);color:var(--green)">110%</div>
+            <div class="stat-label">E-Commerce Growth</div>
+          </div>
+        </div>
+        <div class="quote-block" style="margin-top:12px">
+          <p class="body-sm" style="font-style:italic">"Our digital transformation journey has enhanced our understanding of customer preferences, enabling us to deliver truly personalized experiences at scale."</p>
+          <p class="caption" style="margin-top:8px">-- Hani Weiss, CEO, Majid Al Futtaim Retail</p>
+        </div>
+        <div class="stack gap-xs" style="margin-top:12px">
+          <div class="caption" style="color:var(--teal)">KEY TECHNOLOGIES</div>
+          <p class="body-sm">Azure OpenAI &amp; Advanced Analytics</p>
+          <p class="body-sm">AI-Driven Customer Engagement Platform</p>
+          <p class="body-sm">Geo-Spatial AI Insights for demographic targeting</p>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — CASE STUDY: Dubai Mall — Centered mega-stat
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-ar.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Case Study</div>
+    <div class="rv rv-d1" style="margin-top:clamp(16px,3vh,32px)">
+      <div class="mono" style="font-size:clamp(12px,1vw,16px);color:var(--t3);letter-spacing:2px">THE WORLD'S MOST VISITED RETAIL DESTINATION</div>
+    </div>
+    <div class="metric-mega rv rv-d2" style="color:var(--gold);margin-top:12px">111M</div>
+    <div class="h3 rv rv-d3" style="max-width:18em;text-align:center;margin-top:12px">annual visitors with <span class="accent">AI-optimized experiences</span></div>
+    <p class="body rv rv-d4" style="text-align:center;max-width:34em;margin-top:16px">
+      Dubai Mall leverages AI to enhance operations and customer experiences. Personalized marketing with AI-analyzed purchase history delivers tailored offers, achieving a 20% sales conversion increase.
+    </p>
+    <div class="g3 rv rv-d5" style="margin-top:clamp(24px,4vh,36px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">+20%</div>
+        <div class="stat-label">Sales Conversion</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">-15%</div>
+        <div class="stat-label">Operational Costs</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">-18%</div>
+        <div class="stat-label">Carbon Footprint</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — CASE STUDY: ADNOC & Noon.com — Right-aligned
+     ════════════════════════════════════════════ -->
+<section class="s ov-right" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-warehouse.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">ADNOC &amp; <span class="accent-teal">Noon.com</span></div>
+        <p class="body">Revolutionizing customer experience through AI-powered automation. ADNOC's AI-enabled 'Fill &amp; Go' uses computer vision to automate refueling, while Noon.com optimizes delivery routes and inventory management across the network.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--teal)">50%</div>
+            <div class="stat-label">Faster Refueling</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--green)">+30%</div>
+            <div class="stat-label">Satisfaction Increase</div>
+          </div>
+        </div>
+        <div class="quote-block" style="margin-top:8px">
+          <p class="body-sm" style="font-style:italic">"Leveraging AI enables us to achieve two key objectives: enhancing the customer experience and improving operational efficiency across our network."</p>
+          <p class="caption" style="margin-top:8px">-- ADNOC Distribution Leadership</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — FUTURE OUTLOOK: AI Adoption Timeline 2025-2030
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-ar.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Future Outlook 2025-2030</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Projected AI Adoption <span class="accent">in Dubai Retail</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md">
+        <!-- Timeline visualization -->
+        <div class="tl-row"><div class="tl-yr">2025</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Basic AI Adoption <span class="mono" style="color:var(--green);font-size:14px">42%</span></div><p class="body-sm">Chatbots, basic personalization, initial inventory AI pilots</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2026</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Advanced Analytics <span class="mono" style="color:var(--green);font-size:14px">58%</span></div><p class="body-sm">UAE AI ethics framework implemented. Predictive analytics scaled</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2027</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Predictive Systems <span class="mono" style="color:var(--teal);font-size:14px">67%</span></div><p class="body-sm">In-store AI (smart mirrors, RFID, computer vision) deployed widely</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2028</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Autonomous Decisions <span class="mono" style="color:var(--gold);font-size:14px">78%</span></div><p class="body-sm">30% of routine retail tasks automated. New AI specialist roles emerge</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2030</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Full AI Integration <span class="mono" style="color:var(--green);font-size:14px">90%</span></div><p class="body-sm">End-to-end AI across value chain. AI reduces carbon footprint by 25%</p></div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">TRANSFORMATION THEMES</div>
+        <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--green)">01</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Omnichannel Evolution</div><p class="body-sm" style="font-size:14px;margin-top:4px">Seamless integration between physical and digital touchpoints across all channels</p></div>
+        <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--teal)">02</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Workforce Transformation</div><p class="body-sm" style="font-size:14px;margin-top:4px">New job roles: AI specialists, experience designers. Continuous upskilling mandatory</p></div>
+        <div class="info-card" style="text-align:center"><div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--gold)">03</div><div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">AI-Driven Sustainability</div><p class="body-sm" style="font-size:14px;margin-top:4px">Supply chain optimization reduces carbon footprint by 25%. ESG reporting automated</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — STRATEGIC RECOMMENDATIONS: 3-phase roadmap
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Strategic Recommendations</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">The Implementation <span class="accent">Roadmap</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">SHORT-TERM: 0-1 YEAR</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Immediate Wins</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Pilot AI automations in customer service and inventory management</p>
+          <p class="body-sm">Enhance AI literacy through training programs across retail teams</p>
+          <p class="body-sm">Establish data governance frameworks for UAE compliance</p>
+          <p class="body-sm">Implement chatbots and basic personalization tools</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">MEDIUM-TERM: 1-3 YEARS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Scaling Automation</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Scale predictive analytics across inventory and marketing functions</p>
+          <p class="body-sm">Integrate customer data platforms for unified consumer insights</p>
+          <p class="body-sm">Deploy in-store AI: smart mirrors, RFID, computer vision</p>
+          <p class="body-sm">Develop omnichannel AI strategies for consistent experiences</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">LONG-TERM: 3-5 YEARS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Innovation Readiness</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Full end-to-end AI integration across retail value chain</p>
+          <p class="body-sm">Establish innovation labs for emerging technology exploration</p>
+          <p class="body-sm">Deploy advanced ESG data initiatives and AI-driven sustainability</p>
+          <p class="body-sm">Develop AI talent ecosystems through local partnerships</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout rv rv-d3" style="margin-top:clamp(16px,2vh,24px);max-width:900px">
+      <p class="body-sm" style="font-style:italic">"Retailers who strategically approach AI adoption in phases will maximize ROI while building the organizational capabilities needed for long-term transformation."</p>
+      <p class="caption" style="margin-top:6px">-- ZAVIS AI Retail Transformation Framework, 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — CONCLUSION: Key takeaways + summary stats
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-ar.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Conclusion</div>
+    <div class="h1 rv rv-d1" style="text-align:center;max-width:16em;margin-top:20px;font-size:clamp(28px,4vw,56px)">
+      AI Has Evolved From Back-Office Enabler<br><span class="accent">To Strategic Growth Driver</span>
+    </div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:36em;margin-top:20px;font-size:clamp(15px,1.2vw,18px)">
+      Strategic AI adoption positions UAE retail at the forefront of global innovation, creating a model for technology-enabled retail excellence and customer experience. The market is projected to grow 9x by 2032.
+    </p>
+    <div class="g3 rv rv-d3" style="margin-top:clamp(20px,3vh,36px);max-width:700px;width:100%">
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(12px,0.9vw,14px);color:var(--green);font-weight:600;letter-spacing:2px">AI AS GROWTH ENGINE</div>
+        <p class="body-sm" style="font-size:14px;margin-top:8px">Aligning with UAE's ambition to become an AI-powered economy by 2031</p>
+      </div>
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(12px,0.9vw,14px);color:var(--teal);font-weight:600;letter-spacing:2px">DATA-DRIVEN FUTURE</div>
+        <p class="body-sm" style="font-size:14px;margin-top:8px">Tangible benefits in efficiency, customer engagement, and revenue growth</p>
+      </div>
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(12px,0.9vw,14px);color:var(--gold);font-weight:600;letter-spacing:2px">GLOBAL COMPETITIVENESS</div>
+        <p class="body-sm" style="font-size:14px;margin-top:8px">A model for technology-enabled retail excellence worldwide</p>
+      </div>
+    </div>
+    <div class="g4 rv rv-d4" style="margin-top:clamp(16px,2vh,24px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">$157M</div><div class="stat-label">Market 2032</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">28.2%</div><div class="stat-label">CAGR</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">80%</div><div class="stat-label">AI Adoption</div></div>
+      <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--coral)">90%</div><div class="stat-label">By 2030</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ABOUT ZAVIS + CTA
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/future-retail-ai/ret-hero.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">ZAVIS is an AI-first automation platform empowering businesses in the Middle East to build intelligent, human-like digital assistants and enterprise systems.</p>
+        <p class="body" style="max-width:28em">Our mission is to accelerate digital transformation across industries through cutting-edge AI solutions that drive efficiency, growth, and innovation.</p>
+        <div class="g4" style="margin-top:12px;max-width:400px">
+          <div style="text-align:center"><div class="mono" style="font-size:14px;color:var(--green);font-weight:700">01</div><div class="caption" style="margin-top:4px">Innovation</div></div>
+          <div style="text-align:center"><div class="mono" style="font-size:14px;color:var(--teal);font-weight:700">02</div><div class="caption" style="margin-top:4px">Security</div></div>
+          <div style="text-align:center"><div class="mono" style="font-size:14px;color:var(--gold);font-weight:700">03</div><div class="caption" style="margin-top:4px">Partnership</div></div>
+          <div style="text-align:center"><div class="mono" style="font-size:14px;color:var(--green-l);font-weight:700">04</div><div class="caption" style="margin-top:4px">Growth</div></div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:12px 28px;border-radius:100px;font-family:var(--display);font-size:15px;font-weight:600;text-decoration:none;letter-spacing:.5px;transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 4px 20px rgba(0,168,107,.3)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:12px 0">zavis.ai &#8594;</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">SOURCES &amp; REFERENCES</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.8">
+          Smart Dubai / Digital Dubai Authority<br>
+          UAE AI Council / Ministry of AI<br>
+          PwC Middle East AI Research<br>
+          KPMG &amp; McKinsey Retail Studies<br>
+          Majid Al Futtaim Annual Reports<br>
+          Dubai Chamber of Commerce<br>
+          Euromonitor International<br>
+          Gartner &amp; IDC Market Analysis<br>
+          IBM Global AI Adoption Index<br>
+          LinkedIn UAE Workforce Data 2025
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published 2025</div>
+          <div class="caption" style="margin-top:4px">www.zavis.ai &middot; info@zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){aN(document.getElementById('c1'),28.2,1800,'%','');aN(document.getElementById('c2'),80,1500,'%','');aN(document.getElementById('c3'),25,1200,'%','');aN(document.getElementById('c4'),20,1400,'%','');hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

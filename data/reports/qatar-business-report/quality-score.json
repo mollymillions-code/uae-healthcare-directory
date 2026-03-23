@@ -1,0 +1,513 @@
+{
+  "report": "qatar-business-report",
+  "timestamp": "2026-03-22T10:26:22.601Z",
+  "grade": "A",
+  "averageScore": 96,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 16,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 96,
+    "contrast": 99,
+    "visibility": 100,
+    "overlay": 100,
+    "contentDensity": 84,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 80
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Research — Qatar 2025",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 95,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 20,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30"
+      ]
+    },
+    {
+      "slide": 2,
+      "title": "Qatar's Digital Decade",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 3,
+      "title": "Economic Context",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 14,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "AI Readiness",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 19,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 5,
+      "title": "Executive Summary",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 6,
+      "title": "Sector Deep-Dive",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 90,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 27,
+      "criticalIssues": [],
+      "warnings": [
+        "27 text elements — slide is overcrowded",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 7,
+      "title": "Healthcare",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 21,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 8,
+      "title": "Sector Deep-Dive",
+      "score": 90,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 30,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 40,
+      "criticalIssues": [
+        "40 text elements — slide is overcrowded"
+      ],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 9,
+      "title": "Sector Deep-Dive",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 10,
+      "title": "Sector Deep-Dive",
+      "score": 83,
+      "passed": true,
+      "dimensions": {
+        "typography": 33,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 90,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 40
+      },
+      "fontSizeRange": {
+        "min": 7,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 27,
+      "criticalIssues": [
+        "7px text (min: 11px)",
+        "7px text (min: 11px)",
+        "7px text (min: 11px)",
+        "7px text (min: 11px)",
+        "7px text (min: 11px)",
+        "7px text (min: 11px)"
+      ],
+      "warnings": [
+        "27 text elements — slide is overcrowded",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 11,
+      "title": "Case Studies",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 65,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 32,
+      "criticalIssues": [],
+      "warnings": [
+        "32 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 12,
+      "title": "Adoption Challenges",
+      "score": 89,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 30,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 40,
+      "criticalIssues": [
+        "40 text elements — slide is overcrowded"
+      ],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 13,
+      "title": "SME Opportunity Map",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 95,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 26,
+      "criticalIssues": [],
+      "warnings": [
+        "26 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 14,
+      "title": "Impact Metrics",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 15,
+      "title": "2030 Outlook & Roadmap",
+      "score": 91,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 50,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 35,
+      "criticalIssues": [],
+      "warnings": [
+        "35 text elements — slide is overcrowded",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 16,
+      "title": "(untitled)",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 90,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

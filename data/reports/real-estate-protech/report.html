@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Real Estate & PropTech: Smart Property Solutions — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--blue:#5B8DEF;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── SPECIAL: METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── SPECIAL: TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── PROPERTY MARKET GAUGE ─── */
+.gauge-ring{width:clamp(100px,10vw,140px);height:clamp(100px,10vw,140px);border-radius:50%;border:6px solid var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}
+.gauge-ring::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:6px solid transparent;border-top-color:var(--green);border-right-color:var(--green);transform:rotate(45deg);transition:all 1.2s ease}
+
+/* ─── PROPERTY GRID ─── */
+.prop-metric{display:flex;align-items:baseline;gap:6px}
+.prop-metric .val{font-family:var(--mono);font-weight:700;font-size:clamp(20px,2.5vw,36px)}
+.prop-metric .unit{font-family:var(--mono);font-size:clamp(11px,0.8vw,14px);color:var(--t3)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Dubai PropTech Boom
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Research — October 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:14em">
+      UAE Real Estate &amp; PropTech:<br><span class="accent">Smart Property<br>Solutions</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:32em;margin-top:16px;color:var(--t2)">
+      Dubai's $1.2 billion PropTech Hub is transforming the real estate ecosystem through AI, blockchain, and IoT across the entire property lifecycle
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:740px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">0%</div>
+        <div class="stat-label">CAGR Growth</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">AI Adoption</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">Cost Reduction</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)" id="c4">0%</div>
+        <div class="stat-label">AR/VR Conversion</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — MARKET LANDSCAPE: AED 2.24B → 5.69B
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-smart.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Market Landscape</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div class="metric-mega" style="color:var(--green)">5.69<span style="font-size:.35em;color:var(--t2);font-weight:400">B AED</span></div>
+        </div>
+        <div class="h3" style="color:var(--t1)">Projected UAE PropTech Market by 2030</div>
+        <p class="body" style="max-width:28em">Growing at a 17.49% CAGR from AED 2.24B in 2024, the UAE's PropTech sector is one of the fastest-expanding globally. Dubai's $1.2B PropTech Hub and Smart City strategy are fueling unprecedented adoption of AI, blockchain, and IoT across the property lifecycle.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">17.49%</div><div class="stat-label">CAGR 2024-2030</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">$1.2B</div><div class="stat-label">PropTech Hub Investment</div></div>
+        <div class="g2">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">AED 2.24B</div><div class="stat-label">Market 2024</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">68%</div><div class="stat-label">AI Adoption Rate</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — RESIDENTIAL MARKET: $36.32B → $52.32B
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Residential Real Estate</div>
+    <div class="h2 rv rv-d1" style="margin-top:16px;max-width:16em;text-align:center">UAE Residential Market <span class="accent">Growth Trajectory</span></div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:30em;margin-top:12px">
+      The residential real estate market is projected to expand from $36.32B in 2024 to $52.32B by 2030, driven by digitalization, investor demand, and government initiatives.
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--green)">$36.32B</div>
+        <div class="stat-label">Residential 2024</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--teal)">$52.32B</div>
+        <div class="stat-label">Residential 2030</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--gold)">AED 60B</div>
+        <div class="stat-label">Tokenization 2033</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(91,141,239,.15)">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--blue)">$100M+</div>
+        <div class="stat-label">PropTech Funding</div>
+      </div>
+    </div>
+    <div class="rv rv-d4" style="margin-top:clamp(16px,2vh,24px);max-width:600px;width:100%">
+      <div class="callout" style="text-align:left">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">KEY GROWTH DRIVER</div>
+        <p class="body-sm">Digitalization of real estate — government initiatives, investor demand, and technology adoption accelerating market expansion across the UAE.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — AI IN REAL ESTATE: How Developers & Brokers Use AI
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-smart.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI in Real Estate</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">How Developers &amp; Brokers Are <span class="accent">Using AI in 2025</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="info-card stack gap-sm" style="border-left:3px solid var(--green)">
+          <div class="caption" style="color:var(--green)">PREDICTIVE ANALYSIS</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">68% of top developers deploy AI</div>
+          <p class="body-sm">AI predictive analysis for project planning, pricing optimization, and market forecasting across UAE's leading real estate firms.</p>
+        </div>
+        <div class="info-card stack gap-sm" style="border-left:3px solid var(--teal)">
+          <div class="caption" style="color:var(--teal)">SALES ACCELERATION</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">47% faster lead qualification</div>
+          <p class="body-sm">AI-powered sales tools reduce lead qualification time by 47% and increase conversion rates by 23% for top brokerages.</p>
+        </div>
+        <div class="info-card stack gap-sm" style="border-left:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold)">DOCUMENT PROCESSING</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">65% of paperwork automated</div>
+          <p class="body-sm">Automated document processing handles over 65% of real estate transaction paperwork, reducing errors by 89%.</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">68%</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">AI Adoption Among Top Developers</div>
+        </div>
+        <div class="bar-row"><div class="bar-lbl">Lead Speed</div><div class="bar-track"><div class="bar-fill" data-w="82%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">+47%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Conversion</div><div class="bar-track"><div class="bar-fill" data-w="60%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">+23%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Doc Automation</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">65%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Error Reduction</div><div class="bar-track"><div class="bar-fill" data-w="89%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">89%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Engagement</div><div class="bar-track"><div class="bar-fill" data-w="72%" style="background:linear-gradient(90deg,var(--green-l),var(--green))"></div></div><div class="bar-val" style="color:var(--green-l)">+35%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — PROPTECH SOLUTIONS: Predictive Valuation & Digital Twins
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-vr.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">PropTech Solutions</div>
+        <div class="h2">Predictive Valuation &amp; <span class="accent">Digital Twins</span></div>
+        <p class="body">Machine learning algorithms analyze thousands of market variables in real-time to provide more accurate property valuations. Dubai developers leverage AI for portfolio-wide valuation updates in minutes versus days.</p>
+        <div class="callout">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">DIGITAL TWINS TECHNOLOGY</div>
+          <p class="body-sm">Interactive virtual replicas of physical properties enable developers to simulate, analyze, and optimize buildings across their entire lifecycle — from design through construction to ongoing maintenance.</p>
+        </div>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">15-20%</div>
+            <div class="stat-label">Higher Valuation Accuracy</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">40%</div>
+            <div class="stat-label">Faster Project Delivery</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — CUSTOMER-FACING AI: Chatbots & AR/VR Tours
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-vr.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Customer Experience</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--teal);margin-top:24px">+32%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">Higher conversion rates for properties with immersive AR/VR experiences</div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:30em;margin-top:16px">
+      AI-powered chatbots handle 65% of initial property queries with 24/7 multilingual support. Properties with AR tours receive 49% more engagement. Global buyers experience properties virtually, expanding market reach beyond physical boundaries.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">65%</div>
+        <div class="stat-label">Queries via Chatbots</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">+49%</div>
+        <div class="stat-label">More Engagement</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">24/7</div>
+        <div class="stat-label">Multilingual Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — AUTOMATION: Property Management & Smart Buildings
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-smart.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Smart Buildings</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Automation in Property <span class="accent">Management &amp; Maintenance</span></div>
+    <div class="g2 rv rv-d2" style="width:100%">
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--green)">IOT SENSOR NETWORKS</div>
+        <div class="h3">Real-time monitoring</div>
+        <p class="body-sm">IoT sensor networks monitor building systems in real-time, detecting issues before they become problems and optimizing energy usage across entire portfolios.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">70%</div><div class="stat-label" style="font-size:11px">Downtime Reduction</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--green)">2-3 wk</div><div class="stat-label" style="font-size:11px">Failure Forecast</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--teal)">PREDICTIVE MAINTENANCE</div>
+        <div class="h3">35% cost reduction</div>
+        <p class="body-sm">Predictive maintenance algorithms analyze sensor data to forecast equipment failures 2-3 weeks before occurrence. Average 35% decrease in building management costs.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">-35%</div><div class="stat-label" style="font-size:11px">Mgmt Costs</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--teal)">AI</div><div class="stat-label" style="font-size:11px">Powered</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--gold)">TENANT AUTOMATION</div>
+        <div class="h3">UAE PropTech leaders</div>
+        <p class="body-sm">Hayy.AI and ISKAAN automate tenant screening, maintenance requests, and performance tracking across building portfolios in the UAE market.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">Auto</div><div class="stat-label" style="font-size:11px">Screening</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--gold)">Track</div><div class="stat-label" style="font-size:11px">Performance</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm">
+        <div class="caption" style="color:var(--blue)">CENTRALIZED MANAGEMENT</div>
+        <div class="h3">Unified dashboards</div>
+        <p class="body-sm">Centralized building management systems integrate security, HVAC, lighting, and access control through unified dashboards for complete operational visibility.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--blue)">HVAC</div><div class="stat-label" style="font-size:11px">Integrated</div></div>
+          <div class="stat-card" style="padding:12px"><div class="stat-num" style="font-size:18px;color:var(--blue)">360°</div><div class="stat-label" style="font-size:11px">Visibility</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — BLOCKCHAIN: Data Transparency & Tokenization
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Blockchain & Transparency</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Secure, Traceable &amp; <span class="accent">Immutable Transactions</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--gold);font-size:clamp(40px,6vw,80px)">AED 60B</div>
+        <div class="h3" style="color:var(--t1)">Projected tokenized real estate market by 2033</div>
+        <p class="body" style="max-width:26em">Representing 7% of all UAE property transactions. Fractional ownership starting from as little as AED 2,000 ($540), with VARA-regulated secondary trading emerging in 2025.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">DLD Blockchain Contracts</div>
+          <p class="body-sm">Dubai Land Department has implemented blockchain for all real estate contracts — immutable and transparent record system.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">90% Faster Registration</div>
+          <p class="body-sm">Smart contracts automate transaction settlement, reducing property registration times by 90% and costs by up to 35%.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">62% Fraud Reduction</div>
+          <p class="body-sm">Enhanced security with 62% reduction in real estate fraud cases since blockchain implementation, with instant property history verification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — CASE STUDY: Emaar's Digital Transformation
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-smart.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Emaar's Digital <span class="accent">Transformation</span></div>
+        <p class="body">Emaar Properties has implemented comprehensive digital transformation with AI at its core — focusing on operational efficiencies, enhanced customer experiences, and smart community development across their portfolio.</p>
+        <div class="callout">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">KEY STRATEGIC FOCUS AREAS</div>
+          <p class="body-sm">AI-driven operational efficiencies across project management, supply chains, and maintenance. Virtual experiences and digital twins for property showcases. Predictive analytics for market trends and customer behavior.</p>
+        </div>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">40%</div>
+            <div class="stat-label">Ops Efficiency</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">+65%</div>
+            <div class="stat-label">Digital Engagement</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">80%</div>
+            <div class="stat-label">Back-office Auto</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — CASE STUDY: DAMAC's $1B AI Investment
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-vr.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">DAMAC's <span class="accent">$1B AI Investment</span></div>
+        <p class="body">DAMAC Group has accelerated its $1 billion investment in AI and data center technologies, establishing itself as a leader in real estate innovation through its new DAMAC Digital division.</p>
+        <div class="callout">
+          <div class="caption" style="color:var(--gold);margin-bottom:6px">GLOBAL INVESTMENT PORTFOLIO</div>
+          <p class="body-sm">€400M commitment for a 40 MW data center in Madrid. $50M investment in AI startup Anthropic. Innovative e-commerce real estate platform with interactive 3D virtual property tours.</p>
+        </div>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">$1B</div>
+            <div class="stat-label">AI Investment</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">Real-time</div>
+            <div class="stat-label">E-commerce Platform</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">+35%</div>
+            <div class="stat-label">3D Tour Engagement</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — SME OPPORTUNITIES & CRM AUTOMATION
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">SME Opportunities</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">PropTech Innovation &amp; <span class="accent">CRM Automation</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,32px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">+63%</div>
+          <div class="stat-label">SME PropTech Adoption Increase (2023-2025)</div>
+        </div>
+        <div class="g2">
+          <div class="info-card" style="text-align:center">
+            <div class="caption" style="color:var(--teal);margin-bottom:4px">VR/AR SOLUTIONS</div>
+            <p class="body-sm" style="font-size:14px">Affordable virtual tour platforms for smaller agencies</p>
+          </div>
+          <div class="info-card" style="text-align:center">
+            <div class="caption" style="color:var(--gold);margin-bottom:4px">AI CHAT SYSTEMS</div>
+            <p class="body-sm" style="font-size:14px">Chatbots and client engagement automation</p>
+          </div>
+          <div class="info-card" style="text-align:center">
+            <div class="caption" style="color:var(--blue);margin-bottom:4px">PROPERTY MANAGEMENT</div>
+            <p class="body-sm" style="font-size:14px">Cloud-based management tools</p>
+          </div>
+          <div class="info-card" style="text-align:center">
+            <div class="caption" style="color:var(--green);margin-bottom:4px">DOC AUTOMATION</div>
+            <p class="body-sm" style="font-size:14px">Simplified contract and document processing</p>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="info-card" style="border-top:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold);margin-bottom:8px">CRM AUTOMATION ROI</div>
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">+42%</div>
+          <div class="stat-label">Conversion Rate Improvement</div>
+          <p class="body-sm" style="margin-top:8px">Average improvement with AI-driven CRM tools according to 2024 Dubai brokerages survey.</p>
+        </div>
+        <div class="bar-row"><div class="bar-lbl">Lead Scoring</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">85%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Auto Follow-up</div><div class="bar-track"><div class="bar-fill" data-w="78%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">Smart</div></div>
+        <div class="bar-row"><div class="bar-lbl">Startup Funding</div><div class="bar-track"><div class="bar-fill" data-w="70%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">$100M+</div></div>
+        <div class="bar-row"><div class="bar-lbl">YoY Growth</div><div class="bar-track"><div class="bar-fill" data-w="65%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">+45%</div></div>
+        <div class="callout" style="margin-top:8px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">DLD REACH PROGRAM</div>
+          <p class="body-sm" style="font-size:14px">$250,000 seed funding, mentorship, and global networks for PropTech startups through DLD's Reach Middle East initiative.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — RISKS & REGULATORY LANDSCAPE
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-smart.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Risks & Regulation</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Navigating the <span class="accent">Digital Real Estate Frontier</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--coral);margin-bottom:4px">KEY CHALLENGES</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Data Privacy Concerns</div>
+          <p class="body-sm">Smart property systems collect sensitive personal and financial data. UAE's Personal Data Protection Law (2021) enforces strict consent and data localization requirements.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Regulatory Hurdles</div>
+          <p class="body-sm">Cross-border digital property transactions face complex regulatory frameworks. VARA developing standards for tokenized real estate transactions.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--t3)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Cybersecurity Threats</div>
+          <p class="body-sm">45% increase in cybersecurity incidents targeting property management systems in 2024. Smart buildings and IoT create new attack vectors.</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">UAE'S INNOVATIVE SOLUTIONS</div>
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,32px)">
+          <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--green)">#4</div>
+          <div class="stat-label">Global Secure PropTech Ranking</div>
+          <p class="body-sm" style="margin-top:8px;text-align:center;font-size:14px">PropTech Security Index 2025</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">DLD Blockchain Platform</div>
+          <p class="body-sm">Secures all real estate contracts with 90% faster processing times and central databases with standardized security protocols.</p>
+        </div>
+        <div class="callout">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">FRAUD REDUCTION</div>
+          <p class="body-sm">62% reduction in real estate fraud cases since blockchain implementation, with instant verification of property history and ownership.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — 2030 OUTLOOK: Fully Automated Real Estate
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">2030 Outlook</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:18em">Toward Fully <span class="accent">Automated Real Estate</span> Ecosystems</div>
+    <div class="rv rv-d2" style="margin-top:clamp(16px,2vh,24px)">
+      <div class="metric-mega" style="color:var(--green);font-size:clamp(48px,7vw,100px)">95%</div>
+      <div class="metric-context" style="text-align:center">of property transactions expected to involve AI automation by 2030</div>
+    </div>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(20px,3vh,36px);max-width:900px;width:100%">
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--green)">01</div>
+        <div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Closed-loop AI</div>
+        <p class="body-sm" style="font-size:14px;margin-top:4px">End-to-end property deals without human intervention, from search to settlement</p>
+      </div>
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--teal)">02</div>
+        <div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Blockchain Registers</div>
+        <p class="body-sm" style="font-size:14px;margin-top:4px">100% of UAE property titles stored on distributed ledgers as standard practice</p>
+      </div>
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--gold)">03</div>
+        <div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Urban Planning AI</div>
+        <p class="body-sm" style="font-size:14px;margin-top:4px">Data-driven urban planning integrated with real estate platforms for demand synergy</p>
+      </div>
+      <div class="info-card" style="text-align:center">
+        <div class="mono" style="font-size:clamp(24px,2.5vw,36px);font-weight:700;color:var(--blue)">04</div>
+        <div class="h3" style="font-size:clamp(15px,1.1vw,18px);margin-top:6px">Fractional Ownership</div>
+        <p class="body-sm" style="font-size:14px;margin-top:4px">Tokenization at scale with 30%+ of transactions on secondary trading platforms</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ABOUT ZAVIS / SOURCES
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/real-estate-protech/re-hero.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">Zavis is the AI-powered patient engagement platform built for healthcare. AI agents handle 60-90% of routine patient operations across WhatsApp, Instagram, web chat, and voice. Every inquiry answered, every appointment booked, every follow-up sent. 24 hours a day, 7 days a week.</p>
+        <p class="body" style="max-width:28em;margin-top:12px">One conversation thread per patient across every channel. Two-way EMR writeback in real-time. Full attribution from ad click to booked appointment to collected revenue. Go live in 24 hours.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:10px 24px;border-radius:100px;font-family:var(--display);font-size:14px;font-weight:600;text-decoration:none;letter-spacing:.5px">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">KEY TAKEAWAYS</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.9">
+          ● UAE PropTech market to reach AED 5.69B by 2030 at 17.49% CAGR<br>
+          ● 68% of top developers now using AI predictive analytics tools<br>
+          ● AR tours and AI chatbots reshaping the property buying experience<br>
+          ● Blockchain enhancing transaction security and enabling tokenization<br>
+          ● Residential market expanding from $36.32B to $52.32B by 2030
+        </p>
+        <div class="caption" style="color:var(--green);margin-bottom:4px;margin-top:12px">SOURCES & REFERENCES</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.8">
+          Dubai Land Department (DLD)<br>
+          UAE Virtual Asset Regulatory Authority (VARA)<br>
+          Emaar Properties Annual Report 2024/2025<br>
+          DAMAC Digital Transformation Initiatives<br>
+          PropTech Security Index 2025<br>
+          Dubai Smart City Strategy
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published October 2025</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){aN(document.getElementById('c1'),17.5,1800,'%','');aN(document.getElementById('c2'),68,1500,'%','');aN(document.getElementById('c3'),35,1200,'%','');aN(document.getElementById('c4'),32,1400,'%','+');hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>
