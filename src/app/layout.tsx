@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, Space_Mono, Lora, Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -111,6 +113,8 @@ export default function RootLayout({
         {/* Meta Pixel noscript */}
         <noscript><img height="1" width="1" style={{display:'none'}} src="https://www.facebook.com/tr?id=1045406841134462&ev=PageView&noscript=1" alt="facebook-pixel" /></noscript>
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
