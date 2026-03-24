@@ -1,41 +1,12 @@
-import { MapPin } from "lucide-react";
-
 interface GoogleMapEmbedProps {
   query: string;
   placeId?: string | null;
   className?: string;
 }
 
-export function GoogleMapEmbed({ query, placeId, className = "" }: GoogleMapEmbedProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  // If no API key, show a styled dark placeholder with green CTA
-  if (!apiKey) {
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}${placeId ? `&query_place_id=${placeId}` : ""}`;
-    return (
-      <div className={`bg-dark flex flex-col items-center justify-center ${className}`} style={{ minHeight: "300px" }}>
-        <div className="text-center p-6">
-          <div className="h-12 w-12 bg-dark-600 flex items-center justify-center mx-auto mb-4">
-            <MapPin className="h-6 w-6 text-accent" />
-          </div>
-          <p className="text-white/60 text-sm mb-4">Interactive map preview</p>
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-accent"
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Open in Google Maps
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  const src = placeId
-    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=place_id:${placeId}`
-    : `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(query)}`;
+export function GoogleMapEmbed({ query, className = "" }: GoogleMapEmbedProps) {
+  // Free Google Maps embed — no API key required
+  const src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 
   return (
     <iframe
