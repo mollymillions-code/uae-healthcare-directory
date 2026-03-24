@@ -153,6 +153,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  // ─── Top 10 pages — city × category combos with 10+ rated providers ──────
+  for (const city of cities) {
+    for (const cat of categories) {
+      const { providers: cityProviders } = getProviders({
+        citySlug: city.slug,
+        categorySlug: cat.slug,
+        limit: 99999,
+      });
+      const qualifiedCount = cityProviders.filter(
+        (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
+      ).length;
+      if (qualifiedCount >= 10) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/top/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.85,
+        });
+      }
+    }
+  }
+
   // ─── Provider listing pages ───────────────────────────────────────────────
   const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {

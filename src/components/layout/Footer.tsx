@@ -31,6 +31,7 @@ export function Footer() {
             <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Directory</h5>
             <ul className="space-y-2">
               <li><Link href="/search" className="text-sm text-white/60 hover:text-white transition-colors">Search</Link></li>
+              <li><Link href="/directory/dubai/top/hospitals" className="text-sm text-white/60 hover:text-white transition-colors">Top Rated</Link></li>
               <li><Link href="/claim" className="text-sm text-white/60 hover:text-white transition-colors">Claim Listing</Link></li>
               <li><Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors">About</Link></li>
               <li><Link href="/api/search" className="text-sm text-white/60 hover:text-white transition-colors">API</Link></li>
