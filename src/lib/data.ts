@@ -63,6 +63,9 @@ export interface LocalProvider {
   amenities: string[];
   lastVerified: string; // ISO date — freshness signal for LLMs
   email?: string;
+  facilityType?: string;
+  reviewSummary?: string[];
+  coverImageUrl?: string;
 }
 
 // ─── Load scraped providers if available ────────────────────────────────────────

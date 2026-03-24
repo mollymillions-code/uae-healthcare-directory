@@ -42,7 +42,7 @@ function getCategoryImageUrl(categorySlug: string, base: string): string {
 }
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, ExternalLink, Calendar,
+  CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
 } from "lucide-react";
 
 export const revalidate = 21600;
@@ -446,7 +446,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
         {/* Listing hero banner with category image */}
         <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden">
           <Image
-            src={getCategoryImagePath(category.slug)}
+            src={provider.coverImageUrl || getCategoryImagePath(category.slug)}
             alt={`${provider.name} — ${category.name} in ${city.name}`}
             fill
             className="object-cover"
@@ -517,6 +517,26 @@ export default function CatchAllPage({ params, searchParams }: Props) {
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Shield className="h-5 w-5 text-accent" /> Accepted Insurance</h2>
                 <p className="text-sm text-muted mb-3">{provider.name} accepts these insurance plans:</p>
                 <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200">{i}</span>))}</div>
+              </div>
+            )}
+
+            {/* Review highlights -- from AI-enriched reviewSummary */}
+            {provider.reviewSummary && provider.reviewSummary.length > 0 && provider.reviewSummary[0] !== "No patient reviews available yet" && (
+              <div className="border border-light-200 p-6 mb-6 bg-light-50" data-section="reviews">
+                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MessageSquareQuote className="h-5 w-5 text-accent" /> What patients say</h2>
+                <ul className="space-y-2">
+                  {provider.reviewSummary.map((point: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-muted">
+                      <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                {hasValidRating && (
+                  <p className="text-xs text-muted mt-4 pt-3 border-t border-light-200">
+                    Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
+                  </p>
+                )}
               </div>
             )}
 
