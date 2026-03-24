@@ -298,11 +298,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
           <p className="text-muted leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
         </div>
 
-        {subcategories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
-            {subcategories.map((sub) => (<Link key={sub.slug} href={`/directory/${city.slug}/${category.slug}/${sub.slug}`} className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted">{sub.name}</Link>))}
-          </div>
-        )}
+        {/* Subcategory links hidden — no providers have subcategory data yet */}
 
         {areas.length > 0 && (
           <div className="mb-6">
