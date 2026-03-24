@@ -69,9 +69,10 @@ async function getDbArticles(): Promise<JournalArticle[]> {
       updatedAt: row.updatedAt?.toISOString(),
     }));
 
+    console.log(`[Journal] Loaded ${_dbArticles.length} articles from DB`);
     return _dbArticles;
-  } catch {
-    console.log("[Journal] DB unavailable, no articles loaded");
+  } catch (e: unknown) {
+    console.error("[Journal] DB error:", e instanceof Error ? e.message : e);
     _dbArticles = [];
     return _dbArticles;
   }
