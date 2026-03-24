@@ -265,7 +265,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     const { category } = resolved;
     const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
     const areas = getAreasByCity(city.slug);
-    const subcategories = getSubcategoriesByCategory(category.slug);
+    const _subcategories = getSubcategoriesByCategory(category.slug);
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, null, total);
 
