@@ -14,7 +14,7 @@ export function TagCloud({ tags, limit = 20, activeTag }: TagCloudProps) {
       {displayed.map(({ tag }) => (
         <Link
           key={tag}
-          href={`/intelligence/tag/${tag}`}
+          href={`/intelligence/tag/${encodeURIComponent(tag)}`}
           className={`inline-block px-2.5 py-1 text-xs font-mono transition-colors ${
             activeTag === tag
               ? "bg-dark text-white"
