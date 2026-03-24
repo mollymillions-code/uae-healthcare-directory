@@ -64,6 +64,12 @@ export interface LocalProvider {
   amenities: string[];
   lastVerified: string;
   email?: string;
+  facilityType?: string;
+  reviewSummary?: string[];
+  reviewSummaryAr?: string[];
+  descriptionAr?: string;
+  coverImageUrl?: string;
+  googlePhotoUrl?: string;
 }
 
 // ─── Load scraped providers ─────────────────────────────────────────────────────
