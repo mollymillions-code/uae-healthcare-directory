@@ -3,6 +3,7 @@ import {
   getCities, getCategories, getAreasByCity, getProviders,
   getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
   getProviderCountByInsurance, getProviderCountByLanguage,
+  get24HourProviders, getEmergencyProviders,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
@@ -243,6 +244,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
           });
         }
       }
+    }
+  }
+
+  // ─── 24-Hour & Emergency pages ────────────────────────────────────────────
+  for (const city of cities) {
+    // 24-hour city pages — only if 3+ 24-hour providers
+    const twentyFourHourAll = get24HourProviders(city.slug);
+    if (twentyFourHourAll.length >= 3) {
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/24-hour`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+
+      // 24-hour city × category pages — only if 3+ 24-hour providers in that category
+      for (const cat of categories) {
+        const twentyFourHourCat = get24HourProviders(city.slug, cat.slug);
+        if (twentyFourHourCat.length >= 3) {
+          entries.push({
+            url: `${baseUrl}/directory/${city.slug}/24-hour/${cat.slug}`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.75,
+          });
+        }
+      }
+    }
+
+    // Emergency city pages — only if 3+ emergency providers
+    const emergencyProviders = getEmergencyProviders(city.slug);
+    if (emergencyProviders.length >= 3) {
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/emergency`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.85,
+      });
     }
   }
 

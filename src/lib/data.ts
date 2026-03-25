@@ -421,3 +421,99 @@ export type { Condition };
 export function getConditions(): Condition[] {
   return [...CONDITIONS];
 }
+
+// ─── 24-Hour & Emergency Data Access Functions ──────────────────────────────
+
+/**
+ * Determines whether a provider operates 24 hours.
+ * Checks operatingHours (any day with open="00:00" and close="23:59"),
+ * name containing "24" or "twenty four", or description mentioning
+ * "24 hours" / "round the clock".
+ */
+export function is24HourProvider(provider: LocalProvider): boolean {
+  // Check operatingHours — any day with 00:00–23:59
+  if (provider.operatingHours) {
+    const is24HourSchedule = Object.values(provider.operatingHours).some(
+      (h) => h.open === "00:00" && h.close === "23:59"
+    );
+    if (is24HourSchedule) return true;
+  }
+
+  // Check name
+  const nameLower = provider.name.toLowerCase();
+  if (nameLower.includes("24") || nameLower.includes("twenty four")) return true;
+
+  // Check description
+  const descLower = (provider.description || "").toLowerCase();
+  if (
+    descLower.includes("24 hours") ||
+    descLower.includes("24-hour") ||
+    descLower.includes("round the clock") ||
+    descLower.includes("open 24")
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Determines whether a provider offers emergency services.
+ * Checks category, name, description, and services array.
+ */
+export function isEmergencyProvider(provider: LocalProvider): boolean {
+  if (provider.categorySlug === "emergency-care") return true;
+
+  const nameLower = provider.name.toLowerCase();
+  if (
+    nameLower.includes("emergency") ||
+    nameLower.includes("urgent care") ||
+    nameLower.includes("er ") ||
+    nameLower.includes("a&e")
+  ) {
+    return true;
+  }
+
+  const descLower = (provider.description || "").toLowerCase();
+  if (
+    descLower.includes("emergency department") ||
+    descLower.includes("emergency room") ||
+    descLower.includes("emergency services") ||
+    descLower.includes("urgent care") ||
+    descLower.includes("accident & emergency") ||
+    descLower.includes("accident and emergency")
+  ) {
+    return true;
+  }
+
+  if (
+    provider.services.some((s) => {
+      const sl = s.toLowerCase();
+      return sl.includes("emergency") || sl.includes("urgent care");
+    })
+  ) {
+    return true;
+  }
+
+  // Hospitals are generally considered to have emergency departments
+  if (provider.categorySlug === "hospitals") return true;
+
+  return false;
+}
+
+/** Get all 24-hour providers in a city, optionally filtered by category. */
+export function get24HourProviders(citySlug: string, categorySlug?: string): LocalProvider[] {
+  let source: LocalProvider[];
+  if (categorySlug) {
+    source = byCityCategory.get(`${citySlug}:${categorySlug}`) || [];
+  } else {
+    source = byCity.get(citySlug) || [];
+  }
+  return source.filter(is24HourProvider);
+}
+
+/** Get all emergency-capable providers in a city. */
+export function getEmergencyProviders(citySlug: string): LocalProvider[] {
+  const source = byCity.get(citySlug) || [];
+  return source.filter(isEmergencyProvider);
+}
