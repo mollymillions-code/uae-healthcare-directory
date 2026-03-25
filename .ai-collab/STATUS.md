@@ -38,13 +38,24 @@
 
 ## CRITICAL: Rules for Agents Working on This Project
 
-### 1. NEVER change the DB driver back to Neon
-The codebase was migrated from `@neondatabase/serverless` to `pg` (node-postgres). These three files MUST use `pg`:
-- `src/lib/db/index.ts` — uses `Pool` from `pg` + `drizzle-orm/node-postgres`
-- `src/lib/db/seed.ts` — uses `Pool` from `pg` + `drizzle-orm/node-postgres`
-- `src/lib/research/db.ts` — uses `Pool` from `pg` with tagged template wrapper
+### 1. NEVER use @neondatabase/serverless — ZERO Neon imports remain
+The ENTIRE codebase was migrated from `@neondatabase/serverless` to `pg` (node-postgres). This includes:
+- `src/lib/db/index.ts` — Drizzle ORM via `drizzle-orm/node-postgres`
+- `src/lib/db/seed.ts` — Drizzle ORM via `drizzle-orm/node-postgres`
+- `src/lib/research/db.ts` — tagged template wrapper over `pg.Pool`
+- `src/lib/intelligence/automation/pipeline.ts` — direct `pg.Pool.query()`
+- `scripts/automation/lib/db.mjs` — shared DB module for ALL automation scripts
+- `scripts/run-pipeline-persist.ts` — content pipeline
+- `scripts/seed-journal-to-db.ts`, `scripts/seed-post-queue.mjs`, `scripts/run-schema.mjs`, `scripts/create-table.ts`, `scripts/cleanup-db.ts`
+- `scripts/regen-all-images.ts`, `scripts/fill-missing-images.ts`, `scripts/generate-db-images.ts`, `scripts/fetch-source-images.ts`, `scripts/fix-google-images.ts`, `scripts/upload-images-r2.ts`
 
-If you see `@neondatabase/serverless` or `drizzle-orm/neon-http` in these files, something has gone wrong.
+**If you add a new script that needs DB access**, use `pg` Pool — NOT neon. Example:
+```typescript
+import { Pool } from "pg";
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+const result = await pool.query("SELECT ...");
+await pool.end();
+```
 
 ### 2. NEVER edit files directly on EC2 via SSH
 All code changes must go through GitHub. The deploy workflow runs `git checkout -- .` before `git pull`, which **wipes any local changes on EC2**. If you SSH in and edit files, they WILL be lost on next deploy.
@@ -78,6 +89,19 @@ After pushing to `main`, check:
 
 ### 8. The `.env.local` is NOT in git
 Environment variables live at `/home/ubuntu/zavis-landing/.env.local` on EC2. If you need to add a new env var, you must SSH in and edit that file, then restart PM2. Do NOT commit `.env.local` to git.
+
+### 9. All scripts and workflows run ON EC2, not on GitHub runners
+Since the DB is on localhost, all scripts that need DB access must run on EC2 via SSH. Both GitHub Actions workflows use `appleboy/ssh-action` to SSH into EC2:
+- **Deploy** (`.github/workflows/deploy.yml`) — git pull + build + PM2 restart
+- **Content pipeline** (`.github/workflows/journal-full-pipeline.yml`) — runs `npx tsx scripts/run-pipeline-persist.ts` on EC2 every 2 hours, commits generated images
+
+If you add a new workflow that needs DB access, it MUST run via SSH on EC2 — GitHub runners cannot reach `localhost:5432`.
+
+### 10. After deploy, verify the build works
+Every deploy rebuilds 25k+ static pages. If the build fails, the old `.next` folder remains and the site keeps running on stale code. Always check:
+1. GitHub Actions shows green checkmark
+2. `curl https://www.zavis.ai/api/health` returns the expected commit SHA
+3. If articles show empty, check DB password/permissions (see rules 3 & 4)
 
 ---
 

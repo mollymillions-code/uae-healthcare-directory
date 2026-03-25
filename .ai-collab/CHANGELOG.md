@@ -2,6 +2,13 @@
 
 ## 2026-03-25
 
+### Full Neon-to-pg Migration (all scripts)
+- Migrated ALL remaining 14 scripts from `@neondatabase/serverless` to `pg` (node-postgres)
+- Zero `@neondatabase/serverless` imports remain in the entire codebase
+- `scripts/automation/lib/db.mjs` (shared DB module) now uses `pg.Pool` with tagged template wrapper
+- `src/lib/intelligence/automation/pipeline.ts` now uses direct `pg.Pool.query()`
+- `journal-full-pipeline.yml` workflow now runs on EC2 via SSH (not GitHub runner) since DB is localhost-only
+
 ### Tracking & Analytics
 - Added Reb2b visitor identification script (`GOYPYHQZ9POX`) to root layout alongside existing GTM, Google Ads, Twitter, Clarity, LinkedIn, and Meta pixels
 
