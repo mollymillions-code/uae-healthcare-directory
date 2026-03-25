@@ -10,6 +10,9 @@ import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import { CONDITIONS } from "@/lib/constants/conditions";
+import { LAB_PROFILES, LAB_TESTS, TEST_CATEGORIES } from "@/lib/constants/labs";
+import { getAllLabLists } from "@/lib/labs-lists";
+import { CITIES } from "@/lib/constants/cities";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works",
@@ -218,6 +221,111 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "hourly",
     priority: 0.3,
   });
+
+  // ─── Lab Test Comparison ────────────────────────────────────────────────
+  entries.push({
+    url: `${baseUrl}/labs`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  });
+  entries.push({
+    url: `${baseUrl}/labs/compare`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
+  });
+  for (const lab of LAB_PROFILES) {
+    entries.push({
+      url: `${baseUrl}/labs/${lab.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+  }
+  for (const test of LAB_TESTS) {
+    entries.push({
+      url: `${baseUrl}/labs/test/${test.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+  }
+  // Test category pages
+  for (const cat of TEST_CATEGORIES) {
+    entries.push({
+      url: `${baseUrl}/labs/category/${cat.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    });
+  }
+  // Home collection & packages hubs
+  entries.push(
+    { url: `${baseUrl}/labs/home-collection`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/labs/packages`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+  );
+  // City-specific lab pages + city×category permutations
+  for (const city of CITIES) {
+    const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
+    if (cityLabs.length === 0) continue;
+    entries.push({
+      url: `${baseUrl}/labs/city/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+    for (const cat of TEST_CATEGORIES) {
+      entries.push({
+        url: `${baseUrl}/labs/city/${city.slug}/${cat.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  }
+  // Test × City permutations (/labs/test/[test]/[city])
+  for (const test of LAB_TESTS) {
+    for (const city of CITIES) {
+      entries.push({
+        url: `${baseUrl}/labs/test/${test.slug}/${city.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  }
+  // Programmatic Top-N Lists (/labs/lists/[slug])
+  for (const list of getAllLabLists()) {
+    entries.push({
+      url: `${baseUrl}/labs/lists/${list.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+  }
+
+  // ─── Insurance Navigator (root) ──────────────────────────────────────────
+  entries.push({
+    url: `${baseUrl}/insurance`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  });
+  entries.push({
+    url: `${baseUrl}/insurance/compare`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
+  });
+  for (const insurer of INSURANCE_PROVIDERS) {
+    entries.push({
+      url: `${baseUrl}/insurance/${insurer.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+  }
 
   // ─── Static pages (trust pages only — transactional pages like /claim excluded) ─
   entries.push(
