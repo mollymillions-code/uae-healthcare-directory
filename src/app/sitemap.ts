@@ -3,8 +3,8 @@ import {
   getCities, getCategories, getAreasByCity, getProviders,
   getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
   getProviderCountByInsurance, getProviderCountByLanguage,
-  get24HourProviders, getEmergencyProviders,
-  getProvidersByInsurance, getProvidersByLanguage,
+  get24HourProviders, getEmergencyProviders, getGovernmentProviders,
+  getWalkInProviders, getProvidersByInsurance, getProvidersByLanguage,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
@@ -380,6 +380,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.85,
       });
     }
+
+    // ─── Area-level 24-hour & emergency pages ───────────────────────────────
+    const areasFor24Hr = getAreasByCity(city.slug);
+    for (const area of areasFor24Hr) {
+      const area24Hr = get24HourProviders(city.slug, undefined, area.slug);
+      if (area24Hr.length >= 3) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/${area.slug}/24-hour`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.75,
+        });
+        for (const cat of categories) {
+          const area24HrCat = get24HourProviders(city.slug, cat.slug, area.slug);
+          if (area24HrCat.length >= 3) {
+            entries.push({
+              url: `${baseUrl}/directory/${city.slug}/${area.slug}/24-hour/${cat.slug}`,
+              lastModified: new Date(),
+              changeFrequency: "weekly",
+              priority: 0.7,
+            });
+          }
+        }
+      }
+      const areaEmergency = getEmergencyProviders(city.slug, area.slug);
+      if (areaEmergency.length >= 3) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/${area.slug}/emergency`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        });
+      }
+    }
   }
 
   // ─── Procedure cost pages per city ───────────────────────────────────────
@@ -403,7 +437,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-    // ─── Provider listing pages ───────────────────────────────────────────────
+    // ─── Government facility pages ──────────────────────────────────────────────
+  for (const city of cities) {
+    const govAll = getGovernmentProviders(city.slug);
+    if (govAll.length >= 3) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/government`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 });
+
+      // Government city x category pages
+      for (const cat of categories) {
+        const govCat = getGovernmentProviders(city.slug, cat.slug);
+        if (govCat.length >= 3) {
+          entries.push({ url: `${baseUrl}/directory/${city.slug}/government/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
+        }
+      }
+    }
+
+    // Government area pages
+    const govAreas = getAreasByCity(city.slug);
+    for (const area of govAreas) {
+      const govArea = getGovernmentProviders(city.slug, undefined, area.slug);
+      if (govArea.length >= 3) {
+        entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/government`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
+      }
+    }
+  }
+
+  // ─── Provider listing pages ───────────────────────────────────────────────
   const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {
     entries.push({

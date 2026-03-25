@@ -501,19 +501,28 @@ export function isEmergencyProvider(provider: LocalProvider): boolean {
   return false;
 }
 
-/** Get all 24-hour providers in a city, optionally filtered by category. */
-export function get24HourProviders(citySlug: string, categorySlug?: string): LocalProvider[] {
+/** Get all 24-hour providers in a city, optionally filtered by category and/or area. */
+export function get24HourProviders(citySlug: string, categorySlug?: string, areaSlug?: string): LocalProvider[] {
   let source: LocalProvider[];
-  if (categorySlug) {
+  if (categorySlug && areaSlug) {
+    source = byCityCategoryArea.get(`${citySlug}:${categorySlug}:${areaSlug}`) || [];
+  } else if (categorySlug) {
     source = byCityCategory.get(`${citySlug}:${categorySlug}`) || [];
+  } else if (areaSlug) {
+    source = byCityArea.get(`${citySlug}:${areaSlug}`) || [];
   } else {
     source = byCity.get(citySlug) || [];
   }
   return source.filter(is24HourProvider);
 }
 
-/** Get all emergency-capable providers in a city. */
-export function getEmergencyProviders(citySlug: string): LocalProvider[] {
-  const source = byCity.get(citySlug) || [];
+/** Get all emergency-capable providers in a city, optionally filtered by area. */
+export function getEmergencyProviders(citySlug: string, areaSlug?: string): LocalProvider[] {
+  let source: LocalProvider[];
+  if (areaSlug) {
+    source = byCityArea.get(`${citySlug}:${areaSlug}`) || [];
+  } else {
+    source = byCity.get(citySlug) || [];
+  }
   return source.filter(isEmergencyProvider);
 }
