@@ -3,11 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Home,
-  MapPin,
-  CheckCircle,
   ArrowRight,
-  Clock,
-  Wallet,
   Award,
   Shield,
   Microscope,
@@ -28,8 +24,6 @@ import {
   getPricesForLab,
   getPackagesForLab,
   formatPrice,
-  getTestsByCategory,
-  type TestCategory,
 } from "@/lib/labs";
 import { CITIES } from "@/lib/constants/cities";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
