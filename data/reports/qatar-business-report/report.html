@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Zavis Business & AI Report: Qatar 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--blue:#5B8DEF;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+.ov-right .s-bg::after{background:linear-gradient(270deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-gradient .s-bg::after{background:linear-gradient(135deg,rgba(8,11,18,.9) 0%,rgba(8,11,18,.65) 40%,rgba(8,11,18,.85) 100%)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── SPECIAL: METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── SPECIAL: TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── SECTOR PILLS ─── */
+.sector-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--border)}
+
+/* ─── CASE STUDY CARDS ─── */
+.case-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,24px);backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:10px}
+.case-card .case-brand{font-family:var(--display);font-size:clamp(16px,1.4vw,22px);font-weight:700;color:var(--t1)}
+.case-card .case-type{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
+.case-metrics{display:flex;gap:12px;margin-top:auto}
+.case-metrics .cm{flex:1;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;text-align:center}
+.case-metrics .cm-val{font-family:var(--mono);font-size:clamp(16px,1.5vw,22px);font-weight:700}
+.case-metrics .cm-lbl{font-size:11px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4,.g5{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 16</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Research — Qatar 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:16em">
+      Business &amp; AI Report:<br><span class="accent">Qatar 2025</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      Sector intelligence for executive decision-making. A comprehensive analysis of AI adoption trends, opportunities, and strategic imperatives across Qatar's most dynamic sectors.
+    </p>
+    <div class="g5 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(20px,2.2vw,32px);color:var(--green)" id="c1">0%</div>
+        <div class="stat-label">CEO GenAI Adoption</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(20px,2.2vw,32px);color:var(--gold)" id="c2">$0B</div>
+        <div class="stat-label">Digital Investment</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(20px,2.2vw,32px);color:var(--teal)" id="c3">0%</div>
+        <div class="stat-label">Investment Growth</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(20px,2.2vw,32px);color:var(--blue)" id="c4">0</div>
+        <div class="stat-label">GCC AI Rank</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(20px,2.2vw,32px);color:var(--coral)" id="c5">0</div>
+        <div class="stat-label">Sectors Analyzed</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:clamp(16px,3vh,32px);flex-wrap:wrap;justify-content:center" class="rv rv-d4">
+      <span class="sector-pill" style="color:var(--green);border-color:rgba(0,168,107,.3)">Real Estate</span>
+      <span class="sector-pill" style="color:var(--teal);border-color:rgba(46,196,182,.3)">Healthcare</span>
+      <span class="sector-pill" style="color:var(--gold);border-color:rgba(232,184,75,.3)">Retail</span>
+      <span class="sector-pill" style="color:var(--blue);border-color:rgba(91,141,239,.3)">Finance</span>
+      <span class="sector-pill" style="color:var(--coral);border-color:rgba(255,107,107,.3)">Logistics</span>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — QATAR'S DIGITAL DECADE (Foreword + QNV 2030)
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-falcon.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Qatar's Digital Decade</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">National Vision 2030: <span class="accent">Four Pillars of Transformation</span></div>
+    <div class="g4 rv rv-d2" style="width:100%;margin-bottom:clamp(16px,3vh,28px)">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">PILLAR 1</div>
+        <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Economic Development</div>
+        <p class="body-sm">Diversified economy reducing hydrocarbon dependency through knowledge-based innovation</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">PILLAR 2</div>
+        <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Social Development</div>
+        <p class="body-sm">Just society with high moral standards and social equality</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">PILLAR 3</div>
+        <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Human Development</div>
+        <p class="body-sm">World-class education system equipping citizens for a changing economy</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--blue)">
+        <div class="caption" style="color:var(--blue)">PILLAR 4</div>
+        <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Environmental Development</div>
+        <p class="body-sm">Harmony between economic growth, social development and environmental protection</p>
+      </div>
+    </div>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--green)">+21</div>
+            <div class="stat-label">Global Innovation Index Gain</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">49th / 133 globally (2024)</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--teal)">+25</div>
+            <div class="stat-label">E-Government Index Gain</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">53rd / 193 globally (2024)</p>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <p class="body" style="max-width:28em">Qatar's economic diversification vision is accelerating through technology-driven transformation. The National AI Strategy (2019), Digital Agenda 2030, and NDS-3 are driving unprecedented momentum in digital adoption across public and private sectors.</p>
+        <div class="callout">
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">97%</strong> of Qatar CEOs plan to integrate GenAI into technology platforms within 3 years — vs. 78% globally.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — ECONOMIC CONTEXT: Big Number + Sector GDP
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-tech.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Economic Context</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--gold);margin-top:24px">$5.7<span style="font-size:.4em;color:var(--t2);font-weight:400">B</span></div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:18em;text-align:center">Projected digital investments by 2026 — <span class="accent">245% growth</span> from $1.65B in 2022</div>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)">2.0%</div>
+        <div class="stat-label">Real GDP Growth Q3 2024</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">94%</div>
+        <div class="stat-label">Internet Penetration</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">$35.5B</div>
+        <div class="stat-label">GCC AI Market by 2031</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)">38.1%</div>
+        <div class="stat-label">GCC AI CAGR to 2031</div>
+      </div>
+    </div>
+    <div class="callout rv rv-d4" style="margin-top:clamp(16px,3vh,28px);max-width:700px">
+      <p class="body-sm" style="text-align:center"><strong style="color:var(--t1)">Services sector</strong> expected to drive 40% of future growth through digital transformation. Targeted AI investments projected to generate <strong style="color:var(--t1)">$10B in economic value by 2030</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — AI READINESS: GCC Positioning
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-falcon.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Readiness</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Qatar's Position in the <span class="accent">GCC AI Landscape</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(48px,5vw,72px);color:var(--green)">3rd</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">GCC AI Readiness Ranking (2025)</div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">79.9</div>
+            <div class="stat-label">AI Readiness Score</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">89%</div>
+            <div class="stat-label">AI Patent Growth 2020-25</div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">STRENGTHS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Clear National Vision</div><p class="body-sm">Established AI committee, comprehensive strategy since 2019</p></div>
+        <div class="info-card" style="border-left:3px solid var(--teal)"><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Strong Connectivity</div><p class="body-sm">94% internet penetration, advanced cloud infrastructure</p></div>
+        <div class="info-card" style="border-left:3px solid var(--blue)"><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Governance Frameworks</div><p class="body-sm">NCSA AI guidelines, secure adoption protocols</p></div>
+        <div class="caption" style="color:var(--coral);margin-top:12px;margin-bottom:4px">GAPS TO CLOSE</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Talent Depth</div><p class="body-sm">AI skills deficit of ~3,500 specialists. Production-grade MLOps maturity still developing.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — EXECUTIVE SUMMARY: CEO Actions
+     ════════════════════════════════════════════ -->
+<section class="s ov-gradient" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Executive Summary</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">What CEOs <span class="accent">Need to Know</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="info-card stack gap-xs" style="border-top:3px solid var(--green)">
+          <div class="caption" style="color:var(--green)">ADOPTION IS ACCELERATING</div>
+          <p class="body-sm"><strong style="color:var(--t1)">90%</strong> of Qatar CEOs adopted GenAI in the past year, outpacing the global average of 83%</p>
+          <p class="body-sm"><strong style="color:var(--t1)">87%</strong> aim to embed AI in business processes; <strong style="color:var(--t1)">83%</strong> in product development</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-top:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold)">STRATEGIC ACTIONS</div>
+          <p class="body-sm">Start with targeted automations tied directly to revenue or cost KPIs</p>
+          <p class="body-sm">Build robust data foundations ensuring quality, lineage, and compliance</p>
+          <p class="body-sm">Partner with trusted AI platforms aligned with Qatar's data privacy frameworks</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--teal);margin-bottom:4px">ROI HOT SPOTS ACROSS SECTORS</div>
+        <div class="bar-row"><div class="bar-lbl">Real Estate</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">High</div></div>
+        <div class="bar-row"><div class="bar-lbl">Healthcare</div><div class="bar-track"><div class="bar-fill" data-w="80%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">High</div></div>
+        <div class="bar-row"><div class="bar-lbl">Retail</div><div class="bar-track"><div class="bar-fill" data-w="88%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">High</div></div>
+        <div class="bar-row"><div class="bar-lbl">Finance</div><div class="bar-track"><div class="bar-fill" data-w="82%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">High</div></div>
+        <div class="bar-row"><div class="bar-lbl">Logistics</div><div class="bar-track"><div class="bar-fill" data-w="78%" style="background:linear-gradient(90deg,var(--coral),#FF6B6B)"></div></div><div class="bar-val" style="color:var(--coral)">High</div></div>
+        <div class="callout" style="margin-top:12px">
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Macro Impact:</strong> GCC AI market expected to grow at 38.10% CAGR through 2031, reaching US$35.48 billion.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — REAL ESTATE & PROPTECH
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-retail.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Sector Deep-Dive</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(12px,2vh,20px)">Real Estate &amp; PropTech: <span class="accent">From Listings to Living Systems</span></div>
+    <div class="g4 rv rv-d2" style="width:100%;margin-bottom:clamp(12px,2vh,20px)">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--green)">$580M</div>
+        <div class="stat-label">PropTech Market 2024</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--teal)">28.4%</div>
+        <div class="stat-label">CAGR Through 2030</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--gold)">73%</div>
+        <div class="stat-label">Developers Exploring AI</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--blue)">35%</div>
+        <div class="stat-label">Cost Reduction via Smart Tech</div>
+      </div>
+    </div>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">WHERE AI PAYS NOW</div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(13px,1.1vw,17px)">Valuation &amp; Demand Sensing</div><p class="body-sm" style="font-size:14px">Automated Valuation Models using comparables, micro-location signals, and market trends for real-time property pricing</p></div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(13px,1.1vw,17px)">Digital Twins</div><p class="body-sm" style="font-size:14px">Virtual building replicas optimizing energy usage, predicting maintenance, improving lifecycle capex planning</p></div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(13px,1.1vw,17px)">Tenant Experience</div><p class="body-sm" style="font-size:14px">Bilingual Arabic/English chatbots managing service tickets, concierge services, dynamic pricing</p></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">KPI IMPACT</div>
+        <div class="bar-row"><div class="bar-lbl">Lease-up Speed</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">+25%</div></div>
+        <div class="bar-row"><div class="bar-lbl">OPEX Reduction</div><div class="bar-track"><div class="bar-fill" data-w="60%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">-20%</div></div>
+        <div class="bar-row"><div class="bar-lbl">NOI Improvement</div><div class="bar-track"><div class="bar-fill" data-w="45%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">+10%</div></div>
+        <div class="callout" style="margin-top:8px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">IMPLEMENTATION: 12-18 MONTHS</div>
+          <p class="body-sm" style="font-size:12px">Phase 1: Data Foundation (3-4 mo) → Phase 2: Core AI Solutions (4-6 mo) → Phase 3: Integration (2-3 mo) → Phase 4: Optimization (ongoing)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — HEALTHCARE
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Healthcare</div>
+        <div class="h2">Intelligent, <span class="accent">Patient-Centered Systems</span></div>
+        <div class="g3" style="margin-bottom:8px">
+          <div class="stat-card" style="text-align:center;padding:14px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">72%</div>
+            <div class="stat-label" style="font-size:11px">Facilities Increasing AI Spend</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:14px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">$1.2B</div>
+            <div class="stat-label" style="font-size:11px">AI Market by 2030</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:14px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">38%</div>
+            <div class="stat-label" style="font-size:11px">YoY Telehealth Growth</div>
+          </div>
+        </div>
+        <div class="stack gap-xs">
+          <div class="caption" style="color:var(--green)">WHERE AI PAYS NOW</div>
+          <p class="body-sm"><strong style="color:var(--t1)">Imaging Triage:</strong> AI-powered diagnostics for radiology and cardiology prioritizing urgent cases</p>
+          <p class="body-sm"><strong style="color:var(--t1)">Patient Engagement:</strong> Automated scheduling, AI chat triage, remote monitoring alerts</p>
+          <p class="body-sm"><strong style="color:var(--t1)">Operations:</strong> Automated medical coding, RCM, supply forecasting</p>
+        </div>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:16px;color:var(--green)">-30%</div><div class="stat-label" style="font-size:11px">Wait Times</div></div>
+          <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:16px;color:var(--teal)">+15%</div><div class="stat-label" style="font-size:11px">Imaging Throughput</div></div>
+          <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:16px;color:var(--gold)">-25%</div><div class="stat-label" style="font-size:11px">Admin Cost/Claim</div></div>
+          <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:16px;color:var(--blue)">+35%</div><div class="stat-label" style="font-size:11px">Patient Satisfaction</div></div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — RETAIL & E-COMMERCE
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-retail.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Sector Deep-Dive</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(12px,2vh,20px)">Retail &amp; E-Commerce: <span class="accent">Personalized, Conversational, Real-Time</span></div>
+    <div class="g3 rv rv-d2" style="margin-bottom:clamp(12px,2vh,20px)">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">$3.2B</div>
+        <div class="stat-label">E-Commerce Market 2024</div>
+        <p class="body-sm" style="font-size:12px;margin-top:4px">Projected to reach $5.8B by 2027</p>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)">32%</div>
+        <div class="stat-label">Annual Growth Rate</div>
+        <p class="body-sm" style="font-size:12px;margin-top:4px">Online shopping adoption</p>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">78%</div>
+        <div class="stat-label">Mobile Commerce Share</div>
+        <p class="body-sm" style="font-size:12px;margin-top:4px">Of total e-commerce transactions</p>
+      </div>
+    </div>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">BEFORE vs. AFTER AI</div>
+        <div class="info-card" style="padding:12px"><div class="g2"><div><div class="caption" style="color:var(--t3)">CONVERSION RATE</div><p class="body-sm" style="font-size:14px"><span style="color:var(--t3)">2.3%</span> → <span style="color:var(--green);font-weight:700">3.9%</span> <span style="color:var(--green)">↑ 70%</span></p></div><div><div class="caption" style="color:var(--t3)">AVG ORDER VALUE</div><p class="body-sm" style="font-size:14px"><span style="color:var(--t3)">QAR 320</span> → <span style="color:var(--green);font-weight:700">QAR 410</span> <span style="color:var(--green)">↑ 28%</span></p></div></div></div>
+        <div class="info-card" style="padding:12px"><div class="g2"><div><div class="caption" style="color:var(--t3)">RESPONSE TIME</div><p class="body-sm" style="font-size:14px"><span style="color:var(--t3)">4.2 hrs</span> → <span style="color:var(--green);font-weight:700">12 min</span> <span style="color:var(--green)">↓ 95%</span></p></div><div><div class="caption" style="color:var(--t3)">INVENTORY TURNOVER</div><p class="body-sm" style="font-size:14px"><span style="color:var(--t3)">6.2x</span> → <span style="color:var(--green);font-weight:700">8.4x</span> <span style="color:var(--green)">↑ 35%</span></p></div></div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">WHERE AI PAYS NOW</div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Arabic NLP Personalization</div><p class="body-sm" style="font-size:14px">Relevance models understanding local context, personalized recommendations, intelligent offers</p></div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Conversational Commerce</div><p class="body-sm" style="font-size:14px">WhatsApp/Instagram bots for product discovery, cart management, bilingual support</p></div>
+        <div class="info-card"><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Inventory &amp; Pricing</div><p class="body-sm" style="font-size:14px">AI-driven demand forecasting for Qatar's seasonal events; dynamic markdown optimization</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — FINANCIAL SERVICES
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Sector Deep-Dive</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(12px,2vh,20px)">Financial Services: <span class="accent">Risk-Smart Growth</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md">
+        <div class="g3">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--blue)">$8.9B</div>
+            <div class="stat-label">GCC Financial AI 2024</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--green)">38.5%</div>
+            <div class="stat-label">CAGR 2025-2030</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2.2vw,32px);color:var(--gold)">76%</div>
+            <div class="stat-label">Banks With AI Strategy</div>
+          </div>
+        </div>
+        <div class="stack gap-xs">
+          <div class="caption" style="color:var(--blue)">WHERE AI PAYS NOW</div>
+          <p class="body-sm"><strong style="color:var(--t1)">Risk &amp; Compliance:</strong> AML anomaly detection, transaction monitoring, sanctions screening</p>
+          <p class="body-sm"><strong style="color:var(--t1)">Customer Onboarding:</strong> Digital KYC with OCR, facial recognition, instant decisioning</p>
+          <p class="body-sm"><strong style="color:var(--t1)">Customer Intelligence:</strong> Next-best-action recommendations, personalized offers</p>
+          <p class="body-sm"><strong style="color:var(--t1)">Fraud Detection:</strong> Claims automation, chargeback triage, payment risk scoring</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">KPI IMPACT</div>
+        <div class="bar-row"><div class="bar-lbl">Onboarding Time</div><div class="bar-track"><div class="bar-fill" data-w="80%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">-50%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Cross-sell Revenue</div><div class="bar-track"><div class="bar-fill" data-w="45%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">+10%</div></div>
+        <div class="bar-row"><div class="bar-lbl">AML False Positives</div><div class="bar-track"><div class="bar-fill" data-w="70%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">-40%</div></div>
+        <div class="callout" style="margin-top:12px">
+          <div class="caption" style="color:var(--blue);margin-bottom:4px">QCB AI GUIDELINES (2024)</div>
+          <p class="body-sm" style="font-size:14px">Financial institutions must adopt ethical AI frameworks with transparent algorithms, maintain responsibility for AI-based decisions, and implement comprehensive risk management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — LOGISTICS & SUPPLY CHAIN
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-falcon.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Sector Deep-Dive</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;text-align:center">Logistics &amp; Supply Chain: <span class="accent">Predictive &amp; Autonomous</span></div>
+    <div class="g3 rv rv-d2" style="margin-top:clamp(16px,3vh,28px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--coral)">$12.8B</div>
+        <div class="stat-label">Market Size 2024</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)">8.6%</div>
+        <div class="stat-label">CAGR 2024-2030</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">65%</div>
+        <div class="stat-label">Digital Transformation Rate</div>
+      </div>
+    </div>
+    <div class="g3 rv rv-d3" style="margin-top:clamp(12px,2vh,20px);max-width:800px;width:100%">
+      <div class="info-card stack gap-xs" style="text-align:left">
+        <div class="caption" style="color:var(--green)">NETWORK &amp; LAST MILE</div>
+        <p class="body-sm" style="font-size:14px">Dynamic routing, precise delivery dates, driver-assist sequencing, real-time fleet optimization</p>
+        <div class="g2" style="margin-top:auto">
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--green)">-20%</div><div class="stat-label" style="font-size:7px">Delivery Costs</div></div>
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--green)">+18%</div><div class="stat-label" style="font-size:7px">On-time Rate</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-xs" style="text-align:left">
+        <div class="caption" style="color:var(--teal)">WAREHOUSING</div>
+        <p class="body-sm" style="font-size:14px">AI-driven slotting, computer vision QC, demand-driven replenishment, labor forecasting</p>
+        <div class="g2" style="margin-top:auto">
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--teal)">-25%</div><div class="stat-label" style="font-size:7px">Idle Time</div></div>
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--teal)">+22%</div><div class="stat-label" style="font-size:7px">Inventory Accuracy</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-xs" style="text-align:left">
+        <div class="caption" style="color:var(--gold)">CROSS-BORDER</div>
+        <p class="body-sm" style="font-size:14px">ETA prediction, customs documentation automation, exception handling bots</p>
+        <div class="g2" style="margin-top:auto">
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--gold)">-30%</div><div class="stat-label" style="font-size:7px">Customs Time</div></div>
+          <div class="stat-card" style="padding:8px;text-align:center"><div class="stat-num" style="font-size:14px;color:var(--gold)">-35%</div><div class="stat-label" style="font-size:7px">Order Errors</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — CASE STUDIES
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Case Studies</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Signals of <span class="accent">Scalable ROI</span> in Qatar</div>
+    <div class="g2 rv rv-d2" style="width:100%">
+      <div class="case-card" style="border-top:3px solid var(--green)">
+        <div class="case-type">RETAIL MODERNIZATION</div>
+        <div class="case-brand">Al Meera</div>
+        <p class="body-sm" style="font-size:14px"><strong style="color:var(--t3)">Challenge:</strong> Manual operations &amp; limited customer data<br><strong style="color:var(--t3)">Solution:</strong> Digital platforms &amp; self-checkout with AI<br><strong style="color:var(--t3)">Outcome:</strong> Higher efficiency &amp; personalized shopping</p>
+        <div class="case-metrics">
+          <div class="cm"><div class="cm-val" style="color:var(--green)">+22%</div><div class="cm-lbl">Basket Size</div></div>
+          <div class="cm"><div class="cm-val" style="color:var(--teal)">-35%</div><div class="cm-lbl">Wait Times</div></div>
+        </div>
+      </div>
+      <div class="case-card" style="border-top:3px solid var(--gold)">
+        <div class="case-type">MALL DIGITAL TRANSFORMATION</div>
+        <div class="case-brand">MOQ (Mall of Qatar)</div>
+        <p class="body-sm" style="font-size:14px"><strong style="color:var(--t3)">Challenge:</strong> Static displays &amp; limited footfall insights<br><strong style="color:var(--t3)">Solution:</strong> AI-driven digital media &amp; analytics system<br><strong style="color:var(--t3)">Outcome:</strong> Optimized tenant outcomes &amp; engagement</p>
+        <div class="case-metrics">
+          <div class="cm"><div class="cm-val" style="color:var(--gold)">+18%</div><div class="cm-lbl">Footfall-to-Sales</div></div>
+          <div class="cm"><div class="cm-val" style="color:var(--blue)">+45%</div><div class="cm-lbl">Ad Engagement</div></div>
+        </div>
+      </div>
+      <div class="case-card" style="border-top:3px solid var(--blue)">
+        <div class="case-type">DIGITAL BANKING ACCELERATION</div>
+        <div class="case-brand">QNB</div>
+        <p class="body-sm" style="font-size:14px"><strong style="color:var(--t3)">Challenge:</strong> Complex onboarding &amp; manual verification<br><strong style="color:var(--t3)">Solution:</strong> AI-powered KYC &amp; conversational support<br><strong style="color:var(--t3)">Outcome:</strong> Faster service delivery &amp; higher satisfaction</p>
+        <div class="case-metrics">
+          <div class="cm"><div class="cm-val" style="color:var(--blue)">-65%</div><div class="cm-lbl">Onboarding Time</div></div>
+          <div class="cm"><div class="cm-val" style="color:var(--green)">+28</div><div class="cm-lbl">NPS Improvement</div></div>
+        </div>
+      </div>
+      <div class="case-card" style="border-top:3px solid var(--coral)">
+        <div class="case-type">SMART LOGISTICS OPERATIONS</div>
+        <div class="case-brand">GWC</div>
+        <p class="body-sm" style="font-size:14px"><strong style="color:var(--t3)">Challenge:</strong> Delivery delays &amp; suboptimal routing<br><strong style="color:var(--t3)">Solution:</strong> Predictive routing &amp; warehouse automation<br><strong style="color:var(--t3)">Outcome:</strong> Improved on-time delivery &amp; efficiency</p>
+        <div class="case-metrics">
+          <div class="cm"><div class="cm-val" style="color:var(--coral)">+19%</div><div class="cm-lbl">On-time Delivery</div></div>
+          <div class="cm"><div class="cm-val" style="color:var(--teal)">-14%</div><div class="cm-lbl">Delivery Costs</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption rv rv-d3" style="margin-top:12px;text-align:center">Sources: Zawya; Esprit Digital; Fintech News ME; GWC and industry releases. Metrics are illustrative based on public information.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — ADOPTION CHALLENGES
+     ════════════════════════════════════════════ -->
+<section class="s ov-gradient" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Adoption Challenges</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">What Holds Back <span class="accent">AI Value</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="info-card" style="border-left:3px solid var(--coral)">
+          <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Data Fragmentation &amp; Privacy</div>
+          <p class="body-sm">Siloed systems, inconsistent data lineage, and lack of unified governance. Privacy compliance adds complexity for cross-border data sharing.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Change Management Lag</div>
+          <p class="body-sm">Process redesign trails technical implementation. Cultural resistance to AI-driven decision-making slows adoption.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--t3)">
+          <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Talent Scarcity</div>
+          <p class="body-sm">Critical shortage of production ML skills. Over-reliance on international vendors leads to implementation delays.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--blue)">
+          <div class="h3" style="font-size:clamp(14px,1.2vw,18px)">Infrastructure Costs</div>
+          <p class="body-sm">High investment for compute resources. Business case uncertainty leads to hesitation without clear ROI.</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">REGIONAL COMPARISON: AI ADOPTION BARRIERS</div>
+        <div class="info-card" style="padding:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;font-family:var(--mono);font-size:11px;text-align:center">
+            <div style="color:var(--t3)"></div><div style="color:var(--t3)">DATA</div><div style="color:var(--t3)">TALENT</div><div style="color:var(--t3)">REGS</div><div style="color:var(--t3)">INVEST</div>
+            <div style="color:var(--t1);text-align:left">Qatar</div><div style="color:var(--gold)">Med-Hi</div><div style="color:var(--gold)">Med</div><div style="color:var(--green)">High</div><div style="color:var(--gold)">Med</div>
+            <div style="color:var(--t1);text-align:left">UAE</div><div style="color:var(--green)">High</div><div style="color:var(--gold)">Med-Hi</div><div style="color:var(--green)">High</div><div style="color:var(--green)">V.High</div>
+            <div style="color:var(--t1);text-align:left">KSA</div><div style="color:var(--gold)">Med-Hi</div><div style="color:var(--gold)">Med</div><div style="color:var(--gold)">Med-Hi</div><div style="color:var(--green)">V.High</div>
+          </div>
+        </div>
+        <div class="caption" style="color:var(--teal);margin-top:8px;margin-bottom:4px">MITIGATION FRAMEWORK</div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">Assess</div><div class="tl-line"></div><div><p class="body-sm" style="font-size:14px">Gap analysis for data, skills, technology</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">Build</div><div class="tl-line"></div><div><p class="body-sm" style="font-size:14px">Data foundation, skills dev, initial use cases</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">Scale</div><div class="tl-line"></div><div><p class="body-sm" style="font-size:14px">Expand pilots, develop governance</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">Transform</div><div class="tl-line" style="min-height:30px"></div><div><p class="body-sm" style="font-size:14px">Embed AI into core business processes</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — SME OPPORTUNITY MAP
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-retail.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">SME Opportunity Map</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(12px,2vh,20px)">Practical Plays for <span class="accent">Qatari SMEs</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;margin-bottom:clamp(12px,2vh,20px)">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">MARKETING</div>
+        <p class="body-sm" style="font-size:14px">Lead scoring &amp; qualification with AI</p>
+        <p class="body-sm" style="font-size:14px">WhatsApp chatbots for engagement</p>
+        <p class="body-sm" style="font-size:14px">Multi-language content generation &amp; SEO</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">SALES</div>
+        <p class="body-sm" style="font-size:14px">Proposal assistants with personalized templates</p>
+        <p class="body-sm" style="font-size:14px">Call summarization directly into CRM</p>
+        <p class="body-sm" style="font-size:14px">Quote automation with dynamic pricing</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">OPERATIONS</div>
+        <p class="body-sm" style="font-size:14px">RPA for invoicing &amp; financial reconciliations</p>
+        <p class="body-sm" style="font-size:14px">AI-powered inventory management</p>
+        <p class="body-sm" style="font-size:14px">Appointment scheduling &amp; support bots</p>
+      </div>
+    </div>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--blue);margin-bottom:4px">FUNDING &amp; SUPPORT RESOURCES</div>
+        <div class="info-card"><p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">National Programs:</strong> MCIT Digital Transformation Fund, QDB Innovation Programs, QSTP technology grants</p></div>
+        <div class="info-card"><p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Cloud Credits:</strong> Major platforms offer SME-specific programs with free tier services for AI/ML</p></div>
+        <div class="info-card"><p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Outcome-Based Pricing:</strong> AI vendors offering success-linked payment models rather than upfront licensing</p></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">90-DAY IMPLEMENTATION TIMELINE</div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px;color:var(--green)">30 Days</div><div class="tl-line"></div><div><p class="body-sm" style="font-size:14px">Pilot 1-2 high-confidence workflows with clear ROI metrics. Focus on automating repetitive tasks.</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px;color:var(--teal)">60 Days</div><div class="tl-line"></div><div><p class="body-sm" style="font-size:14px">Scale to 5-7 connected processes with shared data layer. Begin team training on AI maintenance.</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px;color:var(--gold)">90 Days</div><div class="tl-line" style="min-height:30px"></div><div><p class="body-sm" style="font-size:14px">Standardize KPIs, governance, documentation. Develop roadmap for next-generation capabilities.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — IMPACT METRICS & TESTIMONIAL
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Impact Metrics</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px">What Good <span class="accent">Looks Like</span></div>
+    <div class="g3 rv rv-d2" style="margin-top:clamp(20px,3vh,32px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(40px,4.5vw,64px);color:var(--green)">3x</div>
+        <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Faster Customer Response</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">Average response: 12 → 4 min</p>
+      </div>
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(40px,4.5vw,64px);color:var(--gold)">40%</div>
+        <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Lead Conversion Improvement</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">Conversion: 15% → 21%</p>
+      </div>
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(40px,4.5vw,64px);color:var(--teal)">50%</div>
+        <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Manual Workload Reduction</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">20 hrs saved per employee/month</p>
+      </div>
+    </div>
+    <div class="callout rv rv-d3" style="margin-top:clamp(20px,3vh,32px);max-width:700px">
+      <p class="body" style="font-style:italic;text-align:center;font-size:clamp(14px,1.1vw,17px)">"ZAVIS transformed our patient engagement workflow completely. Their AI system reduced our appointment scheduling time by 65% and improved patient satisfaction scores by 28%. The Arabic and English language support has been invaluable for our diverse patient base."</p>
+      <p class="caption" style="margin-top:8px;text-align:center">— Dr. Rashid Ahmed, Medical Director, Flowspace Clinic Dubai</p>
+    </div>
+    <div class="g4 rv rv-d4" style="margin-top:clamp(16px,2vh,24px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--green)">93%</div><div class="stat-label" style="font-size:11px">Client Retention 12mo</div></div>
+      <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--teal)">87%</div><div class="stat-label" style="font-size:11px">Expand in 6mo</div></div>
+      <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--gold)">4.8/5</div><div class="stat-label" style="font-size:11px">User Satisfaction</div></div>
+      <div class="stat-card" style="text-align:center;padding:12px"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--blue)">32%</div><div class="stat-label" style="font-size:11px">Avg ROI in Q1</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 15 — 2030 OUTLOOK + RECOMMENDATIONS
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s15">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-falcon.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">2030 Outlook &amp; Roadmap</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(12px,2vh,20px)">Autonomous, Trusted, <span class="accent">Integrated</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">QATAR'S AI TRANSFORMATION JOURNEY</div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">2023-25</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Foundation</div><p class="body-sm" style="font-size:12px">Building data infrastructure and platform capabilities</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">2025-27</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Acceleration</div><p class="body-sm" style="font-size:12px">Widespread adoption and process integration</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">2027-29</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Transformation</div><p class="body-sm" style="font-size:12px">Business model reinvention and ecosystem integration</p></div></div>
+        <div class="tl-row"><div class="tl-yr" style="font-size:11px">2029+</div><div class="tl-line" style="min-height:30px"></div><div><div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Autonomous Era</div><p class="body-sm" style="font-size:12px">Self-optimizing intelligent systems across economy</p></div></div>
+        <div class="g3" style="margin-top:12px">
+          <div class="info-card" style="text-align:center;padding:12px"><div class="mono" style="font-size:clamp(16px,1.5vw,22px);font-weight:700;color:var(--green)">01</div><div class="body-sm" style="font-size:12px;margin-top:4px">Agentic AI</div></div>
+          <div class="info-card" style="text-align:center;padding:12px"><div class="mono" style="font-size:clamp(16px,1.5vw,22px);font-weight:700;color:var(--teal)">02</div><div class="body-sm" style="font-size:12px;margin-top:4px">Quantum Computing</div></div>
+          <div class="info-card" style="text-align:center;padding:12px"><div class="mono" style="font-size:clamp(16px,1.5vw,22px);font-weight:700;color:var(--gold)">03</div><div class="body-sm" style="font-size:12px;margin-top:4px">Edge Intelligence</div></div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">PRAGMATIC ROADMAP FOR EXECUTIVES</div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--green)">
+          <div class="mono" style="font-size:11px;color:var(--green)">1</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Prioritize</strong> 3-5 use cases tied to revenue/cost KPIs</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--teal)">
+          <div class="mono" style="font-size:11px;color:var(--teal)">2</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Build data foundation:</strong> Customer/product IDs, consent management, data quality rules</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--gold)">
+          <div class="mono" style="font-size:11px;color:var(--gold)">3</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Upskill strategically:</strong> Role-based AI training paths, designate change champions</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--blue)">
+          <div class="mono" style="font-size:11px;color:var(--blue)">4</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Secure your AI stack:</strong> Guardrails, monitoring, model registry from the beginning</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--coral)">
+          <div class="mono" style="font-size:11px;color:var(--coral)">5</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Partner for outcomes:</strong> Contract with vendors based on KPIs, iterate in 90-day sprints</p>
+        </div>
+        <div class="info-card stack gap-xs" style="border-left:3px solid var(--t3)">
+          <div class="mono" style="font-size:11px;color:var(--t3)">6</div>
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Scale with governance:</strong> Reusable components, AI governance board</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 16 — ZAVIS ABOUT / CTA
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s16">
+  <div class="s-bg" style="background-image:url(/reports/qatar-business-report/qa-hero.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">Zavis is the AI-powered patient engagement platform built for healthcare. AI agents handle 60-90% of routine patient operations across WhatsApp, Instagram, web chat, and voice. Every inquiry answered, every appointment booked, every follow-up sent. 24 hours a day, 7 days a week.</p>
+        <p class="body" style="max-width:28em;margin-top:12px">One conversation thread per patient across every channel. Two-way EMR writeback in real-time. Full attribution from ad click to booked appointment to collected revenue. Go live in 24 hours.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:10px 24px;border-radius:100px;font-family:var(--display);font-size:14px;font-weight:600;text-decoration:none;letter-spacing:.5px">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">SOURCES &amp; REFERENCES</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.8">
+          PwC Middle East Analysis<br>
+          Ministry of Communications and IT (MCIT) Qatar<br>
+          Qatar National AI Strategy (QCAI)<br>
+          Oxford Insights AI Readiness Index<br>
+          Qatar Planning and Statistics Authority<br>
+          UN E-Government Development Index<br>
+          IMF Selected Issues Papers<br>
+          BCG GCC AI Pulse Report 2025<br>
+          ESCWA ISPAR AI Readiness Index<br>
+          ZAVIS Internal Research
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published 2025</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){
+  aN(document.getElementById('c1'),90,1500,'%','');
+  aN(document.getElementById('c2'),5.7,1200,'B','$');
+  aN(document.getElementById('c3'),245,1800,'%','');
+  aN(document.getElementById('c4'),3,800,'rd','');
+  aN(document.getElementById('c5'),5,600,'','');
+  hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

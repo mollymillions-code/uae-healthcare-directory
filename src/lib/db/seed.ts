@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as dotenv from "dotenv";
 import { createId } from "../id";
 import { CITIES, AREAS } from "../constants/cities";
@@ -15,8 +15,8 @@ import {
 
 dotenv.config({ path: ".env.local" });
 
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+const db = drizzle(pool);
 
 // Stable IDs for reference data
 function cityId(slug: string) { return `city_${slug}`; }

@@ -3,10 +3,22 @@
  * Every article MUST have an image. No exceptions.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY!;
 const IMG_DIR = "public/images/intelligence";
@@ -95,7 +107,8 @@ RULES: NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. M
 async function main() {
   if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
 
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
   const articles = await sql`
     SELECT id, slug, title, category, source_url, image_url
     FROM journal_articles
@@ -145,6 +158,8 @@ async function main() {
 
   const count = await sql`SELECT COUNT(*) FROM journal_articles WHERE image_url IS NOT NULL AND image_url != ''`;
   console.log(`Articles with images: ${count[0].count}`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

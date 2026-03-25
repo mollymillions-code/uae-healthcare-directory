@@ -1,0 +1,429 @@
+{
+  "report": "ai-healthcare-uae",
+  "timestamp": "2026-03-22T10:28:04.903Z",
+  "grade": "A",
+  "averageScore": 98,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 14,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 100,
+    "contrast": 99,
+    "visibility": 100,
+    "overlay": 100,
+    "contentDensity": 98,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 84
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Research — 2025",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 2,
+      "title": "Market Landscape",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 3,
+      "title": "Public Readiness",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "AI Applications",
+      "score": 89,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 70,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 20
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 31,
+      "criticalIssues": [],
+      "warnings": [
+        "31 text elements — slide is overcrowded",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 5,
+      "title": "Business Impact",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 6,
+      "title": "Case Study",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 7,
+      "title": "Case Study",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 8,
+      "title": "AI Auditing",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 6,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 9,
+      "title": "Adoption Factors",
+      "score": 94,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 40
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 17,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 10,
+      "title": "Regulatory Evolution",
+      "score": 95,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 50
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 24,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 11,
+      "title": "Strategic Recommendations",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 21,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 12,
+      "title": "2030 Horizon",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 13,
+      "title": "Conclusion",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 56
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 12,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 14,
+      "title": "(untitled)",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 90,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

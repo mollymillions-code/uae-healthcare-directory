@@ -1,0 +1,418 @@
+{
+  "report": "fintech-banking-uae",
+  "timestamp": "2026-03-22T10:27:03.579Z",
+  "grade": "A",
+  "averageScore": 99,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 14,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 100,
+    "contrast": 100,
+    "visibility": 99,
+    "overlay": 100,
+    "contentDensity": 98,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 94
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Report Series — October 2025",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 92,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30"
+      ]
+    },
+    {
+      "slide": 2,
+      "title": "Market Landscape",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 24,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 3,
+      "title": "Consumer Adoption",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "Regulatory Framework",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 60
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 19,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 5,
+      "title": "Central Bank AI Governance",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 6,
+      "title": "Conversational Banking",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 7,
+      "title": "KYC, Fraud Detection & Compliance",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 18,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 8,
+      "title": "Predictive Lending",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 10,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 9,
+      "title": "Generative AI in Banking",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 16,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 10,
+      "title": "Case Studies",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 80
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 11,
+      "title": "SME FinTech Gap",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 15,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 12,
+      "title": "ROI of AI in Operations",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 64
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 13,
+      "title": "Implementation Roadmap",
+      "score": 97,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 70,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 31,
+      "criticalIssues": [],
+      "warnings": [
+        "31 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 14,
+      "title": "(untitled)",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 95,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 20,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

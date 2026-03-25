@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hospitality in Dubai: AI-Driven Guest Experiences — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--blue:#5B8DEF;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-right .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.65) 50%,rgba(8,11,18,.93) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+.ov-gradient .s-bg::after{background:linear-gradient(135deg,rgba(8,11,18,.9) 0%,rgba(8,11,18,.6) 40%,rgba(8,11,18,.85) 100%)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.accent-gold{color:var(--gold)}
+.accent-teal{color:var(--teal)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+.callout-gold{background:rgba(232,184,75,.06);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── SPECIAL: METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── SPECIAL: TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── WORKFLOW STEPS ─── */
+.step-num{font-family:var(--mono);font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--green);opacity:.3;line-height:1}
+.step-active .step-num{opacity:1}
+
+/* ─── COMPARISON TABLE ─── */
+.compare-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;align-items:stretch}
+.compare-cell{padding:clamp(10px,1.2vw,16px);background:var(--card);font-size:clamp(14px,1vw,16px);color:var(--t2)}
+.compare-head{background:rgba(0,168,107,.08);color:var(--green);font-family:var(--mono);font-weight:600;font-size:clamp(11px,0.8vw,13px);letter-spacing:2px;text-transform:uppercase}
+
+/* ─── DONUT / RING CHART ─── */
+.ring-chart{position:relative;width:clamp(100px,10vw,140px);height:clamp(100px,10vw,140px)}
+.ring-chart svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-chart .ring-bg{fill:none;stroke:rgba(255,255,255,.04);stroke-width:8}
+.ring-chart .ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.22,1,.36,1)}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+  .compare-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Dubai skyline, title, animated counters
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Research — October 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:16em">
+      Hospitality in Dubai:<br><span class="accent">AI-Driven Guest<br>Experiences</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      A comprehensive analysis of how artificial intelligence is revolutionizing guest satisfaction, operations, and profitability across Dubai's hospitality sector
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:740px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">0%</div>
+        <div class="stat-label">Hotel Occupancy</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">Food Waste Cut</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">AI ROI (2 Yr)</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)" id="c4">0%</div>
+        <div class="stat-label">Travelers Using AI</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — EXECUTIVE SUMMARY: Key thesis with quote
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-lobby.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Executive Summary</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:20em">AI Is Reshaping Dubai's Hospitality <span class="accent">From Lobby to Ledger</span></div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:36em;margin-top:16px">
+      Artificial intelligence is revolutionizing Dubai's hospitality sector through enhanced guest experiences, operational efficiency, and increased profitability. Hotels adopting AI technologies are seeing significant competitive advantages in the post-pandemic travel boom.
+    </p>
+    <div class="callout rv rv-d3" style="max-width:38em;margin-top:clamp(20px,3vh,32px);text-align:center">
+      <p class="body" style="font-style:italic;color:var(--t1)">"By 2030, AI-enabled services are projected to generate over 30% of Dubai's hospitality revenue and significantly reduce operational costs while elevating guest satisfaction."</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — TOURISM MARKET: Big number + stat grid
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Dubai Tourism Market</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--gold)">18.72<span style="font-size:.4em;color:var(--t2);font-weight:400">M</span></div>
+        <div class="h3" style="color:var(--t1)">International Visitors in 2024</div>
+        <p class="body" style="max-width:28em">A 9.15% increase from 2023, Dubai continues its surge as the world's most visited city. With 832 hotels offering 154,016 rooms and an 81% occupancy rate, the sector is primed for AI-driven transformation.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">81%</div><div class="stat-label">Hotel Occupancy H1 2025</div><p class="body-sm" style="margin-top:4px;font-size:11px">+5.5% YoY increase</p></div>
+        <div class="g2">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">AED 745</div><div class="stat-label">Avg Daily Rate</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">832</div><div class="stat-label">Total Hotels</div></div>
+        </div>
+        <div class="stat-card"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">AED 660B</div><div class="stat-label">Tourism Revenue 2024</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — KEY DRIVERS: 4 pillars of AI adoption
+     ════════════════════════════════════════════ -->
+<section class="s ov-gradient" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Adoption Drivers</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Four Forces Accelerating <span class="accent">AI in Hospitality</span></div>
+    <div class="g2 rv rv-d2" style="width:100%">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">HYPER-PERSONALIZATION</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">+20% guest spend</div>
+        <p class="body-sm">AI analyzes guest preferences and behavior patterns to deliver tailored experiences at scale. Guests who receive personalized offers are 33% more likely to return.</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">MULTILINGUAL SUPPORT</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">30+ languages live</div>
+        <p class="body-sm">With visitors from over 200 countries, Dubai hotels leverage AI-powered translation and NLP systems supporting Arabic, English, and 30+ other languages simultaneously.</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">REAL-TIME ENGAGEMENT</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">85% queries automated</div>
+        <p class="body-sm">Modern travelers expect instant responses across digital channels. AI chatbots on WhatsApp and mobile apps have reduced response times from hours to seconds.</p>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--blue)">
+        <div class="caption" style="color:var(--blue)">RISING EXPECTATIONS</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">68% using AI to book</div>
+        <p class="body-sm">As Dubai attracts increasingly sophisticated travelers, expectations for seamless digital experiences grow. Contactless technology has become standard.</p>
+      </div>
+    </div>
+    <div class="callout rv rv-d3" style="margin-top:clamp(16px,2vh,24px)">
+      <p class="body-sm" style="font-style:italic">"For Dubai to maintain its competitive edge as a premier destination, AI is not just a luxury — it's becoming essential infrastructure for delivering exceptional guest experiences."</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — AI CONCIERGE: Channel adoption + stats
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-lobby.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">AI Concierge</div>
+        <div class="h2">Next-Generation <span class="accent">Guest Experience</span></div>
+        <p class="body">24/7 multilingual AI-powered guest services across WhatsApp, in-room tablets, and mobile apps are redefining how hotels interact with guests.</p>
+        <div class="stack gap-sm" style="margin-top:8px">
+          <div class="bar-row"><div class="bar-lbl">WhatsApp</div><div class="bar-track"><div class="bar-fill" data-w="88%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">68%</div></div>
+          <div class="bar-row"><div class="bar-lbl">In-Room Tablets</div><div class="bar-track"><div class="bar-fill" data-w="72%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">72%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Mobile Apps</div><div class="bar-track"><div class="bar-fill" data-w="65%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">+42%</div></div>
+        </div>
+        <div class="g3" style="margin-top:12px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2vw,30px);color:var(--green)">85%</div>
+            <div class="stat-label">Queries Automated</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2vw,30px);color:var(--teal)">14+</div>
+            <div class="stat-label">Languages</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(22px,2vw,30px);color:var(--gold)">3.5x</div>
+            <div class="stat-label">ROI Year 1</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — REVENUE MANAGEMENT & DYNAMIC PRICING
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Revenue Intelligence</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Dynamic Pricing & <span class="accent-gold">Revenue Optimization</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,24px)">Dubai hotels are leveraging AI-powered systems to optimize room rates in real-time, forecast demand patterns, and maximize revenue in a volatile market.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2.5vw,32px)">
+            <div class="stat-num" style="font-size:clamp(36px,4vw,52px);color:var(--green)">17%</div>
+            <div class="stat-label">Revenue Increase</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2.5vw,32px)">
+            <div class="stat-num" style="font-size:clamp(36px,4vw,52px);color:var(--teal)">10%</div>
+            <div class="stat-label">Occupancy Boost</div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2.5vw,32px)">
+            <div class="stat-num" style="font-size:clamp(36px,4vw,52px);color:var(--gold)">59%</div>
+            <div class="stat-label">CPC Reduction</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:clamp(20px,2.5vw,32px)">
+            <div class="stat-num" style="font-size:clamp(36px,4vw,52px);color:var(--blue)">372</div>
+            <div class="stat-label">Hours Saved/Month</div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="callout-gold">
+          <p class="body-sm" style="font-style:italic">"We are impressed by the AI solution's ability to continuously evaluate live forward-facing market data and emerging demand, delivering optimized rates that our team can rely on."</p>
+          <p class="caption" style="margin-top:8px;color:var(--gold)">— Najmul Khan, Group Director of Sales, Revenue & Distribution at DAMAC</p>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--green);margin-bottom:8px">DUBAI IMPLEMENTATIONS</div>
+          <p class="body-sm">DAMAC selected Atomize RMS for Paramount Hotels Dubai</p>
+          <p class="body-sm">Al Habtoor Palace partnered with IDeaS for AI-driven revenue optimization</p>
+          <p class="body-sm">Jumeirah Group saw 109% ROAS boost using AI-powered advertising automation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — SENTIMENT ANALYSIS: Workflow + metrics
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-dining.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Sentiment Analysis</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Multilingual Review Processing <span class="accent-teal">& Recovery</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--teal);margin-bottom:4px">SENTIMENT RECOVERY WORKFLOW</div>
+        <div class="info-card" style="border-left:3px solid var(--teal);display:flex;gap:12px;align-items:center">
+          <div class="step-num">1</div>
+          <div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Collection</div><p class="body-sm" style="font-size:14px">AI monitors reviews across 20+ platforms, social media, WhatsApp, and direct surveys</p></div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--green);display:flex;gap:12px;align-items:center">
+          <div class="step-num">2</div>
+          <div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Analysis</div><p class="body-sm" style="font-size:14px">NLP models identify sentiment, topics, urgency levels, and extract actionable feedback</p></div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold);display:flex;gap:12px;align-items:center">
+          <div class="step-num">3</div>
+          <div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Route & Recover</div><p class="body-sm" style="font-size:14px">Urgent issues escalated automatically. Personalized recovery offers deployed in real-time</p></div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--green)">86%</div><div class="stat-label">Issue Resolution</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--teal)">73%</div><div class="stat-label">Recovery Success</div></div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--gold)">4.2x</div><div class="stat-label">Response Speed</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--blue)">17%</div><div class="stat-label">Retention Lift</div></div>
+        </div>
+        <div class="callout" style="margin-top:4px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">CASE EXAMPLE: DUBAI LUXURY HOTEL CHAIN</div>
+          <p class="body-sm" style="font-size:14px">Implemented multilingual AI sentiment analysis in Q1 2025 — 32% reduction in negative reviews, 12-minute average response time (vs. 4.7 hours), and 9% increase in guest satisfaction scores.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — CASE STUDY: Jumeirah Biometric Check-In
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-lobby.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Jumeirah Hotels <span class="accent">Biometric Check-In</span></div>
+        <p class="body">Jumeirah partnered with Incode Technologies to implement AI-powered mobile and facial recognition — piloted at Burj Al Arab, Jumeirah Beach Hotel and Emirates Towers, then expanded to 13 UAE properties.</p>
+        <div class="callout">
+          <p class="body-sm" style="font-style:italic">"It's time for our guests to say goodbye to the hassle of traditional check-ins and embrace the future of hospitality with our cutting-edge facial recognition technology."</p>
+          <p class="caption" style="margin-top:8px">— Sanjay Sharma, Head of IT at Jumeirah Group</p>
+        </div>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">1.5<span style="font-size:.6em">min</span></div>
+            <div class="stat-label">Check-in Time</div>
+            <p class="body-sm" style="font-size:14px;margin-top:2px">vs. 11.5 min traditional</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">85%</div>
+            <div class="stat-label">Guest Adoption</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">4.8<span style="font-size:.5em">/5</span></div>
+            <div class="stat-label">Satisfaction</div>
+            <p class="body-sm" style="font-size:14px;margin-top:2px">+0.6 pts higher</p>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — CASE STUDY: Rove Hotels Digital Experience
+     ════════════════════════════════════════════ -->
+<section class="s ov-right" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-dining.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">Rove Hotels <span class="accent-teal">Digital Guest Experience</span></div>
+        <p class="body">Rove Hotels modernized the guest journey through digital check-in, smart room IoT, AI chatbots, and Winnow Vision — an AI-powered kitchen waste reduction system using computer vision.</p>
+        <div class="callout" style="border-color:var(--teal);background:rgba(46,196,182,.06)">
+          <p class="body-sm" style="font-style:italic">"We've digitized our check-in process to be more efficient and sustainable, and we use AI-powered solutions like Winnow to help us significantly reduce food waste across our properties."</p>
+          <p class="caption" style="margin-top:8px;color:var(--teal)">— Rove Hotels Management Team</p>
+        </div>
+        <div class="g4" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">72%</div>
+            <div class="stat-label">Waste Cut</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">40%</div>
+            <div class="stat-label">Faster Check-in</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">25%</div>
+            <div class="stat-label">More Bookings</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">4.7<span style="font-size:.5em">/5</span></div>
+            <div class="stat-label">Satisfaction</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — CHATBOT BOOKING GROWTH: Conversion bars
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-tech.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Booking Intelligence</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">How AI Chatbots Transform <span class="accent">Direct Bookings</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:8px">CONVERSION BY CHATBOT SOPHISTICATION</div>
+        <div class="bar-row"><div class="bar-lbl">No Chatbot</div><div class="bar-track"><div class="bar-fill" data-w="20%" style="background:var(--t3)"></div></div><div class="bar-val" style="color:var(--t3)">~8%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Basic Bot</div><div class="bar-track"><div class="bar-fill" data-w="35%" style="background:var(--blue)"></div></div><div class="bar-val" style="color:var(--blue)">~15%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Multilingual AI</div><div class="bar-track"><div class="bar-fill" data-w="58%" style="background:var(--teal)"></div></div><div class="bar-val" style="color:var(--teal)">~25%</div></div>
+        <div class="bar-row"><div class="bar-lbl">WhatsApp + Web</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">~32%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Full Omnichannel</div><div class="bar-track"><div class="bar-fill" data-w="92%" style="background:linear-gradient(90deg,var(--green),var(--gold))"></div></div><div class="bar-val" style="color:var(--gold)">~42%</div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--green)">68%</div><div class="stat-label">UAE Travelers Using AI</div><p class="body-sm" style="font-size:12px;margin-top:2px">+21% since 2023</p></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--teal)">42%</div><div class="stat-label">Direct Booking Lift</div></div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--gold)">85%</div><div class="stat-label">Query Resolution</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,36px);color:var(--blue)">&lt;1<span style="font-size:.5em">min</span></div><div class="stat-label">Response Time</div></div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(22px,2vw,28px);color:var(--green)">24%</div><div class="stat-label">Higher Conversion</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(22px,2vw,28px);color:var(--coral)">-30%</div><div class="stat-label">Fewer Cancellations</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — OPERATIONAL AI: Housekeeping, Inventory, Energy
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-spa.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Operational AI</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Back-of-House <span class="accent">Transformation</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">PREDICTIVE HOUSEKEEPING</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">42% faster readiness</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">AI forecasts room turnover based on check-out patterns</p>
+          <p class="body-sm">Optimizes staff scheduling during peak periods</p>
+          <p class="body-sm">30-40% efficiency improvement</p>
+          <p class="body-sm">Reduces guest wait times via front desk coordination</p>
+        </div>
+        <div class="bar-track" style="margin-top:auto"><div class="bar-fill" data-w="82%" style="background:var(--green)"></div></div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">INVENTORY AUTOMATION</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">72% waste reduction</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Smart tracking of F&B and housekeeping supplies</p>
+          <p class="body-sm">Predictive ordering based on occupancy forecasts</p>
+          <p class="body-sm">Automated supplier communication</p>
+          <p class="body-sm">Real-time visibility across multiple properties</p>
+        </div>
+        <div class="bar-track" style="margin-top:auto"><div class="bar-fill" data-w="72%" style="background:var(--teal)"></div></div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">ENERGY MANAGEMENT</div>
+        <div class="h3" style="font-size:clamp(16px,1.4vw,22px)">20-30% cost savings</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">AI-optimized HVAC based on occupancy and weather</p>
+          <p class="body-sm">Smart room controls learning guest preferences</p>
+          <p class="body-sm">Real-time monitoring and anomaly detection</p>
+          <p class="body-sm">Integration with Dubai smart city infrastructure</p>
+        </div>
+        <div class="bar-track" style="margin-top:auto"><div class="bar-fill" data-w="60%" style="background:var(--gold)"></div></div>
+      </div>
+    </div>
+    <div class="callout rv rv-d3" style="margin-top:clamp(12px,2vh,20px)">
+      <p class="body-sm" style="font-style:italic">"Hotels using LightStay and similar AI platforms have achieved over US$1 billion in verified energy savings and reduced emissions by 30%."</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — SMALL HOTELS: Adoption Gap & Opportunities
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-spa.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Adoption Gap</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Small Hotels: <span class="accent-gold">Barriers & Opportunities</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--coral);margin-bottom:4px">KEY BARRIERS</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)">
+          <div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Cost Barriers</div>
+          <p class="body-sm">39% cite high costs as primary barrier. Average enterprise AI: AED 175,000+. Maintenance adds 15-25% annual costs.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Skill Constraints</div>
+          <p class="body-sm">73% of small hotels lack dedicated IT staff. 31% report organizational resistance. Staff turnover exceeds 25%.</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">COST-EFFECTIVE SOLUTIONS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="g2" style="margin-bottom:8px">
+            <div><div class="mono" style="font-size:13px;color:var(--green);font-weight:700">AED 800/mo</div><div class="caption">SaaS AI Chatbots</div></div>
+            <div><div class="mono" style="font-size:13px;color:var(--teal);font-weight:700">Zero hardware</div><div class="caption">WhatsApp Integration</div></div>
+          </div>
+          <div class="g2">
+            <div><div class="mono" style="font-size:13px;color:var(--gold);font-weight:700">3-8% RevPAR</div><div class="caption">Cloud-based RMS</div></div>
+            <div><div class="mono" style="font-size:13px;color:var(--blue);font-weight:700">15 weeks</div><div class="caption">Staff Upskilling</div></div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:4px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">ACTION PLAN</div>
+          <p class="body-sm" style="font-size:14px">Start with WhatsApp chatbots, measure one metric, validate ROI in 3-6 months, then scale. Expected ROI: 125-175% within first year.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — ROI ANALYSIS & BENEFITS: Performance comparison
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">ROI & Impact</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:20em">Measurable Returns on <span class="accent">AI Investment</span></div>
+    <div class="rv rv-d2" style="margin-top:clamp(20px,3vh,32px);width:100%;max-width:900px">
+      <!-- ROI Timeline -->
+      <div class="g4" style="margin-bottom:clamp(16px,2vh,24px)">
+        <div class="stat-card" style="text-align:center;border-top:3px solid var(--teal)">
+          <div class="caption" style="color:var(--teal);margin-bottom:6px">6 MONTHS</div>
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">40-60%</div>
+          <div class="stat-label">Initial ROI</div>
+        </div>
+        <div class="stat-card" style="text-align:center;border-top:3px solid var(--green)">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">12 MONTHS</div>
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">80-120%</div>
+          <div class="stat-label">Cumulative ROI</div>
+        </div>
+        <div class="stat-card" style="text-align:center;border-top:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold);margin-bottom:6px">18 MONTHS</div>
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">150-200%</div>
+          <div class="stat-label">System Maturity</div>
+        </div>
+        <div class="stat-card" style="text-align:center;border-top:3px solid var(--blue)">
+          <div class="caption" style="color:var(--blue);margin-bottom:6px">24 MONTHS</div>
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">~250%</div>
+          <div class="stat-label">Full-Scale ROI</div>
+        </div>
+      </div>
+      <!-- Performance bars: With vs Without AI -->
+      <div class="info-card" style="width:100%">
+        <div class="caption" style="color:var(--green);margin-bottom:12px">AI IMPACT ON KEY METRICS</div>
+        <div class="stack gap-sm">
+          <div class="bar-row"><div class="bar-lbl">Response Time</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">-85%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Guest Satisfaction</div><div class="bar-track"><div class="bar-fill" data-w="72%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">+32%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Direct Bookings</div><div class="bar-track"><div class="bar-fill" data-w="67%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">+27%</div></div>
+          <div class="bar-row"><div class="bar-lbl">RevPAR Growth</div><div class="bar-track"><div class="bar-fill" data-w="55%" style="background:linear-gradient(90deg,var(--blue),#5B8DEF)"></div></div><div class="bar-val" style="color:var(--blue)">+18%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Op. Cost Savings</div><div class="bar-track"><div class="bar-fill" data-w="62%" style="background:linear-gradient(90deg,var(--green),var(--gold))"></div></div><div class="bar-val" style="color:var(--green)">-25%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ABOUT ZAVIS + CTA
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/hospitality-dubai/hosp-dining.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">Zavis is the AI-powered patient engagement platform built for healthcare. AI agents handle 60-90% of routine patient operations across WhatsApp, Instagram, web chat, and voice. Every inquiry answered, every appointment booked, every follow-up sent. 24 hours a day, 7 days a week.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:12px 28px;border-radius:100px;font-family:var(--display);font-size:15px;font-weight:600;text-decoration:none;letter-spacing:.5px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(0,168,107,.3)" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 28px rgba(0,168,107,.45)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px rgba(0,168,107,.3)'">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:12px 0">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">SOURCES & REFERENCES</div>
+        <p class="body-sm" style="font-size:14px;line-height:1.8">
+          Dubai Department of Economy and Tourism, 2025<br>
+          Dubai Hospitality AI Implementation Report, 2025<br>
+          ZAVIS Hospitality AI Industry Research, 2025<br>
+          PhocusWire AI Adoption Report, 2025<br>
+          UAE Hospitality Tech Survey, 2025<br>
+          Jumeirah Hotels / Incode Technologies<br>
+          Rove Hotels / Winnow Vision<br>
+          DAMAC Hotels / Atomize RMS<br>
+          ZAVIS Analysis — Hotel Industry Data 2024-2025
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published October 2025</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters — real data from report
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){
+  aN(document.getElementById('c1'),81,1800,'%','');
+  aN(document.getElementById('c2'),72,1500,'%','');
+  aN(document.getElementById('c3'),250,1600,'%','~');
+  aN(document.getElementById('c4'),68,1200,'%','');
+  hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+// Keyboard navigation
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

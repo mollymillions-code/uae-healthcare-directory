@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Hidden Cost of Patient No-Shows in UAE Healthcare — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0C2340;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#1B6B5A;--green-d:#134A3E;--green-l:#2EA88A;
+  --teal:#1B6B5A;--gold:#D4A853;--blue:#4A90B8;--coral:#E8583E;
+  --card:rgba(255,255,255,0.035);
+  --border:rgba(255,255,255,0.08);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* --- SLIDE SYSTEM --- */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(12,35,64,.88) 0%,rgba(12,35,64,.65) 50%,rgba(12,35,64,.92) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(12,35,64,.94) 0%,rgba(12,35,64,.72) 50%,rgba(12,35,64,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(12,35,64,.3) 0%,rgba(12,35,64,.75) 50%,rgba(12,35,64,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(12,35,64,.55) 0%,rgba(12,35,64,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(12,35,64,.82)}
+.ov-right .s-bg::after{background:linear-gradient(270deg,rgba(12,35,64,.94) 0%,rgba(12,35,64,.72) 50%,rgba(12,35,64,.4) 100%)}
+
+/* --- PROGRESS & NAV --- */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--gold));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--gold);transform:scale(1.5);box-shadow:0 0 8px rgba(212,168,83,.4)}
+
+/* --- TYPOGRAPHY --- */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--gold)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--gold)}
+.accent-red{color:var(--coral)}
+.accent-teal{color:var(--green)}
+.accent-blue{color:var(--blue)}
+.mono{font-family:var(--mono)}
+
+/* --- ANIMATIONS --- */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+
+/* --- DATA VIZ --- */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.14)}
+
+.callout{background:rgba(27,107,90,.08);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+.callout-warn{background:rgba(232,88,62,.06);border-left:3px solid var(--coral);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* --- LAYOUTS --- */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* --- SPECIAL: METRIC MEGA --- */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* --- SPECIAL: TIMELINE --- */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--gold);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,168,83,.3)}
+
+/* --- MARKET BARS (double) --- */
+.market-bar{display:flex;align-items:center;gap:12px;padding:8px 0}
+.market-bar-label{min-width:clamp(100px,14vw,200px);font-size:clamp(13px,1vw,16px);font-weight:500;color:var(--t2);text-align:right}
+.market-bar-track{flex:1;height:clamp(24px,2vw,32px);background:rgba(255,255,255,.03);border-radius:6px;overflow:hidden;position:relative;display:flex;align-items:center}
+.market-bar-fill{height:100%;border-radius:6px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-family:var(--mono);font-size:clamp(11px,.8vw,13px);font-weight:600;color:rgba(255,255,255,.9)}
+.market-bar-target{position:absolute;right:8px;font-family:var(--mono);font-size:clamp(11px,.8vw,13px);color:var(--t3)}
+
+/* --- RESPONSIVE --- */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+  .market-bar-label{min-width:80px;font-size:12px}
+  .tl-row{grid-template-columns:60px 2px 1fr;gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ================================================================
+     SLIDE 1 — HERO: "The Empty Chair Problem"
+     ================================================================ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Research -- March 2026</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:14em">
+      The Empty Chair Problem:<br><span class="accent">The Hidden Cost of Patient No-Shows</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      1 in 5 UAE healthcare appointments go unattended. Across a $22 billion market, the financial and operational toll is staggering -- and largely preventable.
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:750px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--coral)" id="c1">21%</div>
+        <div class="stat-label">No-Show Rate</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c2">30-40%</div>
+        <div class="stat-label">Arrive Late</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c3">$22B</div>
+        <div class="stat-label">UAE Market</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)" id="c4">$196</div>
+        <div class="stat-label">Cost Per No-Show</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE</div>
+    </div>
+  </div>
+</section>
+<style>@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}</style>
+
+<!-- ================================================================
+     SLIDE 2 — BIG NUMBER: "$196 per missed appointment"
+     ================================================================ -->
+<section class="s ov-center" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-cost.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">The Financial Impact</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--coral);margin-top:24px">$196</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">average revenue lost <span class="accent-red">per missed appointment</span></div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:32em;margin-top:16px">
+      Every empty chair represents not just lost revenue, but wasted physician time, unused equipment, and a patient who did not receive care. For a mid-size clinic handling 200 appointments daily, a 21% no-show rate translates to 42 missed slots and over $8,200 in daily losses.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,88,62,.2)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--coral)">14%</div>
+        <div class="stat-label">Daily Revenue Loss</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(212,168,83,.2)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">20-30%</div>
+        <div class="stat-label">No-Show Range</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(74,144,184,.2)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">42</div>
+        <div class="stat-label">Daily Missed Slots</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 3 — DATA VIZ (horizontal bars): "How the UAE Compares"
+     ================================================================ -->
+<section class="s ov-heavy" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-compare.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Global Benchmarks</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">How the UAE <span class="accent">Compares</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">No-show rates vary globally, but the UAE's 21% sits squarely within the higher range. The UK's NHS has driven theirs down to 7.5% through integrated digital health systems -- proof that systemic intervention works.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-md">
+        <div class="bar-row"><div class="bar-lbl">Global Avg</div><div class="bar-track"><div class="bar-fill" data-w="94%" style="background:var(--t3)"></div></div><div class="bar-val" style="color:var(--t3)">23.5%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Saudi Arabia</div><div class="bar-track"><div class="bar-fill" data-w="95%" style="background:linear-gradient(90deg,var(--coral),#E8583E)"></div></div><div class="bar-val" style="color:var(--coral)">23.7%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Oman</div><div class="bar-track"><div class="bar-fill" data-w="89%" style="background:linear-gradient(90deg,var(--gold),#D4A853)"></div></div><div class="bar-val" style="color:var(--gold)">22.3%</div></div>
+        <div class="bar-row"><div class="bar-lbl">UAE</div><div class="bar-track"><div class="bar-fill" data-w="84%" style="background:linear-gradient(90deg,var(--coral),var(--gold))"></div></div><div class="bar-val" style="color:var(--coral)">21.0%</div></div>
+        <div class="bar-row"><div class="bar-lbl">United States</div><div class="bar-track"><div class="bar-fill" data-w="80%" style="background:linear-gradient(90deg,var(--blue),#4A90B8)"></div></div><div class="bar-val" style="color:var(--blue)">20.0%</div></div>
+        <div class="bar-row"><div class="bar-lbl">United Kingdom</div><div class="bar-track"><div class="bar-fill" data-w="30%" style="background:linear-gradient(90deg,var(--green),var(--green-l))"></div></div><div class="bar-val" style="color:var(--green-l)">7.5%</div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="callout-warn">
+          <div class="caption" style="color:var(--coral);margin-bottom:6px">KEY INSIGHT</div>
+          <p class="body-sm">The GCC region clusters at 21-24%, significantly above the UK benchmark. This gap represents a massive improvement opportunity worth hundreds of millions annually.</p>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--green-l)">13.5pp</div>
+          <div class="stat-label">UAE-UK Gap = Opportunity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 4 — SPLIT (info cards): "Why Patients Don't Show Up"
+     ================================================================ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-reasons.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Root Cause Analysis</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Why Patients <span class="accent-red">Don't Show Up</span></div>
+    <div class="split rv rv-d2">
+      <div class="g2" style="width:100%">
+        <div class="info-card stack gap-sm" style="border-top:3px solid var(--coral)">
+          <div class="stat-num" style="font-size:clamp(32px,3vw,44px);color:var(--coral)">24%</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Felt Better / Illness Resolved</div>
+          <p class="body-sm">Patients recover before their appointment date and do not bother to cancel, leaving the slot empty.</p>
+        </div>
+        <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+          <div class="stat-num" style="font-size:clamp(32px,3vw,44px);color:var(--gold)">16%</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Transport Difficulties</div>
+          <p class="body-sm">Distance, traffic, and limited public transit options in suburban areas create physical barriers to attendance.</p>
+        </div>
+        <div class="info-card stack gap-sm" style="border-top:3px solid var(--blue)">
+          <div class="stat-num" style="font-size:clamp(32px,3vw,44px);color:var(--blue)">15%</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Inconvenient Time Slot</div>
+          <p class="body-sm">Rigid scheduling systems that do not adapt to patient preferences drive avoidable non-attendance.</p>
+        </div>
+        <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+          <div class="stat-num" style="font-size:clamp(32px,3vw,44px);color:var(--green)">12%</div>
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Cannot Leave Work</div>
+          <p class="body-sm">Employment constraints, especially among hourly workers, force patients to choose between work and care.</p>
+        </div>
+      </div>
+      <div class="stack gap-md">
+        <div class="callout-warn">
+          <div class="caption" style="color:var(--coral);margin-bottom:6px">CRITICAL FINDING</div>
+          <div class="h3" style="font-size:clamp(16px,1.4vw,22px);color:var(--t1)">Full-fee patients are <span class="accent-red">36% more likely</span> to no-show</div>
+          <p class="body-sm" style="margin-top:8px">Patients paying full fee without insurance have significantly higher no-show odds compared to insured patients. The absence of a financial relationship with an insurer removes a key accountability mechanism.</p>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--gold);margin-bottom:8px">ADDRESSABLE VS. STRUCTURAL</div>
+          <p class="body-sm">Over 67% of no-show reasons are addressable through technology: better scheduling flexibility, proactive reminders, and transport coordination. Only structural factors like sudden illness resist intervention.</p>
+          <div class="stat-card" style="text-align:center;margin-top:12px;padding:12px">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green-l)">67%+</div>
+            <div class="stat-label">Addressable Causes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 5 — CASE STUDY: "The EHS Breakthrough"
+     ================================================================ -->
+<section class="s ov-left" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-ehs.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Case Study</div>
+        <div class="h2">The EHS <span class="accent">Breakthrough</span></div>
+        <p class="body">Emirates Health Services deployed a machine-learning model across its primary care network to predict no-shows before they happen. The results represent one of the most rigorous evaluations of AI-driven appointment management in the Middle East.</p>
+        <div class="callout">
+          <p class="body-sm" style="font-style:italic">"The machine learning model achieved statistically significant reductions in non-attendance with P less than .001, demonstrating that predictive analytics can be reliably deployed in UAE primary care settings."</p>
+          <p class="caption" style="margin-top:8px">-- EHS Prediction Model Study, 2024</p>
+        </div>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green-l)">50.7%</div>
+            <div class="stat-label">No-Show Reduction</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">86%</div>
+            <div class="stat-label">Model Accuracy</div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--blue)">6,457</div>
+            <div class="stat-label">Staff Hours Saved</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--coral)">P&lt;.001</div>
+            <div class="stat-label">Statistical Significance</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 6 — DATA VIZ (stat grid): "The AI Toolkit That Works"
+     ================================================================ -->
+<section class="s ov-dark" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-whatsapp.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Technology Stack</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">The AI Toolkit <span class="accent">That Works</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green-l)">
+        <div class="caption" style="color:var(--green-l)">WHATSAPP ENGAGEMENT</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">The UAE's Default Channel</div>
+        <p class="body-sm">WhatsApp is the dominant messaging platform in the UAE with 5.66 million active users. Its 98% open rate dwarfs SMS and email, making it the most effective channel for appointment reminders.</p>
+        <div class="g2" style="margin-top:auto;padding-top:12px">
+          <div class="stat-card" style="padding:12px;text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green-l)">98%</div><div class="stat-label" style="font-size:11px">Open Rate</div></div>
+          <div class="stat-card" style="padding:12px;text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green-l)">35-50%</div><div class="stat-label" style="font-size:11px">No-Show Reduction</div></div>
+        </div>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:8px"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--green-l)">5.66M</div><div class="stat-label" style="font-size:11px">UAE Active Users</div></div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--blue)">
+        <div class="caption" style="color:var(--blue)">PREDICTIVE ANALYTICS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Flagging Before the Miss</div>
+        <p class="body-sm">Machine learning models analyze 30+ patient features -- demographics, booking history, weather, time of day -- to identify 60-70% of potential no-shows days in advance.</p>
+        <div class="g2" style="margin-top:auto;padding-top:12px">
+          <div class="stat-card" style="padding:12px;text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">60-70%</div><div class="stat-label" style="font-size:11px">Identifiable Risk</div></div>
+          <div class="stat-card" style="padding:12px;text-align:center"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">30+</div><div class="stat-label" style="font-size:11px">Predictive Features</div></div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">MULTI-CHANNEL REMINDERS</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Layered Engagement</div>
+        <p class="body-sm">Combining WhatsApp, SMS, phone calls, and app push notifications in a sequenced cadence achieves 41% reduction in no-shows. Single-channel approaches plateau at 20-25%.</p>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">41%</div>
+          <div class="stat-label" style="font-size:11px">Multi-Channel Reduction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 7 — BIG NUMBER: "27% less overtime with AI scheduling"
+     ================================================================ -->
+<section class="s ov-center" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-overbooking.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Smart Overbooking</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--green-l);margin-top:24px">27%</div>
+    <div class="h3 rv rv-d2" style="max-width:16em;text-align:center;margin-top:12px">less overtime <span class="accent-teal">with AI-powered scheduling</span></div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:32em;margin-top:16px">
+      AI overbooking models calculate the optimal number of extra appointments based on predicted no-show probability for each slot. Unlike crude manual overbooking, AI dynamically adjusts based on provider, day, specialty, and patient risk profile.
+    </p>
+    <div class="g4 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(27,107,90,.2)">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green-l)">27%</div>
+        <div class="stat-label">Less Overtime</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(74,144,184,.2)">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)">6%</div>
+        <div class="stat-label">Less Wait Time</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(212,168,83,.2)">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">3%</div>
+        <div class="stat-label">Lower Costs</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,88,62,.2)">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--coral)">$1.7M</div>
+        <div class="stat-label">Recovered (Istanbul)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 8 — TIMELINE: "UAE's AI Healthcare Ecosystem"
+     ================================================================ -->
+<section class="s ov-heavy" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-ecosystem.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Ecosystem Map</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">UAE's AI Healthcare <span class="accent">Ecosystem</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md" style="max-width:500px">
+        <div class="tl-row"><div class="tl-yr">Burjeel</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">3,700+ Staff AI-Trained</div><p class="body-sm">The largest private healthcare group in the UAE has invested in comprehensive AI literacy across its workforce, from clinicians to administrators.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">M42</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Malaffi Integration: 3.5B Records</div><p class="body-sm">Abu Dhabi's health information exchange connects 3.5 billion health records with 98% facility coverage, creating the data foundation for predictive models.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">EHS</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Predictive No-Show Model</div><p class="body-sm">Emirates Health Services deployed machine learning to achieve 50.7% reduction in primary care no-shows with 86% prediction accuracy.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">CCAD</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Cleveland Clinic Abu Dhabi</div><p class="body-sm">AI Scribe for ambient clinical documentation. 86% physician adoption rate with 2.1 hours saved daily per physician.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">Mediclinic</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Geneyx AI Genomics</div><p class="body-sm">AI-powered genomic analysis across 7 hospitals and 20+ clinics, with 83% faster analysis and 42% better detection rates.</p></div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="callout">
+          <div class="caption" style="color:var(--gold);margin-bottom:6px">NETWORK EFFECT</div>
+          <p class="body-sm">The UAE's healthcare AI ecosystem is uniquely interconnected. Malaffi's 98% facility coverage means predictive models can access richer data than anywhere else in the GCC, creating a compounding advantage for early adopters.</p>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">98%</div>
+          <div class="stat-label">Facility Coverage (Abu Dhabi)</div>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">3.5B</div>
+          <div class="stat-label">Health Records Connected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 9 — SPLIT (info cards): "Government as Accelerator"
+     ================================================================ -->
+<section class="s ov-heavy" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-government.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Policy Infrastructure</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Government as <span class="accent">Accelerator</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">DIGITAL HEALTH PLATFORMS</div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Nabidh (Dubai)</div>
+          <p class="body-sm" style="margin-top:4px">9.53 million health records unified across 1,500+ facilities. Real-time data exchange enables population-level no-show pattern analysis.</p>
+          <div class="g2" style="margin-top:8px">
+            <div class="stat-card" style="padding:10px;text-align:center"><div class="stat-num" style="font-size:16px;color:var(--gold)">9.53M</div><div class="stat-label" style="font-size:10px">Records</div></div>
+            <div class="stat-card" style="padding:10px;text-align:center"><div class="stat-num" style="font-size:16px;color:var(--gold)">1,500+</div><div class="stat-label" style="font-size:10px">Facilities</div></div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--blue)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Malaffi (Abu Dhabi)</div>
+          <p class="body-sm" style="margin-top:4px">98% facility coverage across Abu Dhabi. The data density enables no-show prediction models that would be impossible in fragmented health systems.</p>
+          <div class="g2" style="margin-top:8px">
+            <div class="stat-card" style="padding:10px;text-align:center"><div class="stat-num" style="font-size:16px;color:var(--blue)">98%</div><div class="stat-label" style="font-size:10px">Coverage</div></div>
+            <div class="stat-card" style="padding:10px;text-align:center"><div class="stat-num" style="font-size:16px;color:var(--blue)">3.5B</div><div class="stat-label" style="font-size:10px">Records</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green-l);margin-bottom:4px">ECONOMIC CONTEXT</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Healthcare Spending at 6% of GDP</div>
+          <p class="body-sm" style="margin-top:4px">The UAE government allocates 6% of GDP to healthcare, with spending growing at 8.5% annually. This investment trajectory signals long-term commitment to digital health infrastructure.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">National AI Strategy 2031</div>
+          <p class="body-sm" style="margin-top:4px">Healthcare designated as a priority sector for AI integration. Dedicated funding streams for health-tech startups and institutional AI adoption programs.</p>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green-l)">8.5%</div>
+          <div class="stat-label">Annual Spending Growth</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 10 — DATA VIZ (bars): "The Market Opportunity"
+     ================================================================ -->
+<section class="s ov-heavy" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-market.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Market Sizing</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">The Market <span class="accent">Opportunity</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">Three converging markets create a multi-billion dollar opportunity for patient engagement and no-show reduction technologies in the Middle East.</p>
+    <div class="stack gap-lg rv rv-d3" style="width:100%;max-width:900px">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green-l)">ME PATIENT ENGAGEMENT MARKET</div>
+        <div class="market-bar">
+          <div class="market-bar-label">2024: $839M</div>
+          <div class="market-bar-track">
+            <div class="market-bar-fill" data-w="100%" style="background:linear-gradient(90deg,var(--green),var(--green-l))">$4.5B by 2033</div>
+          </div>
+        </div>
+        <div class="caption" style="text-align:right">CAGR 23.45%</div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--blue)">ME AI IN PATIENT ENGAGEMENT</div>
+        <div class="market-bar">
+          <div class="market-bar-label">2024: $184M</div>
+          <div class="market-bar-track">
+            <div class="market-bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--blue),#6BADE0)">$1.1B by 2033</div>
+          </div>
+        </div>
+        <div class="caption" style="text-align:right">CAGR 22.26%</div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold)">UAE DIGITAL HEALTH MARKET</div>
+        <div class="market-bar">
+          <div class="market-bar-label">2024: $754M</div>
+          <div class="market-bar-track">
+            <div class="market-bar-fill" data-w="90%" style="background:linear-gradient(90deg,var(--gold),#E8C870)">$2.65B by 2030</div>
+          </div>
+        </div>
+        <div class="caption" style="text-align:right">CAGR 23.3%</div>
+      </div>
+    </div>
+    <div class="callout rv rv-d4" style="margin-top:clamp(16px,3vh,32px);max-width:900px;width:100%">
+      <div class="caption" style="color:var(--gold);margin-bottom:4px">CONVERGENCE</div>
+      <p class="body-sm">These three markets are not independent. No-show reduction sits at the intersection of patient engagement, AI, and digital health -- making it one of the highest-ROI entry points for healthcare technology investment in the region.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 11 — GRID (4 cards): "The No-Show Reduction Playbook"
+     ================================================================ -->
+<section class="s ov-heavy" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-playbook.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Implementation Framework</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">The No-Show Reduction <span class="accent">Playbook</span></div>
+    <div class="g2 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--blue)">
+        <div class="mono" style="font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--blue);opacity:.3">01</div>
+        <div class="caption" style="color:var(--blue)">LAYER 1: PREDICT</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Predictive Risk Scoring</div>
+        <p class="body-sm">Deploy ML models to score every booked appointment for no-show probability. Flag high-risk patients 48-72 hours in advance for targeted intervention.</p>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">60-70%</div>
+          <div class="stat-label" style="font-size:10px">No-Shows Identifiable</div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green-l)">
+        <div class="mono" style="font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--green-l);opacity:.3">02</div>
+        <div class="caption" style="color:var(--green-l)">LAYER 2: ENGAGE</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">WhatsApp-First Engagement</div>
+        <p class="body-sm">Use WhatsApp as the primary reminder channel in the UAE. AI agents handle confirmations, rescheduling, and cancellations in a natural conversational flow.</p>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green-l)">35-50%</div>
+          <div class="stat-label" style="font-size:10px">No-Show Reduction</div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="mono" style="font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--gold);opacity:.3">03</div>
+        <div class="caption" style="color:var(--gold)">LAYER 3: OPTIMIZE</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Smart Overbooking</div>
+        <p class="body-sm">AI calculates optimal overbooking levels per slot based on provider, day, specialty, and real-time cancellation signals. No more guesswork or blanket policies.</p>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">27%</div>
+          <div class="stat-label" style="font-size:10px">Less Overtime</div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--coral)">
+        <div class="mono" style="font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--coral);opacity:.3">04</div>
+        <div class="caption" style="color:var(--coral)">LAYER 4: LEARN</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Continuous Feedback Loops</div>
+        <p class="body-sm">Retrain models quarterly with new attendance data, patient feedback, and seasonal patterns. The system improves with each cycle, compounding gains over time.</p>
+        <div class="stat-card" style="padding:12px;text-align:center;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--coral)">Q/Q</div>
+          <div class="stat-label" style="font-size:10px">Retrain Quarterly</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 12 — DATA VIZ (ROI): "The ROI Case for Action"
+     ================================================================ -->
+<section class="s ov-center" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-roi.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Return on Investment</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:18em">The ROI Case <span class="accent">for Action</span></div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:32em;margin-top:12px">
+      For a clinic handling 200 appointments per day, reducing no-shows from 21% to 10% using AI-driven systems translates directly to recovered revenue.
+    </p>
+    <div class="g3 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(212,168,83,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--gold)">$196</div>
+        <div class="stat-label">Per Prevented No-Show</div>
+        <p class="body-sm" style="font-size:12px;margin-top:8px">Average appointment value recovered for each patient who attends instead of missing</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(27,107,90,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--green-l)">50.7%</div>
+        <div class="stat-label">Reduction Achievable</div>
+        <p class="body-sm" style="font-size:12px;margin-top:8px">Proven by EHS with statistical significance of P less than .001 in UAE primary care</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,88,62,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--coral)">$1.5M</div>
+        <div class="stat-label">Annual Recovery</div>
+        <p class="body-sm" style="font-size:12px;margin-top:8px">Estimated annual revenue recovery for a 200-appointment/day clinic at proven reduction rates</p>
+      </div>
+    </div>
+    <div class="callout rv rv-d4" style="margin-top:clamp(20px,3vh,36px);max-width:800px;width:100%">
+      <div class="caption" style="color:var(--gold);margin-bottom:4px">THE MATH</div>
+      <p class="body-sm">200 appointments/day x 21% no-show rate = 42 missed slots. At 50.7% reduction = 21 slots recovered daily. 21 x $196 x 365 days = <span style="color:var(--t1);font-weight:600">$1.5M+ annual recovery</span>. Implementation costs for AI engagement platforms typically recoup within 3-6 months.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 13 — TIMELINE: "2026-2030 Outlook"
+     ================================================================ -->
+<section class="s ov-heavy" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-future.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Forward Look</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">2026-2033 <span class="accent">Outlook</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md" style="max-width:500px">
+        <div class="tl-row"><div class="tl-yr">2026</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">National Digital Health Platform</div><p class="body-sm">Unified patient engagement layer connecting Nabidh and Malaffi. Real-time no-show prediction available to all connected facilities.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2029</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">$50B Healthcare Market</div><p class="body-sm">UAE healthcare market projected to reach $50 billion, with digital health tools handling 40%+ of patient engagement interactions.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2030</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">$2.65B Digital Health</div><p class="body-sm">UAE digital health market reaches $2.65 billion. AI-first clinics become the norm rather than the exception.</p></div></div>
+        <div class="tl-row"><div class="tl-yr">2033</div><div class="tl-line"></div><div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">$4.5B Patient Engagement</div><p class="body-sm">Middle East patient engagement market reaches $4.5 billion, driven by proven ROI from no-show reduction and automated patient communication.</p></div></div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="callout">
+          <div class="caption" style="color:var(--gold);margin-bottom:6px">THE WINDOW</div>
+          <p class="body-sm">Institutions that deploy AI-driven no-show reduction systems before 2027 will benefit from the compounding effect of quarterly model retraining. By the time competitors catch up, early movers will have 3-4 years of local training data -- an advantage that cannot be purchased.</p>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--green-l);margin-bottom:8px">EXPECTED TRAJECTORY</div>
+          <div class="bar-row"><div class="bar-lbl" style="font-size:12px">2026 No-Show</div><div class="bar-track"><div class="bar-fill" data-w="84%" style="background:var(--coral)"></div></div><div class="bar-val" style="color:var(--coral);font-size:12px">21%</div></div>
+          <div class="bar-row"><div class="bar-lbl" style="font-size:12px">2028 Target</div><div class="bar-track"><div class="bar-fill" data-w="56%" style="background:var(--gold)"></div></div><div class="bar-val" style="color:var(--gold);font-size:12px">14%</div></div>
+          <div class="bar-row"><div class="bar-lbl" style="font-size:12px">2030 Target</div><div class="bar-track"><div class="bar-fill" data-w="40%" style="background:var(--green-l)"></div></div><div class="bar-val" style="color:var(--green-l);font-size:12px">10%</div></div>
+          <p class="body-sm" style="margin-top:8px;font-size:12px">UK's 7.5% proves that sub-10% is achievable with systematic digital intervention.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 14 — CONCLUSION + CTA: "The Cost of Waiting"
+     ================================================================ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/uae-patient-no-show-cost-2026/noshow-conclusion.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div class="tag">Conclusion</div>
+        <div class="h1" style="font-size:clamp(28px,4vw,56px)">The Cost of <span class="accent-red">Waiting</span> Is the Cost of <span class="accent">Inaction</span></div>
+        <p class="body" style="max-width:28em">Every month without AI-driven no-show reduction is another month of 42 empty chairs per day, $8,200 in daily losses, and thousands of patients who do not receive care. The technology exists. The evidence is proven. The only remaining variable is the decision to deploy.</p>
+        <div class="g4" style="margin-top:12px">
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--coral)">21%</div><div class="stat-label" style="font-size:10px">Current</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--green-l)">10%</div><div class="stat-label" style="font-size:10px">Achievable</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--gold)">86%</div><div class="stat-label" style="font-size:10px">AI Accuracy</div></div>
+          <div class="stat-card" style="text-align:center"><div class="stat-num" style="font-size:clamp(18px,1.8vw,24px);color:var(--blue)">$1.5M+</div><div class="stat-label" style="font-size:10px">Recovery</div></div>
+        </div>
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px;margin-top:24px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <p class="body" style="max-width:28em">Zavis is the AI-powered patient engagement platform built for healthcare. AI agents handle 60-90% of routine patient operations across WhatsApp, Instagram, web chat, and voice. Every inquiry answered, every appointment booked, every follow-up sent. 24 hours a day, 7 days a week.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--bg);padding:10px 24px;border-radius:100px;font-family:var(--display);font-size:14px;font-weight:600;text-decoration:none;letter-spacing:.5px">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--gold);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0">zavis.ai</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">SOURCES & REFERENCES</div>
+        <p class="body-sm" style="font-size:13px;line-height:1.9">
+          Emirates Health Services -- ML No-Show Prediction Study (P&lt;.001)<br>
+          WHO Global Health Expenditure Database<br>
+          UAE Ministry of Health and Prevention<br>
+          Dubai Health Authority -- Nabidh Platform Data<br>
+          Abu Dhabi Department of Health -- Malaffi HIE<br>
+          Burjeel Holdings AI Training Program<br>
+          Cleveland Clinic Abu Dhabi -- AI Scribe Deployment<br>
+          Mediclinic Middle East -- Geneyx Genomics<br>
+          Middle East Patient Engagement Market Report 2024-2033<br>
+          UAE Digital Health Market Forecast 2024-2030<br>
+          BMC Health Services Research -- No-Show Determinants<br>
+          International Journal of Medical Informatics -- Overbooking Models
+        </p>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published March 2026</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counter animations
+function aN(el,to,d,s,p){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(p||'')+((v*to).toFixed(to%1?1:0))+(s||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){
+  aN(document.getElementById('c1'),21,1200,'%','');
+  aN(document.getElementById('c3'),22,1500,'','$');
+  hObs.disconnect();
+}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowRight'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowLeft'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

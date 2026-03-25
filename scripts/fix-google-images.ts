@@ -2,9 +2,21 @@
  * Remove Google News logo images from DB and re-fetch real OG images.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 const BLOCKED = ["lh3.googleusercontent.com", "gstatic.com", "google.com/images"];
 
@@ -36,7 +48,8 @@ async function fetchRealOgImage(url: string): Promise<string | null> {
 }
 
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
 
   // Find articles with Google logo images
   const bad = await sql`
@@ -73,6 +86,8 @@ async function main() {
   }
 
   console.log(`\nDone: ${fixed} fixed, ${cleared} cleared (no image better than fake image)`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

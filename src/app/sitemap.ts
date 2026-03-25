@@ -156,6 +156,70 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  // ─── Top 10 pages ───────────────────────────────────────────────────────
+
+  // UAE overall top 10
+  entries.push({
+    url: `${baseUrl}/directory/top`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  });
+
+  // Top 10 per category (UAE-wide) — only if 5+ qualified providers
+  for (const cat of categories) {
+    const { providers: catProviders } = getProviders({ categorySlug: cat.slug, limit: 99999 });
+    const qualCat = catProviders.filter(
+      (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
+    ).length;
+    if (qualCat >= 5) {
+      entries.push({
+        url: `${baseUrl}/directory/top/${cat.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.85,
+      });
+    }
+  }
+
+  // Top 10 per city (all categories) — only if 5+ qualified providers
+  for (const city of cities) {
+    const { providers: cityAllProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    const qualCity = cityAllProviders.filter(
+      (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
+    ).length;
+    if (qualCity >= 5) {
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/top`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.85,
+      });
+    }
+  }
+
+  // Top 10 city × category combos — only if 10+ qualified providers
+  for (const city of cities) {
+    for (const cat of categories) {
+      const { providers: cityProviders } = getProviders({
+        citySlug: city.slug,
+        categorySlug: cat.slug,
+        limit: 99999,
+      });
+      const qualifiedCount = cityProviders.filter(
+        (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
+      ).length;
+      if (qualifiedCount >= 10) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/top/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.85,
+        });
+      }
+    }
+  }
+
   // ─── Provider listing pages ───────────────────────────────────────────────
   const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {

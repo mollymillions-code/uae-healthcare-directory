@@ -1,0 +1,30 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/zavis-landing
+            git checkout -- .
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart zavis-landing
+            echo "===== DEPLOY VERIFICATION ====="
+            echo "GitHub SHA: $GITHUB_SHA"
+            echo "Server SHA: $(git rev-parse HEAD)"
+            echo "Server Time: $(date -u)"
+            echo "PM2 Status: $(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); landing=[p for p in procs if p['name']=='zavis-landing']; print(landing[0]['pm2_env']['status'] if landing else 'NOT FOUND')")"
+            echo "Health Check: $(curl -s http://localhost:3200/api/health | python3 -c "import sys,json; d=json.load(sys.stdin); print(f\"OK — {d['version']['short']} — {d['version']['message']}\")" 2>/dev/null || echo "FAILED")"
+            echo "==============================="

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Clinics &amp; Aesthetics: AI as the Silent Growth Partner — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#070A10;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays — unique aesthetics combos */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(7,10,16,.88) 0%,rgba(7,10,16,.6) 50%,rgba(7,10,16,.92) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(7,10,16,.94) 0%,rgba(7,10,16,.72) 50%,rgba(7,10,16,.35) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(7,10,16,.15) 0%,rgba(7,10,16,.65) 50%,rgba(7,10,16,.96) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(7,10,16,.45) 0%,rgba(7,10,16,.9) 70%)}
+.ov-dark .s-bg::after{background:rgba(7,10,16,.8)}
+.ov-teal .s-bg::after{background:linear-gradient(135deg,rgba(46,196,182,.08) 0%,rgba(7,10,16,.88) 40%,rgba(7,10,16,.92) 100%)}
+.ov-gold .s-bg::after{background:linear-gradient(180deg,rgba(232,184,75,.05) 0%,rgba(7,10,16,.85) 35%,rgba(7,10,16,.94) 100%)}
+.ov-diag .s-bg::after{background:linear-gradient(150deg,rgba(7,10,16,.95) 0%,rgba(0,168,107,.06) 50%,rgba(7,10,16,.92) 100%)}
+.ov-right .s-bg::after{background:linear-gradient(270deg,rgba(7,10,16,.94) 0%,rgba(7,10,16,.7) 50%,rgba(7,10,16,.3) 100%)}
+.ov-split .s-bg::after{background:linear-gradient(90deg,rgba(7,10,16,.92) 0%,rgba(7,10,16,.92) 50%,rgba(7,10,16,.5) 50%,rgba(7,10,16,.5) 100%)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.accent-teal{color:var(--teal)}
+.accent-gold{color:var(--gold)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── FUNNEL VIZ ─── */
+.funnel{display:flex;flex-direction:column;gap:6px;width:100%}
+.funnel-step{display:flex;align-items:center;gap:12px}
+.funnel-bar{height:clamp(32px,3.5vw,44px);border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:16px;font-family:var(--mono);font-size:clamp(12px,1vw,15px);font-weight:600;color:var(--t1);transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.funnel-lbl{font-size:clamp(11px,0.8vw,13px);color:var(--t2);min-width:120px;text-align:right}
+
+/* ─── STEP CARDS ─── */
+.step-card{position:relative;padding-left:clamp(40px,4vw,56px)}
+.step-num{position:absolute;left:0;top:0;font-family:var(--mono);font-size:clamp(28px,3vw,40px);font-weight:800;color:var(--green);opacity:.3}
+
+/* ─── BEFORE/AFTER ─── */
+.ba-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(16px,2vw,32px);align-items:start}
+.ba-divider{width:2px;background:var(--border);height:100%;position:relative}
+.ba-divider::after{content:'VS';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:12px;color:var(--gold);background:var(--bg);padding:8px 4px;letter-spacing:2px}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── RING CHART ─── */
+.ring-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.ring-center{position:absolute;text-align:center}
+
+/* ─── CTA BTN ─── */
+.btn-cta{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:14px 32px;border-radius:100px;font-family:var(--display);font-size:15px;font-weight:600;text-decoration:none;letter-spacing:.5px;transition:all .3s;border:none;cursor:pointer}
+.btn-cta:hover{background:var(--green-l);color:var(--bg);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,168,107,.3)}
+.btn-ghost{color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0;transition:color .3s}
+.btn-ghost:hover{color:var(--green-l)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .ba-grid{grid-template-columns:1fr}
+  .ba-divider{display:none}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+  .funnel-lbl{min-width:80px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Clinics & Aesthetics Title
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Business &amp; AI Report — 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:16em">
+      Clinics &amp; Aesthetic Centers in the UAE:<br><span class="accent">AI as the Silent Growth Partner</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      Automation in Care &amp; Beauty — How AI is reshaping patient engagement, booking systems, and operational efficiency across UAE clinics.
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:750px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">0</div>
+        <div class="stat-label">Healthcare Market</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">Aesthetic CAGR</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">Mobile Bookings</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green-l)" id="c4">0%</div>
+        <div class="stat-label">ROI in 12 Months</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">By Anuj Singh &nbsp;·&nbsp; SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — INDUSTRY GROWTH SNAPSHOT
+     ════════════════════════════════════════════ -->
+<section class="s ov-teal" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Industry Growth Snapshot</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--green)">$22<span style="font-size:.45em;color:var(--t2);font-weight:400">B</span></div>
+        <div class="h3" style="color:var(--t1)">UAE Healthcare Market Value (2024)</div>
+        <p class="body" style="max-width:28em">Projected to reach $23.5B in 2025. The UAE is witnessing accelerated growth in healthcare technology adoption, with digital transformation initiatives driving market expansion across all sectors.</p>
+      </div>
+      <div class="stack gap-sm">
+        <div class="stat-card">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">$195M→$290M</div>
+          <div class="stat-label">Dental Services 2024→2030</div>
+          <p class="body-sm" style="margin-top:4px;font-size:11px">Growing at 6.8% CAGR</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">8.3%</div>
+          <div class="stat-label">Aesthetic Clinic CAGR</div>
+          <p class="body-sm" style="margin-top:4px;font-size:11px">Outpacing global average (2023–2030)</p>
+        </div>
+        <div class="g2">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">6.8%</div><div class="stat-label">Dental CAGR</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green-l)">$23.5B</div><div class="stat-label">2025 Projected</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — PATIENT BEHAVIOR: BOOKING PATTERNS
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Patient Behavior Insights</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--teal);margin-top:24px">68%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">of bookings now made via <span class="accent-teal">mobile devices</span></div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:30em;margin-top:16px">
+      Up from 52% in 2023. Patient behavior reveals increased demand for instant booking confirmation and 24/7 scheduling options. Clinics with AI-assisted booking report 42% higher satisfaction.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">83%</div>
+        <div class="stat-label">Prefer Digital Booking</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">WhatsApp emerging as dominant</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">7.4h</div>
+        <div class="stat-label">Avg Response Time</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">Global benchmark: 3.2 hours</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">+42%</div>
+        <div class="stat-label">Satisfaction Lift</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">With AI-assisted booking</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — DIGITAL ADOPTION LEVELS
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Digital Adoption</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">UAE Clinics Are <span class="accent">Rapidly Going Digital</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">76%</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Digital Appointment Systems</div>
+          <p class="body-sm" style="margin-top:8px;text-align:center;font-size:12px">Up from 52% in 2021</p>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">62%</div>
+            <div class="stat-label">AI for Patient Mgmt</div>
+            <p class="body-sm" style="margin-top:4px;font-size:12px">Doubled from 31% in 2022</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">83%</div>
+            <div class="stat-label">Digital Records</div>
+            <p class="body-sm" style="margin-top:4px;font-size:12px">Industry-leading adoption</p>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">DIGITAL ADOPTION BY SECTOR (2023–2025)</div>
+        <div class="bar-row"><div class="bar-lbl">Patient Booking</div><div class="bar-track"><div class="bar-fill" data-w="76%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">76%</div></div>
+        <div class="bar-row"><div class="bar-lbl">AI Integration</div><div class="bar-track"><div class="bar-fill" data-w="62%" style="background:linear-gradient(90deg,var(--teal),var(--green-l))"></div></div><div class="bar-val" style="color:var(--teal)">62%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Digital Records</div><div class="bar-track"><div class="bar-fill" data-w="83%" style="background:linear-gradient(90deg,var(--gold),#E8B84B)"></div></div><div class="bar-val" style="color:var(--gold)">83%</div></div>
+        <div class="bar-row"><div class="bar-lbl">WhatsApp Svcs</div><div class="bar-track"><div class="bar-fill" data-w="72%" style="background:linear-gradient(90deg,var(--green),var(--green-l))"></div></div><div class="bar-val" style="color:var(--green-l)">72%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Analytics Usage</div><div class="bar-track"><div class="bar-fill" data-w="48%" style="background:linear-gradient(90deg,var(--t3),var(--t2))"></div></div><div class="bar-val" style="color:var(--t2)">48%</div></div>
+        <div class="callout" style="margin-top:12px">
+          <p class="body-sm" style="font-size:14px">Digital adoption expected to reach near-complete penetration by 2028. Aesthetic and dental sectors lead adoption rates across the region.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — WHATSAPP BOOKING FUNNEL
+     ════════════════════════════════════════════ -->
+<section class="s ov-diag" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Lead Capture &amp; WhatsApp Funnel</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">WhatsApp: The <span class="accent-gold">Dominant Channel</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">76% of clinics report WhatsApp as their most effective lead capture method. AI-enhanced booking systems report 38% higher appointment retention rates.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">68%</div>
+            <div class="stat-label">Higher Conversion</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">vs. traditional contact forms</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">4.2<span style="font-size:.5em">min</span></div>
+            <div class="stat-label">AI Response Time</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">Down from 3.5 hours manual</p>
+          </div>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--gold)">87%</div>
+          <div class="stat-label">Patient Satisfaction with Booking</div>
+          <p class="body-sm" style="font-size:14px;margin-top:4px">+23% improvement after implementing ZAVIS</p>
+        </div>
+      </div>
+      <div class="funnel">
+        <div class="funnel-step"><div class="funnel-lbl">Initial Contact</div><div class="funnel-bar" data-w="100%" style="background:linear-gradient(90deg,var(--green),var(--teal))">100%</div></div>
+        <div class="funnel-step"><div class="funnel-lbl">AI Engagement</div><div class="funnel-bar" data-w="92%" style="background:linear-gradient(90deg,var(--green),var(--teal));opacity:.88">92%</div></div>
+        <div class="funnel-step"><div class="funnel-lbl">Scheduling</div><div class="funnel-bar" data-w="78%" style="background:linear-gradient(90deg,var(--green),var(--teal));opacity:.76">78%</div></div>
+        <div class="funnel-step"><div class="funnel-lbl">Follow-up</div><div class="funnel-bar" data-w="73%" style="background:linear-gradient(90deg,var(--green),var(--teal));opacity:.64">73%</div></div>
+        <div class="funnel-step"><div class="funnel-lbl">Appointment</div><div class="funnel-bar" data-w="68%" style="background:linear-gradient(90deg,var(--teal),var(--gold));opacity:.56">68%</div></div>
+        <div class="funnel-step"><div class="funnel-lbl">Retention</div><div class="funnel-bar" data-w="61%" style="background:linear-gradient(90deg,var(--gold),var(--green));opacity:.48">61%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — AI RECEPTION MODELS
+     ════════════════════════════════════════════ -->
+<section class="s ov-gold" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Reception Models</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">Four Tiers of <span class="accent">Intelligent Reception</span></div>
+    <div class="g4 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--t3)">
+        <div class="caption" style="color:var(--t3)">TIER 1</div>
+        <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Virtual Receptionist</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Basic automated responses</p>
+          <p class="body-sm">24/7 availability</p>
+          <p class="body-sm">Appointment scheduling</p>
+          <p class="body-sm">FAQ handling</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">TIER 2</div>
+        <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Conversational AI</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">NLP capabilities</p>
+          <p class="body-sm">Patient intent recognition</p>
+          <p class="body-sm">Personalized interactions</p>
+          <p class="body-sm">Multilingual support</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">TIER 3</div>
+        <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Intelligent Assistant</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Advanced engagement tools</p>
+          <p class="body-sm">Insurance verification</p>
+          <p class="body-sm">Payment processing</p>
+          <p class="body-sm">Medical record integration</p>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green);background:rgba(0,168,107,.04)">
+        <div class="caption" style="color:var(--green)">TIER 4 — ZAVIS PEP AI</div>
+        <div class="h3" style="font-size:clamp(15px,1.3vw,20px);color:var(--green)">Premium End-to-End</div>
+        <div class="stack gap-xs">
+          <p class="body-sm">Predictive analytics</p>
+          <p class="body-sm">Personalized health recs</p>
+          <p class="body-sm">Seamless EMR integration</p>
+          <p class="body-sm">Full patient lifecycle</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout rv rv-d3" style="margin-top:clamp(16px,2vh,24px);max-width:600px">
+      <p class="body-sm" style="font-size:12px">ZAVIS PEP AI scores highest across all capability axes: 24/7 availability, integration depth, patient satisfaction, personalization, and task automation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — EMR + AUTOMATION INTEGRATION
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">EMR + Automation</div>
+        <div class="h2">Seamless Integration <span class="accent">That Saves Hours</span></div>
+        <p class="body">When EMR is fully integrated with ZAVIS automation, clinics see dramatic reductions in administrative burden and near-perfect data accuracy.</p>
+        <div class="g3" style="margin-top:8px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">67%</div>
+            <div class="stat-label">Admin Time Cut</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">3.2h</div>
+            <div class="stat-label">Saved Daily</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">98.5%</div>
+            <div class="stat-label">Data Accuracy</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">INTEGRATION BENEFITS</div>
+          <div class="stack gap-xs">
+            <p class="body-sm">Real-time patient data sync across platforms</p>
+            <p class="body-sm">Seamless scheduling with automated reminders</p>
+            <p class="body-sm">Smart billing + insurance verification</p>
+            <p class="body-sm">HIPAA & UAE regulation compliant</p>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-md" style="max-width:420px">
+        <div class="caption" style="color:var(--teal);margin-bottom:4px">INTEGRATION WORKFLOW</div>
+        <div class="step-card"><div class="step-num">01</div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Patient Data Capture</div><p class="body-sm">Multi-channel intake via WhatsApp, website forms, or phone</p></div>
+        <div class="step-card"><div class="step-num">02</div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">ZAVIS AI Processing</div><p class="body-sm">Information extraction, categorization & validation</p></div>
+        <div class="step-card"><div class="step-num">03</div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">EMR Integration & Sync</div><p class="body-sm">Secure bidirectional data flow with leading EMR platforms</p></div>
+        <div class="step-card"><div class="step-num">04</div><div class="h3" style="font-size:clamp(14px,1.1vw,18px)">Automated Workflows</div><p class="body-sm">Scheduling, reminders, follow-ups & billing</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — CASE STUDY: DENTAL NATION
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Case Study</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Dental Nation <span class="accent">&amp; ZAVIS PEP</span></div>
+    <p class="body rv rv-d2" style="max-width:40em;margin-top:8px">A leading dental clinic network in Dubai with 5 locations and 15+ practitioners. ZAVIS PEP was deployed across all locations with EMR integration in 2 weeks and staff training in under 3 days.</p>
+    <div class="ba-grid rv rv-d3" style="margin-top:clamp(20px,3vh,32px);width:100%">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--coral);margin-bottom:4px">BEFORE</div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><p class="body-sm">Manual appointment booking</p></div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><p class="body-sm">High no-show rate: <strong style="color:var(--coral)">25%</strong></p></div>
+        <div class="info-card" style="border-left:3px solid var(--coral)"><p class="body-sm">Limited staff productivity</p></div>
+      </div>
+      <div class="ba-divider"></div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">AFTER ZAVIS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><p class="body-sm">Automated 24/7 booking</p></div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><p class="body-sm">Low no-show rate: <strong style="color:var(--green)">12.5%</strong></p></div>
+        <div class="info-card" style="border-left:3px solid var(--green)"><p class="body-sm">Enhanced staff efficiency</p></div>
+      </div>
+    </div>
+    <div class="g4 rv rv-d4" style="margin-top:clamp(16px,2vh,28px);width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">50%</div>
+        <div class="stat-label">No-Show Reduction</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">3x</div>
+        <div class="stat-label">Admin Productivity</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">24/7</div>
+        <div class="stat-label">Booking Capability</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green-l)">+15%</div>
+        <div class="stat-label">Revenue Increase</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — ROI: BOOKINGS vs AUTOMATION
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">ROI Analysis</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--gold);margin-top:24px">312%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:18em;text-align:center">Average ROI after 12 months <span class="accent-gold">based on UAE clinic case studies</span></div>
+    <div class="g3 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">68%</div>
+        <div class="stat-label">Staff Time Saved</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">On administrative tasks</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">4.3<span style="font-size:.5em">mo</span></div>
+        <div class="stat-label">Average Breakeven</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">For ZAVIS implementation</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">+22%</div>
+        <div class="stat-label">Total Bookings Up</div>
+        <p class="body-sm" style="margin-top:4px;font-size:12px">With 24/7 availability</p>
+      </div>
+    </div>
+    <div class="callout rv rv-d4" style="margin-top:clamp(16px,2vh,24px);max-width:700px">
+      <div class="caption" style="color:var(--gold);margin-bottom:4px">REVENUE IMPACT (AED/MONTH)</div>
+      <div class="stack gap-xs" style="margin-top:8px">
+        <div class="bar-row"><div class="bar-lbl">Small Clinic</div><div class="bar-track"><div class="bar-fill" data-w="35%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">+35%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Medium Practice</div><div class="bar-track"><div class="bar-fill" data-w="48%" style="background:linear-gradient(90deg,var(--teal),var(--gold))"></div></div><div class="bar-val" style="color:var(--teal)">+48%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Large Clinic</div><div class="bar-track"><div class="bar-fill" data-w="62%" style="background:linear-gradient(90deg,var(--gold),var(--green))"></div></div><div class="bar-val" style="color:var(--gold)">+62%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Multi-Location</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--green),var(--green-l))"></div></div><div class="bar-val" style="color:var(--green-l)">+85%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — AI FOLLOW-UP & RETENTION
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">AI Follow-up &amp; Retention</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Personalized Journeys That <span class="accent-teal">Drive Engagement</span></div>
+    <div class="split rv rv-d2" style="margin-top:clamp(16px,3vh,24px)">
+      <div class="stack gap-sm">
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--green)">+37%</div>
+            <div class="stat-label">Patient Retention</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">With automated follow-ups</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(32px,3.5vw,48px);color:var(--teal)">68%</div>
+            <div class="stat-label">Response Rate</div>
+            <p class="body-sm" style="font-size:12px;margin-top:4px">vs 42% traditional comms</p>
+          </div>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">4.3h</div>
+          <div class="stat-label">Staff Time Saved Daily</div>
+          <p class="body-sm" style="font-size:14px;margin-top:4px">Through automated patient follow-up sequences</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--teal);margin-bottom:4px">PATIENT JOURNEY TOUCHPOINTS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Post-visit Check (24h)</div>
+            <div class="mono" style="font-size:14px;color:var(--green);font-weight:700">92%</div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Treatment Follow-up (3–7d)</div>
+            <div class="mono" style="font-size:14px;color:var(--teal);font-weight:700">84%</div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Results Check-in (14d)</div>
+            <div class="mono" style="font-size:14px;color:var(--gold);font-weight:700">76%</div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--green-l)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="h3" style="font-size:clamp(15px,1.1vw,18px)">Maintenance Scheduling (30–90d)</div>
+            <div class="mono" style="font-size:14px;color:var(--green-l);font-weight:700">63%</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:4px">
+          <p class="body-sm" style="font-size:14px">ZAVIS AI workflows create personalized patient journeys through intelligent timing algorithms and context-aware messaging.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — COMPLIANCE & DATA PROTECTION
+     ════════════════════════════════════════════ -->
+<section class="s ov-right" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:540px">
+        <div class="tag">Compliance &amp; Security</div>
+        <div class="h2">Privacy by Design, <span class="accent">Security by Default</span></div>
+        <div class="g3" style="margin-top:4px">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">100%</div>
+            <div class="stat-label">UAE Compliant</div>
+            <p class="body-sm" style="font-size:14px;margin-top:4px">DOH-AD & DHA</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(14px,1.3vw,18px);color:var(--teal)">ISO 27001</div>
+            <div class="stat-label">Info Security</div>
+            <p class="body-sm" style="font-size:14px;margin-top:4px">International standard</p>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(14px,1.3vw,18px);color:var(--gold)">HIPAA</div>
+            <div class="stat-label">Compatible</div>
+            <p class="body-sm" style="font-size:14px;margin-top:4px">Global recognition</p>
+          </div>
+        </div>
+        <div class="stack gap-xs" style="margin-top:8px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">SECURITY FRAMEWORK</div>
+          <div class="bar-row"><div class="bar-lbl">Data Encryption</div><div class="bar-track"><div class="bar-fill" data-w="98%" style="background:var(--green)"></div></div><div class="bar-val" style="color:var(--green)">98%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Regulatory</div><div class="bar-track"><div class="bar-fill" data-w="100%" style="background:var(--teal)"></div></div><div class="bar-val" style="color:var(--teal)">100%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Access Control</div><div class="bar-track"><div class="bar-fill" data-w="96%" style="background:var(--gold)"></div></div><div class="bar-val" style="color:var(--gold)">96%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Breach Prevention</div><div class="bar-track"><div class="bar-fill" data-w="95%" style="background:var(--green-l)"></div></div><div class="bar-val" style="color:var(--green-l)">95%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Audit Trails</div><div class="bar-track"><div class="bar-fill" data-w="97%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--teal)">97%</div></div>
+        </div>
+        <div class="callout">
+          <p class="body-sm" style="font-size:14px">End-to-end encryption for all patient communications. Regular security audits, role-based access control with audit trails, and penetration testing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — UAE vs GLOBAL COMPARISON
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-scan.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Aesthetic Industry Comparison</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">UAE Outpaces the <span class="accent-gold">Global Average</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">KEY GROWTH INDICATORS — UAE vs GLOBAL</div>
+        <div class="info-card">
+          <div class="caption" style="margin-bottom:8px">MARKET GROWTH (CAGR)</div>
+          <div style="display:flex;gap:16px;align-items:flex-end">
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">8.3%</div><div class="stat-label">UAE</div></div>
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--t3)">6.5%</div><div class="stat-label">Global</div></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="margin-bottom:8px">DIGITAL ADOPTION RATE</div>
+          <div style="display:flex;gap:16px;align-items:flex-end">
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">85%</div><div class="stat-label">UAE</div></div>
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--t3)">67%</div><div class="stat-label">Global</div></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="margin-bottom:8px">PATIENT DIGITAL READINESS</div>
+          <div style="display:flex;gap:16px;align-items:flex-end">
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">92%</div><div class="stat-label">UAE</div></div>
+            <div style="text-align:center"><div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--t3)">73%</div><div class="stat-label">Global</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <p class="body" style="max-width:28em">The UAE aesthetic industry demonstrates significantly higher digital readiness and automation adoption compared to global averages, creating ideal conditions for AI-driven solutions.</p>
+        <div class="caption" style="color:var(--teal);margin-top:12px;margin-bottom:4px">UAE vs GLOBAL — ADOPTION BARS</div>
+        <div class="bar-row"><div class="bar-lbl">Growth CAGR</div><div class="bar-track"><div class="bar-fill" data-w="83%" style="background:var(--green)"></div></div><div class="bar-val" style="color:var(--green)">8.3%</div></div>
+        <div class="bar-row"><div class="bar-lbl" style="font-size:12px;color:var(--t3)">Global CAGR</div><div class="bar-track"><div class="bar-fill" data-w="65%" style="background:var(--t3)"></div></div><div class="bar-val" style="color:var(--t3)">6.5%</div></div>
+        <div style="height:8px"></div>
+        <div class="bar-row"><div class="bar-lbl">UAE Digital</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:var(--teal)"></div></div><div class="bar-val" style="color:var(--teal)">85%</div></div>
+        <div class="bar-row"><div class="bar-lbl" style="font-size:12px;color:var(--t3)">Global Digital</div><div class="bar-track"><div class="bar-fill" data-w="67%" style="background:var(--t3)"></div></div><div class="bar-val" style="color:var(--t3)">67%</div></div>
+        <div style="height:8px"></div>
+        <div class="bar-row"><div class="bar-lbl">UAE Readiness</div><div class="bar-track"><div class="bar-fill" data-w="92%" style="background:var(--gold)"></div></div><div class="bar-val" style="color:var(--gold)">92%</div></div>
+        <div class="bar-row"><div class="bar-lbl" style="font-size:12px;color:var(--t3)">Global Ready</div><div class="bar-track"><div class="bar-fill" data-w="73%" style="background:var(--t3)"></div></div><div class="bar-val" style="color:var(--t3)">73%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — 2025-2030 PROJECTION
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">2025–2030 Projection</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:18em">The Future of <span class="accent">Clinic Automation</span> in the UAE</div>
+    <div class="g3 rv rv-d2" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,52px);color:var(--green)">75%</div>
+        <div class="stat-label">UAE Clinics with AI by 2030</div>
+        <p class="body-sm" style="margin-top:6px;font-size:11px">Up from 32% in 2025</p>
+      </div>
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,52px);color:var(--gold)">$450M</div>
+        <div class="stat-label">AI Healthcare Market 2030</div>
+        <p class="body-sm" style="margin-top:6px;font-size:11px">12.8% CAGR from 2025</p>
+      </div>
+      <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+        <div class="stat-num" style="font-size:clamp(24px,3vw,40px);color:var(--teal)">38%→85%</div>
+        <div class="stat-label">Automated Booking Penetration</div>
+        <p class="body-sm" style="margin-top:6px;font-size:11px">Across UAE clinic sector</p>
+      </div>
+    </div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:34em;margin-top:clamp(16px,2vh,24px)">
+      By 2030, advanced AI systems will manage 60% of all patient interactions in UAE clinics, with ZAVIS projected to maintain market leadership with 42% share in the clinic automation segment.
+    </p>
+    <div class="callout rv rv-d4" style="margin-top:clamp(12px,2vh,20px);max-width:600px">
+      <div class="stack gap-xs" style="text-align:center">
+        <div class="bar-row"><div class="bar-lbl">AI Reception 2025</div><div class="bar-track"><div class="bar-fill" data-w="32%" style="background:var(--green)"></div></div><div class="bar-val" style="color:var(--green)">32%</div></div>
+        <div class="bar-row"><div class="bar-lbl">AI Reception 2030</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--green),var(--green-l))"></div></div><div class="bar-val" style="color:var(--green-l)">75%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ABOUT ZAVIS + CTA
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/clinics-aesthetics/clin-hero.png);opacity:0.25"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">RESEARCH</span></div>
+        <div class="h3" style="color:var(--green)">About ZAVIS</div>
+        <p class="body" style="max-width:28em">ZAVIS empowers healthcare professionals with intelligent automation solutions that enhance patient care while improving operational efficiency. AI agents handle 60–90% of routine patient operations across WhatsApp, Instagram, web chat, and voice.</p>
+        <p class="body" style="max-width:28em">One conversation thread per patient across every channel. Two-way EMR writeback in real-time. Full attribution from ad click to booked appointment to collected revenue. Go live in 24 hours.</p>
+        <div class="g2" style="margin-top:8px;max-width:400px">
+          <div class="info-card" style="text-align:center;padding:12px"><div class="caption" style="color:var(--green)">CORE VALUES</div><p class="body-sm" style="font-size:12px;margin-top:4px">Innovation · Patient-Centered · Data Security · Continuous Improvement</p></div>
+          <div class="info-card" style="text-align:center;padding:12px"><div class="caption" style="color:var(--teal)">EXPERTISE</div><p class="body-sm" style="font-size:12px;margin-top:4px">AI Booking · EMR Automation · Patient Engagement · Analytics</p></div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" class="btn-cta">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" class="btn-ghost">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">CONTACT</div>
+        <p class="body-sm" style="line-height:2">
+          Website: www.zavis.ai<br>
+          Email: contact@zavis.ai<br>
+          UAE Office: Dubai Healthcare City, Building 24
+        </p>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div class="caption" style="color:var(--gold);margin-bottom:8px">REPORT SERIES</div>
+          <p class="body-sm" style="font-size:14px;line-height:1.8">
+            Clinics &amp; Aesthetic Centers in the UAE:<br>
+            AI as the Silent Growth Partner<br>
+            Automation in Care &amp; Beauty
+          </p>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published 2025 &nbsp;·&nbsp; By Anuj Singh</div>
+          <div class="caption" style="margin-top:4px">ZAVIS Report Series</div>
+          <div class="caption" style="margin-top:4px;color:var(--t3)">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ─── Core Navigation ─── */
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label','Go to slide '+(i+1));b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+/* ─── Intersection Observer ─── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      /* Reveal animations */
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      /* Animated bars */
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{
+        setTimeout(()=>{f.style.width=f.dataset.w},j*80);
+      });
+    }
+  });
+},{threshold:0.4});
+S.forEach(s=>obs.observe(s));
+
+/* ─── Hero Counter Animation ─── */
+function aN(el,to,d,suffix,prefix,dec){
+  dec=dec||0;
+  const t0=performance.now();
+  (function f(now){
+    const r=Math.min((now-t0)/d,1),v=1-Math.pow(1-r,3);
+    el.textContent=(prefix||'')+((v*to).toFixed(dec))+(suffix||'');
+    if(r<1)requestAnimationFrame(f);
+  })(t0);
+}
+const hObs=new IntersectionObserver(e=>{
+  e.forEach(x=>{
+    if(x.isIntersecting){
+      aN(document.getElementById('c1'),22,1600,'B','$');
+      aN(document.getElementById('c2'),8.3,1400,'%','',1);
+      aN(document.getElementById('c3'),68,1200,'%','');
+      aN(document.getElementById('c4'),312,1800,'%','');
+      hObs.disconnect();
+    }
+  });
+},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+/* ─── Keyboard Navigation ─── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){
+    e.preventDefault();
+    const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);
+    if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'});
+  }
+  if(e.key==='ArrowUp'){
+    e.preventDefault();
+    const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);
+    if(c>0)S[c-1].scrollIntoView({behavior:'smooth'});
+  }
+});
+</script>
+</body>
+</html>

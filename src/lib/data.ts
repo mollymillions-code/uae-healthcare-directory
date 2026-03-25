@@ -282,23 +282,82 @@ export function getProviderSlugsByCity(citySlug: string): { categorySlug: string
   return cityProviders.map((p) => ({ categorySlug: p.categorySlug, slug: p.slug }));
 }
 
+// ─── UAE City Insurance Context ────────────────────────────────────────────────
+
+function getCityInsuranceNote(citySlug: string): string {
+  if (citySlug === "dubai") {
+    return "Dubai mandates employer-provided health insurance under the DHA Essential Benefits Plan (since 2014). Major insurers operating in Dubai include Daman, AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz.";
+  }
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") {
+    return "Abu Dhabi requires health insurance for all residents under the DOH (formerly HAAD) framework. UAE nationals receive Thiqa coverage; expatriates are typically covered by Daman or employer-arranged plans. AXA, Cigna, MetLife, and Allianz are also widely accepted.";
+  }
+  if (citySlug === "sharjah") {
+    return "Sharjah follows MOHAP guidelines. Widely accepted plans include Daman, AXA, Cigna, MetLife, Orient Insurance, and Oman Insurance. Many employers offer group health plans.";
+  }
+  return "The Northern Emirates follow MOHAP coverage rules. Daman, AXA, Cigna, Orient Insurance, and Oman Insurance are commonly accepted. Check individual provider listings for plan specifics.";
+}
+
+// ─── UAE Typical Consultation Fees ─────────────────────────────────────────────
+
+function getCityGPFee(citySlug: string): string {
+  if (citySlug === "dubai") return "AED 150–300";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "AED 100–250";
+  return "AED 80–200";
+}
+
 export function getFaqs(entityType: string, entitySlug: string): { question: string; answer: string }[] {
   const city = CITIES.find((c) => c.slug === entitySlug);
   const cat = CATEGORIES.find((c) => c.slug === entitySlug);
 
   if (entityType === "city" && city) {
+    const insuranceNote = getCityInsuranceNote(city.slug);
+    const gpFee = getCityGPFee(city.slug);
     return [
-      { question: `How many healthcare providers are in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, ${city.name} has numerous registered healthcare providers including hospitals, clinics, dental practices, and specialty centers. Browse the UAE Open Healthcare Directory to find all providers by category and area.` },
-      { question: `What are the best-rated hospitals in ${city.name}?`, answer: `The top-rated hospitals in ${city.name} can be found by sorting the UAE Open Healthcare Directory hospital listings by Google rating. Many hospitals maintain ratings above 4.5 stars.` },
-      { question: `How do I find a doctor near me in ${city.name}?`, answer: `Use the search feature on the UAE Open Healthcare Directory and enable location access to find healthcare providers nearest to you in ${city.name}. You can filter by specialty, area, and rating.` },
-      { question: `Which insurance providers are accepted in ${city.name}?`, answer: `Most healthcare providers in ${city.name} accept major insurance plans including Daman, Thiqa, Dubai Insurance Company (DIC), AXA, Cigna, and others. Check individual provider listings on the UAE Open Healthcare Directory for specifics.` },
+      {
+        question: `How many healthcare providers are in ${city.name}?`,
+        answer: `According to the UAE Open Healthcare Directory, ${city.name} has hundreds of registered healthcare providers including hospitals, clinics, dental practices, and specialty centers. Browse the UAE Open Healthcare Directory to find all providers by category and area.`,
+      },
+      {
+        question: `What are the best-rated hospitals in ${city.name}?`,
+        answer: `The top-rated hospitals in ${city.name} can be found by sorting the UAE Open Healthcare Directory hospital listings by Google rating. Many hospitals in ${city.name} maintain ratings above 4.5 stars. Leading names include major private groups such as Mediclinic, Aster, LLH, and NMC, alongside government facilities.`,
+      },
+      {
+        question: `How do I find a doctor near me in ${city.name}?`,
+        answer: `Use the search feature on the UAE Open Healthcare Directory and enable location access to find healthcare providers nearest to you in ${city.name}. You can filter by specialty, area, and rating. GP walk-in wait times are typically 15–45 minutes; specialist appointments are usually available within 1–7 days.`,
+      },
+      {
+        question: `Which insurance plans are accepted in ${city.name}?`,
+        answer: `${insuranceNote} Check individual provider listings on the UAE Open Healthcare Directory for plan-specific acceptance.`,
+      },
+      {
+        question: `How much does a GP consultation cost in ${city.name}?`,
+        answer: `A standard GP consultation in ${city.name} typically costs ${gpFee}, depending on the clinic tier and whether you pay out-of-pocket or through insurance. Specialist consultations range from AED 300–800 or more. Government facilities are generally more affordable. An emergency visit typically costs AED 300–1,000 before treatment. Always confirm fees directly with the provider.`,
+      },
+      {
+        question: `How long are typical wait times for healthcare in ${city.name}?`,
+        answer: `In ${city.name}, GP walk-in clinics typically see patients within 15–45 minutes. Specialist appointment wait times range from 1–7 days depending on demand and clinic. Emergency departments provide immediate triage; non-critical cases are generally attended to within 30–120 minutes. Lab results for basic tests (e.g., CBC) are usually available same-day; specialized tests may take 1–3 days.`,
+      },
     ];
   }
 
   if (entityType === "category" && cat) {
     return [
-      { question: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`, answer: `Browse the UAE Open Healthcare Directory ${cat.name.toLowerCase()} listings to compare providers across all UAE cities. Sort by rating, read Google reviews, and check accepted insurance plans.` },
-      { question: `Are ${cat.name.toLowerCase()} services covered by insurance in the UAE?`, answer: `Most major insurance plans in the UAE cover ${cat.name.toLowerCase()} services. Coverage varies by plan. Check with your insurance provider and verify at individual clinics.` },
+      {
+        question: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`,
+        answer: `Browse the UAE Open Healthcare Directory ${cat.name.toLowerCase()} listings to compare providers across all UAE cities. Sort by Google rating, read patient reviews, and check accepted insurance plans. All listings are sourced from official DHA, DOH, and MOHAP registers.`,
+      },
+      {
+        question: `Are ${cat.name.toLowerCase()} services covered by insurance in the UAE?`,
+        answer: `Most major insurance plans in the UAE — including Daman, Thiqa, AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz — cover core ${cat.name.toLowerCase()} services. Coverage scope and co-payment levels vary by plan tier. Always confirm with your insurer and the provider before booking. Dubai employers are legally required to provide the DHA Essential Benefits Plan as a minimum; Abu Dhabi mandates DOH-compliant coverage.`,
+      },
+      {
+        question: `How much do ${cat.name.toLowerCase()} services cost in the UAE?`,
+        answer: `Consultation fees for ${cat.name.toLowerCase()} in the UAE typically range from AED 300–800 for a specialist visit, depending on the city and clinic tier. Dubai generally has the highest fees (AED 150–300 for a GP; AED 300–800+ for specialists); Abu Dhabi is comparable; the Northern Emirates tend to be more affordable (AED 80–200 for a GP). Diagnostic add-ons such as blood tests (AED 50–150 for a CBC) or imaging (AED 100–300 for X-ray; AED 1,000–3,000 for MRI) are charged separately.`,
+      },
+      {
+        question: `Which insurance plans are most widely accepted at ${cat.name.toLowerCase()} in the UAE?`,
+        answer: `The most widely accepted insurance plans at ${cat.name.toLowerCase()} across the UAE are Daman (mandatory in Abu Dhabi for expats), Thiqa (for UAE nationals in Abu Dhabi), the DHA Essential Benefits Plan (mandatory in Dubai), AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz. Use the insurance filter on each provider listing page on the UAE Open Healthcare Directory to confirm acceptance before your visit.`,
+      },
     ];
   }
 

@@ -19,17 +19,38 @@ async function getDbArticles(): Promise<JournalArticle[]> {
     const { desc, eq } = await import("drizzle-orm");
 
     const rows = await db
-      .select()
+      .select({
+        id: journalArticles.id,
+        slug: journalArticles.slug,
+        title: journalArticles.title,
+        excerpt: journalArticles.excerpt,
+        category: journalArticles.category,
+        tags: journalArticles.tags,
+        source: journalArticles.source,
+        sourceUrl: journalArticles.sourceUrl,
+        sourceName: journalArticles.sourceName,
+        authorName: journalArticles.authorName,
+        authorRole: journalArticles.authorRole,
+        imageUrl: journalArticles.imageUrl,
+        imageCaption: journalArticles.imageCaption,
+        isFeatured: journalArticles.isFeatured,
+        isBreaking: journalArticles.isBreaking,
+        readTimeMinutes: journalArticles.readTimeMinutes,
+        publishedAt: journalArticles.publishedAt,
+        updatedAt: journalArticles.updatedAt,
+        status: journalArticles.status,
+      })
       .from(journalArticles)
       .where(eq(journalArticles.status, "published"))
-      .orderBy(desc(journalArticles.publishedAt));
+      .orderBy(desc(journalArticles.publishedAt))
+      .limit(30);
 
     _dbArticles = rows.map((row) => ({
       id: row.id,
       slug: row.slug,
       title: row.title,
       excerpt: row.excerpt,
-      body: row.body,
+      body: "", // Body loaded separately on article detail pages
       category: row.category as JournalCategory,
       tags: (row.tags || []) as string[],
       source: row.source as JournalArticle["source"],
@@ -48,9 +69,10 @@ async function getDbArticles(): Promise<JournalArticle[]> {
       updatedAt: row.updatedAt?.toISOString(),
     }));
 
+    console.log(`[Journal] Loaded ${_dbArticles.length} articles from DB`);
     return _dbArticles;
-  } catch {
-    console.log("[Journal] DB unavailable, no articles loaded");
+  } catch (e: unknown) {
+    console.error("[Journal] DB error:", e instanceof Error ? e.message : e);
     _dbArticles = [];
     return _dbArticles;
   }
@@ -97,6 +119,24 @@ export function getArticles(opts?: {
 
 export function getArticleBySlug(slug: string): JournalArticle | undefined {
   return getAllArticlesSync().find((a) => a.slug === slug);
+}
+
+/** Fetch the full article body from DB for a single article (detail page only) */
+export async function getArticleBodyBySlug(slug: string): Promise<string> {
+  if (!process.env.DATABASE_URL) return "";
+  try {
+    const { db } = await import("@/lib/db");
+    const { journalArticles } = await import("@/lib/db/schema");
+    const { eq } = await import("drizzle-orm");
+    const rows = await db
+      .select({ body: journalArticles.body })
+      .from(journalArticles)
+      .where(eq(journalArticles.slug, slug))
+      .limit(1);
+    return rows[0]?.body || "";
+  } catch {
+    return "";
+  }
 }
 
 export function getFeaturedArticles(limit = 3): JournalArticle[] {

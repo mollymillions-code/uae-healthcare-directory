@@ -265,9 +265,11 @@ export async function runContentPipeline(): Promise<PipelineResult> {
 
   if (process.env.DATABASE_URL) {
     try {
-      const { neon } = await import("@neondatabase/serverless");
-      const sql = neon(process.env.DATABASE_URL);
-      const dbRows = await sql`SELECT title, source_url FROM journal_articles`;
+      const pg = await import("pg");
+      const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+      const result = await pool.query("SELECT title, source_url FROM journal_articles");
+      await pool.end();
+      const dbRows = result.rows;
       for (const row of dbRows) {
         if (row.title) existingTitles.add((row.title as string).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 50));
         if (row.source_url) existingSourceUrls.add(row.source_url as string);

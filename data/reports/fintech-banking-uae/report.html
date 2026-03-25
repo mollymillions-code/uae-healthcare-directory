@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fintech &amp; Banking in the UAE — Zavis Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080B12;
+  --t1:#F0ECE4;--t2:#C0BFD0;--t3:#8E8EA6;
+  --green:#00A86B;--green-d:#006828;--green-l:#4AEAB0;
+  --teal:#2EC4B6;--gold:#E8B84B;--blue:#5B8DEF;--coral:#FF6B6B;
+  --card:rgba(255,255,255,0.025);
+  --border:rgba(255,255,255,0.07);
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Geist',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;background:var(--bg);color:var(--t1);font-family:var(--body);-webkit-font-smoothing:antialiased;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+
+/* ─── SLIDE SYSTEM ─── */
+.s{width:100vw;min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;display:flex}
+.s-pad{padding:clamp(24px,5vh,56px) clamp(24px,5vw,80px);width:100%;display:flex;flex-direction:column;position:relative;z-index:2}
+.s-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.s-bg::after{content:'';position:absolute;inset:0;z-index:1}
+
+/* Overlays */
+.ov-heavy .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,.6) 50%,rgba(8,11,18,.9) 100%)}
+.ov-left .s-bg::after{background:linear-gradient(90deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.4) 100%)}
+.ov-bottom .s-bg::after{background:linear-gradient(180deg,rgba(8,11,18,.3) 0%,rgba(8,11,18,.75) 50%,rgba(8,11,18,.97) 100%)}
+.ov-center .s-bg::after{background:radial-gradient(ellipse at center,rgba(8,11,18,.55) 0%,rgba(8,11,18,.92) 70%)}
+.ov-dark .s-bg::after{background:rgba(8,11,18,.78)}
+.ov-right .s-bg::after{background:linear-gradient(270deg,rgba(8,11,18,.93) 0%,rgba(8,11,18,.7) 50%,rgba(8,11,18,.35) 100%)}
+
+/* ─── PROGRESS & NAV ─── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green-d),var(--green),var(--teal));z-index:300;transition:width .2s;pointer-events:none}
+.counter{position:fixed;bottom:3vh;right:3vw;z-index:200;font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;pointer-events:none}
+.dots{position:fixed;right:1.2vw;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.on{background:var(--green);transform:scale(1.5);box-shadow:0 0 8px rgba(0,168,107,.4)}
+
+/* ─── TYPOGRAPHY ─── */
+.tag{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:12px}
+.tag::before{content:'';width:24px;height:1.5px;background:var(--green)}
+.mega{font-family:var(--display);font-weight:300;line-height:1;letter-spacing:-3px;color:var(--t1)}
+.h1{font-family:var(--display);font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.05;letter-spacing:-2px}
+.h2{font-family:var(--display);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1;letter-spacing:-1px}
+.h3{font-family:var(--display);font-size:clamp(18px,2vw,28px);font-weight:600;line-height:1.2}
+.body{font-size:clamp(16px,1.2vw,19px);color:var(--t2);line-height:1.75}
+.body-sm{font-size:clamp(14px,1vw,16px);color:var(--t2);line-height:1.7}
+.caption{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:1px}
+.accent{color:var(--green)}
+.mono{font-family:var(--mono)}
+
+/* ─── ANIMATIONS ─── */
+.rv{opacity:1;transform:none;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}.rv-d5{transition-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ─── DATA VIZ ─── */
+.bar-row{display:grid;grid-template-columns:clamp(80px,12vw,180px) 1fr clamp(50px,6vw,90px);align-items:center;gap:clamp(8px,1vw,16px)}
+.bar-lbl{font-size:clamp(15px,1.1vw,18px);font-weight:500;color:var(--t2);text-align:right}
+.bar-track{height:clamp(10px,1.2vw,18px);background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,1,.36,1);width:0}
+.bar-val{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:600}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(8px)}
+.stat-num{font-family:var(--mono);font-weight:700;line-height:1}
+.stat-label{font-size:clamp(11px,0.8vw,13px);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:6px}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(16px,1.8vw,28px);backdrop-filter:blur(8px);transition:border-color .3s}
+.info-card:hover{border-color:rgba(255,255,255,.12)}
+
+.callout{background:rgba(0,168,107,.06);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,24px)}
+
+/* ─── LAYOUTS ─── */
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,20px)}
+.stack{display:flex;flex-direction:column}
+.gap-xs{gap:6px}.gap-sm{gap:12px}.gap-md{gap:clamp(16px,2vw,24px)}.gap-lg{gap:clamp(24px,3vw,40px)}.gap-xl{gap:clamp(32px,4vw,56px)}
+.grow{flex:1}
+.max-w-md{max-width:600px}.max-w-lg{max-width:800px}
+.mt-auto{margin-top:auto}
+
+/* ─── SPECIAL: METRIC MEGA ─── */
+.metric-mega{font-family:var(--mono);font-size:clamp(56px,8vw,120px);font-weight:800;line-height:.85;letter-spacing:-3px}
+.metric-context{font-size:clamp(14px,1.2vw,18px);color:var(--t2);margin-top:8px}
+
+/* ─── SPECIAL: TIMELINE ─── */
+.tl-row{display:grid;grid-template-columns:80px 2px 1fr;gap:20px;align-items:start}
+.tl-yr{font-family:var(--mono);font-size:clamp(15px,1.1vw,18px);font-weight:700;color:var(--green);text-align:right;padding-top:2px}
+.tl-line{background:var(--border);min-height:60px;position:relative}
+.tl-line::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,168,107,.3)}
+
+/* ─── SPECIAL: GOVERNANCE HEXAGON ─── */
+.hex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1vw,16px);max-width:520px}
+.hex-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:clamp(12px,1.2vw,20px);text-align:center;transition:border-color .3s}
+.hex-item:hover{border-color:rgba(0,168,107,.3)}
+.hex-icon{font-size:clamp(20px,2vw,28px);margin-bottom:6px}
+.hex-label{font-family:var(--mono);font-size:clamp(9px,0.7vw,11px);font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--t2)}
+
+/* ─── SPECIAL: MARKET GROWTH CHART ─── */
+.chart-bars{display:flex;align-items:flex-end;gap:clamp(8px,1.5vw,20px);height:200px;padding-top:20px}
+.chart-col{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;transition:height 1.4s cubic-bezier(.22,1,.36,1);height:0}
+.chart-year{font-family:var(--mono);font-size:clamp(12px,0.8vw,13px);color:var(--t3);margin-top:8px}
+.chart-val{font-family:var(--mono);font-size:clamp(12px,0.8vw,13px);font-weight:600;margin-bottom:6px}
+
+/* ─── SPECIAL: ROADMAP STEPS ─── */
+.road-step{display:flex;align-items:flex-start;gap:clamp(12px,1.5vw,20px)}
+.road-num{font-family:var(--mono);font-size:clamp(28px,3vw,44px);font-weight:800;line-height:1;min-width:50px}
+.road-content{flex:1}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .split{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:70px 1fr 40px}
+  .s-pad{padding:20px}
+  .metric-mega{font-size:48px}
+  .hex-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-bars{height:150px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="ctr">01 / 14</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — HERO: Fintech title with animated counters
+     ════════════════════════════════════════════ -->
+<section class="s ov-bottom" id="s1">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-hero.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="grow"></div>
+    <div class="tag rv" style="justify-content:center;margin-bottom:24px">Zavis Report Series — October 2025</div>
+    <h1 class="h1 rv rv-d1" style="text-align:center;max-width:16em">
+      Fintech &amp; Banking in the UAE:<br><span class="accent">Automating Trust</span>
+    </h1>
+    <p class="body rv rv-d2" style="text-align:center;max-width:34em;margin-top:16px;color:var(--t2)">
+      How AI-powered solutions are transforming financial operations and customer experiences in the United Arab Emirates
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,48px);max-width:750px;width:100%">
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--green)" id="c1">$0B</div>
+        <div class="stat-label">Market by 2029</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)" id="c2">0%</div>
+        <div class="stat-label">CAGR Growth</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)" id="c3">0%</div>
+        <div class="stat-label">Digital Adoption</div>
+      </div>
+      <div class="stat-card" style="text-align:center">
+        <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--blue)" id="c4">$0M</div>
+        <div class="stat-label">FinTech Funding</div>
+      </div>
+    </div>
+    <div class="mt-auto" style="padding-top:24px">
+      <div class="caption" style="animation:pulse 2s infinite;text-align:center">SCROLL TO EXPLORE ↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — MARKET SIZE: Big number + growth chart
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s2">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-vault.png)"></div>
+  <div class="s-pad" style="justify-content:center;align-items:flex-start">
+    <div class="tag rv">Market Landscape</div>
+    <div class="split rv rv-d1" style="margin-top:24px">
+      <div class="stack gap-md">
+        <div class="metric-mega" style="color:var(--green)">$5.71<span style="font-size:.4em;color:var(--t2);font-weight:400">B</span></div>
+        <div class="h3" style="color:var(--t1)">UAE FinTech Market Projection by 2029</div>
+        <p class="body" style="max-width:28em">Growing at a 13.8% CAGR from $3.16 billion in 2024, the UAE's FinTech market is among the fastest-expanding in the MENA region. FinTech startups attracted $265 million in funding in 2024 alone, representing one-third of all national startup investments.</p>
+        <div class="g2" style="margin-top:8px">
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">$265M</div><div class="stat-label">2024 FinTech Funding</div></div>
+          <div class="stat-card"><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">33%</div><div class="stat-label">Of National Startup $</div></div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:8px">UAE FINTECH MARKET GROWTH PROJECTION</div>
+        <div class="chart-bars" id="growth-chart">
+          <div class="chart-col"><div class="chart-val" style="color:var(--green)">$3.16B</div><div class="chart-bar" data-h="55%" style="background:linear-gradient(180deg,var(--green),var(--green-d))"></div><div class="chart-year">2024</div></div>
+          <div class="chart-col"><div class="chart-val" style="color:var(--teal)">$3.60B</div><div class="chart-bar" data-h="63%" style="background:linear-gradient(180deg,var(--teal),rgba(46,196,182,.5))"></div><div class="chart-year">2025</div></div>
+          <div class="chart-col"><div class="chart-val" style="color:var(--teal)">$4.10B</div><div class="chart-bar" data-h="72%" style="background:linear-gradient(180deg,var(--teal),rgba(46,196,182,.5))"></div><div class="chart-year">2026</div></div>
+          <div class="chart-col"><div class="chart-val" style="color:var(--blue)">$4.66B</div><div class="chart-bar" data-h="82%" style="background:linear-gradient(180deg,var(--blue),rgba(91,141,239,.5))"></div><div class="chart-year">2027</div></div>
+          <div class="chart-col"><div class="chart-val" style="color:var(--blue)">$5.15B</div><div class="chart-bar" data-h="90%" style="background:linear-gradient(180deg,var(--blue),rgba(91,141,239,.5))"></div><div class="chart-year">2028</div></div>
+          <div class="chart-col"><div class="chart-val" style="color:var(--gold)">$5.71B</div><div class="chart-bar" data-h="100%" style="background:linear-gradient(180deg,var(--gold),rgba(232,184,75,.5))"></div><div class="chart-year">2029</div></div>
+        </div>
+        <div class="callout" style="margin-top:12px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">KEY INSIGHT</div>
+          <p class="body-sm" style="font-size:14px">89% of UAE consumers now use digital-first banking services, significantly above the global average</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — DIGITAL ADOPTION: 89% center stat
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s3">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-mobile.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Consumer Adoption</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--teal);margin-top:24px">89%</div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:16em;text-align:center">of UAE consumers now use digital-first bank accounts</div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:30em;margin-top:16px">
+      The UAE leads the region in digital banking adoption, driven by mobile-first consumers, progressive regulation, and a thriving ecosystem of over 8,000 FinTech industry leaders gathering annually at the Dubai FinTech Summit.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(24px,4vh,40px);max-width:700px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--teal)">8,000+</div>
+        <div class="stat-label">FinTech Summit Leaders</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--green)">100+</div>
+        <div class="stat-label">Countries Represented</div>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(91,141,239,.15)">
+        <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--blue)">13.8%</div>
+        <div class="stat-label">Market CAGR</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — REGULATORY FRAMEWORK: Ecosystem enablers
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s4">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-blockchain.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Regulatory Framework</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,32px)">Progressive Regulation <span class="accent">Enabling Innovation</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">REGULATORY INFRASTRUCTURE</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Open Finance Regulation</div>
+          <p class="body-sm">Enables secure data sharing between financial institutions through standardized APIs</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Payment Token Services</div>
+          <p class="body-sm">Governance framework for cryptocurrencies and digital assets under central bank oversight</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">Regulatory Sandbox</div>
+          <p class="body-sm">Allows FinTech startups to test innovations under regulatory supervision before full launch</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--blue)">
+          <div class="h3" style="font-size:clamp(15px,1.3vw,20px)">AML/CFT Enforcement</div>
+          <p class="body-sm">Over AED 339 million in enforcement actions in 2024, ensuring market integrity</p>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--gold);margin-bottom:4px">ECOSYSTEM ENABLERS</div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--teal);margin-bottom:6px">DFSA & ADGM</div>
+          <p class="body-sm">Dubai Financial Services Authority and Abu Dhabi Global Market provide innovation-friendly regulatory frameworks attracting global FinTech firms</p>
+        </div>
+        <div class="info-card">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">NATIONAL eKYC PLATFORM</div>
+          <p class="body-sm">Blockchain-enabled corporate eKYC consortium initiated by Dubai Economy and DIFC for secure sharing of verified KYC data between licensing authorities and banks</p>
+        </div>
+        <div class="stat-card" style="text-align:center;margin-top:4px">
+          <div class="stat-num" style="font-size:clamp(28px,3vw,40px);color:var(--gold)">AED 339M+</div>
+          <div class="stat-label">AML Enforcement Actions 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — AI GOVERNANCE: CBUAE 6 principles hexagon
+     ════════════════════════════════════════════ -->
+<section class="s ov-dark" id="s5">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-vault.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Central Bank AI Governance</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">CBUAE's Six Pillars of <span class="accent">AI Governance</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-md" style="max-width:480px">
+        <p class="body">The Central Bank of the UAE issued comprehensive guidelines for Big Data Analytics and AI in financial institutions (November 2021), establishing a framework where Governing Bodies and Senior Management remain accountable for all AI decisions and outcomes.</p>
+        <div class="hex-grid">
+          <div class="hex-item"><div class="hex-icon">&#9881;</div><div class="hex-label">Governance</div></div>
+          <div class="hex-item"><div class="hex-icon">&#9878;</div><div class="hex-label">Accountability</div></div>
+          <div class="hex-item"><div class="hex-icon">&#9883;</div><div class="hex-label">Design</div></div>
+          <div class="hex-item"><div class="hex-icon">&#9680;</div><div class="hex-label">Monitoring</div></div>
+          <div class="hex-item"><div class="hex-icon">&#10070;</div><div class="hex-label">Ethics</div></div>
+          <div class="hex-item"><div class="hex-icon">&#9733;</div><div class="hex-label">Customer<br>Protection</div></div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">TRANSPARENCY</div>
+          <p class="body-sm">Models must be reliable, transparent, and explainable proportionate to application materiality. Mandatory framework for reviewing algorithms prior to deployment.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div class="caption" style="color:var(--teal);margin-bottom:4px">MONITORING</div>
+          <p class="body-sm">Periodic post-deployment verification required to ensure models behave as designed. Continuous review of data quality and model drift.</p>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold);margin-bottom:4px">ETHICS & CUSTOMER PROTECTION</div>
+          <p class="body-sm">All AI applications must produce objective, consistent, ethical, and fair outcomes. Mandatory plain language disclosure to customers.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — CONVERSATIONAL BANKING: AI assistants revolution
+     ════════════════════════════════════════════ -->
+<section class="s ov-left" id="s6">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-mobile.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Conversational Banking</div>
+        <div class="h2">The AI Assistant <span class="accent">Revolution</span></div>
+        <p class="body">From basic FAQ chatbots to sophisticated service layers that route intent, fetch data, and complete end-to-end tasks. Modern AI assistants now open accounts, dispute charges, and set limits within seconds.</p>
+        <div class="stack gap-sm">
+          <div class="bar-row"><div class="bar-lbl">Containment Rate</div><div class="bar-track"><div class="bar-fill" data-w="60%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">40-60%</div></div>
+          <div class="bar-row"><div class="bar-lbl">CSAT Improvement</div><div class="bar-track"><div class="bar-fill" data-w="45%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">+18%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Cost Savings</div><div class="bar-track"><div class="bar-fill" data-w="75%" style="background:linear-gradient(90deg,var(--gold),var(--green))"></div></div><div class="bar-val" style="color:var(--gold)">60%</div></div>
+          <div class="bar-row"><div class="bar-lbl">Resolution Speed</div><div class="bar-track"><div class="bar-fill" data-w="50%" style="background:linear-gradient(90deg,var(--blue),var(--teal))"></div></div><div class="bar-val" style="color:var(--blue)">-25%</div></div>
+        </div>
+        <div class="callout" style="margin-top:8px">
+          <p class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Multilingual NLP:</strong> Seamless switching between Arabic and English, crucial for UAE's diverse population. 24/7 availability addressing the demand for always-on financial services.</p>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — KYC, FRAUD & COMPLIANCE: Triple threat
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s7">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-blockchain.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">KYC, Fraud Detection &amp; Compliance</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">AI-Powered <span class="accent">Trust Infrastructure</span></div>
+    <div class="g3 rv rv-d2" style="width:100%;align-items:stretch">
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--green)">
+        <div class="caption" style="color:var(--green)">DOCUMENT INTELLIGENCE</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">85% Less Manual Error</div>
+        <p class="body-sm">OCR/NLP extracts and validates data from Emirates IDs, passports, trade licenses. Machine learning adapts to evolving document formats.</p>
+        <div class="stat-card" style="text-align:center;padding:12px;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">85%</div>
+          <div class="stat-label">Error Reduction</div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--teal)">
+        <div class="caption" style="color:var(--teal)">RISK SCREENING</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">60% Fewer False Positives</div>
+        <p class="body-sm">Always-on screening for PEPs, sanctions, and adverse media with dynamic risk scoring. Real-time KYC checks triggered by anomaly detection.</p>
+        <div class="stat-card" style="text-align:center;padding:12px;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--teal)">60%</div>
+          <div class="stat-label">False Positive Reduction</div>
+        </div>
+      </div>
+      <div class="info-card stack gap-sm" style="border-top:3px solid var(--gold)">
+        <div class="caption" style="color:var(--gold)">eKYC INNOVATION</div>
+        <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Blockchain Verified</div>
+        <p class="body-sm">National blockchain-enabled corporate eKYC platform by Dubai Economy and DIFC. AI agents transform policy into executable, auditable workflows.</p>
+        <div class="stat-card" style="text-align:center;padding:12px;margin-top:auto">
+          <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">100%</div>
+          <div class="stat-label">Audit Trail Coverage</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — PREDICTIVE LENDING: Credit scoring + inclusion
+     ════════════════════════════════════════════ -->
+<section class="s ov-right" id="s8">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div></div>
+      <div class="stack gap-md" style="max-width:520px">
+        <div class="tag">Predictive Lending</div>
+        <div class="h2">From Days to <span class="accent">Seconds</span></div>
+        <p class="body">Advanced ML models blend traditional bureau data with alternative signals from transaction histories and cash-flow patterns. Instant credit decisions through automated underwriting eliminate days-long approval cycles.</p>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--green)">90%</div>
+            <div class="stat-label">Faster Decisions</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,32px);color:var(--gold)">30%+</div>
+            <div class="stat-label">BNPL Growth/yr</div>
+          </div>
+        </div>
+        <div class="callout">
+          <div class="caption" style="color:var(--green);margin-bottom:6px">FINANCIAL INCLUSION</div>
+          <p class="body-sm">Specialized scoring for "thin-file" consumers and gig economy workers. SME-focused models incorporating business cash flow cycles. Risk-based gradual credit building pathways expanding access while minimizing defaults.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — GEN AI CUSTOMER SUPPORT: Impact metrics
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s9">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-mobile.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">Generative AI in Banking</div>
+    <div class="h2 rv rv-d1" style="text-align:center;margin-top:16px;max-width:18em">Transforming <span class="accent">Customer Experience</span></div>
+    <p class="body rv rv-d2" style="text-align:center;max-width:30em;margin-top:12px">
+      Sophisticated NLP engines processing multiple Arabic dialects and English, delivering context-aware responses with real-time personalization across all digital channels.
+    </p>
+    <div class="g4 rv rv-d3" style="margin-top:clamp(24px,4vh,40px);max-width:800px;width:100%">
+      <div class="stat-card" style="text-align:center;border-color:rgba(0,168,107,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--green)">60%</div>
+        <div class="stat-label">Cost Savings</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">In customer service operations</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(46,196,182,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--teal)">25%</div>
+        <div class="stat-label">Faster Resolution</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">Improved first-contact rates</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(232,184,75,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--gold)">+18%</div>
+        <div class="stat-label">CSAT Scores</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">Without expanding human teams</p>
+      </div>
+      <div class="stat-card" style="text-align:center;border-color:rgba(91,141,239,.2)">
+        <div class="stat-num" style="font-size:clamp(32px,4vw,48px);color:var(--blue)">24/7</div>
+        <div class="stat-label">Availability</div>
+        <p class="body-sm" style="font-size:12px;margin-top:6px">Consistent quality all channels</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — CASE STUDIES: Mashreq Neo & Liv Bank
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s10">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-hero.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Case Studies</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">UAE's Digital Banking <span class="accent">Pioneers</span></div>
+    <div class="split rv rv-d2">
+      <!-- Mashreq Neo -->
+      <div class="info-card stack gap-md" style="border-top:3px solid var(--green)">
+        <div>
+          <div class="h3">Mashreq Neo</div>
+          <div class="caption" style="color:var(--green);margin-top:4px">FAST MOVER — 2025 BANKING AI QUADRANT</div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center;padding:12px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">500K+</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:12px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">100+</div>
+            <div class="stat-label">AI Transactions</div>
+          </div>
+        </div>
+        <p class="body-sm">BankAssist Conversational AI with 100+ banking transactions via voice or text. ML for straight-through processing and hyper-personalized corporate journeys.</p>
+        <div class="stat-card" style="padding:10px;text-align:center;background:rgba(0,168,107,.08);border-color:rgba(0,168,107,.15)">
+          <div class="stat-num" style="font-size:clamp(18px,1.5vw,24px);color:var(--green)">+16%</div>
+          <div class="stat-label">Debit Card Activation via Omnichannel</div>
+        </div>
+      </div>
+      <!-- Liv Bank -->
+      <div class="info-card stack gap-md" style="border-top:3px solid var(--gold)">
+        <div>
+          <div class="h3">Liv Bank <span style="font-weight:300;font-size:.7em;color:var(--t2)">by Emirates NBD</span></div>
+          <div class="caption" style="color:var(--gold);margin-top:4px">DIGITAL BANK OF THE YEAR — MENA 2024</div>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center;padding:12px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">600K+</div>
+            <div class="stat-label">Digital Customers</div>
+          </div>
+          <div class="stat-card" style="text-align:center;padding:12px">
+            <div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--blue)">1st</div>
+            <div class="stat-label">In-App IPO Subs</div>
+          </div>
+        </div>
+        <p class="body-sm">First lifestyle-driven digital-only bank in the UAE. Spatial banking with Apple Vision Pro at Dubai FinTech Summit 2024. Liv Lite app for children (8-18) with financial education.</p>
+        <div class="stat-card" style="padding:10px;text-align:center;background:rgba(232,184,75,.08);border-color:rgba(232,184,75,.15)">
+          <div class="stat-num" style="font-size:clamp(11px,0.85vw,13px);color:var(--gold);letter-spacing:1px">VIRTUAL BANK OF THE YEAR UAE 2024</div>
+          <div class="stat-label">ME&A Retail Banking Innovation Awards</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — SME GAP: $250B problem + automation opp
+     ════════════════════════════════════════════ -->
+<section class="s ov-center" id="s11">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-vault.png)"></div>
+  <div class="s-pad flex-center">
+    <div class="tag rv" style="justify-content:center">SME FinTech Gap</div>
+    <div class="metric-mega rv rv-d1" style="color:var(--gold);margin-top:24px">$250<span style="font-size:.45em;color:var(--t2);font-weight:400">B</span></div>
+    <div class="h3 rv rv-d2" style="margin-top:12px;max-width:18em;text-align:center">GCC-wide SME financing gap leaving thousands of growth-ready businesses <span class="accent">undercapitalized</span></div>
+    <p class="body rv rv-d3" style="text-align:center;max-width:34em;margin-top:16px">
+      Only 50% of UAE SMEs have adequate access to banking services despite representing 94% of all companies. End-to-end automation can bridge this gap.
+    </p>
+    <div class="g3 rv rv-d4" style="margin-top:clamp(20px,3vh,32px);max-width:800px;width:100%">
+      <div class="info-card stack gap-sm" style="text-align:left">
+        <div class="caption" style="color:var(--green)">AUTOMATION IMPACT</div>
+        <div class="h3" style="font-size:clamp(14px,1.1vw,18px)">85% Faster Underwriting</div>
+        <p class="body-sm" style="font-size:14px">End-to-end loan processing automation reducing time and 60% lower operational costs</p>
+      </div>
+      <div class="info-card stack gap-sm" style="text-align:left">
+        <div class="caption" style="color:var(--gold)">DIGITAL LENDING</div>
+        <div class="h3" style="font-size:clamp(14px,1.1vw,18px)">30%+ BNPL Growth</div>
+        <p class="body-sm" style="font-size:14px">Buy-now-pay-later and merchant cash advance growing annually for smaller merchants</p>
+      </div>
+      <div class="info-card stack gap-sm" style="text-align:left">
+        <div class="caption" style="color:var(--teal)">SMART FINANCE</div>
+        <div class="h3" style="font-size:clamp(14px,1.1vw,18px)">AI Cash Flow Forecasting</div>
+        <p class="body-sm" style="font-size:14px">Smart AR management and policy-driven banking controls for automated spend rules</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — ROI OF AI: Operations impact bars
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s12">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-blockchain.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">ROI of AI in Operations</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px">Quantifiable Returns <span class="accent">Across the Stack</span></div>
+    <p class="body rv rv-d2" style="max-width:36em;margin-top:8px;margin-bottom:clamp(16px,3vh,32px)">AI adoption in UAE banking is delivering measurable returns across cost savings, efficiency, and strategic advantages.</p>
+    <div class="split rv rv-d3">
+      <div class="stack gap-md">
+        <div class="stat-card" style="text-align:center;padding:clamp(20px,3vw,36px)">
+          <div class="stat-num" style="font-size:clamp(40px,5vw,64px);color:var(--green)">300%</div>
+          <div class="stat-label" style="font-size:clamp(12px,0.8vw,12px)">Transaction Monitoring Capacity Increase</div>
+          <p class="body-sm" style="margin-top:8px;text-align:center;font-size:12px">With the same staff resources</p>
+        </div>
+        <div class="g2">
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--gold)">95%</div>
+            <div class="stat-label">Fraud Detection Rate</div>
+          </div>
+          <div class="stat-card" style="text-align:center">
+            <div class="stat-num" style="font-size:clamp(24px,2.5vw,36px);color:var(--teal)">90%</div>
+            <div class="stat-label">Faster Credit Decisions</div>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="bar-row"><div class="bar-lbl">Support Costs</div><div class="bar-track"><div class="bar-fill" data-w="85%" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div><div class="bar-val" style="color:var(--green)">-60%</div></div>
+        <div class="bar-row"><div class="bar-lbl">KYC/Compliance</div><div class="bar-track"><div class="bar-fill" data-w="55%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div><div class="bar-val" style="color:var(--teal)">-30-40%</div></div>
+        <div class="bar-row"><div class="bar-lbl">False Positives</div><div class="bar-track"><div class="bar-fill" data-w="45%" style="background:linear-gradient(90deg,var(--gold),var(--green))"></div></div><div class="bar-val" style="color:var(--gold)">-25%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Onboarding Time</div><div class="bar-track"><div class="bar-fill" data-w="92%" style="background:linear-gradient(90deg,var(--blue),var(--teal))"></div></div><div class="bar-val" style="color:var(--blue)">Days→Min</div></div>
+        <div class="bar-row"><div class="bar-lbl">Monitoring x3</div><div class="bar-track"><div class="bar-fill" data-w="100%" style="background:linear-gradient(90deg,var(--green),var(--gold))"></div></div><div class="bar-val" style="color:var(--green)">+300%</div></div>
+        <div class="callout" style="margin-top:8px">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">STRATEGIC ADVANTAGE</div>
+          <p class="body-sm" style="font-size:14px">Enhanced customer acquisition through personalized offerings. Competitive differentiation through superior experience and innovation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — FUTURE + IMPLEMENTATION ROADMAP
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s13">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-mobile.png)"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="tag rv">Implementation Roadmap</div>
+    <div class="h2 rv rv-d1" style="margin-top:12px;margin-bottom:clamp(16px,3vh,24px)">From Discovery to <span class="accent">Optimization</span></div>
+    <div class="split rv rv-d2">
+      <div class="stack gap-lg">
+        <div class="road-step">
+          <div class="road-num" style="color:var(--green)">01</div>
+          <div class="road-content">
+            <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Discovery &amp; Assessment</div>
+            <p class="body-sm">Analyze current systems and identify key automation opportunities. Compliance-first approach with regulatory alignment.</p>
+          </div>
+        </div>
+        <div class="road-step">
+          <div class="road-num" style="color:var(--teal)">02</div>
+          <div class="road-content">
+            <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Pilot Deployment</div>
+            <p class="body-sm">Implement high-value AI agents in targeted workflows. Hybrid deployment with cloud and on-premises options.</p>
+          </div>
+        </div>
+        <div class="road-step">
+          <div class="road-num" style="color:var(--gold)">03</div>
+          <div class="road-content">
+            <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Scale &amp; Integration</div>
+            <p class="body-sm">Expand across departments with system integration. Knowledge transfer and team enablement throughout.</p>
+          </div>
+        </div>
+        <div class="road-step">
+          <div class="road-num" style="color:var(--blue)">04</div>
+          <div class="road-content">
+            <div class="h3" style="font-size:clamp(16px,1.3vw,22px)">Optimization</div>
+            <p class="body-sm">Refine models with continuous learning. Continuous governance framework with clear accountability.</p>
+          </div>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">SUCCESS METRICS</div>
+        <div class="info-card" style="border-left:3px solid var(--green)">
+          <div class="caption" style="color:var(--green);margin-bottom:4px">OPERATIONAL EFFICIENCY</div>
+          <div class="g2">
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">40-60%</div><div class="stat-label">Less Manual Processing</div></div>
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--green)">90%+</div><div class="stat-label">Straight-through Rate</div></div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--gold)">
+          <div class="caption" style="color:var(--gold);margin-bottom:4px">RISK MANAGEMENT</div>
+          <div class="g2">
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">-30%</div><div class="stat-label">False Positives</div></div>
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--gold)">85%</div><div class="stat-label">Fraud Detection Acc.</div></div>
+          </div>
+        </div>
+        <div class="info-card" style="border-left:3px solid var(--teal)">
+          <div class="caption" style="color:var(--teal);margin-bottom:4px">CUSTOMER EXPERIENCE</div>
+          <div class="g2">
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">75%</div><div class="stat-label">Faster Onboarding</div></div>
+            <div><div class="stat-num" style="font-size:clamp(20px,2vw,28px);color:var(--teal)">+25%</div><div class="stat-label">CSAT Improvement</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — ZAVIS ABOUT + CTA
+     ════════════════════════════════════════════ -->
+<section class="s ov-heavy" id="s14">
+  <div class="s-bg" style="background-image:url(/reports/fintech-banking-uae/fin-hero.png);opacity:0.3"></div>
+  <div class="s-pad" style="justify-content:center">
+    <div class="split rv">
+      <div class="stack gap-md">
+        <div style="font-family:var(--display);font-size:clamp(24px,2.5vw,36px);font-weight:700;letter-spacing:1px">ZAVIS <span style="color:var(--t3);font-weight:300">FINANCIAL AI</span></div>
+        <p class="body" style="max-width:28em">Zavis provides an end-to-end agentic automation platform built specifically for financial services. Secure, explainable AI agents integrate with existing banking systems through a unified orchestration layer that transforms predictions into completed tasks.</p>
+        <div class="g3" style="margin-top:8px">
+          <div class="info-card" style="padding:12px;text-align:center">
+            <div class="caption" style="color:var(--green);margin-bottom:4px">KYC AGENT</div>
+            <p class="body-sm" style="font-size:12px">Automates document processing, verification &amp; risk assessment</p>
+          </div>
+          <div class="info-card" style="padding:12px;text-align:center">
+            <div class="caption" style="color:var(--teal);margin-bottom:4px">MONITORING AGENT</div>
+            <p class="body-sm" style="font-size:12px">Real-time fraud detection &amp; financial compliance</p>
+          </div>
+          <div class="info-card" style="padding:12px;text-align:center">
+            <div class="caption" style="color:var(--gold);margin-bottom:4px">SERVICE AGENT</div>
+            <p class="body-sm" style="font-size:12px">Context-aware support with human handoff</p>
+          </div>
+        </div>
+        <p class="body-sm" style="max-width:28em;margin-top:8px">Built to UAE Central Bank AI governance standards. Immutable logs, approval gates, and model whitelists. Human-in-the-loop checkpoints with comprehensive explainability.</p>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+          <a href="https://www.zavis.ai/book-a-demo" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:10px 24px;border-radius:100px;font-family:var(--display);font-size:14px;font-weight:600;text-decoration:none;letter-spacing:.5px">Book a Demo</a>
+          <a href="https://www.zavis.ai" target="_blank" style="color:var(--green);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-decoration:none;display:inline-flex;align-items:center;padding:10px 0">zavis.ai →</a>
+        </div>
+      </div>
+      <div class="stack gap-sm">
+        <div class="caption" style="color:var(--green);margin-bottom:4px">REPORT SUMMARY</div>
+        <div class="info-card" style="border-left:2px solid var(--green);padding:12px 16px">
+          <div class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Thriving Ecosystem:</strong> $3.16B → $5.71B by 2029, 89% digital adoption</div>
+        </div>
+        <div class="info-card" style="border-left:2px solid var(--teal);padding:12px 16px">
+          <div class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">AI Governance:</strong> CBUAE's 6-pillar framework sets global standards</div>
+        </div>
+        <div class="info-card" style="border-left:2px solid var(--gold);padding:12px 16px">
+          <div class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Compliance Automation:</strong> 60% cost reduction in KYC/AML processes</div>
+        </div>
+        <div class="info-card" style="border-left:2px solid var(--blue);padding:12px 16px">
+          <div class="body-sm" style="font-size:14px"><strong style="color:var(--t1)">Financial Inclusion:</strong> Addressing $250B SME financing gap</div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="caption">Published October 2025</div>
+          <div class="caption" style="margin-top:4px">contact@zavis.ai &middot; +971 800 ZAVIS</div>
+          <div class="caption" style="margin-top:4px">research.zavis.ai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const S=document.querySelectorAll('.s'),N=S.length;
+const prog=document.getElementById('prog'),ctr=document.getElementById('ctr'),dotsC=document.getElementById('dots');
+for(let i=0;i<N;i++){const b=document.createElement('button');b.className='dot';b.onclick=()=>S[i].scrollIntoView({behavior:'smooth'});dotsC.appendChild(b)}
+const dots=dotsC.querySelectorAll('.dot');
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=[...S].indexOf(e.target);
+      ctr.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+      prog.style.width=((i+1)/N*100)+'%';
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      e.target.querySelectorAll('.rv').forEach(r=>r.classList.add('vis'));
+      e.target.querySelectorAll('[data-w]').forEach((f,j)=>{setTimeout(()=>{f.style.width=f.dataset.w},j*80)});
+      e.target.querySelectorAll('[data-h]').forEach((f,j)=>{setTimeout(()=>{f.style.height=f.dataset.h},j*100)});
+    }
+  });
+},{threshold:0.45});
+S.forEach(s=>obs.observe(s));
+
+// Hero counters
+function aN(el,to,d,suffix,prefix){const t=performance.now();(function f(n){const r=Math.min((n-t)/d,1),v=1-Math.pow(1-r,3);el.textContent=(prefix||'')+((v*to).toFixed(to%1?1:0))+(suffix||'');if(r<1)requestAnimationFrame(f)})(t)}
+const hObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){aN(document.getElementById('c1'),5.71,1800,'B','$');aN(document.getElementById('c2'),13.8,1500,'%','');aN(document.getElementById('c3'),89,1200,'%','');aN(document.getElementById('c4'),265,1400,'M','$');hObs.disconnect()}})},{threshold:0.5});
+hObs.observe(document.getElementById('s1'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c<N-1)S[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'){e.preventDefault();const c=[...S].findIndex(s=>s.getBoundingClientRect().top>=-100);if(c>0)S[c-1].scrollIntoView({behavior:'smooth'})}
+});
+</script>
+</body>
+</html>

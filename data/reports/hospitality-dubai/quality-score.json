@@ -1,0 +1,424 @@
+{
+  "report": "hospitality-dubai",
+  "timestamp": "2026-03-22T10:26:43.127Z",
+  "grade": "A",
+  "averageScore": 99,
+  "threshold": 70,
+  "passed": true,
+  "slideCount": 14,
+  "failedCount": 0,
+  "dimensionAverages": {
+    "typography": 100,
+    "contrast": 99,
+    "visibility": 99,
+    "overlay": 100,
+    "contentDensity": 99,
+    "visualHierarchy": 100,
+    "whitespace": 100,
+    "readability": 94
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "title": "Zavis Research — October 2025",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 92,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 72
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 13,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30"
+      ]
+    },
+    {
+      "slide": 2,
+      "title": "Executive Summary",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 5,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 3,
+      "title": "Dubai Tourism Market",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 11,
+        "max": 120
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 14,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 4,
+      "title": "AI Adoption Drivers",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 16,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 5,
+      "title": "AI Concierge",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 13,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 16,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 6,
+      "title": "Revenue Intelligence",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 52
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 18,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 7,
+      "title": "Sentiment Analysis",
+      "score": 96,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 87,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 70
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 23,
+      "criticalIssues": [],
+      "warnings": [
+        "opacity: 0.30",
+        "opacity: 0.30",
+        "opacity: 0.30",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 8,
+      "title": "Case Study",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 80
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.2,
+        "max": 16.7
+      },
+      "textElementCount": 16,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.00x (need ≥1.3x)",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 9,
+      "title": "Case Study",
+      "score": 99,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 90
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 15,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 10,
+      "title": "Booking Intelligence",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 85,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 90
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 28,
+      "criticalIssues": [],
+      "warnings": [
+        "28 text elements — slide is overcrowded",
+        "Line height 1.00x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 11,
+      "title": "Operational AI",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.4,
+        "max": 16.7
+      },
+      "textElementCount": 22,
+      "criticalIssues": [],
+      "warnings": []
+    },
+    {
+      "slide": 12,
+      "title": "Adoption Gap",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 80
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 19,
+      "criticalIssues": [],
+      "warnings": [
+        "Line height 1.20x (need ≥1.3x)",
+        "Line height 1.20x (need ≥1.3x)"
+      ]
+    },
+    {
+      "slide": 13,
+      "title": "ROI & Impact",
+      "score": 100,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 100,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 95,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 48
+      },
+      "contrastRange": {
+        "min": 6.1,
+        "max": 16.7
+      },
+      "textElementCount": 26,
+      "criticalIssues": [],
+      "warnings": [
+        "26 text elements — slide is overcrowded"
+      ]
+    },
+    {
+      "slide": 14,
+      "title": "(untitled)",
+      "score": 98,
+      "passed": true,
+      "dimensions": {
+        "typography": 100,
+        "contrast": 89,
+        "visibility": 100,
+        "overlay": 100,
+        "contentDensity": 100,
+        "visualHierarchy": 100,
+        "whitespace": 100,
+        "readability": 100
+      },
+      "fontSizeRange": {
+        "min": 12,
+        "max": 36
+      },
+      "contrastRange": {
+        "min": 3.1,
+        "max": 16.7
+      },
+      "textElementCount": 9,
+      "criticalIssues": [],
+      "warnings": [
+        "3.1:1 ratio (need 4.5:1)"
+      ]
+    }
+  ]
+}

@@ -2,12 +2,25 @@
  * Clean up DB: remove duplicates and fix Google logo images.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
+
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
 
   // 1. Find and remove duplicate articles (same source story, different slugs)
   const all = await sql`SELECT id, slug, title, source_url, image_url FROM journal_articles ORDER BY published_at ASC`;
@@ -96,6 +109,8 @@ async function main() {
   console.log(`Total articles: ${finalCount[0].count}`);
   console.log(`With images: ${withImages[0].count}`);
   console.log(`Without images: ${Number(finalCount[0].count) - Number(withImages[0].count)}`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

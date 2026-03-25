@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FeaturedArticle } from "@/components/intelligence/FeaturedArticle";
@@ -15,7 +16,7 @@ import {
   getUpcomingEvents,
   getLatestSocialPosts,
   getAllTags,
-  getArticles,
+
   loadDbArticles,
 } from "@/lib/intelligence/data";
 import { journalListingSchema } from "@/lib/intelligence/seo";
@@ -23,7 +24,9 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-export const revalidate = 3600; // 1 hour
+// force-dynamic: Vercel Hobby has 19MB ISR limit — even 20 articles exceed it with RSC payload.
+// CDN edge caching via Cache-Control headers in vercel.json handles SEO crawl speed.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
@@ -45,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export default async function JournalPage() {
-  // Load articles from DB before rendering
+  noStore(); // Prevent static pre-rendering — avoids Vercel's 19MB fallback limit
   await loadDbArticles();
 
   const featured = getFeaturedArticles(2);
@@ -53,7 +56,7 @@ export default async function JournalPage() {
   const latest = getLatestArticles(20);
   const events = getUpcomingEvents(5);
   const socialPosts = getLatestSocialPosts(4);
-  const tags = getAllTags();
+  const tags = getAllTags().slice(0, 15); // Top 15 tags only
 
   // Articles not in featured, for the main feed
   const featuredSlugs = new Set(featured.map((a) => a.slug));
@@ -61,12 +64,6 @@ export default async function JournalPage() {
 
   const hero = featured[0];
   const secondary = featured[1];
-
-  // Category counts for the index
-  const categoryCounts = JOURNAL_CATEGORIES.map((cat) => ({
-    ...cat,
-    count: getArticles({ category: cat.slug }).total,
-  }));
 
   return (
     <>
@@ -175,7 +172,7 @@ export default async function JournalPage() {
             <div>
               <h3 className="label text-accent mb-4">Sections</h3>
               <div className="space-y-0">
-                {categoryCounts.map((cat, i) => (
+                {JOURNAL_CATEGORIES.map((cat, i) => (
                   <div key={cat.slug}>
                     {i > 0 && <div className="border-b border-light-200" />}
                     <Link
@@ -184,9 +181,6 @@ export default async function JournalPage() {
                     >
                       <span className="text-sm text-muted group-hover:text-accent transition-colors">
                         {cat.name}
-                      </span>
-                      <span className="font-mono text-xs text-muted">
-                        {cat.count}
                       </span>
                     </Link>
                   </div>
