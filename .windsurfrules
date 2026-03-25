@@ -1,0 +1,22 @@
+## PRODUCTION SITE — zavis.ai
+
+Every push to `main` deploys directly to production. There is NO staging.
+
+### Before pushing ANY code:
+1. Run `npm run lint` — fix ALL errors (unused imports, unused vars, type errors)
+2. Run `npm run build` if you added/changed pages
+3. Unused imports WILL crash production. Remove them.
+
+### Database:
+- Uses `pg` (node-postgres), NOT `@neondatabase/serverless`
+- Connection: `import { db } from "@/lib/db"` for Drizzle ORM
+- For raw SQL: `import { Pool } from "pg"`
+- NEVER import from `@neondatabase/serverless`
+
+### Deployment:
+- Push to `main` → GitHub Actions lint check → SSH deploy to EC2
+- All scripts run ON EC2 (DB is localhost), not GitHub runners
+- `.env.local` is on EC2 only, not in git
+- Nginx serves `_next/static` from disk (do not change)
+
+### Full docs: See `CLAUDE.md` and `.ai-collab/STATUS.md`
