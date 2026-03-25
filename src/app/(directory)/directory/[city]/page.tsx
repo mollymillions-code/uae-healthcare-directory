@@ -207,6 +207,10 @@ export default function CityPage({ params }: Props) {
               <span className="font-medium">By Condition</span>
               <span className="text-xs text-muted">Dental, LASIK, IVF...</span>
             </Link>
+            <Link href={`/directory/${city.slug}/procedures`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
+              <span className="font-medium">Procedure Costs</span>
+              <span className="text-xs text-muted">Dental, LASIK, MRI...</span>
+            </Link>
           </div>
         </section>
       </div>

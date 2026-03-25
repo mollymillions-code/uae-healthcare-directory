@@ -16,6 +16,7 @@ import { CONDITIONS } from "@/lib/constants/conditions";
 import { LAB_PROFILES, LAB_TESTS, LAB_TEST_PRICES, TEST_CATEGORIES } from "@/lib/constants/labs";
 import { getAllLabLists } from "@/lib/labs-lists";
 import { CITIES } from "@/lib/constants/cities";
+import { PROCEDURES } from "@/lib/constants/procedures";
 import { getAllComparisonSlugs } from "@/lib/compare";
 
 const GUIDE_SLUGS = [
@@ -381,7 +382,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  // ─── Provider listing pages ───────────────────────────────────────────────
+  // ─── Procedure cost pages per city ───────────────────────────────────────
+  for (const city of cities) {
+    const procsInCity = PROCEDURES.filter((p) => p.cityPricing[city.slug]);
+    if (procsInCity.length > 0) {
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/procedures`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+      for (const proc of procsInCity) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/procedures/${proc.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.75,
+        });
+      }
+    }
+  }
+
+    // ─── Provider listing pages ───────────────────────────────────────────────
   const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {
     entries.push({
