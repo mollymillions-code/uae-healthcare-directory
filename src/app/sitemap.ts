@@ -437,6 +437,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  // ─── Walk-In Clinic pages ─────────────────────────────────────────────────
+  const WALK_IN_CATS = ["clinics", "dental", "dermatology", "ophthalmology", "pediatrics", "ent", "pharmacy", "labs-diagnostics", "emergency-care"];
+  for (const city of cities) {
+    const walkInAll = getWalkInProviders(city.slug);
+    if (walkInAll.length >= 3) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 });
+      for (const cs of WALK_IN_CATS) {
+        const walkInCat = getWalkInProviders(city.slug, cs);
+        if (walkInCat.length >= 3) {
+          entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in/${cs}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
+        }
+      }
+    }
+
+    // Area-level walk-in pages
+    const walkInAreas = getAreasByCity(city.slug);
+    for (const area of walkInAreas) {
+      const areaWalkIn = getWalkInProviders(city.slug, undefined, area.slug);
+      if (areaWalkIn.length >= 3) {
+        entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/walk-in`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
+        for (const cs of WALK_IN_CATS) {
+          const areaWalkInCat = getWalkInProviders(city.slug, cs, area.slug);
+          if (areaWalkInCat.length >= 3) {
+            entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/walk-in/${cs}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 });
+          }
+        }
+      }
+    }
+  }
+
     // ─── Government facility pages ──────────────────────────────────────────────
   for (const city of cities) {
     const govAll = getGovernmentProviders(city.slug);

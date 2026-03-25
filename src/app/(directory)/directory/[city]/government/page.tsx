@@ -2,282 +2,115 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import {
-  getCities,
-  getCityBySlug,
-  getCategories,
-  getGovernmentProviders,
-} from "@/lib/data";
-import {
-  breadcrumbSchema,
-  faqPageSchema,
-  itemListSchema,
-  speakableSchema,
-} from "@/lib/seo";
+import { getCities, getCityBySlug, getProviders } from "@/lib/data";
+import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
+interface Props { params: { city: string } }
 
-interface Props {
-  params: { city: string };
-}
+const GOV_NAME_TERMS = ["- dubai health","- dha","ministry of health","government","public health protection","primary health","health center -","health centre -","tawam hospital","al ain hospital","al qassimi hospital","saqr hospital","fujairah hospital","dibba hospital","kalba hospital","khorfakkan hospital","masafi hospital","sheikh khalifa medical city","sheikh shakhbout","mafraq hospital","corniche hospital","kanad hospital","al dhafra hospital","al wagan hospital"];
+const GOV_FT = ["primary healthcare"];
 
-/** Only generate pages for cities with 3+ government providers */
-export function generateStaticParams() {
-  const cities = getCities();
-  const params: { city: string }[] = [];
+function isGov(name: string, ft: string): boolean { const n = name.toLowerCase(); const f = ft.toLowerCase(); return GOV_NAME_TERMS.some((t) => n.includes(t)) || GOV_FT.some((t) => f.includes(t)); }
+function getGovProviders(citySlug: string) { const { providers } = getProviders({ citySlug, limit: 99999 }); return providers.filter((p) => isGov(p.name, p.facilityType || "")); }
 
-  for (const city of cities) {
-    const providers = getGovernmentProviders(city.slug);
-    if (providers.length >= 3) {
-      params.push({ city: city.slug });
-    }
-  }
+export function generateStaticParams() { return getCities().filter((c) => getGovProviders(c.slug).length > 0).map((c) => ({ city: c.slug })); }
 
-  return params;
-}
-
-function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
-}
-
-function getGovernmentOperator(citySlug: string): string {
-  if (citySlug === "dubai")
-    return "DHA operates government hospitals such as Rashid Hospital, Dubai Hospital, Latifa Hospital, and primary healthcare centers across the emirate.";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "SEHA (Abu Dhabi Health Services Company) manages public hospitals including Sheikh Khalifa Medical City, Tawam Hospital, Al Ain Hospital, and Mafraq Hospital under DOH oversight.";
-  return "MOHAP directly operates government hospitals and primary healthcare centers across the Northern Emirates, including Al Qassimi Hospital in Sharjah, Saqr Hospital in Ras Al Khaimah, and clinics in Ajman, Umm Al Quwain, and Fujairah.";
-}
+function getRegulatorName(s: string): string { if (s === "dubai") return "the Dubai Health Authority (DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)"; return "the Ministry of Health and Prevention (MOHAP)"; }
+function getRegulatorShort(s: string): string { if (s === "dubai") return "DHA"; if (s === "abu-dhabi" || s === "al-ain") return "DOH"; return "MOHAP"; }
+function getGovOperator(s: string): string { if (s === "dubai") return "Dubai Health (formerly DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under the DOH"; return "the Ministry of Health and Prevention (MOHAP)"; }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const city = getCityBySlug(params.city);
-  if (!city) return {};
-
-  const base = getBaseUrl();
-  const title = `Government & Public Healthcare in ${city.name}, UAE | Free & Subsidized`;
-  const description = `Find government hospitals, public health centers, and MOHAP/DHA/SEHA facilities in ${city.name}, UAE. Many services are free or subsidized for Emiratis and insured residents. Updated March 2026.`;
-  const url = `${base}/directory/${city.slug}/government`;
-
+  const city = getCityBySlug(params.city); if (!city) return {};
+  const count = getGovProviders(city.slug).length; const base = getBaseUrl(); const url = `${base}/directory/${city.slug}/government`;
   return {
-    title,
-    description,
+    title: `Government Healthcare Facilities in ${city.name}, UAE | ${count} Public Facilities`,
+    description: `Find ${count} government and public healthcare facilities in ${city.name}, UAE. Browse government hospitals, primary health centers, and public clinics operated by ${getRegulatorShort(city.slug)}. Updated March 2026.`,
     alternates: { canonical: url },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      locale: "en_AE",
-      siteName: "UAE Open Healthcare Directory",
-      url,
-    },
+    openGraph: { title: `Government Healthcare Facilities in ${city.name}, UAE`, description: `${count} government hospitals and public health centers in ${city.name}.`, type: "website", locale: "en_AE", siteName: "UAE Open Healthcare Directory", url },
   };
 }
 
-export default function GovernmentCityPage({ params }: Props) {
-  const city = getCityBySlug(params.city);
-  if (!city) notFound();
+export default function GovernmentPage({ params }: Props) {
+  const city = getCityBySlug(params.city); if (!city) notFound();
+  const govProviders = getGovProviders(city.slug); if (govProviders.length === 0) notFound();
+  const base = getBaseUrl(); const regulator = getRegulatorName(city.slug); const regulatorShort = getRegulatorShort(city.slug); const govOperator = getGovOperator(city.slug); const count = govProviders.length;
+  const hospitals = govProviders.filter((p) => (p.facilityType || "").toLowerCase().includes("hospital"));
+  const primaryCare = govProviders.filter((p) => { const ft = (p.facilityType || "").toLowerCase(); const n = p.name.toLowerCase(); return ft.includes("primary healthcare") || n.includes("primary health") || n.includes("health center") || n.includes("health centre"); });
+  const sorted = [...govProviders].sort((a, b) => { const r = Number(b.googleRating) - Number(a.googleRating); return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0); });
+  const ratedProviders = sorted.filter((p) => Number(p.googleRating) > 0);
+  const faqs = [
+    { question: `How many government healthcare facilities are there in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, there are ${count} government and public healthcare facilities in ${city.name}, UAE. These include government hospitals, primary healthcare centers, and specialized public health facilities operated by ${govOperator}. Data sourced from official government registers, last verified March 2026.` },
+    { question: `Are government hospitals in ${city.name} free?`, answer: `Government healthcare in the UAE is subsidized but not entirely free. UAE nationals receive free or heavily subsidized treatment. Expatriates with valid health insurance pay reduced co-payments. Uninsured patients pay out-of-pocket at government-set rates, typically 30-50% lower than private hospital fees.` },
+    { question: `What services do government hospitals in ${city.name} offer?`, answer: `Government hospitals in ${city.name} offer comprehensive services including emergency care (24/7), inpatient and outpatient care, surgical services, maternity and obstetrics, pediatrics, radiology and imaging, laboratory diagnostics, pharmacy services, and specialist consultations.` },
+    { question: `How do I get an appointment at a government hospital in ${city.name}?`, answer: `Appointments at government hospitals in ${city.name} can be booked through ${city.slug === "dubai" ? "the DHA app or by calling the hospital directly" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "the SEHA app or by calling the hospital directly" : "the MOHAP app or by calling the facility directly"}. Emergency departments accept walk-ins 24/7.` },
+    { question: `What insurance is accepted at government facilities in ${city.name}?`, answer: `Government facilities in ${city.name} typically accept ${city.slug === "dubai" ? "DHA Essential Benefits Plan, Daman, and most major insurance plans" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "Thiqa (for UAE nationals), Daman, and most DOH-recognized insurance plans" : "MOHAP-recognized insurance plans, Daman, and major providers"}.` },
+    { question: `What are the wait times at government hospitals in ${city.name}?`, answer: `Emergency departments provide immediate triage for critical cases. Non-critical emergencies: 30-120 minutes. Outpatient specialist appointments: 1-4 weeks. Primary healthcare centers: 15-45 minutes for walk-ins.` },
+  ];
 
-  const providers = getGovernmentProviders(city.slug);
-  if (providers.length < 3) notFound();
-
-  const base = getBaseUrl();
-  const regulator = getRegulatorName(city.slug);
-  const operatorNote = getGovernmentOperator(city.slug);
-  const count = providers.length;
-
-  const sorted = [...providers].sort((a, b) => {
-    const ratingDiff = Number(b.googleRating) - Number(a.googleRating);
-    if (ratingDiff !== 0) return ratingDiff;
-    return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
-  });
-
-  const categoryCounts = new Map<string, number>();
-  for (const p of providers) {
-    categoryCounts.set(
-      p.categorySlug,
-      (categoryCounts.get(p.categorySlug) || 0) + 1
-    );
-  }
-  const categories = getCategories();
-  const categoryLinks = categories.filter(
-    (cat) => (categoryCounts.get(cat.slug) || 0) >= 3
+  const renderRow = (provider: typeof govProviders[0], index: number, badge: string) => (
+    <li key={provider.id} className="article-row">
+      <span className="text-2xl font-bold text-accent leading-none mt-0.5 w-8 shrink-0 text-center">{String(index + 1).padStart(2, "0")}</span>
+      <div className="flex-1 min-w-0"><div className="flex items-start justify-between gap-4 flex-wrap"><div className="flex-1 min-w-0">
+        <Link href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`} className="font-bold text-dark hover:text-accent transition-colors">{provider.name}</Link>
+        <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+          {Number(provider.googleRating) > 0 && <span className="text-xs font-semibold text-accent">{provider.googleRating}/5</span>}
+          {provider.googleReviewCount > 0 && <span className="text-xs text-muted">{provider.googleReviewCount.toLocaleString()} reviews</span>}
+          {provider.facilityType && <span className="text-xs text-muted">{provider.facilityType}</span>}
+          {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="text-xs text-muted hover:text-accent transition-colors">{provider.phone}</a>}
+        </div>
+        {provider.address && <p className="text-xs text-muted mt-1 line-clamp-1">{provider.address}</p>}
+      </div><div className="shrink-0"><span className="badge">{badge}</span></div></div></div>
+    </li>
   );
 
-  const faqs = [
-    {
-      question: `How many government healthcare facilities are in ${city.name}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${count} government and public healthcare facilities in ${city.name}. These include government hospitals, primary healthcare centers, and specialty clinics operated by ${regulator.replace("the ", "")}. ${operatorNote} All listings are sourced from official health authority registers, last verified March 2026.`,
-    },
-    {
-      question: `Is government healthcare free in ${city.name}?`,
-      answer: `Many government healthcare services in ${city.name} are free or heavily subsidized for UAE nationals. Emirati citizens with Thiqa insurance (Abu Dhabi) or DHA coverage (Dubai) receive most services at no cost. Expatriate residents with valid health insurance can access government facilities at reduced rates, typically paying only co-payments. Emergency services at government hospitals cannot be refused regardless of insurance status. Uninsured patients may pay out-of-pocket at government-set rates, which are significantly lower than private hospital fees.`,
-    },
-    {
-      question: `What is the difference between government and private healthcare in ${city.name}?`,
-      answer: `Government healthcare in ${city.name} is operated by ${regulator.replace("the ", "")} and offers services at lower cost, often free for nationals. Wait times tend to be longer (1 to 4 weeks for specialist appointments vs. 1 to 7 days at private facilities). Private hospitals generally offer shorter wait times, more comfortable amenities, and wider specialist availability but at higher cost (GP visits: AED 150 to 300 private vs. AED 0 to 50 government). Both sectors are licensed by ${regulator} and meet the same regulatory standards.`,
-    },
-    {
-      question: `Which insurance plans are accepted at government hospitals in ${city.name}?`,
-      answer: `Government hospitals in ${city.name} accept Thiqa (for UAE nationals in Abu Dhabi), Daman (mandatory for Abu Dhabi expatriates), DHA Essential Benefits Plan (mandatory in Dubai), and most major private insurance plans including AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz. Coverage levels depend on your specific plan. Always carry your Emirates ID and insurance card when visiting a government facility.`,
-    },
-    {
-      question: `How do I register at a government health center in ${city.name}?`,
-      answer: `To register at a government health center in ${city.name}, visit the facility with your Emirates ID (or passport for visitors), insurance card, and any existing medical records. In Dubai, you can register online through the DHA app. In Abu Dhabi, the SEHA app allows appointment booking. In the Northern Emirates, MOHAP facilities accept walk-in registrations. Once registered, you receive a medical record number for future visits. Initial registration is typically free for insured patients.`,
-    },
-    {
-      question: `Are government hospitals in ${city.name} good quality?`,
-      answer: `Government hospitals in ${city.name} are licensed and regularly inspected by ${regulator}. Many are internationally accredited by JCI (Joint Commission International). Government hospitals handle complex cases including trauma, organ transplants, and advanced cancer treatment. They employ qualified specialists and maintain modern diagnostic equipment. Patient reviews on the UAE Open Healthcare Directory show ratings for each facility based on real patient experiences.`,
-    },
-  ];
-
-  const breadcrumbItems = [
-    { name: "UAE", url: base },
-    { name: city.name, url: `${base}/directory/${city.slug}` },
-    { name: "Government", url: `${base}/directory/${city.slug}/government` },
-  ];
-
   return (
-    <div className="container-tc py-8">
-      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd
-        data={itemListSchema(
-          `Government Healthcare in ${city.name}`,
-          sorted.slice(0, 20),
-          city.name,
-          base
-        )}
-      />
-
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: city.name, href: `/directory/${city.slug}` },
-          { label: "Government" },
-        ]}
-      />
-
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">
-          Government & Public Healthcare in {city.name}, UAE
-        </h1>
-        <p className="text-sm text-muted mb-4">
-          {count} government & public facilities · Last updated March 2026
-        </p>
-
-        <div className="bg-emerald-50 border border-emerald-200 p-4 mb-6">
-          <p className="text-sm font-bold text-emerald-800 mb-1">
-            About UAE Public Healthcare
-          </p>
-          <p className="text-sm text-emerald-700">
-            {city.slug === "dubai" &&
-              "In Dubai, government healthcare is operated by the Dubai Health Authority (DHA). DHA runs public hospitals (Rashid, Dubai, Latifa, Hatta, Al Baraha) and primary healthcare centers across the emirate. Services are free or subsidized for Emiratis and heavily discounted for insured residents."}
-            {(city.slug === "abu-dhabi" || city.slug === "al-ain") &&
-              "In Abu Dhabi, SEHA (Abu Dhabi Health Services Company) manages government hospitals under DOH regulation. Major facilities include Sheikh Khalifa Medical City, Tawam Hospital, Mafraq Hospital, and Al Ain Hospital. UAE nationals with Thiqa insurance receive free care; expatriates pay subsidized rates through Daman or employer plans."}
-            {city.slug !== "dubai" &&
-              city.slug !== "abu-dhabi" &&
-              city.slug !== "al-ain" &&
-              "In the Northern Emirates, government healthcare is operated directly by the Ministry of Health and Prevention (MOHAP). MOHAP runs hospitals and primary healthcare centers in Sharjah, Ajman, Ras Al Khaimah, Umm Al Quwain, and Fujairah. Many services are free or subsidized for UAE nationals and insured residents."}
-          </p>
-        </div>
-
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
-            According to the UAE Open Healthcare Directory, there are {count}{" "}
-            government and public healthcare facilities in {city.name}.{" "}
-            {operatorNote}
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <>
-                {" "}
-                The highest-rated government facility is{" "}
-                <strong>{sorted[0].name}</strong> with a{" "}
-                {sorted[0].googleRating}-star Google rating based on{" "}
-                {sorted[0].googleReviewCount.toLocaleString()} patient reviews.
-              </>
-            )}{" "}
-            All listings are sourced from official {regulator} licensed facility
-            registers.
-          </p>
-        </div>
-      </div>
-
-      {categoryLinks.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm font-medium text-dark mb-2">
-            Filter by category:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {categoryLinks.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/directory/${city.slug}/government/${cat.slug}`}
-                className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted"
-              >
-                {cat.name} ({categoryCounts.get(cat.slug)})
-              </Link>
-            ))}
+    <>
+      <div className="container-tc py-8">
+        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: "Government Facilities", url: `${base}/directory/${city.slug}/government` }])} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+        <JsonLd data={faqPageSchema(faqs)} />
+        {ratedProviders.length >= 3 && <JsonLd data={itemListSchema(`Government Healthcare Facilities in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />}
+        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: "Government Facilities" }]} />
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-dark mb-3">Government Healthcare Facilities in {city.name}, UAE</h1>
+          <p className="text-muted leading-relaxed mb-4">{city.name} has {count} government and public healthcare facilities operated by {govOperator}. These include government hospitals, primary healthcare centers, and specialized public health services. Healthcare in {city.name} is regulated by {regulator}.</p>
+          <div className="answer-block mb-6" data-answer-block="true">
+            <p className="text-muted leading-relaxed">
+              According to the UAE Open Healthcare Directory, there are {count} government healthcare facilities in {city.name}.
+              {hospitals.length > 0 && ` This includes ${hospitals.length} government hospital${hospitals.length === 1 ? "" : "s"}`}
+              {primaryCare.length > 0 && ` and ${primaryCare.length} primary healthcare center${primaryCare.length === 1 ? "" : "s"}`}.
+              Government facilities in {city.name} are operated by {govOperator}. UAE nationals receive subsidized or free treatment; expatriates are covered through employer-provided insurance or pay government-set rates.
+              {ratedProviders.length > 0 && ratedProviders[0] && (<> The highest-rated government facility is <strong>{ratedProviders[0].name}</strong>{Number(ratedProviders[0].googleRating) > 0 ? ` with a ${ratedProviders[0].googleRating}-star Google rating` : ""}.</>)}{" "}
+              All listings are sourced from official {regulatorShort} registers, last verified March 2026.
+            </p>
           </div>
         </div>
-      )}
-
-      <section className="mb-10">
-        <div className="section-header">
-          <h2>Government & Public Facilities in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard
-              key={provider.id}
-              name={provider.name}
-              slug={provider.slug}
-              citySlug={provider.citySlug}
-              categorySlug={provider.categorySlug}
-              address={provider.address}
-              phone={provider.phone}
-              website={provider.website}
-              shortDescription={provider.shortDescription}
-              googleRating={provider.googleRating}
-              googleReviewCount={provider.googleReviewCount}
-              isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">
-          Looking for private healthcare?{" "}
-          <Link
-            href={`/directory/${city.slug}`}
-            className="text-accent hover:underline font-medium"
-          >
-            Browse all healthcare providers in {city.name} &rarr;
-          </Link>
-        </p>
-        <p className="text-sm text-muted">
-          Need emergency care?{" "}
-          <Link
-            href={`/directory/${city.slug}/emergency`}
-            className="text-accent hover:underline font-medium"
-          >
-            Emergency healthcare in {city.name} &rarr;
-          </Link>
-        </p>
-      </section>
-
-      <FaqSection
-        faqs={faqs}
-        title={`Government Healthcare in ${city.name} — FAQ`}
-      />
-    </div>
+        {hospitals.length > 0 && (
+          <section className="mb-10">
+            <div className="section-header"><h2>Government Hospitals in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div>
+            <ol className="space-y-0">{[...hospitals].sort((a, b) => Number(b.googleRating) - Number(a.googleRating) || (b.googleReviewCount || 0) - (a.googleReviewCount || 0)).map((p, i) => renderRow(p, i, "Government"))}</ol>
+          </section>
+        )}
+        {primaryCare.length > 0 && (
+          <section className="mb-10">
+            <div className="section-header"><h2>Primary Healthcare Centers in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div>
+            <ol className="space-y-0">{[...primaryCare].sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => renderRow(p, i, "Public"))}</ol>
+          </section>
+        )}
+        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); const others = sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id));
+          return others.length > 0 ? (<section className="mb-10"><div className="section-header"><h2>Other Government Health Services in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div><ol className="space-y-0">{others.map((p, i) => renderRow(p, i, "Government"))}</ol></section>) : null;
+        })()}
+        <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">All Providers</span><span className="text-xs text-muted">{city.name}</span></Link>
+          <Link href={`/directory/${city.slug}/walk-in`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">Walk-In Clinics</span><span className="text-xs text-muted">No appointment needed</span></Link>
+          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">By Insurance</span><span className="text-xs text-muted">Daman, Thiqa, AXA...</span></Link>
+        </div></section>
+        <FaqSection faqs={faqs} title={`Government Healthcare in ${city.name} — FAQ`} />
+      </div>
+    </>
   );
 }
