@@ -14,7 +14,32 @@ import { CONDITIONS, Condition } from "./constants/conditions";
 
 // ─── DB imports (only used when DATABASE_URL is set) ─────────────────────────
 
-const HAS_DB = !!process.env.DATABASE_URL;
+let HAS_DB = !!process.env.DATABASE_URL;
+let _dbVerified = false;
+
+/**
+ * Check if DB actually has providers. If not (empty table, connection error),
+ * fall back to JSON. This handles the case where DATABASE_URL is set on EC2
+ * but the providers table hasn't been seeded yet.
+ */
+async function verifyDbHasData(): Promise<boolean> {
+  if (_dbVerified) return HAS_DB;
+  if (!HAS_DB) { _dbVerified = true; return false; }
+
+  try {
+    await ensureDbModules();
+    const result = await _db!.select({ id: _providersTable!.id }).from(_providersTable!).limit(1);
+    if (result.length === 0) {
+      console.warn("[data.ts] DB has no providers — falling back to JSON");
+      HAS_DB = false;
+    }
+  } catch (e) {
+    console.warn("[data.ts] DB connection failed — falling back to JSON:", e instanceof Error ? e.message : e);
+    HAS_DB = false;
+  }
+  _dbVerified = true;
+  return HAS_DB;
+}
 
 // Lazy-load DB modules so the JSON fallback path never touches pg
 let _db: typeof import("@/lib/db")["db"] | null = null;
@@ -536,6 +561,9 @@ export async function getProviders(filters?: {
   limit?: number;
   sort?: "rating" | "name" | "relevance";
 }): Promise<{ providers: LocalProvider[]; total: number; page: number; totalPages: number }> {
+  // ─── Verify DB has data (first call only) ──────────────────────────────────
+  await verifyDbHasData();
+
   // ─── Fallback: JSON ────────────────────────────────────────────────────────
   if (!HAS_DB) {
     loadFallback();
