@@ -10,8 +10,6 @@ import {
 } from "lucide-react";
 import {
   LAB_PROFILES,
-  LAB_TESTS,
-  LAB_TEST_PRICES,
   getLabTest,
   getPriceRange,
   formatPrice,
@@ -788,7 +786,6 @@ function getEstimatedCost(testSlugs: string[]): number {
 function getLabsOfferingMostTests(
   testSlugs: string[]
 ): { labSlug: string; labName: string; testCount: number; totalTests: number }[] {
-  const testSet = new Set(testSlugs);
   const labScores: {
     labSlug: string;
     labName: string;

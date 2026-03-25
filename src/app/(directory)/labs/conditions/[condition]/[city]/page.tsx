@@ -3,13 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, ArrowRight, Home, Calculator } from "lucide-react";
 import {
-  LAB_PROFILES,
-  LAB_TESTS,
-  LAB_TEST_PRICES,
   getLabTest,
-  getLabProfile,
   getLabsByCity,
-  getPricesForTestInCity,
   getPriceRangeInCity,
   formatPrice,
   getPricesForLab,

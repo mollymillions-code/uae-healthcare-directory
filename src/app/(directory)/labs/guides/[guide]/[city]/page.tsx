@@ -3,9 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, ArrowRight, Home, Clock, FileText, AlertTriangle, FlaskConical, Shield, Building2 } from "lucide-react";
 import {
-  LAB_PROFILES,
-  LAB_TESTS,
-  LAB_TEST_PRICES,
   getLabsByCity,
   getLabTest,
   getPriceRangeInCity,
@@ -23,12 +20,6 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 43200;
 
 // ─── Guide + City Data ──────────────────────────────────────────────────────
-
-interface GuideCity {
-  slug: string;
-  name: string;
-  relatedTests: string[];
-}
 
 const GUIDE_DATA: Record<
   string,
@@ -781,7 +772,6 @@ export async function generateStaticParams() {
   const citySlugs = CITIES.map((c) => c.slug);
 
   for (const guideSlug of guideSlugs) {
-    const guide = GUIDE_DATA[guideSlug];
     for (const citySlug of citySlugs) {
       // Include if at least 2 labs exist in this city
       const cityLabs = getLabsByCity(citySlug);
