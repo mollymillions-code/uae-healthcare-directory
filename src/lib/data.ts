@@ -552,3 +552,53 @@ export function getWalkInProviders(citySlug: string, categorySlug?: string, area
   }
   return categorySlug ? source : source.filter(isWalkInProvider);
 }
+
+// ─── Government Facility Functions ──────────────────────────────────────────
+
+/** Determines whether a provider is a government/public healthcare facility. */
+export function isGovernmentProvider(provider: LocalProvider): boolean {
+  const nl = provider.name.toLowerCase();
+  const dl = (provider.description || "").toLowerCase();
+  const fl = (provider.facilityType || "").toLowerCase();
+
+  // Name indicators
+  if (
+    nl.includes("government") || nl.includes("public health") ||
+    nl.includes("ministry") || nl.includes("mohap") ||
+    nl.includes("dha ") || nl.includes("doh ") ||
+    nl.includes("seha") || nl.includes("ambulatory") ||
+    nl.includes("primary health") || nl.includes("health center") ||
+    nl.includes("health centre")
+  ) return true;
+
+  // Facility type
+  if (
+    fl.includes("government") || fl.includes("public") ||
+    fl.includes("primary health")
+  ) return true;
+
+  // Description
+  if (
+    dl.includes("government-run") || dl.includes("government run") ||
+    dl.includes("public hospital") || dl.includes("public health") ||
+    dl.includes("operated by seha") || dl.includes("operated by dha") ||
+    dl.includes("ministry of health")
+  ) return true;
+
+  return false;
+}
+
+/** Get government/public providers in a city, optionally filtered by category and/or area. */
+export function getGovernmentProviders(citySlug: string, categorySlug?: string, areaSlug?: string): LocalProvider[] {
+  let source: LocalProvider[];
+  if (categorySlug && areaSlug) {
+    source = byCityCategoryArea.get(`${citySlug}:${categorySlug}:${areaSlug}`) || [];
+  } else if (categorySlug) {
+    source = byCityCategory.get(`${citySlug}:${categorySlug}`) || [];
+  } else if (areaSlug) {
+    source = byCityArea.get(`${citySlug}:${areaSlug}`) || [];
+  } else {
+    source = byCity.get(citySlug) || [];
+  }
+  return source.filter(isGovernmentProvider);
+}
