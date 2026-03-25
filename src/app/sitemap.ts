@@ -220,6 +220,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  // Top 10 area × category combos — only if 5+ qualified providers
+  for (const city of cities) {
+    const areas = getAreasByCity(city.slug);
+    for (const area of areas) {
+      for (const cat of categories) {
+        const { providers: areaProviders } = getProviders({
+          citySlug: city.slug,
+          areaSlug: area.slug,
+          categorySlug: cat.slug,
+          limit: 99999,
+        });
+        const qualifiedArea = areaProviders.filter(
+          (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
+        ).length;
+        if (qualifiedArea >= 5) {
+          entries.push({
+            url: `${baseUrl}/directory/${city.slug}/${area.slug}/top/${cat.slug}`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.8,
+          });
+        }
+      }
+    }
+  }
+
   // ─── Provider listing pages ───────────────────────────────────────────────
   const { providers } = getProviders({ limit: 99999 });
   for (const provider of providers) {
