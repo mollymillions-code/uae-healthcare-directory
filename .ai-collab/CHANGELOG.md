@@ -25,12 +25,17 @@
 - Added GitHub secrets `EC2_HOST` and `EC2_SSH_KEY`
 - Created GitHub webhook (ID: 602502216) pointing to `/api/deploy-webhook` with HMAC verification
 - Deploy webhook server running on port 9100 via PM2 (`zavis-deploy-webhook`)
+- Added `/api/health` endpoint for deploy verification (returns git SHA, commit message, uptime)
 
 ### Code Fixes
 - Removed unused `subcategories` variable in `src/app/(directory)/directory/[city]/[...segments]/page.tsx` (was causing build failure)
 - Added error logging to `getDbArticles()` in `src/lib/intelligence/data.ts` — previously swallowed DB errors silently with empty catch block
 
+### Post-Migration Fixes
+- Fixed DB permission issue: tables restored from dump were owned by `postgres`, not `zavis_admin`. Required explicit `GRANT ALL` after migration.
+- Fixed `zavis_admin` password authentication failure — password gets reset when other services modify PostgreSQL roles. Must be re-set to `zavis_admin_2026`.
+- Both issues caused intelligence page to show "No articles published" despite 108 articles in DB, because `getDbArticles()` caches empty array on first failure.
+
 ### Pending
-- DNS records need to be pointed to 13.205.197.148 (A records for `@` and `www`)
-- SSL via certbot after DNS propagation
+- SSL via certbot (DNS now pointed)
 - Remove Vercel deployment once EC2 is confirmed stable
