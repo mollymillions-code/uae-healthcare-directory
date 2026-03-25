@@ -437,6 +437,173 @@ function buildFreeHomeCollectionInCity(citySlug: string): LabList | null {
   };
 }
 
+// ── Home collection × category ─────────────────────────────────────────────
+
+function buildHomeCollectionCategoryUAE(category: TestCategory): LabList | null {
+  const homeCollectionLabs = LAB_PROFILES.filter((l) => l.homeCollection);
+  const catTests = new Set(LAB_TESTS.filter((t) => t.category === category).map((t) => t.slug));
+  const labsWithCatTests = homeCollectionLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+  );
+  if (labsWithCatTests.length < MIN_ITEMS_FOR_LIST) return null;
+  const label = CATEGORY_SHORT[category] || categoryLabel(category);
+  return {
+    slug: `home-collection-${category}-tests`,
+    title: `${label} With Home Collection in the UAE (2026)`,
+    h1: `${label} Available for Home Collection in the UAE`,
+    metaDescription: `${labsWithCatTests.length} UAE labs offer ${label.toLowerCase()} with home sample collection. A certified nurse visits your home. Compare prices, turnaround times, and accreditations.`,
+    listType: "feature",
+    feature: "home-collection",
+    categorySlug: category,
+    limit: Math.min(10, labsWithCatTests.length),
+  };
+}
+
+function buildHomeCollectionCategoryInCity(category: TestCategory, citySlug: string): LabList | null {
+  const cityLabs = getLabsByCity(citySlug).filter((l) => l.homeCollection);
+  const catTests = new Set(LAB_TESTS.filter((t) => t.category === category).map((t) => t.slug));
+  const labsWithCatTests = cityLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+  );
+  if (labsWithCatTests.length < MIN_ITEMS_FOR_LIST) return null;
+  const city = cityName(citySlug);
+  const label = CATEGORY_SHORT[category] || categoryLabel(category);
+  return {
+    slug: `home-collection-${category}-tests-${citySlug}`,
+    title: `${label} With Home Collection in ${city}`,
+    h1: `${label} — Home Collection in ${city}`,
+    metaDescription: `${labsWithCatTests.length} labs in ${city} offer home collection for ${label.toLowerCase()}. Compare prices, book a certified nurse visit, and get results within 24h.`,
+    listType: "feature",
+    feature: "home-collection",
+    categorySlug: category,
+    citySlug,
+    limit: Math.min(10, labsWithCatTests.length),
+  };
+}
+
+// ── Free home collection × category ───────────────────────────────────────
+
+function buildFreeHomeCollectionCategoryUAE(category: TestCategory): LabList | null {
+  const freeLabs = LAB_PROFILES.filter((l) => l.homeCollection && l.homeCollectionFee === 0);
+  const catTests = new Set(LAB_TESTS.filter((t) => t.category === category).map((t) => t.slug));
+  const labsWithCatTests = freeLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+  );
+  if (labsWithCatTests.length < MIN_ITEMS_FOR_LIST) return null;
+  const label = CATEGORY_SHORT[category] || categoryLabel(category);
+  return {
+    slug: `free-home-collection-${category}-tests`,
+    title: `Free Home Collection for ${label} in the UAE`,
+    h1: `${label} — Free Home Collection in the UAE`,
+    metaDescription: `${labsWithCatTests.length} UAE labs offer ${label.toLowerCase()} with free home sample collection — no visit fee. Compare test prices and book a certified nurse online.`,
+    listType: "feature",
+    feature: "free-home-collection",
+    categorySlug: category,
+    limit: Math.min(10, labsWithCatTests.length),
+  };
+}
+
+function buildFreeHomeCollectionCategoryInCity(category: TestCategory, citySlug: string): LabList | null {
+  const cityLabs = getLabsByCity(citySlug).filter((l) => l.homeCollection && l.homeCollectionFee === 0);
+  const catTests = new Set(LAB_TESTS.filter((t) => t.category === category).map((t) => t.slug));
+  const labsWithCatTests = cityLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+  );
+  if (labsWithCatTests.length < MIN_ITEMS_FOR_LIST) return null;
+  const city = cityName(citySlug);
+  const label = CATEGORY_SHORT[category] || categoryLabel(category);
+  return {
+    slug: `free-home-collection-${category}-tests-${citySlug}`,
+    title: `Free Home Collection for ${label} in ${city}`,
+    h1: `${label} — Free Home Collection in ${city}`,
+    metaDescription: `${labsWithCatTests.length} labs in ${city} offer free home collection for ${label.toLowerCase()}. No visit fee, results in 24h. Compare prices across accredited labs.`,
+    listType: "feature",
+    feature: "free-home-collection",
+    categorySlug: category,
+    citySlug,
+    limit: Math.min(10, labsWithCatTests.length),
+  };
+}
+
+// ── Home collection × popular test ────────────────────────────────────────
+
+function buildHomeCollectionTestUAE(testSlug: string): LabList | null {
+  const test = getLabTest(testSlug);
+  if (!test) return null;
+  const homeCollectionLabs = LAB_PROFILES.filter((l) => l.homeCollection);
+  const labsWithTest = homeCollectionLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && p.testSlug === testSlug)
+  );
+  if (labsWithTest.length < MIN_ITEMS_FOR_LIST) return null;
+  return {
+    slug: `home-collection-${testSlug}-test`,
+    title: `${test.shortName} Test With Home Collection in the UAE`,
+    h1: `${test.shortName} — Home Collection Across UAE Labs`,
+    metaDescription: `${labsWithTest.length} UAE labs offer ${test.name} with home sample collection. A DHA-licensed nurse collects your sample at home. Compare prices from AED ${Math.min(...LAB_TEST_PRICES.filter((p) => p.testSlug === testSlug && homeCollectionLabs.some((l) => l.slug === p.labSlug)).map((p) => p.price))}.`,
+    listType: "feature",
+    feature: "home-collection",
+    testSlug,
+    limit: Math.min(10, labsWithTest.length),
+  };
+}
+
+function buildHomeCollectionTestInCity(testSlug: string, citySlug: string): LabList | null {
+  const test = getLabTest(testSlug);
+  if (!test) return null;
+  const cityLabs = getLabsByCity(citySlug).filter((l) => l.homeCollection);
+  const labsWithTest = cityLabs.filter((lab) =>
+    LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && p.testSlug === testSlug)
+  );
+  if (labsWithTest.length < MIN_ITEMS_FOR_LIST) return null;
+  const city = cityName(citySlug);
+  return {
+    slug: `home-collection-${testSlug}-test-${citySlug}`,
+    title: `${test.shortName} Home Collection in ${city} — Compare Labs`,
+    h1: `${test.shortName} — Home Collection in ${city}`,
+    metaDescription: `${labsWithTest.length} labs in ${city} offer ${test.name} with home collection. Compare prices, turnaround times, and accreditations. Book a certified nurse visit.`,
+    listType: "feature",
+    feature: "home-collection",
+    testSlug,
+    citySlug,
+    limit: Math.min(10, labsWithTest.length),
+  };
+}
+
+// ── Cheapest home collection tests (ranked by price) ─────────────────────
+
+function buildCheapestHomeCollectionTestsUAE(): LabList | null {
+  const homeCollectionLabSlugs = new Set(LAB_PROFILES.filter((l) => l.homeCollection).map((l) => l.slug));
+  const homeCollectionPrices = LAB_TEST_PRICES.filter((p) => homeCollectionLabSlugs.has(p.labSlug));
+  if (homeCollectionPrices.length < MIN_ITEMS_FOR_LIST) return null;
+  return {
+    slug: "cheapest-home-collection-tests-uae",
+    title: "Cheapest At-Home Blood Tests in the UAE (2026)",
+    h1: "Cheapest Tests Available for Home Collection in the UAE",
+    metaDescription: "The most affordable blood tests you can get at home in the UAE. Ranked by price across home-collection labs. No clinic visit needed — a nurse comes to you.",
+    listType: "feature",
+    feature: "home-collection",
+    limit: 10,
+  };
+}
+
+function buildCheapestHomeCollectionTestsInCity(citySlug: string): LabList | null {
+  const cityLabs = getLabsByCity(citySlug).filter((l) => l.homeCollection);
+  const cityLabSlugs = new Set(cityLabs.map((l) => l.slug));
+  const prices = LAB_TEST_PRICES.filter((p) => cityLabSlugs.has(p.labSlug));
+  if (prices.length < MIN_ITEMS_FOR_LIST) return null;
+  const city = cityName(citySlug);
+  return {
+    slug: `cheapest-home-collection-tests-${citySlug}`,
+    title: `Cheapest At-Home Blood Tests in ${city} (2026)`,
+    h1: `Cheapest Home Collection Tests in ${city}`,
+    metaDescription: `The most affordable blood tests available for home collection in ${city}. Ranked by price. A DHA-licensed nurse collects your sample — no clinic visit needed.`,
+    listType: "feature",
+    feature: "home-collection",
+    citySlug,
+    limit: 10,
+  };
+}
+
 function buildCAPAccreditedList(): LabList | null {
   const labs = LAB_PROFILES.filter((l) => l.accreditations.includes("CAP"));
   if (labs.length < MIN_ITEMS_FOR_LIST) return null;
@@ -634,6 +801,57 @@ export function getAllLabLists(): LabList[] {
     if (list) lists.push(list);
   }
 
+  // 10. Home collection × category — UAE-wide
+  for (const category of ALL_CATEGORIES) {
+    const hcCat = buildHomeCollectionCategoryUAE(category);
+    if (hcCat) lists.push(hcCat);
+  }
+
+  // 11. Home collection × category × major city
+  for (const category of ALL_CATEGORIES) {
+    for (const citySlug of MAJOR_CITIES) {
+      const hcCatCity = buildHomeCollectionCategoryInCity(category, citySlug);
+      if (hcCatCity) lists.push(hcCatCity);
+    }
+  }
+
+  // 12. Free home collection × category — UAE-wide
+  for (const category of ALL_CATEGORIES) {
+    const freeHcCat = buildFreeHomeCollectionCategoryUAE(category);
+    if (freeHcCat) lists.push(freeHcCat);
+  }
+
+  // 13. Free home collection × category × major city
+  for (const category of ALL_CATEGORIES) {
+    for (const citySlug of MAJOR_CITIES) {
+      const freeHcCatCity = buildFreeHomeCollectionCategoryInCity(category, citySlug);
+      if (freeHcCatCity) lists.push(freeHcCatCity);
+    }
+  }
+
+  // 14. Home collection × popular test — UAE-wide
+  for (const testSlug of POPULAR_TEST_SLUGS) {
+    const hcTest = buildHomeCollectionTestUAE(testSlug);
+    if (hcTest) lists.push(hcTest);
+  }
+
+  // 15. Home collection × popular test × major city
+  for (const testSlug of POPULAR_TEST_SLUGS) {
+    for (const citySlug of MAJOR_CITIES) {
+      const hcTestCity = buildHomeCollectionTestInCity(testSlug, citySlug);
+      if (hcTestCity) lists.push(hcTestCity);
+    }
+  }
+
+  // 16. Cheapest home collection tests
+  const cheapestHC = buildCheapestHomeCollectionTestsUAE();
+  if (cheapestHC) lists.push(cheapestHC);
+  for (const citySlug of MAJOR_CITIES) {
+    const cheapestHCCity = buildCheapestHomeCollectionTestsInCity(citySlug);
+    if (cheapestHCCity) lists.push(cheapestHCCity);
+  }
+
+  // 17. Other feature lists
   const capList = buildCAPAccreditedList();
   if (capList) lists.push(capList);
 
@@ -643,7 +861,7 @@ export function getAllLabLists(): LabList[] {
   const noFastingList = buildNoFastingTestsList();
   if (noFastingList) lists.push(noFastingList);
 
-  // 10. Most tests
+  // 18. Most tests
   lists.push(buildMostTestsList());
 
   // 11. Most expensive tests
@@ -903,13 +1121,27 @@ export function getLabListItems(list: LabList): LabListItem[] {
             .map((r, i) => testToItem(i + 1, r.test, r.minPrice === Infinity ? undefined : r.minPrice));
         }
 
-        // Free home collection
+        // Free home collection (optionally filtered by category or test)
         case "free-home-collection": {
-          const candidates = list.citySlug
+          let candidates = list.citySlug
             ? getLabsByCity(list.citySlug).filter(
                 (l) => l.homeCollection && l.homeCollectionFee === 0
               )
             : LAB_PROFILES.filter((l) => l.homeCollection && l.homeCollectionFee === 0);
+
+          // Filter to labs offering tests in a specific category
+          if (list.categorySlug) {
+            const catTests = new Set(LAB_TESTS.filter((t) => t.category === list.categorySlug).map((t) => t.slug));
+            candidates = candidates.filter((lab) =>
+              LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+            );
+          }
+          // Filter to labs offering a specific test
+          if (list.testSlug) {
+            candidates = candidates.filter((lab) =>
+              LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && p.testSlug === list.testSlug)
+            );
+          }
 
           return candidates
             .map((lab) => ({ lab, price: cheapestPriceForLab(lab.slug) }))
@@ -929,11 +1161,23 @@ export function getLabListItems(list: LabList): LabListItem[] {
             .map((r, i) => labToItem(i + 1, r.lab, r.price, "From"));
         }
 
-        // Generic home-collection (any fee)
+        // Generic home-collection (any fee, optionally filtered by category or test)
         case "home-collection": {
-          const candidates = list.citySlug
+          let candidates = list.citySlug
             ? getLabsByCity(list.citySlug).filter((l) => l.homeCollection)
             : LAB_PROFILES.filter((l) => l.homeCollection);
+
+          if (list.categorySlug) {
+            const catTests = new Set(LAB_TESTS.filter((t) => t.category === list.categorySlug).map((t) => t.slug));
+            candidates = candidates.filter((lab) =>
+              LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && catTests.has(p.testSlug))
+            );
+          }
+          if (list.testSlug) {
+            candidates = candidates.filter((lab) =>
+              LAB_TEST_PRICES.some((p) => p.labSlug === lab.slug && p.testSlug === list.testSlug)
+            );
+          }
 
           return candidates
             .map((lab) => ({ lab, price: cheapestPriceForLab(lab.slug) }))
