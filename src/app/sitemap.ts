@@ -16,6 +16,7 @@ import { CONDITIONS } from "@/lib/constants/conditions";
 import { LAB_PROFILES, LAB_TESTS, LAB_TEST_PRICES, TEST_CATEGORIES } from "@/lib/constants/labs";
 import { getAllLabLists } from "@/lib/labs-lists";
 import { CITIES } from "@/lib/constants/cities";
+import { getAllComparisonSlugs } from "@/lib/compare";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works",
@@ -404,6 +405,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
+    });
+  }
+
+  // ─── Comparison pages ─────────────────────────────────────────────────────
+  entries.push({
+    url: `${baseUrl}/directory/compare`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  });
+  for (const compSlug of getAllComparisonSlugs()) {
+    entries.push({
+      url: `${baseUrl}/directory/compare/${compSlug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
     });
   }
 
