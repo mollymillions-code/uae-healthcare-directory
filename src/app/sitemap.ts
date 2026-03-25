@@ -38,6 +38,10 @@ const INSURANCE_GUIDE_SLUGS = [
   "switching-health-insurance",
 ];
 
+// Force dynamic to avoid build-time timeout with 32k+ URLs
+export const dynamic = "force-dynamic";
+export const revalidate = 3600; // Cache for 1 hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl();
   const cities = getCities();
