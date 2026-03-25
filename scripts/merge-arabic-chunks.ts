@@ -15,18 +15,54 @@ function main() {
   const chunkFiles = readdirSync(CHUNKS_DIR).filter((f) => f.startsWith("ar-") && f.endsWith(".json")).sort();
   console.log(`Found ${chunkFiles.length} Arabic chunk files`);
 
+  // Build a slug-to-index lookup for array-format chunks
+  const slugToIndex = new Map<string, number>();
+  for (let i = 0; i < providers.length; i++) {
+    if (providers[i].slug) slugToIndex.set(providers[i].slug, i);
+    if (providers[i].id) slugToIndex.set(providers[i].id, i);
+  }
+
   let merged = 0;
   for (const file of chunkFiles) {
-    const chunk = JSON.parse(readFileSync(join(CHUNKS_DIR, file), "utf-8"));
+    const raw = JSON.parse(readFileSync(join(CHUNKS_DIR, file), "utf-8"));
     let fileMerged = 0;
-    for (const [indexStr, data] of Object.entries(chunk)) {
-      const idx = parseInt(indexStr);
-      if (idx < 0 || idx >= providers.length) continue;
-      const ar = data as { descriptionAr?: string; reviewSummaryAr?: string[] };
-      if (ar.descriptionAr) providers[idx].descriptionAr = ar.descriptionAr;
-      if (ar.reviewSummaryAr?.length) providers[idx].reviewSummaryAr = ar.reviewSummaryAr;
-      fileMerged++;
+
+    if (Array.isArray(raw)) {
+      // Array format: [{id, descriptionAr, reviewSummaryAr}, ...]
+      // Try to extract range from filename: ar-5000-5999.json -> offset 5000
+      const rangeMatch = file.match(/ar-(\d+)-/);
+      const offset = rangeMatch ? parseInt(rangeMatch[1]) : -1;
+
+      for (let j = 0; j < raw.length; j++) {
+        const item = raw[j] as { id?: string; descriptionAr?: string; reviewSummaryAr?: string[] };
+        // Try index-based mapping first
+        const idx = offset >= 0 ? offset + j : -1;
+        if (idx >= 0 && idx < providers.length && item.descriptionAr) {
+          providers[idx].descriptionAr = item.descriptionAr;
+          if (item.reviewSummaryAr?.length) providers[idx].reviewSummaryAr = item.reviewSummaryAr;
+          fileMerged++;
+        } else if (item.id) {
+          // Fallback: match by id/slug
+          const lookupIdx = slugToIndex.get(item.id);
+          if (lookupIdx !== undefined && item.descriptionAr) {
+            providers[lookupIdx].descriptionAr = item.descriptionAr;
+            if (item.reviewSummaryAr?.length) providers[lookupIdx].reviewSummaryAr = item.reviewSummaryAr;
+            fileMerged++;
+          }
+        }
+      }
+    } else {
+      // Dict format: {"index": {descriptionAr, reviewSummaryAr}, ...}
+      for (const [indexStr, data] of Object.entries(raw)) {
+        const idx = parseInt(indexStr);
+        if (isNaN(idx) || idx < 0 || idx >= providers.length) continue;
+        const ar = data as { descriptionAr?: string; reviewSummaryAr?: string[] };
+        if (ar.descriptionAr) providers[idx].descriptionAr = ar.descriptionAr;
+        if (ar.reviewSummaryAr?.length) providers[idx].reviewSummaryAr = ar.reviewSummaryAr;
+        fileMerged++;
+      }
     }
+
     merged += fileMerged;
     console.log(`  ${file}: ${fileMerged} merged`);
   }
