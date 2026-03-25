@@ -5,8 +5,8 @@
  * Usage: npx tsx scripts/seed-journal-to-db.ts
  */
 
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import * as dotenv from "dotenv";
 import { journalArticles } from "../src/lib/db/schema";
 import { SEED_ARTICLES } from "../src/lib/intelligence/seed-articles";
@@ -18,8 +18,8 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql);
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
 
 async function seedJournalArticles() {
   console.log("📰 Seeding journal articles to database...\n");
@@ -67,4 +67,4 @@ async function seedJournalArticles() {
   console.log(`\n✅ Done. ${inserted} inserted, ${skipped} skipped.`);
 }
 
-seedJournalArticles().catch(console.error);
+seedJournalArticles().catch(console.error).finally(() => pool.end());

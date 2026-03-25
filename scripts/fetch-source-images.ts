@@ -4,9 +4,21 @@
  * the og:image meta tag to get the real editorial photo.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 async function fetchOgImage(url: string): Promise<string | null> {
   try {
@@ -42,7 +54,8 @@ async function fetchOgImage(url: string): Promise<string | null> {
 }
 
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
 
   const articles = await sql`
     SELECT id, slug, title, source_url, image_url
@@ -76,6 +89,8 @@ async function main() {
   }
 
   console.log(`\nDone: ${found} images found, ${failed} failed`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

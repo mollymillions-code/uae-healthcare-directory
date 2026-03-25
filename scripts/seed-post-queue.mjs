@@ -1,12 +1,26 @@
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
+const { Pool } = pg;
 import { readFileSync } from 'fs';
+
+function createSql(pool) {
+  return async (strings, ...values) => {
+    let text = '';
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 // Read DATABASE_URL from .env.local
 const envContent = readFileSync('.env.local', 'utf-8');
 const dbUrl = envContent.match(/DATABASE_URL="([^"]+)"/)?.[1];
 if (!dbUrl) throw new Error('DATABASE_URL not found in .env.local');
 
-const sql = neon(dbUrl);
+const pool = new Pool({ connectionString: dbUrl });
+const sql = createSql(pool);
 
 const RUN_ID = 'a0c3c061-3eea-4f96-9667-eb8e8abda5c9';
 const SLUG = 'uae-patient-no-show-cost-2026';
@@ -333,4 +347,4 @@ async function seed() {
   console.log('\nDone. 12 posts seeded.');
 }
 
-seed().catch(err => { console.error(err); process.exit(1); });
+seed().catch(err => { console.error(err); process.exit(1); }).finally(() => pool.end());

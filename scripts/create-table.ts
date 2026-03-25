@@ -1,9 +1,22 @@
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
+
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
 
   await sql`
     CREATE TABLE IF NOT EXISTS journal_articles (
@@ -40,6 +53,8 @@ async function main() {
 
   const count = await sql`SELECT COUNT(*) FROM journal_articles`;
   console.log("Current row count:", count[0].count);
+
+  await pool.end();
 }
 
 main().catch(console.error);

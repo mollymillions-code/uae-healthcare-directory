@@ -3,10 +3,22 @@
  * Forces regeneration even if image exists.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY!;
 const IMG_DIR = "public/images/intelligence";
@@ -65,7 +77,8 @@ NO text, NO words, NO numbers, NO watermarks, NO logos. 16:9 landscape. Photorea
 async function main() {
   if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
 
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
   const articles = await sql`SELECT id, slug, title FROM journal_articles ORDER BY published_at DESC`;
 
   console.log(`Regenerating images for ${articles.length} articles...\n`);
@@ -91,6 +104,8 @@ async function main() {
   }
 
   console.log(`\nDone: ${done} regenerated, ${failed} failed`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

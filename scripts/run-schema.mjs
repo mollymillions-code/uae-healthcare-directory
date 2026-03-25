@@ -1,8 +1,22 @@
-import { neon } from '@neondatabase/serverless'
+import pg from 'pg';
+const { Pool } = pg;
+
+function createSql(pool) {
+  return async (strings, ...values) => {
+    let text = '';
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 const DATABASE_URL = 'postgresql://neondb_owner:npg_of39WSHMlnvG@ep-dawn-shape-aefjck3y.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require'
 
-const sql = neon(DATABASE_URL)
+const pool = new Pool({ connectionString: DATABASE_URL })
+const sql = createSql(pool)
 
 console.log('Creating tables...')
 
@@ -137,3 +151,5 @@ const tables = await sql`SELECT tablename FROM pg_tables WHERE schemaname = 'pub
 console.log('\nAll tables:')
 tables.forEach(t => console.log(`  - ${t.tablename}`))
 console.log('\nDone.')
+
+await pool.end()

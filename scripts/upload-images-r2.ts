@@ -7,7 +7,7 @@
 import { execSync } from "child_process";
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
@@ -17,8 +17,21 @@ const R2_PUBLIC_URL = "https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev";
 const IMG_DIR = join(process.cwd(), "public/images/intelligence");
 const COMPRESSED_DIR = "/tmp/zavis-compressed";
 
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
+
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
 
   // Get all articles from DB
   const articles = await sql`SELECT id, slug, image_url FROM journal_articles`;
@@ -149,6 +162,8 @@ async function main() {
   }
 
   console.log(`\n=== Done: ${uploaded} uploaded, ${failed} failed ===`);
+
+  await pool.end();
 }
 
 function buildImagePrompt(title: string, category: string): string {

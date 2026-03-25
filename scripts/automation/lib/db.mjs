@@ -1,14 +1,16 @@
 /**
- * Direct NeonDB connection for automation scripts.
+ * Direct PostgreSQL connection for automation scripts.
  * Reads DATABASE_URL from .env.local.
+ * Migrated from @neondatabase/serverless to pg (node-postgres).
  */
 
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
+const { Pool } = pg;
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { PROJECT_ROOT } from './config.mjs';
 
-let _sql = null;
+let _pool = null;
 
 function loadEnv() {
   const envPath = join(PROJECT_ROOT, '.env.local');
@@ -34,15 +36,29 @@ function loadEnv() {
   }
 }
 
-export function getDb() {
-  if (!_sql) {
+function getPool() {
+  if (!_pool) {
     loadEnv();
     if (!process.env.DATABASE_URL) {
       throw new Error('DATABASE_URL is not set. Check .env.local');
     }
-    _sql = neon(process.env.DATABASE_URL);
+    _pool = new Pool({ connectionString: process.env.DATABASE_URL });
   }
-  return _sql;
+  return _pool;
+}
+
+// Tagged template SQL function — drop-in replacement for neon()
+export function getDb() {
+  const pool = getPool();
+  return async (strings, ...values) => {
+    let text = '';
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result = await pool.query(text, values);
+    return result.rows;
+  };
 }
 
 // ── Helper functions ────────────────────────────────────────────────

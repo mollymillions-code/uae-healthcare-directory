@@ -3,10 +3,22 @@
  * Saves to public/images/intelligence/ and updates the DB.
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 const API_KEY = process.env.GEMINI_API_KEY!;
 const MODEL = "gemini-3.1-flash-image-preview";
@@ -62,7 +74,8 @@ async function generateImage(slug: string, title: string, category: string): Pro
 async function main() {
   if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
 
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
   const articles = await sql`SELECT id, slug, title, category, image_url FROM journal_articles WHERE image_url IS NULL OR image_url = ''`;
 
   console.log(`${articles.length} articles need images\n`);
@@ -78,6 +91,8 @@ async function main() {
   }
 
   console.log(`\nDone: ${done} images generated and saved to DB`);
+
+  await pool.end();
 }
 
 main().catch(console.error);

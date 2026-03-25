@@ -6,10 +6,23 @@
  * Usage: npx tsx scripts/run-pipeline-persist.ts
  */
 
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
+
+// Tagged template SQL helper (replaces neon() interface)
+function createSql(pool: Pool) {
+  return async (strings: TemplateStringsArray, ...values: unknown[]): Promise<Record<string, unknown>[]> => {
+    let text = "";
+    for (let i = 0; i < strings.length; i++) {
+      text += strings[i];
+      if (i < values.length) text += `$${i + 1}`;
+    }
+    const result: QueryResult = await pool.query(text, values);
+    return result.rows;
+  };
+}
 
 import { fetchAllFeeds, filterRelevantItems } from "../src/lib/intelligence/automation/feeds";
 import { generateArticleBatch } from "../src/lib/intelligence/automation/summarize";
@@ -91,7 +104,8 @@ NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Visually
 // ─── Main Pipeline ──────────────────────────────────────────────────────────────
 
 async function main() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const sql = createSql(pool);
   console.log("=== Full Autonomous Pipeline ===\n");
 
   // 1. Fetch all feeds
@@ -190,6 +204,7 @@ async function main() {
 
   const finalCount = await sql`SELECT COUNT(*) FROM journal_articles`;
   console.log(`\n=== Done: ${persisted} new articles. Total in DB: ${finalCount[0].count} ===`);
+  await pool.end();
 }
 
 main().catch(console.error);
