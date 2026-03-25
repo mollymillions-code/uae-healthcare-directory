@@ -1,5 +1,14 @@
 # Zavis Landing - Changelog
 
+## 2026-03-25 — [Claude Code] Description Enrichment Fix (6000-9999)
+
+- Wrote 4000 new provider descriptions for ALL indices 6000-9999 (all had "licensed and regulated by" pattern from prior enrichment run)
+- Also resolved 11 git merge conflicts in `src/lib/providers-scraped.json` (took HEAD version for all)
+- Each description: 80-112 words (avg 89), no banned phrases, warm and professional tone
+- Includes: facility name + type (inferred from facilityType + name + services) + area/city, type-specific service sentences (pharmacy/warehouse/optical/dental/school/nursery/first aid/ayurvedic/general), patient rating + review count, language accessibility, correct regulator (DHA/DOH/MOHAP by city), phone contact
+- 3-way sentence variation (idx % 3) to avoid duplicate phrasing across entries
+- Output: `scripts/enrichment-chunks/fix-6000-9999.json` — 4000 entries, format: `{"index": {"description": "..."}}`
+
 ## 2026-03-25 — [Claude Code] Description Enrichment Fix (3000-5999)
 
 - Wrote 615 new provider descriptions for indices 5000-5998 (all providers in 3000-5999 range where description contained "Licensed by" or was under 50 words — all 615 were in 5000-5998)
