@@ -10,7 +10,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import { CONDITIONS } from "@/lib/constants/conditions";
-import { LAB_PROFILES, LAB_TESTS, TEST_CATEGORIES } from "@/lib/constants/labs";
+import { LAB_PROFILES, LAB_TESTS, LAB_TEST_PRICES, TEST_CATEGORIES } from "@/lib/constants/labs";
 import { getAllLabLists } from "@/lib/labs-lists";
 import { CITIES } from "@/lib/constants/cities";
 
@@ -329,6 +329,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/labs/home-collection`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/labs/packages`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   );
+  // Home collection per city + city×category permutations
+  for (const city of CITIES) {
+    const hcLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug) && l.homeCollection);
+    if (hcLabs.length === 0) continue;
+    entries.push({
+      url: `${baseUrl}/labs/home-collection/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+    const hcLabSlugs = new Set(hcLabs.map((l) => l.slug));
+    for (const cat of TEST_CATEGORIES) {
+      const hasCatTests = LAB_TESTS.some(
+        (t) => t.category === cat.slug && LAB_TEST_PRICES.some((p) => hcLabSlugs.has(p.labSlug) && p.testSlug === t.slug)
+      );
+      if (hasCatTests) {
+        entries.push({
+          url: `${baseUrl}/labs/home-collection/${city.slug}/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
+    }
+  }
   // City-specific lab pages + city×category permutations
   for (const city of CITIES) {
     const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
