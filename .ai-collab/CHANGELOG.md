@@ -2,6 +2,9 @@
 
 ## 2026-03-25
 
+### Tracking & Analytics
+- Added Reb2b visitor identification script (`GOYPYHQZ9POX`) to root layout alongside existing GTM, Google Ads, Twitter, Clarity, LinkedIn, and Meta pixels
+
 ### Migration from Vercel to Self-Hosted EC2
 - Switched DB driver from `@neondatabase/serverless` (neon-http) to `pg` (node-postgres) in 3 files:
   - `src/lib/db/index.ts` — Main Drizzle ORM connection
