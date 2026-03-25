@@ -682,6 +682,90 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
+  // ─── Lab Guides (/labs/guides/[guide] + /labs/guides/[guide]/[city]) ─────
+  const GUIDE_SLUGS_LABS = [
+    "visa-medical", "pre-marital-screening", "pregnancy-tests", "walk-in-labs",
+    "weekend-labs", "same-day-results", "mens-health-40-plus", "womens-health-30-plus",
+    "senior-health-screening", "corporate-health-check",
+  ];
+  for (const guide of GUIDE_SLUGS_LABS) {
+    entries.push({
+      url: `${baseUrl}/labs/guides/${guide}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    });
+    for (const city of CITIES) {
+      const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
+      if (cityLabs.length >= 2) {
+        entries.push({
+          url: `${baseUrl}/labs/guides/${guide}/${city.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.7,
+        });
+      }
+    }
+  }
+
+  // ─── Lab Conditions (/labs/conditions/[condition] + /[city]) ───────────
+  const CONDITION_SLUGS = [
+    "pcos", "diabetes", "anemia", "thyroid-disorders", "heart-disease",
+    "liver-disease", "kidney-disease", "fertility", "std-screening",
+    "vitamin-deficiency", "allergy-testing", "prostate-health",
+  ];
+  for (const condition of CONDITION_SLUGS) {
+    entries.push({
+      url: `${baseUrl}/labs/conditions/${condition}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    });
+    for (const city of CITIES) {
+      const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
+      if (cityLabs.length >= 1) {
+        entries.push({
+          url: `${baseUrl}/labs/conditions/${condition}/${city.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.7,
+        });
+      }
+    }
+  }
+
+  // ─── Lab vs Lab comparisons (/labs/vs/[comparison]) ────────────────────
+  for (let i = 0; i < LAB_PROFILES.length; i++) {
+    for (let j = i + 1; j < LAB_PROFILES.length; j++) {
+      const [a, b] = [LAB_PROFILES[i].slug, LAB_PROFILES[j].slug].sort();
+      const aPrices = LAB_TEST_PRICES.filter((p) => p.labSlug === a).length;
+      const bPrices = LAB_TEST_PRICES.filter((p) => p.labSlug === b).length;
+      if (aPrices >= 5 && bPrices >= 5) {
+        entries.push({
+          url: `${baseUrl}/labs/vs/${a}-vs-${b}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.7,
+        });
+      }
+    }
+  }
+
+  // ─── Test Results Interpretation (/labs/results/[test]) ────────────────
+  const RESULTS_SLUGS = [
+    "cbc", "vitamin-d", "vitamin-b12", "lipid-profile", "hba1c", "tsh",
+    "thyroid-panel", "lft", "kft", "iron-studies", "fasting-glucose",
+    "testosterone", "amh", "psa", "hiv-test", "crp",
+  ];
+  for (const test of RESULTS_SLUGS) {
+    entries.push({
+      url: `${baseUrl}/labs/results/${test}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    });
+  }
+
   // ─── Insurance Navigator (root) ──────────────────────────────────────────
   entries.push({
     url: `${baseUrl}/insurance`,
