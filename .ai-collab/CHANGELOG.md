@@ -1,5 +1,30 @@
 # Zavis Landing - Changelog
 
+## 2026-03-25 — [Claude Code] 24-Hour Provider Pages + Area-Level Insurance Pages
+
+- **New file:** `src/app/(directory)/directory/[city]/24-hours/page.tsx` — 24-hour provider filtered pages for all 8 cities
+- **Modified:** `src/app/(directory)/directory/[city]/[...segments]/page.tsx` — Added `area-insurance` resolved type for `/directory/[city]/[area]/insurance`
+- **Modified:** `src/app/sitemap.ts` — Added 24-hours URLs for all 8 cities + area-insurance URLs for all areas with providers
+- **Why:** SEO capture for "24 hour clinic Dubai", "open now pharmacy Abu Dhabi", "insurance JLT Dubai" queries
+- **Impact:** 8 new 24-hours city pages + ~62 area-insurance pages, all with JSON-LD, FAQs, answer blocks, cross-links
+
+## 2026-03-25 — [Claude Code] Insurer vs Insurer Head-to-Head Comparison Pages
+
+- **New file:** `src/app/(directory)/insurance/compare/[matchup]/page.tsx` — Programmatic comparison pages for top insurer matchups
+- **Modified:** `src/app/sitemap.ts` — Added ~45 matchup URLs for top 10 insurers by network size
+- **Why:** SEO/AEO play — captures "Daman vs AXA" and similar comparison search queries with rich structured data
+- **Impact:** ~45 new statically generated pages with JSON-LD, dynamic FAQs, side-by-side tables, network bar charts, plan cards, and verdict blocks
+
+## 2026-03-25 — [Claude Code] Description Enrichment Fix (1763-2440)
+
+- Rewrote 500 provider descriptions at indices 1763-2440 where description contained boilerplate "Licensed and regulated by" text
+- All 500 entries: 80-105 words (avg 86), 100% in 80-120 word range
+- All providers are Dubai-based (DHA regulated)
+- 30+ facility types handled: polyclinics (160), optical centers (72), community pharmacies (68), school clinics (47), home healthcare (25), clinical support centers, day surgery, beauty centers, hospitals, laboratories, fertility centers, TCAM clinics, dental labs, cord blood centers, and more
+- Name-based specialty detection for correct service descriptions (dental, derma, gynae, nutrition, physio, Ayurveda, autism, Down syndrome, early intervention, chiropractic, osteopathy, prosthetics, etc.)
+- FT health desk voice throughout — no AI-tells, no banned words, no promotional tone
+- Output: `scripts/enrichment-chunks/fix2-1763-2440.json` — 500 entries, format: `{"index": {"description": "..."}}`
+
 ## 2026-03-25 — [Claude Code] Description Enrichment Fix (6000-9999)
 
 - Wrote 4000 new provider descriptions for ALL indices 6000-9999 (all had "licensed and regulated by" pattern from prior enrichment run)

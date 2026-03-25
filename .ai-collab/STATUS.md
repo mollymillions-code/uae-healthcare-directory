@@ -127,6 +127,20 @@ This is a PRODUCTION branch — there is no staging environment. Every push to `
 
 ---
 
+## Active Work
+
+None currently.
+
+## Recently Completed (last 48h)
+
+- **Claude Code** (2026-03-25T22:45:00+04:00) — Built 24-hour provider filtered pages (`/directory/[city]/24-hours`) and area-level insurance pages (`/directory/[city]/[area]/insurance`). 24-hours page includes: answer block with category breakdown, sorted provider list (cap 50), emergency info section (998/999/997/112), 5 FAQs, JSON-LD (BreadcrumbList, ItemList, FAQPage, SpeakableSpecification), cross-links, and sitemap entries. Area insurance page integrated into catch-all `[...segments]` route with insurer breakdown by area, top 5 ranked list, full insurer grid, 5 FAQs, and sitemap entries.
+
+- **Claude Code** (2026-03-25T20:30:00+04:00) — Built insurer vs insurer head-to-head comparison pages at `/insurance/compare/[matchup]`. Generates top ~45 matchups (C(10,2)) from top 10 insurers by network size. Includes hero, answer blocks, side-by-side comparison table, network-by-city bar chart, plan cards, verdict section, 6 dynamic FAQs, JSON-LD (BreadcrumbList, FAQPage, SpeakableSpecification), and cross-links. Updated sitemap.ts with matchup URLs.
+
+- **Claude Code** (2026-03-25T00:00:00+04:00) — Rewrote 500 provider descriptions at indices 1763-2440 containing boilerplate "Licensed and regulated by" text. All 500 descriptions are 80-120 words in FT health desk voice. Saved to scripts/enrichment-chunks/fix2-1763-2440.json
+
+---
+
 ## Other Services on Same EC2
 - `ontology-app` (port 3100) — Zavis Ontology platform
 - Postiz / socials — Social media engine

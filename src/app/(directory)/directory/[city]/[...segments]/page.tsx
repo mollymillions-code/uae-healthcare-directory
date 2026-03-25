@@ -14,6 +14,7 @@ import {
   getAreaBySlug, getAreasByCity, getSubcategoriesByCategory,
   getProviderBySlug, getProviders, getTopRatedProviders,
   getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
+  getInsuranceProviders,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema, itemListSchema,
@@ -88,6 +89,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
 
     const area = getAreaBySlug(citySlug, seg1);
     if (area) {
+      if (seg2 === "insurance") return { type: "area-insurance" as const, area };
       const cat2 = getCategoryBySlug(seg2);
       if (cat2) return { type: "area-category" as const, area, category: cat2 };
       return null;
@@ -133,6 +135,14 @@ export async function generateStaticParams() {
             params.push({ city: city.slug, segments: [area.slug, cat.slug] });
           }
         }
+      }
+    }
+
+    // Area + Insurance pages — only if area has providers
+    for (const area of areas) {
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
+        params.push({ city: city.slug, segments: [area.slug, "insurance"] });
       }
     }
 
@@ -202,6 +212,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             'en-AE': `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           },
+        },
+      };
+    }
+    case "area-insurance": {
+      const { area } = resolved;
+      const url = `${base}/directory/${city.slug}/${area.slug}/insurance`;
+      return {
+        title: `Insurance Coverage in ${area.name}, ${city.name} | UAE Open Healthcare Directory`,
+        description: `Find healthcare providers by insurance plan in ${area.name}, ${city.name}, UAE. Browse accepted insurers — Daman, Thiqa, AXA, Cigna, and more. Verified listings, last updated March 2026.`,
+        alternates: { canonical: url },
+        openGraph: {
+          title: `Insurance Coverage in ${area.name}, ${city.name}`,
+          description: `Healthcare providers by insurance plan in ${area.name}, ${city.name}. Browse all accepted insurers.`,
+          url,
+          type: "website",
         },
       };
     }
@@ -414,6 +439,215 @@ export default function CatchAllPage({ params, searchParams }: Props) {
           </div>
         )}
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${area.name} — FAQ`} />
+      </div>
+    );
+  }
+
+  // --- Area + Insurance Page ---
+  if (resolved.type === "area-insurance") {
+    const { area } = resolved;
+    const insurers = getInsuranceProviders();
+
+    // Get all providers in this area
+    const { providers: areaProviders } = getProviders({ citySlug: city.slug, areaSlug: area.slug, limit: 99999 });
+
+    // Count providers per insurer in this area
+    const insurerBreakdown = insurers
+      .map((ins) => {
+        const matchTerms = [ins.slug, ins.name.toLowerCase()];
+        const count = areaProviders.filter((p) =>
+          p.insurance.some((pIns) => matchTerms.some((term) => pIns.toLowerCase().includes(term)))
+        ).length;
+        return { ...ins, count };
+      })
+      .filter((i) => i.count > 0)
+      .sort((a, b) => b.count - a.count);
+
+    const top5 = insurerBreakdown.slice(0, 5);
+    const totalProviders = areaProviders.length;
+
+    const regulator = city.slug === "dubai"
+      ? "the Dubai Health Authority (DHA)"
+      : (city.slug === "abu-dhabi" || city.slug === "al-ain")
+        ? "the Department of Health (DOH)"
+        : "the Ministry of Health and Prevention (MOHAP)";
+
+    const mandateNote = city.slug === "dubai"
+      ? "Dubai mandates health insurance for all residents and employees under the DHA Essential Benefits Plan."
+      : (city.slug === "abu-dhabi" || city.slug === "al-ain")
+        ? "Abu Dhabi requires mandatory health insurance for all residents under DOH regulations. UAE nationals receive Thiqa coverage."
+        : "Health insurance follows UAE federal MOHAP guidelines. Most employers provide group health plans.";
+
+    const areaInsuranceFaqs = [
+      {
+        question: `Which insurance plans are accepted in ${area.name}, ${city.name}?`,
+        answer: `According to the UAE Open Healthcare Directory, healthcare providers in ${area.name}, ${city.name} accept ${insurerBreakdown.length} different insurance plans. ${top5.length > 0 ? `The most widely accepted are ${top5.map((i) => `${i.name} (${i.count} providers)`).join(", ")}.` : ""} ${mandateNote} Check individual provider listings for plan-specific acceptance.`,
+      },
+      {
+        question: `How many healthcare providers are in ${area.name}, ${city.name}?`,
+        answer: `The UAE Open Healthcare Directory lists ${totalProviders} healthcare ${totalProviders === 1 ? "provider" : "providers"} in ${area.name}, ${city.name}. These include hospitals, clinics, pharmacies, and specialist centers. All providers are licensed by ${regulator}. Data last verified March 2026.`,
+      },
+      {
+        question: `Do providers in ${area.name} accept Daman insurance?`,
+        answer: `${(() => { const daman = insurerBreakdown.find((i) => i.slug === "daman"); return daman ? `Yes. ${daman.count} healthcare ${daman.count === 1 ? "provider" : "providers"} in ${area.name}, ${city.name} accept Daman insurance.` : `Check individual provider listings in ${area.name} for Daman acceptance.`; })()} Daman is the UAE's largest health insurer, covering over 3 million lives. Browse individual listings on the UAE Open Healthcare Directory for detailed insurance acceptance.`,
+      },
+      {
+        question: `Is health insurance required in ${city.name}?`,
+        answer: `${mandateNote} All residents and employees must have valid health insurance coverage. In ${area.name}, ${city.name}, most healthcare providers accept a wide range of insurance plans. Uninsured patients may pay out-of-pocket, but emergency care cannot be refused regardless of insurance status.`,
+      },
+      {
+        question: `Where can I find doctors that accept my insurance in ${area.name}?`,
+        answer: `Browse the UAE Open Healthcare Directory to find healthcare providers in ${area.name}, ${city.name} by insurance plan. Use the insurance filter on individual provider listings or visit the ${city.name} insurance index to see all accepted plans. Always confirm insurance acceptance directly with the provider before your visit.`,
+      },
+    ];
+
+    return (
+      <div className="container-tc py-8">
+        {/* JSON-LD */}
+        <JsonLd data={breadcrumbSchema([
+          { name: "UAE", url: base },
+          { name: city.name, url: `${base}/directory/${city.slug}` },
+          { name: area.name, url: `${base}/directory/${city.slug}/${area.slug}` },
+          { name: "Insurance" },
+        ])} />
+        <JsonLd data={faqPageSchema(areaInsuranceFaqs)} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        {/* Breadcrumb */}
+        <Breadcrumb items={[
+          { label: "UAE", href: "/" },
+          { label: city.name, href: `/directory/${city.slug}` },
+          { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
+          { label: "Insurance" },
+        ]} />
+
+        {/* Header */}
+        <h1 className="text-3xl font-bold text-dark mb-2">
+          Insurance Coverage in {area.name}, {city.name}
+        </h1>
+        <p className="text-sm text-muted mb-6">
+          {totalProviders} providers &middot; {insurerBreakdown.length} accepted insurers &middot; Last updated March 2026
+        </p>
+
+        {/* Answer Block */}
+        <div className="answer-block mb-8" data-answer-block="true">
+          <p className="text-muted leading-relaxed">
+            According to the UAE Open Healthcare Directory, {totalProviders} healthcare {totalProviders === 1 ? "provider" : "providers"} in {area.name}, {city.name} accept
+            insurance from {insurerBreakdown.length} different {insurerBreakdown.length === 1 ? "plan" : "plans"}.
+            {top5.length > 0 && ` The most widely accepted insurers are ${top5.map((i) => i.name).join(", ")}.`}
+            {" "}{mandateNote} All listings are regulated by {regulator}, last verified March 2026.
+          </p>
+        </div>
+
+        {/* Top 5 Insurers */}
+        {top5.length > 0 && (
+          <section className="mb-10">
+            <div className="section-header">
+              <h2>Most Accepted Insurers in {area.name}</h2>
+              <span className="arrows">&gt;&gt;&gt;</span>
+            </div>
+            <div className="space-y-0">
+              {top5.map((ins, idx) => (
+                <div key={ins.slug} className="flex items-center gap-3 py-3 border-b border-light-200 last:border-b-0">
+                  <span className="text-xs font-bold text-muted w-5 flex-shrink-0">#{idx + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/directory/${city.slug}/insurance/${ins.slug}`}
+                      className="text-sm font-bold text-dark hover:text-accent transition-colors block truncate"
+                    >
+                      {ins.name}
+                    </Link>
+                    <p className="text-xs text-muted truncate">{ins.description}</p>
+                  </div>
+                  <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                    {ins.count} {ins.count === 1 ? "provider" : "providers"}
+                  </span>
+                  <span className="badge text-[9px] flex-shrink-0">{ins.type}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* All Insurers Grid */}
+        <section className="mb-10">
+          <div className="section-header">
+            <h2>All Insurance Plans Accepted in {area.name}</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
+          </div>
+          {insurerBreakdown.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {insurerBreakdown.map((ins) => (
+                <Link
+                  key={ins.slug}
+                  href={`/directory/${city.slug}/insurance/${ins.slug}`}
+                  className="block border border-light-200 p-4 hover:border-accent transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
+                    <span className="badge text-[9px]">{ins.type}</span>
+                  </div>
+                  <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
+                  <p className="text-xs font-bold text-accent">
+                    {ins.count} {ins.count === 1 ? "provider" : "providers"} in {area.name}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 border border-light-200">
+              <p className="text-muted mb-2">No insurance data available for {area.name} yet.</p>
+              <Link href={`/directory/${city.slug}/insurance`} className="text-accent text-sm font-bold">
+                View insurance plans for all of {city.name} &rarr;
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* FAQs */}
+        <FaqSection faqs={areaInsuranceFaqs} title={`Insurance in ${area.name}, ${city.name} — FAQ`} />
+
+        {/* Cross-links */}
+        <section className="mt-10 mb-10">
+          <div className="section-header">
+            <h2>Related Pages</h2>
+            <span className="arrows">&gt;&gt;&gt;</span>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <Link
+              href={`/directory/${city.slug}/insurance`}
+              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            >
+              Insurance in {city.name}
+            </Link>
+            <Link
+              href={`/directory/${city.slug}/${area.slug}`}
+              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            >
+              All healthcare in {area.name}
+            </Link>
+            <Link
+              href={`/directory/${city.slug}`}
+              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            >
+              All healthcare in {city.name}
+            </Link>
+            <Link
+              href="/insurance/compare"
+              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            >
+              Compare insurers
+            </Link>
+          </div>
+        </section>
+
+        {/* Disclaimer */}
+        <div className="border-t border-light-200 pt-4">
+          <p className="text-[11px] text-muted leading-relaxed">
+            <strong>Disclaimer:</strong> Insurance acceptance data is sourced from official health authority registers and provider-submitted data, last verified March 2026.
+            Insurance networks can change — always confirm with the provider&apos;s insurance desk before your visit.
+          </p>
+        </div>
       </div>
     );
   }

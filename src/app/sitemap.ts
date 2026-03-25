@@ -4,11 +4,13 @@ import {
   getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
   getProviderCountByInsurance, getProviderCountByLanguage,
   get24HourProviders, getEmergencyProviders,
+  getProvidersByInsurance, getProvidersByLanguage,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
+import { INSURER_PROFILES, getInsurerNetworkStats } from "@/lib/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import { CONDITIONS } from "@/lib/constants/conditions";
 import { LAB_PROFILES, LAB_TESTS, LAB_TEST_PRICES, TEST_CATEGORIES } from "@/lib/constants/labs";
@@ -24,6 +26,14 @@ const GUIDE_SLUGS = [
   "choosing-a-doctor-uae",
   "healthcare-free-zones-dubai",
   "emergency-services-uae",
+];
+
+const INSURANCE_GUIDE_SLUGS = [
+  "freelancer-health-insurance",
+  "maternity-insurance-uae",
+  "how-to-claim-health-insurance",
+  "domestic-worker-insurance",
+  "switching-health-insurance",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -97,6 +107,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }
     }
 
+    // ─── 24-Hour pages per city ────────────────────────────────────────────
+    entries.push({
+      url: `${baseUrl}/directory/${city.slug}/24-hours`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
+
+    // ─── Area + Insurance pages — only if area has providers ──────────────
+    for (const area of areas) {
+      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      if (areaCount > 0) {
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/${area.slug}/insurance`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
+    }
+
     // ─── Insurance pages per city — only if providers accept that insurer ──
     entries.push({
       url: `${baseUrl}/directory/${city.slug}/insurance`,
@@ -113,6 +144,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
           changeFrequency: "weekly",
           priority: 0.7,
         });
+
+        // Insurance × Category cross-reference pages (only where >= 2 providers)
+        const insurerProviders = getProvidersByInsurance(insurer.slug, city.slug);
+        for (const cat of categories) {
+          const catCount = insurerProviders.filter((p) => p.categorySlug === cat.slug).length;
+          if (catCount >= 2) {
+            entries.push({
+              url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`,
+              lastModified: new Date(),
+              changeFrequency: "weekly",
+              priority: 0.65,
+            });
+          }
+        }
       }
     }
 
@@ -135,6 +180,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }
     }
 
+    // ─── Language × Category pages per city ─────────────────────────────────
+    for (const lang of LANGUAGES) {
+      const langProviders = getProvidersByLanguage(lang.slug, city.slug);
+      if (langProviders.length === 0) continue;
+      for (const cat of categories) {
+        const catCount = langProviders.filter((p) => p.categorySlug === cat.slug).length;
+        if (catCount >= 2) {
+          entries.push({
+            url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}/${cat.slug}`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.65,
+          });
+        }
+      }
+    }
+
     // ─── Condition pages per city — only if related categories have providers
     entries.push({
       url: `${baseUrl}/directory/${city.slug}/condition`,
@@ -152,6 +214,39 @@ export default function sitemap(): MetadataRoute.Sitemap {
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 0.7,
+        });
+      }
+    }
+  }
+
+  // ─── Best [category] in [city] pages ────────────────────────────────────
+
+  // Master index: /best
+  entries.push({
+    url: `${baseUrl}/best`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  });
+
+  for (const city of cities) {
+    // City-level: /best/[city]
+    entries.push({
+      url: `${baseUrl}/best/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    });
+
+    // Category-level: /best/[city]/[category] — only where rated providers exist
+    for (const cat of categories) {
+      const bestCatCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      if (bestCatCount > 0) {
+        entries.push({
+          url: `${baseUrl}/best/${city.slug}/${cat.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.85,
         });
       }
     }
@@ -478,6 +573,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
+    });
+  }
+
+  // Insurer vs Insurer head-to-head comparison pages (top 10 by network size)
+  const top10Insurers = INSURER_PROFILES.map((p) => {
+    const stats = getInsurerNetworkStats(p.slug);
+    return { slug: p.slug, networkSize: stats?.totalProviders ?? 0 };
+  })
+    .sort((a, b) => b.networkSize - a.networkSize)
+    .slice(0, 10);
+
+  for (let i = 0; i < top10Insurers.length; i++) {
+    for (let j = i + 1; j < top10Insurers.length; j++) {
+      const [a, b] = [top10Insurers[i].slug, top10Insurers[j].slug].sort();
+      entries.push({
+        url: `${baseUrl}/insurance/compare/${a}-vs-${b}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  }
+
+  // ─── Insurance Guides ───────────────────────────────────────────────────
+  entries.push({
+    url: `${baseUrl}/insurance/guide`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  });
+  for (const slug of INSURANCE_GUIDE_SLUGS) {
+    entries.push({
+      url: `${baseUrl}/insurance/guide/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.65,
     });
   }
 
