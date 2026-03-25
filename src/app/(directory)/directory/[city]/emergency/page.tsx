@@ -46,7 +46,7 @@ function getRegulatorName(citySlug: string): string {
   return "the Ministry of Health and Prevention (MOHAP)";
 }
 
-function getEmergencyNumber(citySlug: string): string {
+function getEmergencyNumber(): string {
   // UAE unified emergency number
   return "998 (Ambulance) or 999 (Police/Fire)";
 }
@@ -84,7 +84,7 @@ export default function EmergencyCityPage({ params }: Props) {
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const emergencyNumber = getEmergencyNumber(city.slug);
+  const emergencyNumber = getEmergencyNumber();
   const count = providers.length;
 
   // Sort by rating descending

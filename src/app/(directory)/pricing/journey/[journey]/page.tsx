@@ -3,12 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowRight,
-  Clock,
-  DollarSign,
-  Shield,
   MapPin,
   CheckCircle2,
-  CircleDot,
+  Clock,
 } from "lucide-react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";

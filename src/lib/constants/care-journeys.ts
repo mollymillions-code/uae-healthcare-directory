@@ -6,7 +6,7 @@
  * Used to answer "How much does it cost to treat [condition] in [city]?"
  */
 
-import { getProcedureBySlug, formatAed, type CityPricing } from "./procedures";
+import { getProcedureBySlug } from "./procedures";
 import { CITIES } from "./cities";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────

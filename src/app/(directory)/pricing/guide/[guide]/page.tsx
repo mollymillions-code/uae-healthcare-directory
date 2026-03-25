@@ -10,7 +10,6 @@ import {
   Baby,
   ArrowRight,
   MapPin,
-  Lightbulb,
   TrendingDown,
   TrendingUp,
   Shield,

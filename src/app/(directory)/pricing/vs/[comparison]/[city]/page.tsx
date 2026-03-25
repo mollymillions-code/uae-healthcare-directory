@@ -89,8 +89,6 @@ export default async function CityComparisonPage({ params }: PageProps) {
   if (!pricingA || !pricingB) notFound();
 
   const cheaperProc = pricingA.typical < pricingB.typical ? procA : procB;
-  const pricierProc = pricingA.typical < pricingB.typical ? procB : procA;
-  const cheaperPricing = pricingA.typical < pricingB.typical ? pricingA : pricingB;
   const pricierPricing = pricingA.typical < pricingB.typical ? pricingB : pricingA;
   const priceDiff = Math.abs(pricingA.typical - pricingB.typical);
   const savingsPercent = Math.round((priceDiff / pricierPricing.typical) * 100);

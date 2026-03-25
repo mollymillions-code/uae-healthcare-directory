@@ -3,8 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowRight,
-  Clock,
-  DollarSign,
   MapPin,
   CheckCircle2,
   TrendingDown,
