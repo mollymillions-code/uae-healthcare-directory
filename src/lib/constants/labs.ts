@@ -587,7 +587,7 @@ export const LAB_TESTS: LabTest[] = [
     category: "liver",
     description:
       "Panel measuring ALT, AST, ALP, GGT, bilirubin, albumin, and total protein to assess liver health.",
-    fastingRequired: true,
+    fastingRequired: false,
     sampleType: "blood",
     turnaroundHours: 6,
     commonReasons: ["Liver health check", "Medication monitoring", "Alcohol use", "Fatty liver"],
@@ -613,7 +613,7 @@ export const LAB_TESTS: LabTest[] = [
     category: "kidney",
     description:
       "Panel measuring creatinine, BUN, eGFR, uric acid, and electrolytes to assess kidney health.",
-    fastingRequired: true,
+    fastingRequired: false,
     sampleType: "blood",
     turnaroundHours: 6,
     commonReasons: ["Kidney health check", "Diabetes monitoring", "Medication monitoring", "Hypertension"],

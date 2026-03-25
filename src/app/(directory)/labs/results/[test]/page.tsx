@@ -331,7 +331,7 @@ const TEST_INTERPRETATIONS: Record<string, TestInterpretation> = {
     nextSteps:
       "For iron deficiency anaemia: oral ferrous sulfate or ferrous gluconate 200–325 mg daily (taken with vitamin C to enhance absorption, not with tea, coffee, or calcium). Recheck haemoglobin and ferritin after 8–12 weeks. Continue supplementation for 3–6 months after haemoglobin normalises to replenish stores. For patients who cannot tolerate oral iron or have severe anaemia: intravenous iron infusion (ferric carboxymaltose is widely available in UAE hospitals). Always investigate and treat the source of blood loss — supplementation without addressing the cause will not maintain iron levels.",
     relatedTests: ["cbc", "vitamin-b12", "lft", "thyroid-panel"],
-    fastingRequired: false,
+    fastingRequired: true,
     howOften: "Annually for women of reproductive age and frequent blood donors. Every 3–6 months when correcting iron deficiency.",
   },
 
@@ -359,7 +359,7 @@ const TEST_INTERPRETATIONS: Record<string, TestInterpretation> = {
       "With a diabetes prevalence of approximately 17.3% and pre-diabetes approaching 25% of adults, the UAE is one of the most diabetes-affected countries in the world. Fasting glucose testing is part of UAE employer health mandates, visa medicals for certain categories, and the Abu Dhabi Weqaya cardiovascular screening programme. The test requires fasting, which can be challenging during Ramadan — healthcare providers typically advise pre-dawn (suhoor time) testing for accuracy during this period. Post-Ramadan glucose testing often reveals previously undiagnosed diabetes that was masked by inadvertent fasting during Ramadan.",
     nextSteps:
       "For pre-diabetes: structured lifestyle intervention targeting 5–7% weight loss and 150 minutes of moderate-intensity exercise weekly reduces diabetes progression by 58%. Dietary modification (reduce refined carbohydrates, increase fibre and vegetables, reduce sugar-sweetened drinks). Retest fasting glucose and HbA1c every 6 months. Metformin may be considered in high-risk individuals. For new diabetes diagnosis: see a general practitioner or endocrinologist for formal management — typically includes HbA1c, kidney and liver function, lipid profile, and urine albumin to assess for early complications.",
-    relatedTests: ["hba1c", "lipid-profile", "kft", "lft", "insulin"],
+    relatedTests: ["hba1c", "lipid-profile", "kft", "lft", "insulin-fasting"],
     fastingRequired: true,
     howOften: "Annually for adults over 35 or with risk factors. Every 3 months when managing diabetes.",
   },
@@ -387,7 +387,7 @@ const TEST_INTERPRETATIONS: Record<string, TestInterpretation> = {
       "Men's health and testosterone testing is rapidly growing in the UAE, driven by increasing awareness of hypogonadism in middle-aged men and a thriving wellness and hormone optimisation sector in Dubai and Abu Dhabi. The high rates of obesity and metabolic syndrome in the UAE are significant drivers — adipose tissue aromatises testosterone to oestrogen, lowering free testosterone in obese men. Anabolic steroid use among gym-going expats — particularly bodybuilders — is a recognised clinical issue; anabolic steroids suppress the hypothalamic-pituitary-testicular axis, causing secondary hypogonadism that may persist for months to years after cessation. TRT requires an endocrinologist or urologist prescription in the UAE.",
     nextSteps:
       "Confirm with two morning fasting samples. Add LH, FSH, and prolactin to distinguish primary from secondary hypogonadism. For men with secondary hypogonadism, pituitary evaluation is essential before starting TRT. For PCOS in women: lifestyle modification (weight loss), hormonal contraception for menstrual regulation, metformin for insulin resistance, and fertility specialist referral if conception is desired. Do not start TRT without specialist assessment — it permanently suppresses natural testosterone production and causes azoospermia.",
-    relatedTests: ["lh-fsh", "amh", "thyroid-panel", "lipid-profile", "hba1c"],
+    relatedTests: ["fsh", "amh", "thyroid-panel", "lipid-profile", "hba1c"],
     fastingRequired: true,
     howOften: "As clinically indicated. Men on TRT: every 3–6 months to monitor dose and haematocrit.",
   },
@@ -413,10 +413,10 @@ const TEST_INTERPRETATIONS: Record<string, TestInterpretation> = {
     whenToWorry:
       "See a fertility specialist promptly if AMH is below 1.0 ng/mL and you want to conceive — treatment windows are limited and waiting reduces options further. If AMH is undetectable before age 40 with irregular periods and menopausal symptoms (hot flashes, night sweats), seek evaluation for Premature Ovarian Insufficiency. If planning to delay pregnancy beyond your mid-30s, an AMH test in your late 20s or early 30s provides useful information for fertility planning, though it cannot predict when you will stop being fertile altogether.",
     uaeContext:
-      "The UAE has a thriving fertility medicine sector, with internationally accredited IVF centres in Dubai and Abu Dhabi (Fakih IVF, Bourn Hall, Medcare, American Hospital IVF). UAE law permits IVF only within marriage, and the large community of married expat couples — many delaying childbearing due to career and financial reasons — drives substantial demand. AMH is a standard part of new patient workups at all UAE fertility centres. It is widely available at UAE diagnostic labs without a referral, and its affordability (AED 80–200) has made proactive ovarian reserve testing increasingly common among women in their late 20s and 30s living in the UAE.",
+      "The UAE has a thriving fertility medicine sector, with internationally accredited IVF centres in Dubai and Abu Dhabi (Fakih IVF, Bourn Hall, Medcare, American Hospital IVF). UAE law permits IVF only within marriage, and the large community of married expat couples — many delaying childbearing due to career and financial reasons — drives substantial demand. AMH is a standard part of new patient workups at all UAE fertility centres. It is widely available at UAE diagnostic labs without a referral, and its affordability (AED 280–400) has made proactive ovarian reserve testing increasingly common among women in their late 20s and 30s living in the UAE.",
     nextSteps:
       "AMH should be interpreted alongside a day-2–4 antral follicle count (AFC) on pelvic ultrasound — these together give the most accurate picture of ovarian reserve. For women with low AMH seeking pregnancy: see a reproductive endocrinologist to discuss IVF options and the advisability of egg freezing before reserve declines further. For women with high AMH and PCOS: lifestyle modification (weight loss if overweight) improves ovulation rates; inositol supplementation has evidence for improving follicle quality in PCOS; specialist guidance for IVF stimulation protocols is essential.",
-    relatedTests: ["thyroid-panel", "testosterone", "vitamin-d", "lh-fsh"],
+    relatedTests: ["thyroid-panel", "testosterone", "vitamin-d", "fsh"],
     fastingRequired: false,
     howOften: "As needed for fertility planning. No established routine screening interval.",
   },
