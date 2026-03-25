@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  staticPageGenerationTimeout: 300,
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.who.int" },
