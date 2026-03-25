@@ -526,3 +526,29 @@ export function getEmergencyProviders(citySlug: string, areaSlug?: string): Loca
   }
   return source.filter(isEmergencyProvider);
 }
+
+// ─── Walk-In Clinic Functions ────────────────────────────────────────────────
+
+/** Walk-in = categorySlug "clinics", facilityType "polyclinic", or name containing "walk-in"/"polyclinic". */
+export function isWalkInProvider(provider: LocalProvider): boolean {
+  if (provider.categorySlug === "clinics") return true;
+  const fl = (provider.facilityType || "").toLowerCase();
+  if (fl.includes("polyclinic")) return true;
+  const nl = provider.name.toLowerCase();
+  return nl.includes("polyclinic") || nl.includes("walk-in") || nl.includes("walk in");
+}
+
+/** Get walk-in providers. With categorySlug returns all in that category; without filters to walk-in types. */
+export function getWalkInProviders(citySlug: string, categorySlug?: string, areaSlug?: string): LocalProvider[] {
+  let source: LocalProvider[];
+  if (categorySlug && areaSlug) {
+    source = byCityCategoryArea.get(`${citySlug}:${categorySlug}:${areaSlug}`) || [];
+  } else if (categorySlug) {
+    source = byCityCategory.get(`${citySlug}:${categorySlug}`) || [];
+  } else if (areaSlug) {
+    source = byCityArea.get(`${citySlug}:${areaSlug}`) || [];
+  } else {
+    source = byCity.get(citySlug) || [];
+  }
+  return categorySlug ? source : source.filter(isWalkInProvider);
+}
