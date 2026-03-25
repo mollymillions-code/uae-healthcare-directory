@@ -19,6 +19,12 @@
 
 ## 2026-03-25
 
+### CI/CD: Lint gate added to deploy pipeline
+- Deploy workflow now runs `npm run lint` + `tsc --noEmit` BEFORE deploying to EC2
+- If lint fails, deploy is blocked — broken code never reaches production
+- This was added after unused imports in the labs feature crashed the site (PM2 crash-looped 1405 times, 502 Bad Gateway)
+- Fixed unused imports in `labs/home-collection/[city]/page.tsx` and `[city]/[category]/page.tsx`
+
 ### Full Neon-to-pg Migration (all scripts)
 - Migrated ALL remaining 14 scripts from `@neondatabase/serverless` to `pg` (node-postgres)
 - Zero `@neondatabase/serverless` imports remain in the entire codebase

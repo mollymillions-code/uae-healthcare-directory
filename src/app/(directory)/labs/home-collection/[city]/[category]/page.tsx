@@ -4,22 +4,7 @@ import Link from "next/link";
 import {
   Home,
   ArrowRight,
-  CheckCircle,
   Clock,
-  FlaskConical,
-  Droplets,
-  Sun,
-  Activity,
-  Gauge,
-  Filter,
-  Heart,
-  Zap,
-  AlertTriangle,
-  Baby,
-  Search,
-  ShieldAlert,
-  TestTubes,
-  Scan,
   Shield,
   Microscope,
 } from "lucide-react";
@@ -35,8 +20,6 @@ import {
   getPricesForLab,
   getPackagesForLab,
   formatPrice,
-  getTestsByCategory,
-  type TestCategory,
 } from "@/lib/labs";
 import { CITIES } from "@/lib/constants/cities";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";

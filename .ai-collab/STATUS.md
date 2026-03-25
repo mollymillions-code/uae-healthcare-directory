@@ -97,11 +97,33 @@ Since the DB is on localhost, all scripts that need DB access must run on EC2 vi
 
 If you add a new workflow that needs DB access, it MUST run via SSH on EC2 — GitHub runners cannot reach `localhost:5432`.
 
-### 10. After deploy, verify the build works
-Every deploy rebuilds 25k+ static pages. If the build fails, the old `.next` folder remains and the site keeps running on stale code. Always check:
-1. GitHub Actions shows green checkmark
+### 10. ALWAYS lint before pushing — broken builds TAKE DOWN THE SITE
+The deploy pipeline runs `npm run lint` and `tsc --noEmit` BEFORE deploying. If lint fails, deploy is blocked — this is intentional.
+
+**Before pushing ANY code to `main`, you MUST run:**
+```bash
+npm run lint
+```
+If there are errors (unused imports, unused variables, type errors), FIX THEM before pushing. Common issues:
+- **Unused imports** — remove them. Do NOT import icons, components, or types you don't use.
+- **Unused variables** — remove or prefix with `_` (but check `.eslintrc.json` first — some configs reject `_` prefix too).
+- **Type errors** — fix them. Do not push code with `any` type workarounds.
+
+**Why this matters:** If a build fails on EC2, the `.next` folder gets wiped during rebuild. PM2 then crash-loops because there's no build to serve, and the ENTIRE SITE goes down with a 502 Bad Gateway. This happened on 2026-03-25 when unused imports in the labs feature crashed the site.
+
+### 11. After deploy, verify the build works
+Every deploy rebuilds 27k+ static pages. Always check:
+1. GitHub Actions shows green checkmark on BOTH `lint` and `deploy` jobs
 2. `curl https://www.zavis.ai/api/health` returns the expected commit SHA
 3. If articles show empty, check DB password/permissions (see rules 3 & 4)
+
+### 12. Do NOT push directly to `main` without testing locally
+If you're adding new pages, components, or features:
+1. Run `npm run lint` locally
+2. Run `npm run build` locally to verify static generation works
+3. Only then push to `main`
+
+This is a PRODUCTION branch — there is no staging environment. Every push to `main` deploys directly to zavis.ai.
 
 ---
 
