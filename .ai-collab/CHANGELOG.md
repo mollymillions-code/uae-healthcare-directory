@@ -1,5 +1,13 @@
 # Zavis Landing - Changelog
 
+## 2026-03-25 — [Claude Code] Description Enrichment Fix (3000-5999)
+
+- Wrote 615 new provider descriptions for indices 5000-5998 (all providers in 3000-5999 range where description contained "Licensed by" or was under 50 words — all 615 were in 5000-5998)
+- Each description: 80-101 words (avg 94.8), unique per facility type, warm tone, no banned phrases
+- Includes: facility name + type + area/city, type-specific services, correct regulator (DHA/DOH/MOHAP by city), patient rating + review count, phone contact
+- Fixed 112 article grammar errors (a optical/eye -> an optical/eye), 10 plural errors (1 reviews -> 1 review)
+- Output: `scripts/enrichment-chunks/fix-3000-5999.json` — 431KB, 615 entries, format: `{"index": {"description": "..."}}`
+
 ## 2026-03-25
 
 ### Full Neon-to-pg Migration (all scripts)
