@@ -39,20 +39,28 @@ export const metadata: Metadata = {
 
 export const revalidate = 21600;
 
-export default function DirectoryHomePage() {
+export default async function DirectoryHomePage() {
   const cities = getCities();
   const categories = getCategories();
   const base = getBaseUrl();
-  const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
+
+  // Fetch all async data in parallel
+  const [cityCounts, catCounts, topProviders] = await Promise.all([
+    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
+    Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))),
+    getTopRatedProviders(undefined, 20),
+  ]);
+
+  const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
+  const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   // Top 8 categories sorted by provider count
   const categoriesWithCount = categories
-    .map((cat) => ({ ...cat, count: getProviderCountByCategory(cat.slug) }))
+    .map((cat, i) => ({ ...cat, count: catCounts[i] }))
     .sort((a, b) => b.count - a.count);
   const top8Categories = categoriesWithCount.slice(0, 8);
 
   // Featured providers: only those with ratings > 0, otherwise first 8 alphabetically
-  const topProviders = getTopRatedProviders(undefined, 20);
   const ratedProviders = topProviders.filter((p) => Number(p.googleRating) > 0);
   const hasRatings = ratedProviders.length > 0;
   const featuredProviders = hasRatings
@@ -112,7 +120,7 @@ export default function DirectoryHomePage() {
                 <div className="content">
                   <span className="badge mb-2 w-fit">Abu Dhabi</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("abu-dhabi")} providers in Abu Dhabi
+                    {cityCountMap["abu-dhabi"] ?? 0} providers in Abu Dhabi
                   </h2>
                   <p className="text-white/60 text-sm mt-1">DOH regulated</p>
                 </div>
@@ -123,7 +131,7 @@ export default function DirectoryHomePage() {
                 <div className="content">
                   <span className="badge mb-2 w-fit">Sharjah</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("sharjah").toLocaleString()} providers in Sharjah
+                    {(cityCountMap["sharjah"] ?? 0).toLocaleString()} providers in Sharjah
                   </h2>
                   <p className="text-white/60 text-sm mt-1">MOHAP regulated</p>
                 </div>
@@ -134,7 +142,7 @@ export default function DirectoryHomePage() {
             <div className="lg:col-span-3 bg-dark-800 p-5 flex flex-col">
               <h3 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">All Emirates</h3>
               {cities.map((city) => {
-                const count = getProviderCountByCity(city.slug);
+                const count = cityCountMap[city.slug] ?? 0;
                 return (
                   <Link
                     key={city.slug}

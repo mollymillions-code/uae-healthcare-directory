@@ -54,14 +54,14 @@ function getInsurerTypeLabel(type: string): string {
 
 // ─── generateStaticParams ─────────────────────────────────────────────────────
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const insurers = getInsuranceProviders();
   const params: { city: string; insurer: string }[] = [];
 
   for (const city of cities) {
     for (const ins of insurers) {
-      const count = getProviderCountByInsurance(ins.slug, city.slug);
+      const count = await getProviderCountByInsurance(ins.slug, city.slug);
       if (count > 0) {
         params.push({ city: city.slug, insurer: ins.slug });
       }
@@ -73,12 +73,12 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
   if (!insurer) return {};
-  const count = getProviderCountByInsurance(insurer.slug, city.slug);
+  const count = await getProviderCountByInsurance(insurer.slug, city.slug);
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const url = `${base}/directory/${city.slug}/insurance/${insurer.slug}`;
@@ -101,7 +101,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function InsuranceProviderPage({ params }: Props) {
+export default async function InsuranceProviderPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -109,7 +109,7 @@ export default function InsuranceProviderPage({ params }: Props) {
   const insurer = allInsurers.find((i) => i.slug === params.insurer);
   if (!insurer) notFound();
 
-  const providers = getProvidersByInsurance(insurer.slug, city.slug);
+  const providers = await getProvidersByInsurance(insurer.slug, city.slug);
   const count = providers.length;
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
@@ -137,20 +137,26 @@ export default function InsuranceProviderPage({ params }: Props) {
     .slice(0, 5);
 
   // ─── Other cities this insurer is accepted in ────────────────────────────────
-  const otherCities = getCities()
-    .filter((c) => c.slug !== city.slug)
-    .map((c) => ({ ...c, count: getProviderCountByInsurance(insurer.slug, c.slug) }))
+  const otherCitiesRaw = getCities().filter((c) => c.slug !== city.slug);
+  const otherCityCounts = await Promise.all(
+    otherCitiesRaw.map((c) => getProviderCountByInsurance(insurer.slug, c.slug))
+  );
+  const otherCities = otherCitiesRaw
+    .map((c, i) => ({ ...c, count: otherCityCounts[i] }))
     .filter((c) => c.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
   // ─── Related insurers in this city (top 5 by name proximity, pre-computed) ──
-  // Avoid calling getProviderCountByInsurance 38× — just pick 5 popular ones
   const popularSlugs = ["daman", "axa", "cigna", "bupa", "oman-insurance", "nas", "mednet", "orient", "dic", "takaful-emarat"];
-  const relatedInsurers = allInsurers
+  const relatedInsurersRaw = allInsurers
     .filter((i) => i.slug !== insurer.slug && popularSlugs.includes(i.slug))
-    .slice(0, 5)
-    .map((i) => ({ ...i, count: getProviderCountByInsurance(i.slug, city.slug) }))
+    .slice(0, 5);
+  const relatedInsurerCounts = await Promise.all(
+    relatedInsurersRaw.map((i) => getProviderCountByInsurance(i.slug, city.slug))
+  );
+  const relatedInsurers = relatedInsurersRaw
+    .map((i, idx) => ({ ...i, count: relatedInsurerCounts[idx] }))
     .filter((i) => i.count > 0);
 
   // ─── Rich answer paragraph ────────────────────────────────────────────────────

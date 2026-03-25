@@ -28,7 +28,7 @@ interface Props {
   params: { city: string; area: string; category: string };
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; area: string; category: string }[] = [];
@@ -36,7 +36,7 @@ export function generateStaticParams() {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       for (const cat of categories) {
-        const providers = get24HourProviders(city.slug, cat.slug, area.slug);
+        const providers = await get24HourProviders(city.slug, cat.slug, area.slug);
         if (providers.length >= 3) {
           params.push({ city: city.slug, area: area.slug, category: cat.slug });
         }
@@ -73,13 +73,13 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function TwentyFourHourAreaCategoryPage({ params }: Props) {
+export default async function TwentyFourHourAreaCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const cat = getCategoryBySlug(params.category);
   if (!city || !area || !cat) notFound();
 
-  const providers = get24HourProviders(city.slug, cat.slug, area.slug);
+  const providers = await get24HourProviders(city.slug, cat.slug, area.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

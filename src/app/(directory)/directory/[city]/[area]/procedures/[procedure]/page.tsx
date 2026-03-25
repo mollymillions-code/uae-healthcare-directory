@@ -37,7 +37,7 @@ function getRegulatorName(citySlug: string): string {
  * generateStaticParams: area x procedure combos where
  * the procedure's related category has providers in that area.
  */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string; area: string; procedure: string }[] = [];
 
@@ -45,7 +45,7 @@ export function generateStaticParams() {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       for (const proc of PROCEDURES) {
-        const { total } = getProviders({
+        const { total } = await getProviders({
           citySlug: city.slug,
           areaSlug: area.slug,
           categorySlug: proc.categorySlug,
@@ -96,7 +96,7 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function AreaProcedurePage({ params }: Props) {
+export default async function AreaProcedurePage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const proc = getProcedureBySlug(params.procedure);
@@ -108,7 +108,7 @@ export default function AreaProcedurePage({ params }: Props) {
   const categoryName = category?.name || proc.categorySlug;
 
   // Get providers from this area in the procedure's category
-  const { providers: areaProviders } = getProviders({
+  const { providers: areaProviders } = await getProviders({
     citySlug: city.slug,
     areaSlug: area.slug,
     categorySlug: proc.categorySlug,
@@ -125,18 +125,21 @@ export default function AreaProcedurePage({ params }: Props) {
   const priceTypical = cityPrice?.typical ?? Math.round((priceMin + priceMax) / 2);
 
   // Related procedures that also have providers in this area
-  const relatedProcedures = proc.relatedProcedures
-    .map((slug) => PROCEDURES.find((p) => p.slug === slug))
-    .filter((rp): rp is MedicalProcedure => {
-      if (!rp) return false;
-      const { total } = getProviders({
-        citySlug: city.slug,
-        areaSlug: area.slug,
-        categorySlug: rp.categorySlug,
-        limit: 1,
-      });
-      return total > 0;
-    });
+  const relatedProcedureResults = await Promise.all(
+    proc.relatedProcedures
+      .map((slug) => PROCEDURES.find((p) => p.slug === slug))
+      .filter((rp): rp is MedicalProcedure => Boolean(rp))
+      .map(async (rp) => {
+        const { total } = await getProviders({
+          citySlug: city.slug,
+          areaSlug: area.slug,
+          categorySlug: rp.categorySlug,
+          limit: 1,
+        });
+        return total > 0 ? rp : null;
+      })
+  );
+  const relatedProcedures = relatedProcedureResults.filter((rp): rp is MedicalProcedure => rp !== null);
 
   // Insurance coverage label
   const insuranceLabel =

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 100);
   const sort = (searchParams.get("sort") as "rating" | "name" | "relevance") || "rating";
 
-  const result = getProviders({
+  const result = await getProviders({
     query: q,
     citySlug: city,
     categorySlug: category,

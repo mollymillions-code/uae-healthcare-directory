@@ -23,7 +23,7 @@ interface Props {
 
 /* ─── Static params: city × language × category where filtered count >= 2 ─── */
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const languages = getLanguagesList();
   const categories = getCategories();
@@ -31,7 +31,7 @@ export function generateStaticParams() {
 
   for (const city of cities) {
     for (const language of languages) {
-      const langProviders = getProvidersByLanguage(language.slug, city.slug);
+      const langProviders = await getProvidersByLanguage(language.slug, city.slug);
       for (const cat of categories) {
         const count = langProviders.filter((p) => p.categorySlug === cat.slug).length;
         if (count >= 2) {
@@ -46,7 +46,7 @@ export function generateStaticParams() {
 
 /* ─── Metadata ─── */
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const language = getLanguagesList().find((l) => l.slug === params.lang);
@@ -54,7 +54,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const allLangProviders = getProvidersByLanguage(language.slug, city.slug);
+  const allLangProviders = await getProvidersByLanguage(language.slug, city.slug);
   const count = allLangProviders.filter((p) => p.categorySlug === category.slug).length;
   const base = getBaseUrl();
 
@@ -73,7 +73,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 /* ─── Page ─── */
 
-export default function LanguageCategoryPage({ params }: Props) {
+export default async function LanguageCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -83,7 +83,7 @@ export default function LanguageCategoryPage({ params }: Props) {
   const category = getCategoryBySlug(params.category);
   if (!category) notFound();
 
-  const allLangProviders = getProvidersByLanguage(language.slug, city.slug);
+  const allLangProviders = await getProvidersByLanguage(language.slug, city.slug);
   const providers = allLangProviders
     .filter((p) => p.categorySlug === category.slug)
     .sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
@@ -97,11 +97,13 @@ export default function LanguageCategoryPage({ params }: Props) {
 
   // Other languages that have providers for this category in this city
   const allLanguages = getLanguagesList();
-  const otherLanguages = allLanguages.filter((l) => {
-    if (l.slug === language.slug) return false;
-    const lp = getProvidersByLanguage(l.slug, city.slug);
-    return lp.filter((p) => p.categorySlug === category.slug).length >= 2;
-  });
+  const otherLanguagesRaw = allLanguages.filter((l) => l.slug !== language.slug);
+  const otherLangProvidersList = await Promise.all(
+    otherLanguagesRaw.map((l) => getProvidersByLanguage(l.slug, city.slug))
+  );
+  const otherLanguages = otherLanguagesRaw.filter((l, i) =>
+    otherLangProvidersList[i].filter((p) => p.categorySlug === category.slug).length >= 2
+  );
 
   // All categories for this language in this city (for cross-links)
   const allCategories = getCategories();
@@ -114,7 +116,7 @@ export default function LanguageCategoryPage({ params }: Props) {
   const totalLangProviders = allLangProviders.length;
 
   // Total category providers in city (for cross-link)
-  const totalCatProviders = getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const totalCatProviders = await getProviderCountByCategoryAndCity(category.slug, city.slug);
 
   const faqs = [
     {

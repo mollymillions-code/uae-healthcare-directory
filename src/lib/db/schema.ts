@@ -108,13 +108,18 @@ export const providers = pgTable(
     categoryId: text("category_id")
       .notNull()
       .references(() => categories.id),
+    categorySlug: text("category_slug").notNull().default(""),
     subcategoryId: text("subcategory_id").references(() => subcategories.id),
+    subcategorySlug: text("subcategory_slug"),
+    facilityType: text("facility_type"),
 
     // Location
     cityId: text("city_id")
       .notNull()
       .references(() => cities.id),
+    citySlug: text("city_slug").notNull().default(""),
     areaId: text("area_id").references(() => areas.id),
+    areaSlug: text("area_slug"),
     address: text("address").notNull(),
     addressAr: text("address_ar"),
     latitude: numeric("latitude", { precision: 10, scale: 7 }),
@@ -130,7 +135,10 @@ export const providers = pgTable(
 
     // Details
     description: text("description"),
+    descriptionAr: text("description_ar"),
     shortDescription: text("short_description"),
+    reviewSummary: jsonb("review_summary").$type<string[]>().default([]),
+    reviewSummaryAr: jsonb("review_summary_ar").$type<string[]>().default([]),
     services: jsonb("services").$type<string[]>().default([]),
     languages: jsonb("languages").$type<string[]>().default([]),
     insurance: jsonb("insurance").$type<string[]>().default([]),
@@ -149,6 +157,7 @@ export const providers = pgTable(
     // Media
     logoUrl: text("logo_url"),
     coverImageUrl: text("cover_image_url"),
+    googlePhotoUrl: text("google_photo_url"),
     photos: jsonb("photos").$type<string[]>().default([]),
 
     // Status
@@ -179,6 +188,16 @@ export const providers = pgTable(
       table.areaId
     ),
     ratingIdx: index("idx_providers_rating").on(table.googleRating),
+    citySlugIdx: index("idx_providers_city_slug").on(table.citySlug),
+    categorySlugIdx: index("idx_providers_category_slug").on(table.categorySlug),
+    citySlugCategorySlugIdx: index("idx_providers_city_cat_slug").on(
+      table.citySlug,
+      table.categorySlug
+    ),
+    citySlugAreaSlugIdx: index("idx_providers_city_area_slug").on(
+      table.citySlug,
+      table.areaSlug
+    ),
   })
 );
 

@@ -23,10 +23,10 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = getProviderCountByCity(city.slug);
+  const count = await getProviderCountByCity(city.slug);
   return {
     title: `Healthcare Providers in ${city.name}, UAE | ${count}+ Listings`,
     description: `Find ${count}+ healthcare providers in ${city.name}, UAE. Browse hospitals, clinics, dentists, and specialists with ratings, reviews, and contact details. Last verified March 2026.`,
@@ -71,17 +71,31 @@ function getEditorialBlurb(cityName: string, total: number, regulator: string): 
   return `${cityName} is home to ${total} licensed healthcare facilities regulated by ${regulator}. Browse hospitals, clinics, and specialist providers serving the community.`;
 }
 
-export default function CityPage({ params }: Props) {
+export default async function CityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const categories = getCategories();
   const areas = getAreasByCity(city.slug);
-  const topProviders = getTopRatedProviders(city.slug, 12);
+  const topProviders = await getTopRatedProviders(city.slug, 12);
   const faqs = getFaqs("city", city.slug);
-  const total = getProviderCountByCity(city.slug);
+  const total = await getProviderCountByCity(city.slug);
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.name);
+
+  // Pre-fetch category counts (async) before render
+  const catCounts = await Promise.all(
+    categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))
+  );
+  const catsWithCounts = categories
+    .map((cat, i) => ({ ...cat, count: catCounts[i] }))
+    .filter((cat) => cat.count > 0);
+
+  // Pre-fetch area counts (async) before render
+  const areaCounts = await Promise.all(
+    areas.map((area) => getProviderCountByAreaAndCity(area.slug, city.slug))
+  );
+  const areasWithCounts = areas.map((area, i) => ({ ...area, count: areaCounts[i] }));
 
   // Featured providers: only rated > 0; fallback to first 6 alphabetically
   const ratedProviders = topProviders.filter((p) => Number(p.googleRating) > 0);
@@ -142,14 +156,14 @@ export default function CityPage({ params }: Props) {
             <span className="arrows">&gt;&gt;&gt;</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {categories.filter((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0).map((cat) => (
+            {catsWithCounts.map((cat) => (
               <CategoryCard
                 key={cat.slug}
                 name={cat.name}
                 slug={cat.slug}
                 icon={cat.icon}
                 citySlug={city.slug}
-                providerCount={getProviderCountByCategoryAndCity(cat.slug, city.slug)}
+                providerCount={cat.count}
               />
             ))}
           </div>
@@ -165,23 +179,20 @@ export default function CityPage({ params }: Props) {
               <span className="arrows">&gt;&gt;&gt;</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {areas.map((area) => {
-                const count = getProviderCountByAreaAndCity(area.slug, city.slug);
-                return (
-                  <Link
-                    key={area.slug}
-                    href={`/directory/${city.slug}/${area.slug}`}
-                    className="flex items-center justify-between bg-white border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
-                  >
-                    <span className="font-medium">{area.name}</span>
-                    {count > 0 && (
-                      <span className="text-muted text-xs">
-                        {count} {count === 1 ? "provider" : "providers"}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+              {areasWithCounts.map((area) => (
+                <Link
+                  key={area.slug}
+                  href={`/directory/${city.slug}/${area.slug}`}
+                  className="flex items-center justify-between bg-white border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
+                >
+                  <span className="font-medium">{area.name}</span>
+                  {area.count > 0 && (
+                    <span className="text-muted text-xs">
+                      {area.count} {area.count === 1 ? "provider" : "providers"}
+                    </span>
+                  )}
+                </Link>
+              ))}
             </div>
           </div>
         </section>

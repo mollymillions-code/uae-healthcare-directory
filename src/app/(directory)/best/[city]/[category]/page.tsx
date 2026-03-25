@@ -93,7 +93,7 @@ interface Props {
 
 // ─── generateStaticParams ───────────────────────────────────────────────────────
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];
@@ -101,7 +101,7 @@ export function generateStaticParams() {
   for (const city of cities) {
     for (const cat of categories) {
       // Only generate where providers exist with ratings > 0
-      const { providers } = getProviders({
+      const { providers } = await getProviders({
         citySlug: city.slug,
         categorySlug: cat.slug,
         sort: "rating",
@@ -119,18 +119,18 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ───────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const count = getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const count = await getProviderCountByCategoryAndCity(category.slug, city.slug);
   const base = getBaseUrl();
   const url = `${base}/best/${city.slug}/${category.slug}`;
 
   // Get top provider for meta description
-  const { providers } = getProviders({
+  const { providers } = await getProviders({
     citySlug: city.slug,
     categorySlug: category.slug,
     sort: "rating",
@@ -158,7 +158,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 
-export default function BestCategoryInCityPage({ params }: Props) {
+export default async function BestCategoryInCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -168,10 +168,10 @@ export default function BestCategoryInCityPage({ params }: Props) {
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const regulatorShort = getRegulatorShort(city.slug);
-  const totalCount = getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const totalCount = await getProviderCountByCategoryAndCity(category.slug, city.slug);
 
   // Get ALL providers for this combo (no limit), then rank
-  const { providers: allProviders } = getProviders({
+  const { providers: allProviders } = await getProviders({
     citySlug: city.slug,
     categorySlug: category.slug,
     limit: 99999,
@@ -193,22 +193,24 @@ export default function BestCategoryInCityPage({ params }: Props) {
   const topNeighborhoods = topAreas(allProviders, 5);
 
   // Cross-links: other cities for same category
-  const otherCities = getCities()
+  const otherCitiesRaw = await Promise.all(getCities()
     .filter((c) => c.slug !== city.slug)
-    .map((c) => ({
+    .map(async (c) => ({
       ...c,
-      count: getProviderCountByCategoryAndCity(category.slug, c.slug),
-    }))
+      count: await getProviderCountByCategoryAndCity(category.slug, c.slug),
+    })));
+  const otherCities = otherCitiesRaw
     .filter((c) => c.count > 0)
     .sort((a, b) => b.count - a.count);
 
   // Cross-links: other categories in same city
-  const otherCategories = getCategories()
+  const otherCategoriesRaw = await Promise.all(getCategories()
     .filter((c) => c.slug !== category.slug)
-    .map((c) => ({
+    .map(async (c) => ({
       ...c,
-      count: getProviderCountByCategoryAndCity(c.slug, city.slug),
-    }))
+      count: await getProviderCountByCategoryAndCity(c.slug, city.slug),
+    })));
+  const otherCategories = otherCategoriesRaw
     .filter((c) => c.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);

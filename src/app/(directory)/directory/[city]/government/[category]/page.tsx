@@ -27,14 +27,14 @@ interface Props {
 }
 
 /** Only generate pages for city x category combos with 3+ government providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];
 
   for (const city of cities) {
     for (const cat of categories) {
-      const providers = getGovernmentProviders(city.slug, cat.slug);
+      const providers = await getGovernmentProviders(city.slug, cat.slug);
       if (providers.length >= 3) {
         params.push({ city: city.slug, category: cat.slug });
       }
@@ -84,12 +84,12 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function GovernmentCategoryCityPage({ params }: Props) {
+export default async function GovernmentCategoryCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();
 
-  const providers = getGovernmentProviders(city.slug, cat.slug);
+  const providers = await getGovernmentProviders(city.slug, cat.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

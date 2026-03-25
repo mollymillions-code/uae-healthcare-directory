@@ -22,17 +22,17 @@ export const revalidate = 43200;
 
 // ─── Top 10 insurers by network size (for generating matchups) ──────────────
 
-function getTop10Insurers(): { slug: string; name: string; networkSize: number }[] {
-  return INSURER_PROFILES.map((p) => {
-    const stats = getInsurerNetworkStats(p.slug);
+async function getTop10Insurers(): Promise<{ slug: string; name: string; networkSize: number }[]> {
+  return (await Promise.all(INSURER_PROFILES.map(async (p) => {
+    const stats = await getInsurerNetworkStats(p.slug);
     return { slug: p.slug, name: p.name, networkSize: stats?.totalProviders ?? 0 };
-  })
+  })))
     .sort((a, b) => b.networkSize - a.networkSize)
     .slice(0, 10);
 }
 
-function getAllMatchups(): { slug: string; slugA: string; slugB: string }[] {
-  const top10 = getTop10Insurers();
+async function getAllMatchups(): Promise<{ slug: string; slugA: string; slugB: string }[]> {
+  const top10 = await getTop10Insurers();
   const matchups: { slug: string; slugA: string; slugB: string }[] = [];
 
   for (let i = 0; i < top10.length; i++) {
@@ -73,20 +73,20 @@ interface Props {
   params: { matchup: string };
 }
 
-export function generateStaticParams() {
-  return getAllMatchups().map((m) => ({ matchup: m.slug }));
+export async function generateStaticParams() {
+  return (await getAllMatchups()).map((m) => ({ matchup: m.slug }));
 }
 
 // ─── Metadata ───────────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const parsed = parseMatchupSlug(params.matchup);
   if (!parsed) return {};
 
   const profileA = getInsurerProfile(parsed.slugA)!;
   const profileB = getInsurerProfile(parsed.slugB)!;
-  const statsA = getInsurerNetworkStats(parsed.slugA);
-  const statsB = getInsurerNetworkStats(parsed.slugB);
+  const statsA = await getInsurerNetworkStats(parsed.slugA);
+  const statsB = await getInsurerNetworkStats(parsed.slugB);
   const base = getBaseUrl();
 
   const title = `${profileA.name} vs ${profileB.name} — UAE Health Insurance Comparison 2026`;
@@ -210,7 +210,7 @@ function generateVerdict(
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default function MatchupPage({ params }: Props) {
+export default async function MatchupPage({ params }: Props) {
   const parsed = parseMatchupSlug(params.matchup);
   if (!parsed) notFound();
 
@@ -218,8 +218,8 @@ export default function MatchupPage({ params }: Props) {
   const profileB = getInsurerProfile(parsed.slugB);
   if (!profileA || !profileB) notFound();
 
-  const statsA = getInsurerNetworkStats(parsed.slugA);
-  const statsB = getInsurerNetworkStats(parsed.slugB);
+  const statsA = await getInsurerNetworkStats(parsed.slugA);
+  const statsB = await getInsurerNetworkStats(parsed.slugB);
   const base = getBaseUrl();
   const cities = getCities();
 
@@ -244,7 +244,7 @@ export default function MatchupPage({ params }: Props) {
   const strongCityB = getStrongestCity(statsB);
 
   // Get other popular matchups for cross-links
-  const allMatchups = getAllMatchups();
+  const allMatchups = await getAllMatchups();
   const otherMatchups = allMatchups
     .filter((m) => m.slug !== params.matchup)
     .filter((m) =>

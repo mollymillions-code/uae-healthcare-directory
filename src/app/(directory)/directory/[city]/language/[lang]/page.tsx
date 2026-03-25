@@ -20,14 +20,14 @@ interface Props {
   params: { city: string; lang: string };
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const languages = getLanguagesList();
   const params: { city: string; lang: string }[] = [];
 
   for (const city of cities) {
     for (const lang of languages) {
-      const count = getProviderCountByLanguage(lang.slug, city.slug);
+      const count = await getProviderCountByLanguage(lang.slug, city.slug);
       if (count > 0) {
         params.push({ city: city.slug, lang: lang.slug });
       }
@@ -37,12 +37,12 @@ export function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const language = getLanguagesList().find((l) => l.slug === params.lang);
   if (!language) return {};
-  const count = getProviderCountByLanguage(language.slug, city.slug);
+  const count = await getProviderCountByLanguage(language.slug, city.slug);
   const base = getBaseUrl();
 
   return {
@@ -52,14 +52,14 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function LanguageProviderPage({ params }: Props) {
+export default async function LanguageProviderPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const language = getLanguagesList().find((l) => l.slug === params.lang);
   if (!language) notFound();
 
-  const providers = getProvidersByLanguage(language.slug, city.slug);
+  const providers = await getProvidersByLanguage(language.slug, city.slug);
   const count = providers.length;
   const base = getBaseUrl();
 

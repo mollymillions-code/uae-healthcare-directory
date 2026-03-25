@@ -15,12 +15,12 @@ interface Props {
 }
 
 /** Return cities that have 5+ qualified providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string }[] = [];
 
   for (const city of cities) {
-    const { providers } = getProviders({ citySlug: city.slug, limit: 99999 });
+    const { providers } = await getProviders({ citySlug: city.slug, limit: 99999 });
     const qualified = providers.filter(
       (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
     );
@@ -62,11 +62,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function TopCityPage({ params }: Props) {
+export default async function TopCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const { providers: allProviders } = getProviders({
+  const { providers: allProviders } = await getProviders({
     citySlug: city.slug,
     limit: 99999,
   });

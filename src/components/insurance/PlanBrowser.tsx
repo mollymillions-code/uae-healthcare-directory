@@ -7,9 +7,13 @@ import { ComparisonTable } from "./ComparisonTable";
 import {
   INSURER_PROFILES,
   getAllPlans,
-  getComparablePlans,
   type InsurancePlan,
-} from "@/lib/insurance";
+} from "@/lib/constants/insurance-plans";
+
+function getComparablePlans(planIds: string[]) {
+  const all = getAllPlans();
+  return planIds.map((id) => all.find((p) => p.id === id)).filter(Boolean) as InsurancePlan[];
+}
 
 type TierFilter = "all" | InsurancePlan["tier"];
 

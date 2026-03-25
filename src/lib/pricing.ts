@@ -109,27 +109,30 @@ export function estimateOutOfPocket(
 /**
  * Get pricing summary for a procedure across all cities.
  */
-export function getProcedureCityPricing(procedureSlug: string): CityPricingSummary[] {
+export async function getProcedureCityPricing(procedureSlug: string): Promise<CityPricingSummary[]> {
   const procedure = getProcedureBySlug(procedureSlug);
   if (!procedure) return [];
 
-  return CITIES.map((city) => {
-    const pricing = procedure.cityPricing[city.slug];
-    if (!pricing) return null;
+  const results = await Promise.all(
+    CITIES.map(async (city) => {
+      const pricing = procedure.cityPricing[city.slug];
+      if (!pricing) return null;
 
-    const providers = getProviders({ citySlug: city.slug }).providers;
-    // Count providers in the procedure's category
-    const categoryProviders = providers.filter(
-      (p) => p.categorySlug === procedure.categorySlug
-    );
+      const { providers } = await getProviders({ citySlug: city.slug });
+      // Count providers in the procedure's category
+      const categoryProviders = providers.filter(
+        (p) => p.categorySlug === procedure.categorySlug
+      );
 
-    return {
-      citySlug: city.slug,
-      cityName: city.name,
-      pricing,
-      providerCount: categoryProviders.length,
-    };
-  }).filter(Boolean) as CityPricingSummary[];
+      return {
+        citySlug: city.slug,
+        cityName: city.name,
+        pricing,
+        providerCount: categoryProviders.length,
+      };
+    })
+  );
+  return results.filter(Boolean) as CityPricingSummary[];
 }
 
 /**

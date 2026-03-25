@@ -19,10 +19,10 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = getProviderCountByCity(city.slug);
+  const count = await getProviderCountByCity(city.slug);
   const cityNameAr = getArabicCityName(city.slug);
   const base = getBaseUrl();
   return {
@@ -38,17 +38,25 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArabicCityPage({ params }: Props) {
+export default async function ArabicCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const categories = getCategories();
   const areas = getAreasByCity(city.slug);
-  const topProviders = getTopRatedProviders(city.slug, 6);
-  const total = getProviderCountByCity(city.slug);
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
   const regulator = getArabicRegulator(city.slug);
+
+  // Pre-fetch all async data in parallel
+  const [topProviders, total, catCounts, areaCounts] = await Promise.all([
+    getTopRatedProviders(city.slug, 6),
+    getProviderCountByCity(city.slug),
+    Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))),
+    Promise.all(areas.map((area) => getProviderCountByAreaAndCity(area.slug, city.slug))),
+  ]);
+  const catCountMap = Object.fromEntries(categories.map((cat, i) => [cat.slug, catCounts[i]]));
+  const areaCountMap = Object.fromEntries(areas.map((area, i) => [area.slug, areaCounts[i]]));
 
   return (
     <div className="container-tc py-8">
@@ -87,7 +95,7 @@ export default function ArabicCityPage({ params }: Props) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {categories.map((cat) => {
-            const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+            const count = catCountMap[cat.slug] ?? 0;
             return (
               <Link
                 key={cat.slug}
@@ -113,7 +121,7 @@ export default function ArabicCityPage({ params }: Props) {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {areas.map((area) => {
-              const count = getProviderCountByAreaAndCity(area.slug, city.slug);
+              const count = areaCountMap[area.slug] ?? 0;
               return (
                 <Link
                   key={area.slug}

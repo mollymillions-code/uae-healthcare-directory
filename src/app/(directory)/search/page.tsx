@@ -22,11 +22,11 @@ interface SearchPageProps {
   };
 }
 
-export default function SearchPage({ searchParams }: SearchPageProps) {
+export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q, city, category, area, page: pageStr, sort } = searchParams;
   const page = Number(pageStr) || 1;
 
-  const { providers, total, totalPages } = getProviders({
+  const { providers, total, totalPages } = await getProviders({
     query: q,
     citySlug: city,
     categorySlug: category,

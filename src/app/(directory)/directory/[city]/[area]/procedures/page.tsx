@@ -22,26 +22,29 @@ interface Props {
 }
 
 /** Return procedures whose related category has at least 1 provider in this area */
-function getProceduresWithProviders(citySlug: string, areaSlug: string): MedicalProcedure[] {
-  return PROCEDURES.filter((proc) => {
-    const { total } = getProviders({
-      citySlug,
-      areaSlug,
-      categorySlug: proc.categorySlug,
-      limit: 1,
-    });
-    return total > 0;
-  });
+async function getProceduresWithProviders(citySlug: string, areaSlug: string): Promise<MedicalProcedure[]> {
+  const results = await Promise.all(
+    PROCEDURES.map(async (proc) => {
+      const { total } = await getProviders({
+        citySlug,
+        areaSlug,
+        categorySlug: proc.categorySlug,
+        limit: 1,
+      });
+      return total > 0 ? proc : null;
+    })
+  );
+  return results.filter((proc): proc is MedicalProcedure => proc !== null);
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
 
   for (const city of cities) {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const available = getProceduresWithProviders(city.slug, area.slug);
+      const available = await getProceduresWithProviders(city.slug, area.slug);
       if (available.length > 0) {
         params.push({ city: city.slug, area: area.slug });
       }
@@ -57,13 +60,13 @@ function getRegulatorName(citySlug: string): string {
   return "the Ministry of Health and Prevention (MOHAP)";
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) return {};
 
   const base = getBaseUrl();
-  const available = getProceduresWithProviders(city.slug, area.slug);
+  const available = await getProceduresWithProviders(city.slug, area.slug);
   const title = `Medical Procedures in ${area.name}, ${city.name} | Costs & Providers (${available.length} Procedures)`;
   const description = `Compare costs for ${available.length} medical procedures in ${area.name}, ${city.name}, UAE. Real AED pricing for dental, LASIK, IVF, diagnostics, cosmetic surgery, and more. Find providers near you.`;
   const url = `${base}/directory/${city.slug}/${area.slug}/procedures`;
@@ -83,14 +86,14 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function AreaProceduresPage({ params }: Props) {
+export default async function AreaProceduresPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const available = getProceduresWithProviders(city.slug, area.slug);
+  const available = await getProceduresWithProviders(city.slug, area.slug);
   const pageUrl = `${base}/directory/${city.slug}/${area.slug}/procedures`;
 
   if (available.length === 0) notFound();

@@ -22,16 +22,19 @@ interface Props {
   params: { city: string; condition: string };
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const conditions = getConditions();
   const params: { city: string; condition: string }[] = [];
 
   for (const city of cities) {
     for (const cond of conditions) {
-      const hasProviders = cond.relatedCategories?.some(
-        (catSlug: string) => getProviderCountByCategoryAndCity(catSlug, city.slug) > 0
+      const counts = await Promise.all(
+        (cond.relatedCategories ?? []).map((catSlug: string) =>
+          getProviderCountByCategoryAndCity(catSlug, city.slug)
+        )
       );
+      const hasProviders = counts.some((c) => c > 0);
       if (hasProviders) {
         params.push({ city: city.slug, condition: cond.slug });
       }
@@ -56,12 +59,12 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 /** Gather providers from all relatedCategories for this condition, deduplicated by ID. */
-function getProvidersForCondition(citySlug: string, relatedCategories: string[]): LocalProvider[] {
+async function getProvidersForCondition(citySlug: string, relatedCategories: string[]): Promise<LocalProvider[]> {
   const seen = new Set<string>();
   const result: LocalProvider[] = [];
 
   for (const catSlug of relatedCategories) {
-    const { providers } = getProviders({ citySlug, categorySlug: catSlug, limit: 50, sort: "rating" });
+    const { providers } = await getProviders({ citySlug, categorySlug: catSlug, limit: 50, sort: "rating" });
     for (const p of providers) {
       if (!seen.has(p.id)) {
         seen.add(p.id);
@@ -76,14 +79,14 @@ function getProvidersForCondition(citySlug: string, relatedCategories: string[])
   return result;
 }
 
-export default function ConditionPage({ params }: Props) {
+export default async function ConditionPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const condition = getConditions().find((c) => c.slug === params.condition);
   if (!condition) notFound();
 
-  const providers = getProvidersForCondition(city.slug, condition.relatedCategories);
+  const providers = await getProvidersForCondition(city.slug, condition.relatedCategories);
   const count = providers.length;
   const base = getBaseUrl();
 

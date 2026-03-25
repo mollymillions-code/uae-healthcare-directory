@@ -7,8 +7,10 @@ This is the Zavis Landing production site (zavis.ai). Every push to `main` deplo
 ## ⛔ BEFORE YOU WRITE ANY CODE
 
 1. **Run `npm run lint` before pushing.** Lint errors block deployment. Unused imports, unused variables, and type errors will fail the CI pipeline.
-2. **Run `npm run build` locally before pushing** if you added/changed pages. The build generates 27k+ static pages. If it fails in CI, the deploy is blocked.
+2. **Run `npm run build` locally before pushing** if you added/changed pages. The build generates 30k+ static pages. If it fails in CI, the deploy is blocked.
 3. **Never import things you don't use.** This is the #1 cause of broken deploys. Every unused import is a lint error that blocks production deployment.
+4. **All `data.ts` functions are ASYNC.** You must `await` them. See "Data Layer" section below.
+5. **Read `.ai-collab/DATA-MIGRATION.md`** if you're working with provider data — it explains the JSON→DB migration and how data access works now.
 
 ---
 
@@ -51,6 +53,25 @@ import { neon } from "@neondatabase/serverless";
 - **Safe deploy:** Build failure → automatic rollback to last good build (site stays up)
 - **Health check:** Post-deploy health check at `/api/health` — rollback if site doesn't respond
 - **Verify:** Check https://github.com/zavis-support/zavis-landing/actions after pushing
+
+## Data Layer — CRITICAL
+
+Provider data (12,519 healthcare facilities) lives in **PostgreSQL**, NOT a JSON file. The old `providers-scraped.json` (58MB) caused OOM crashes and is being removed.
+
+**All functions in `src/lib/data.ts` are ASYNC.** You must `await` them:
+
+```typescript
+// ✅ CORRECT
+const providers = await getProviders({ citySlug: "dubai" });
+const city = await getCityBySlug("dubai");
+
+// ❌ WRONG — returns a Promise, not data
+const providers = getProviders({ citySlug: "dubai" });
+```
+
+**Full migration docs:** `.ai-collab/DATA-MIGRATION.md` — read this before touching provider data.
+
+**Constants are still synchronous** — `CITIES`, `CATEGORIES`, `INSURANCE_PROVIDERS`, `LANGUAGES`, `CONDITIONS` load from small TS files, not DB.
 
 ## File Structure
 

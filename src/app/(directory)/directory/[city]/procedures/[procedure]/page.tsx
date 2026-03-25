@@ -51,7 +51,7 @@ export function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const proc = getProcedureBySlug(params.procedure);
@@ -60,7 +60,7 @@ export function generateMetadata({ params }: Props): Metadata {
   if (!pricing) return {};
 
   const base = getBaseUrl();
-  const providerCount = getProviderCountByCategoryAndCity(
+  const providerCount = await getProviderCountByCategoryAndCity(
     proc.categorySlug,
     city.slug
   );
@@ -113,7 +113,7 @@ function getCoverageBadgeClass(coverage: MedicalProcedure["insuranceCoverage"]):
   }
 }
 
-export default function ProcedureCityPage({ params }: Props) {
+export default async function ProcedureCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -127,7 +127,7 @@ export default function ProcedureCityPage({ params }: Props) {
   const regulator = getRegulatorName(city.slug);
 
   // Related providers in this city + category
-  const { providers, total: providerCount } = getProviders({
+  const { providers, total: providerCount } = await getProviders({
     citySlug: city.slug,
     categorySlug: proc.categorySlug,
     limit: 12,

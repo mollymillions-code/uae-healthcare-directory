@@ -21,7 +21,7 @@ export const revalidate = 43200;
 interface Props { params: { city: string; area: string; category: string } }
 
 /** Return all city × area × category combos that have 5+ rated providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; area: string; category: string }[] = [];
@@ -30,7 +30,7 @@ export function generateStaticParams() {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       for (const cat of categories) {
-        const { providers } = getProviders({
+        const { providers } = await getProviders({
           citySlug: city.slug,
           areaSlug: area.slug,
           categorySlug: cat.slug,
@@ -83,13 +83,13 @@ function getRegulatorName(citySlug: string): string {
   return "the Ministry of Health and Prevention (MOHAP)";
 }
 
-export default function TopAreaCategoryPage({ params }: Props) {
+export default async function TopAreaCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const cat = getCategoryBySlug(params.category);
   if (!city || !area || !cat) notFound();
 
-  const { providers: allProviders } = getProviders({
+  const { providers: allProviders } = await getProviders({
     citySlug: city.slug,
     areaSlug: area.slug,
     categorySlug: cat.slug,

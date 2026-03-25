@@ -25,12 +25,12 @@ interface Props {
 }
 
 /** Only generate pages for cities with 3+ emergency providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string }[] = [];
 
   for (const city of cities) {
-    const providers = getEmergencyProviders(city.slug);
+    const providers = await getEmergencyProviders(city.slug);
     if (providers.length >= 3) {
       params.push({ city: city.slug });
     }
@@ -75,11 +75,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function EmergencyCityPage({ params }: Props) {
+export default async function EmergencyCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const providers = getEmergencyProviders(city.slug);
+  const providers = await getEmergencyProviders(city.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

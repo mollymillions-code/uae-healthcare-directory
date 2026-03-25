@@ -2,9 +2,27 @@
 
 import { useState } from "react";
 import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
-import { type QuizAnswers, type PlanRecommendation, recommendPlans } from "@/lib/insurance";
+// Types defined inline to avoid importing @/lib/insurance (which chains to pg)
+interface QuizAnswers {
+  budget: "low" | "mid" | "high";
+  familySize: "single" | "couple" | "family";
+  needsDental: boolean;
+  needsMaternity: boolean;
+  needsInternational: boolean;
+  preferredCity: string;
+  prioritiseCopay: boolean;
+}
+
+interface PlanRecommendation {
+  plan: import("@/lib/constants/insurance-plans").InsurancePlan;
+  insurer: import("@/lib/constants/insurance-plans").InsurerProfile;
+  score: number;
+  reasons: string[];
+  networkSize: number;
+}
+import { getRecommendedPlans } from "@/app/actions/insurance";
 import { PlanCard } from "./PlanCard";
-import { getCities } from "@/lib/data";
+import { CITIES } from "@/lib/constants/cities";
 
 const STEPS = [
   { key: "budget", title: "What's your annual budget for health insurance?" },
@@ -18,9 +36,9 @@ export function InsuranceQuiz() {
   const [answers, setAnswers] = useState<Partial<QuizAnswers>>({});
   const [results, setResults] = useState<PlanRecommendation[] | null>(null);
 
-  const cities = getCities();
+  const cities = CITIES;
 
-  function handleNext() {
+  async function handleNext() {
     if (step < STEPS.length - 1) {
       setStep(step + 1);
     } else {
@@ -34,7 +52,8 @@ export function InsuranceQuiz() {
         preferredCity: answers.preferredCity || "dubai",
         prioritiseCopay: answers.prioritiseCopay || false,
       };
-      setResults(recommendPlans(fullAnswers));
+      const plans = await getRecommendedPlans(fullAnswers);
+      setResults(plans);
     }
   }
 

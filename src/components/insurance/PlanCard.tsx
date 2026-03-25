@@ -5,7 +5,7 @@ import {
   formatPremium,
   formatLimit,
   getTierLabel,
-} from "@/lib/insurance";
+} from "@/lib/constants/insurance-plans";
 
 const TIER_COLORS: Record<InsurancePlan["tier"], string> = {
   basic: "bg-dark-500 text-white",

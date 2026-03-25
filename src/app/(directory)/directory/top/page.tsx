@@ -31,10 +31,10 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function TopUAEPage() {
+export default async function TopUAEPage() {
   const base = getBaseUrl();
 
-  const { providers: allProviders } = getProviders({ limit: 99999, sort: "rating" });
+  const { providers: allProviders } = await getProviders({ limit: 99999, sort: "rating" });
 
   const top10 = allProviders
     .filter((p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10)

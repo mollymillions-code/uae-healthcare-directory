@@ -29,11 +29,11 @@ export function generateStaticParams() {
   return INSURER_PROFILES.map((p) => ({ insurer: p.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) return {};
   const base = getBaseUrl();
-  const stats = getInsurerNetworkStats(params.insurer);
+  const stats = await getInsurerNetworkStats(params.insurer);
 
   return {
     title: `${profile.name} Health Insurance UAE — Plans, Coverage & ${stats?.totalProviders.toLocaleString() || ""} Provider Network`,
@@ -48,11 +48,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function InsurerDetailPage({ params }: Props) {
+export default async function InsurerDetailPage({ params }: Props) {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) notFound();
 
-  const stats = getInsurerNetworkStats(params.insurer);
+  const stats = await getInsurerNetworkStats(params.insurer);
   const base = getBaseUrl();
 
   const cheapestPlan = [...profile.plans].sort(
@@ -288,8 +288,8 @@ export default function InsurerDetailPage({ params }: Props) {
       <FaqSection faqs={faqs} title={`${profile.name} Insurance — FAQ`} />
 
       {/* Other Insurers to Consider */}
-      {(() => {
-        const allStats = getAllInsurerNetworkStats();
+      {await (async () => {
+        const allStats = await getAllInsurerNetworkStats();
         const others = allStats
           .filter((s) => s.slug !== profile.slug && s.totalProviders > 0)
           .sort((a, b) => {

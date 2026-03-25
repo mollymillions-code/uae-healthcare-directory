@@ -15,12 +15,12 @@ interface Props {
 }
 
 /** Return categories that have 5+ qualified providers UAE-wide */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const categories = getCategories();
   const params: { category: string }[] = [];
 
   for (const cat of categories) {
-    const { providers } = getProviders({ categorySlug: cat.slug, limit: 99999 });
+    const { providers } = await getProviders({ categorySlug: cat.slug, limit: 99999 });
     const qualified = providers.filter(
       (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
     );
@@ -56,11 +56,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function TopCategoryUAEPage({ params }: Props) {
+export default async function TopCategoryUAEPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
   if (!cat) notFound();
 
-  const { providers: allProviders } = getProviders({
+  const { providers: allProviders } = await getProviders({
     categorySlug: cat.slug,
     limit: 99999,
   });

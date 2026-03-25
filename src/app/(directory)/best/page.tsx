@@ -32,22 +32,23 @@ export function generateMetadata(): Metadata {
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 
-export default function BestIndexPage() {
+export default async function BestIndexPage() {
   const base = getBaseUrl();
   const cities = getCities();
   const categories = getCategories();
 
   // Build city cards with counts and top provider
-  const cityData = cities
-    .map((city) => {
-      const count = getProviderCountByCity(city.slug);
-      const topProvider = getTopRatedProviders(city.slug, 1)[0];
+  const cityDataRaw = await Promise.all(cities
+    .map(async (city) => {
+      const count = await getProviderCountByCity(city.slug);
+      const topProviders = await getTopRatedProviders(city.slug, 1);
+      const topProvider = topProviders[0];
       // Count how many categories have providers
-      const catCount = categories.filter(
-        (cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0,
-      ).length;
+      const catCounts = await Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug)));
+      const catCount = catCounts.filter((c) => c > 0).length;
       return { ...city, count, topProvider, catCount };
-    })
+    }));
+  const cityData = cityDataRaw
     .filter((c) => c.count > 0)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -55,7 +56,7 @@ export default function BestIndexPage() {
   const popularCombos: { citySlug: string; cityName: string; catSlug: string; catName: string; count: number }[] = [];
   for (const city of cities) {
     for (const cat of categories) {
-      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (count >= 5) {
         popularCombos.push({
           citySlug: city.slug,

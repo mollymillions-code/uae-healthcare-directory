@@ -32,12 +32,18 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function InsuranceIndexPage({ params }: Props) {
+export default async function InsuranceIndexPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const insurers = getInsuranceProviders();
   const base = getBaseUrl();
+
+  // Pre-fetch insurance counts
+  const insurerCounts = await Promise.all(
+    insurers.map((ins) => getProviderCountByInsurance(ins.slug, city.slug))
+  );
+  const insurersWithCounts = insurers.map((ins, i) => ({ ...ins, count: insurerCounts[i] }));
 
   return (
     <div className="container-tc py-8">
@@ -74,25 +80,22 @@ export default function InsuranceIndexPage({ params }: Props) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {insurers.map((ins) => {
-          const count = getProviderCountByInsurance(ins.slug, city.slug);
-          return (
-            <Link
-              key={ins.slug}
-              href={`/directory/${city.slug}/insurance/${ins.slug}`}
-              className="block border border-light-200 p-4 hover:border-accent transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
-                <span className="badge text-[9px]">{ins.type}</span>
-              </div>
-              <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
-              <p className="text-xs font-bold text-accent">
-                {count} {count === 1 ? "provider" : "providers"}
-              </p>
-            </Link>
-          );
-        })}
+        {insurersWithCounts.map((ins) => (
+          <Link
+            key={ins.slug}
+            href={`/directory/${city.slug}/insurance/${ins.slug}`}
+            className="block border border-light-200 p-4 hover:border-accent transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
+              <span className="badge text-[9px]">{ins.type}</span>
+            </div>
+            <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
+            <p className="text-xs font-bold text-accent">
+              {ins.count} {ins.count === 1 ? "provider" : "providers"}
+            </p>
+          </Link>
+        ))}
       </div>
     </div>
   );

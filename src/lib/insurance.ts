@@ -51,7 +51,7 @@ export interface PlanRecommendation {
 
 const networkStatsCache = new Map<string, InsurerNetworkStats>();
 
-export function getInsurerNetworkStats(insurerSlug: string): InsurerNetworkStats | undefined {
+export async function getInsurerNetworkStats(insurerSlug: string): Promise<InsurerNetworkStats | undefined> {
   const cached = networkStatsCache.get(insurerSlug);
   if (cached) return cached;
 
@@ -61,16 +61,20 @@ export function getInsurerNetworkStats(insurerSlug: string): InsurerNetworkStats
   const cities = getCities();
   const categories = getCategories();
 
+  const cityCounts = await Promise.all(
+    cities.map((city) => getProviderCountByInsurance(insurerSlug, city.slug))
+  );
+
   const byCity: NetworkBreakdown[] = cities
-    .map((city) => ({
+    .map((city, i) => ({
       citySlug: city.slug,
       cityName: city.name,
-      providerCount: getProviderCountByInsurance(insurerSlug, city.slug),
+      providerCount: cityCounts[i],
     }))
     .filter((c) => c.providerCount > 0)
     .sort((a, b) => b.providerCount - a.providerCount);
 
-  const allProviders = getProvidersByInsurance(insurerSlug);
+  const allProviders = await getProvidersByInsurance(insurerSlug);
 
   // Count by category
   const catMap = new Map<string, number>();
@@ -99,8 +103,9 @@ export function getInsurerNetworkStats(insurerSlug: string): InsurerNetworkStats
   return stats;
 }
 
-export function getAllInsurerNetworkStats(): InsurerNetworkStats[] {
-  return INSURER_PROFILES.map((p) => getInsurerNetworkStats(p.slug)!).filter(Boolean);
+export async function getAllInsurerNetworkStats(): Promise<InsurerNetworkStats[]> {
+  const results = await Promise.all(INSURER_PROFILES.map((p) => getInsurerNetworkStats(p.slug)));
+  return results.filter(Boolean) as InsurerNetworkStats[];
 }
 
 // ─── Plan Comparison ────────────────────────────────────────────────────────────
@@ -122,7 +127,7 @@ export interface QuizAnswers {
   prioritiseCopay: boolean;
 }
 
-export function recommendPlans(answers: QuizAnswers): PlanRecommendation[] {
+export async function recommendPlans(answers: QuizAnswers): Promise<PlanRecommendation[]> {
   const allPlans = getAllPlans();
   const recommendations: PlanRecommendation[] = [];
 
@@ -198,8 +203,8 @@ export function recommendPlans(answers: QuizAnswers): PlanRecommendation[] {
 
     // Network size in preferred city
     const networkSize = answers.preferredCity
-      ? getProviderCountByInsurance(plan.insurerSlug, answers.preferredCity)
-      : getProvidersByInsurance(plan.insurerSlug).length;
+      ? await getProviderCountByInsurance(plan.insurerSlug, answers.preferredCity)
+      : (await getProvidersByInsurance(plan.insurerSlug)).length;
 
     if (networkSize > 500) {
       score += 10;

@@ -28,12 +28,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ArabicHomePage() {
+export default async function ArabicHomePage() {
   const cities = getCities();
   const categories = getCategories();
-  const topProviders = getTopRatedProviders(undefined, 8);
   const base = getBaseUrl();
-  const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
+
+  // Pre-fetch all async data
+  const [topProviders, cityCounts, catCounts] = await Promise.all([
+    getTopRatedProviders(undefined, 8),
+    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
+    Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))),
+  ]);
+  const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
+  const catCountMap = Object.fromEntries(categories.map((cat, i) => [cat.slug, catCounts[i]]));
+  const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   return (
     <>
@@ -79,7 +87,7 @@ export default function ArabicHomePage() {
                 <div className="content">
                   <span className="badge mb-2 w-fit">{getArabicCityName("abu-dhabi")}</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("abu-dhabi")} {ar.providers} في {getArabicCityName("abu-dhabi")}
+                    {cityCountMap["abu-dhabi"] ?? 0} {ar.providers} في {getArabicCityName("abu-dhabi")}
                   </h2>
                   <p className="text-white/60 text-sm mt-1">{getArabicRegulator("abu-dhabi")}</p>
                 </div>
@@ -90,7 +98,7 @@ export default function ArabicHomePage() {
                 <div className="content">
                   <span className="badge mb-2 w-fit">{getArabicCityName("sharjah")}</span>
                   <h2 className="text-xl font-bold text-white leading-tight">
-                    {getProviderCountByCity("sharjah").toLocaleString("ar-AE")} {ar.providers} في {getArabicCityName("sharjah")}
+                    {(cityCountMap["sharjah"] ?? 0).toLocaleString("ar-AE")} {ar.providers} في {getArabicCityName("sharjah")}
                   </h2>
                   <p className="text-white/60 text-sm mt-1">{getArabicRegulator("sharjah")}</p>
                 </div>
@@ -101,7 +109,7 @@ export default function ArabicHomePage() {
             <div className="lg:col-span-3 bg-dark-800 p-5 flex flex-col">
               <h3 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">{ar.allEmirates}</h3>
               {cities.map((city) => {
-                const count = getProviderCountByCity(city.slug);
+                const count = cityCountMap[city.slug] ?? 0;
                 return (
                   <Link
                     key={city.slug}
@@ -127,7 +135,7 @@ export default function ArabicHomePage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {cities.map((city) => {
-            const count = getProviderCountByCity(city.slug);
+            const count = cityCountMap[city.slug] ?? 0;
             const hasImage = ["dubai", "abu-dhabi", "sharjah", "ajman", "al-ain", "ras-al-khaimah", "fujairah", "umm-al-quwain"].includes(city.slug);
             return (
               <Link
@@ -178,7 +186,7 @@ export default function ArabicHomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
           {categories.map((cat) => {
-            const count = getProviderCountByCategory(cat.slug);
+            const count = catCountMap[cat.slug] ?? 0;
             return (
               <Link
                 key={cat.slug}

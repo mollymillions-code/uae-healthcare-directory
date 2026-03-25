@@ -34,7 +34,7 @@ interface Props {
 /**
  * Resolve URL segments (same logic as English version).
  */
-function resolveSegments(citySlug: string, segments: string[]) {
+async function resolveSegments(citySlug: string, segments: string[]) {
   const [seg1, seg2, seg3] = segments;
 
   if (segments.length === 1) {
@@ -48,7 +48,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
   if (segments.length === 2) {
     const cat1 = getCategoryBySlug(seg1);
     if (cat1) {
-      const provider = getProviderBySlug(seg2);
+      const provider = await getProviderBySlug(seg2);
       if (provider) return { type: "listing" as const, category: cat1, provider };
       return null;
     }
@@ -64,7 +64,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
   if (segments.length === 3) {
     const area = getAreaBySlug(citySlug, seg1);
     const cat = getCategoryBySlug(seg2);
-    const provider = getProviderBySlug(seg3);
+    const provider = await getProviderBySlug(seg3);
     if (area && cat && provider) return { type: "listing" as const, area, category: cat, provider };
     return null;
   }
@@ -80,7 +80,7 @@ export async function generateStaticParams() {
   for (const city of cities) {
     // City + Category pages — only if providers exist
     for (const cat of categories) {
-      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (count > 0) {
         params.push({ city: city.slug, segments: [cat.slug] });
       }
@@ -88,12 +88,12 @@ export async function generateStaticParams() {
     // City + Area pages — only if providers exist
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         params.push({ city: city.slug, segments: [area.slug] });
         // Area + Category facet pages — only if providers exist in this combination
         for (const cat of categories) {
-          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
           if (total > 0) {
             params.push({ city: city.slug, segments: [area.slug, cat.slug] });
           }
@@ -101,7 +101,7 @@ export async function generateStaticParams() {
       }
     }
     // Individual provider listing pages — Arabic mirror of every provider
-    const { providers: cityProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    const { providers: cityProviders } = await getProviders({ citySlug: city.slug, limit: 99999 });
     for (const provider of cityProviders) {
       params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
     }
@@ -113,7 +113,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const resolved = resolveSegments(city.slug, params.segments);
+  const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
@@ -121,7 +121,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   switch (resolved.type) {
     case "city-category": {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
-      const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
       return {
         title: `${catNameAr} في ${cityNameAr} | ${total} ${ar.provider}`,
         description: `ابحث عن أفضل ${catNameAr} في ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد مع تقييمات Google ومراجعات وتفاصيل الاتصال. آخر تحقق مارس 2026.`,
@@ -136,7 +136,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
     case "city-area": {
       const areaNameAr = resolved.area.nameAr || resolved.area.name;
-      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
       return {
         title: `الرعاية الصحية في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
         description: `ابحث عن مقدمي الرعاية الصحية في ${areaNameAr}، ${cityNameAr}، الإمارات. مستشفيات وعيادات ومتخصصون مع تقييمات.`,
@@ -152,7 +152,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     case "area-category": {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const areaNameAr = resolved.area.nameAr || resolved.area.name;
-      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
       return {
         title: `${catNameAr} في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
         description: `ابحث عن ${catNameAr} في ${areaNameAr}، ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد.`,
@@ -177,11 +177,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function ArabicCatchAllPage({ params, searchParams }: Props) {
+export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const resolved = resolveSegments(city.slug, params.segments);
+  const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
 
   const page = Number(searchParams.page) || 1;
@@ -192,7 +192,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "city-category") {
     const { category } = resolved;
     const catNameAr = getArabicCategoryName(category.slug);
-    const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
     const areas = getAreasByCity(city.slug);
     const regulator = getArabicRegulator(city.slug);
 
@@ -283,7 +283,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "city-area") {
     const { area } = resolved;
     const areaNameAr = area.nameAr || area.name;
-    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
+    const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
     const categories = getCategories();
 
     return (
@@ -360,7 +360,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
     const { area, category } = resolved;
     const catNameAr = getArabicCategoryName(category.slug);
     const areaNameAr = area.nameAr || area.name;
-    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
+    const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
     const regulator = getArabicRegulator(city.slug);
 
     return (
@@ -433,7 +433,7 @@ export default function ArabicCatchAllPage({ params, searchParams }: Props) {
     const catNameAr = getArabicCategoryName(category.slug);
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
     const areaNameAr = area?.nameAr || area?.name || "";
-    const nearbyProviders = getTopRatedProviders(city.slug, 4).filter((p) => p.id !== provider.id);
+    const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
     const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${provider.operatingHours?.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${provider.lastVerified}.`;
 

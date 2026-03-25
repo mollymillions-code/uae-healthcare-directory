@@ -2,7 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { getCategoryImagePath } from "@/lib/helpers";
-import { getCategoryBySlug } from "@/lib/data";
+import { CATEGORIES } from "@/lib/constants/categories";
+
+function getCategoryBySlug(slug: string) {
+  return CATEGORIES.find((c) => c.slug === slug);
+}
 
 interface ProviderCardProps {
   name: string;

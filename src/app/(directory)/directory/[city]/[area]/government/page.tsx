@@ -27,14 +27,14 @@ interface Props {
 }
 
 /** Only generate pages for city x area combos with 3+ government providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
 
   for (const city of cities) {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const providers = getGovernmentProviders(city.slug, undefined, area.slug);
+      const providers = await getGovernmentProviders(city.slug, undefined, area.slug);
       if (providers.length >= 3) {
         params.push({ city: city.slug, area: area.slug });
       }
@@ -83,12 +83,12 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function GovernmentAreaPage({ params }: Props) {
+export default async function GovernmentAreaPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();
 
-  const providers = getGovernmentProviders(city.slug, undefined, area.slug);
+  const providers = await getGovernmentProviders(city.slug, undefined, area.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

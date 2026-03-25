@@ -61,7 +61,7 @@ interface Props {
  * 4. /directory/dubai/{category}/{listing}        -> Individual listing
  * 5. /directory/dubai/{area}/{category}/{listing} -> Individual listing (via area path)
  */
-function resolveSegments(citySlug: string, segments: string[]) {
+async function resolveSegments(citySlug: string, segments: string[]) {
   const [seg1, seg2, seg3] = segments;
 
   if (segments.length === 1) {
@@ -78,7 +78,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
     const cat1 = getCategoryBySlug(seg1);
     if (cat1) {
       // seg1 is category -> seg2 must be a listing slug
-      const provider = getProviderBySlug(seg2);
+      const provider = await getProviderBySlug(seg2);
       if (provider) return { type: "listing" as const, category: cat1, provider };
       // Could be a subcategory
       const subcats = getSubcategoriesByCategory(cat1.slug);
@@ -101,7 +101,7 @@ function resolveSegments(citySlug: string, segments: string[]) {
     // area + category + listing
     const area = getAreaBySlug(citySlug, seg1);
     const cat = getCategoryBySlug(seg2);
-    const provider = getProviderBySlug(seg3);
+    const provider = await getProviderBySlug(seg3);
     if (area && cat && provider) return { type: "listing" as const, area, category: cat, provider };
     return null;
   }
@@ -117,7 +117,7 @@ export async function generateStaticParams() {
   for (const city of cities) {
     // City + Category pages — only if providers exist
     for (const cat of categories) {
-      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (count > 0) {
         params.push({ city: city.slug, segments: [cat.slug] });
       }
@@ -125,12 +125,12 @@ export async function generateStaticParams() {
     // City + Area pages — only if providers exist
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         params.push({ city: city.slug, segments: [area.slug] });
         // Area + Category facet pages — only if providers exist in this combination
         for (const cat of categories) {
-          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
           if (total > 0) {
             params.push({ city: city.slug, segments: [area.slug, cat.slug] });
           }
@@ -140,14 +140,14 @@ export async function generateStaticParams() {
 
     // Area + Insurance pages — only if area has providers
     for (const area of areas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         params.push({ city: city.slug, segments: [area.slug, "insurance"] });
       }
     }
 
     // Individual listing pages — every provider gets a page at /directory/{city}/{category}/{slug}
-    const { providers: cityProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    const { providers: cityProviders } = await getProviders({ citySlug: city.slug, limit: 99999 });
     for (const provider of cityProviders) {
       params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
     }
@@ -159,13 +159,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const resolved = resolveSegments(city.slug, params.segments);
+  const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
   const base = getBaseUrl();
 
   switch (resolved.type) {
     case "city-category": {
-      const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
       return {
         title: `${resolved.category.name} in ${city.name}, UAE | ${total} ${total === 1 ? "Provider" : "Providers"}`,
         description: `Find ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with contact details. Last verified March 2026.`,
@@ -188,7 +188,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
     case "city-area": {
-      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
       return {
         title: `Healthcare in ${resolved.area.name}, ${city.name} | ${total} ${total === 1 ? "Provider" : "Providers"}`,
         description: `Find healthcare providers in ${resolved.area.name}, ${city.name}, UAE. Hospitals, clinics, and specialists with ratings.`,
@@ -202,7 +202,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
     case "area-category": {
-      const { total } = getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
       return {
         title: `${resolved.category.name} in ${resolved.area.name}, ${city.name} | ${total} ${total === 1 ? "Provider" : "Providers"}`,
         description: `Find ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"}.`,
@@ -256,7 +256,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
     case "city-category-subcategory": {
-      const { total } = getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, subcategorySlug: resolved.subcategory.slug, limit: 1 });
+      const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, subcategorySlug: resolved.subcategory.slug, limit: 1 });
       return {
         title: `${resolved.subcategory.name} in ${city.name} | ${resolved.category.name}`,
         description: `Find ${resolved.subcategory.name} specialists in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with ratings and reviews. Last verified March 2026.`,
@@ -270,11 +270,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function CatchAllPage({ params, searchParams }: Props) {
+export default async function CatchAllPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const resolved = resolveSegments(city.slug, params.segments);
+  const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
 
   const page = Number(searchParams.page) || 1;
@@ -288,7 +288,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
     const { category } = resolved;
-    const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
     const areas = getAreasByCity(city.slug);
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, null, total);
@@ -350,7 +350,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
   // --- City + Area Page ---
   if (resolved.type === "city-area") {
     const { area } = resolved;
-    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
+    const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, sort: "rating", limit: 20 });
     const categories = getCategories();
 
     const areaFaqs = [
@@ -395,7 +395,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
   // --- Area + Category Facet Page ---
   if (resolved.type === "area-category") {
     const { area, category } = resolved;
-    const { providers, total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
+    const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, area, total);
 
@@ -449,7 +449,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
     const insurers = getInsuranceProviders();
 
     // Get all providers in this area
-    const { providers: areaProviders } = getProviders({ citySlug: city.slug, areaSlug: area.slug, limit: 99999 });
+    const { providers: areaProviders } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, limit: 99999 });
 
     // Count providers per insurer in this area
     const insurerBreakdown = insurers
@@ -656,7 +656,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "listing") {
     const { category, provider } = resolved;
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
-    const nearbyProviders = getTopRatedProviders(city.slug, 4).filter((p) => p.id !== provider.id);
+    const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
     const hasValidRating = Number(provider.googleRating) > 0;
     const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${provider.operatingHours?.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${provider.lastVerified}.`;
@@ -868,7 +868,7 @@ export default function CatchAllPage({ params, searchParams }: Props) {
   // --- Subcategory page ---
   if (resolved.type === "city-category-subcategory") {
     const { category, subcategory } = resolved;
-    const { providers, total, totalPages } = getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page, limit: 20, sort: "rating" });
 
     return (
       <div className="container-tc py-8">

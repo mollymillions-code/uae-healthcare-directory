@@ -32,17 +32,17 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function InsuranceNavigatorPage() {
+export default async function InsuranceNavigatorPage() {
   const base = getBaseUrl();
-  const allStats = getAllInsurerNetworkStats();
+  const allStats = await getAllInsurerNetworkStats();
   const totalPlans = INSURER_PROFILES.reduce((sum, p) => sum + p.plans.length, 0);
   const totalProviders = allStats.reduce((sum, s) => sum + s.totalProviders, 0);
 
   // City insurance data — top 3 insurers by network size per city
   const cities = getCities();
-  const cityInsuranceData = cities
-    .map((city) => {
-      const providerCount = getProviderCountByCity(city.slug);
+  const cityInsuranceData = await Promise.all(cities
+    .map(async (city) => {
+      const providerCount = await getProviderCountByCity(city.slug);
       const topInsurers = allStats
         .map((s) => {
           const cityBreakdown = s.byCity.find((b) => b.citySlug === city.slug);
@@ -52,8 +52,8 @@ export default function InsuranceNavigatorPage() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
       return { city, providerCount, topInsurers };
-    })
-    .filter((d) => d.providerCount > 0 && d.topInsurers.length > 0);
+    }));
+  const filteredCityInsuranceData = cityInsuranceData.filter((d) => d.providerCount > 0 && d.topInsurers.length > 0);
 
   const faqs = [
     {
@@ -269,7 +269,7 @@ export default function InsuranceNavigatorPage() {
         Insurance network coverage varies significantly by emirate. Browse providers and top-performing insurers in each UAE city.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-12">
-        {cityInsuranceData.map(({ city, providerCount, topInsurers }) => (
+        {filteredCityInsuranceData.map(({ city, providerCount, topInsurers }) => (
           <Link
             key={city.slug}
             href={`/directory/${city.slug}/insurance`}

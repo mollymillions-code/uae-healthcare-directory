@@ -37,7 +37,7 @@ function getRegulatorSlug(citySlug: string): "dha" | "doh" | "mohap" {
 
 // ─── generateStaticParams ─────────────────────────────────────────────────────
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const insurers = getInsuranceProviders();
   const categories = getCategories();
@@ -45,7 +45,7 @@ export function generateStaticParams() {
 
   for (const city of cities) {
     for (const ins of insurers) {
-      const allProviders = getProvidersByInsurance(ins.slug, city.slug);
+      const allProviders = await getProvidersByInsurance(ins.slug, city.slug);
       if (allProviders.length === 0) continue;
 
       for (const cat of categories) {
@@ -64,7 +64,7 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
@@ -72,7 +72,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const allProviders = getProvidersByInsurance(insurer.slug, city.slug);
+  const allProviders = await getProvidersByInsurance(insurer.slug, city.slug);
   const filtered = allProviders.filter((p) => p.categorySlug === category.slug);
   const count = filtered.length;
   const base = getBaseUrl();
@@ -97,7 +97,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function InsuranceCategoryPage({ params }: Props) {
+export default async function InsuranceCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -108,7 +108,7 @@ export default function InsuranceCategoryPage({ params }: Props) {
   const category = getCategoryBySlug(params.category);
   if (!category) notFound();
 
-  const allProviders = getProvidersByInsurance(insurer.slug, city.slug);
+  const allProviders = await getProvidersByInsurance(insurer.slug, city.slug);
   const providers = allProviders
     .filter((p) => p.categorySlug === category.slug)
     .sort((a, b) => {

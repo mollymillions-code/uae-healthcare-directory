@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { type InsurerNetworkStats } from "@/lib/insurance";
+export interface InsurerNetworkStats {
+  slug: string;
+  name: string;
+  totalProviders: number;
+  byCity: { citySlug: string; cityName: string; providerCount: number }[];
+  byCategory: { categorySlug: string; categoryName: string; providerCount: number }[];
+}
 
 interface NetworkStatsProps {
   stats: InsurerNetworkStats;

@@ -53,12 +53,12 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ───────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
 
-  const { providers: allCity } = getProviders({ citySlug: city.slug, limit: 99999 });
+  const { providers: allCity } = await getProviders({ citySlug: city.slug, limit: 99999 });
   const providers24 = allCity.filter(is24Hour);
   const count = providers24.length;
 
@@ -80,7 +80,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default function TwentyFourHoursPage({ params }: Props) {
+export default async function TwentyFourHoursPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -88,7 +88,7 @@ export default function TwentyFourHoursPage({ params }: Props) {
   const categories = getCategories();
 
   // Get all providers in this city and filter for 24-hour
-  const { providers: allCity } = getProviders({ citySlug: city.slug, limit: 99999 });
+  const { providers: allCity } = await getProviders({ citySlug: city.slug, limit: 99999 });
   const providers24 = allCity.filter(is24Hour);
   const total = providers24.length;
 

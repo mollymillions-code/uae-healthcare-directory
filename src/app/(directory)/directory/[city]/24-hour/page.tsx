@@ -26,12 +26,12 @@ interface Props {
 }
 
 /** Only generate pages for cities with 3+ 24-hour providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string }[] = [];
 
   for (const city of cities) {
-    const providers = get24HourProviders(city.slug);
+    const providers = await get24HourProviders(city.slug);
     if (providers.length >= 3) {
       params.push({ city: city.slug });
     }
@@ -71,11 +71,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function TwentyFourHourCityPage({ params }: Props) {
+export default async function TwentyFourHourCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const providers = get24HourProviders(city.slug);
+  const providers = await get24HourProviders(city.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

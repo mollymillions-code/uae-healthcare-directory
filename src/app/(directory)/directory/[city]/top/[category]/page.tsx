@@ -19,14 +19,14 @@ export const revalidate = 43200;
 interface Props { params: { city: string; category: string } }
 
 /** Return all city × category combos that have 10+ providers with rating > 0 and reviewCount > 10 */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];
 
   for (const city of cities) {
     for (const cat of categories) {
-      const { providers } = getProviders({
+      const { providers } = await getProviders({
         citySlug: city.slug,
         categorySlug: cat.slug,
         limit: 99999,
@@ -76,12 +76,12 @@ function getRegulatorName(citySlug: string): string {
   return "the Ministry of Health and Prevention (MOHAP)";
 }
 
-export default function TopCategoryPage({ params }: Props) {
+export default async function TopCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();
 
-  const { providers: allProviders } = getProviders({
+  const { providers: allProviders } = await getProviders({
     citySlug: city.slug,
     categorySlug: cat.slug,
     limit: 99999,

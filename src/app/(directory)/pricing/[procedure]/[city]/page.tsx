@@ -77,7 +77,7 @@ export default async function CityProcedurePricingPage({ params }: Props) {
   const base = getBaseUrl();
 
   // Providers in this city + category
-  const allCityProviders = getProviders({ citySlug }).providers;
+  const allCityProviders = (await getProviders({ citySlug })).providers;
   const categoryProviders = allCityProviders.filter(
     (p) => p.categorySlug === proc.categorySlug
   );

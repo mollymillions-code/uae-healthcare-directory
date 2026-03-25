@@ -7,8 +7,12 @@ import { ComparisonTable } from "@/components/insurance/ComparisonTable";
 import {
   INSURER_PROFILES,
   getAllPlans,
-  getComparablePlans,
-} from "@/lib/insurance";
+} from "@/lib/constants/insurance-plans";
+
+function getComparablePlans(planIds: string[]) {
+  const all = getAllPlans();
+  return planIds.map((id) => all.find((p) => p.id === id)).filter(Boolean) as import("@/lib/constants/insurance-plans").InsurancePlan[];
+}
 
 export function CompareClient() {
   const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);

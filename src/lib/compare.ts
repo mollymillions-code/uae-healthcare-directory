@@ -120,8 +120,8 @@ function computeAvgRating(providers: LocalProvider[]): { avgRating: number; rate
   return { avgRating: Math.round((sum / rated.length) * 10) / 10, ratedCount: rated.length };
 }
 
-function getTopProviderSummary(citySlug: string, limit = 5) {
-  const top = getTopRatedProviders(citySlug, limit);
+async function getTopProviderSummary(citySlug: string, limit = 5) {
+  const top = await getTopRatedProviders(citySlug, limit);
   return top.map((p) => ({
     name: p.name,
     rating: p.googleRating,
@@ -132,44 +132,56 @@ function getTopProviderSummary(citySlug: string, limit = 5) {
 
 // ─── City Comparison Data ────────────────────────────────────────────────────
 
-function buildCityStats(citySlug: string): CityStats {
-  const { providers } = getProviders({ citySlug, limit: 99999 });
+async function buildCityStats(citySlug: string): Promise<CityStats> {
+  const { providers } = await getProviders({ citySlug, limit: 99999 });
   const { avgRating, ratedCount } = computeAvgRating(providers);
+  const [topProviders, hospitalCount, clinicCount, dentalCount, pharmacyCount] = await Promise.all([
+    getTopProviderSummary(citySlug, 5),
+    getProviderCountByCategoryAndCity("hospitals", citySlug),
+    getProviderCountByCategoryAndCity("clinics", citySlug),
+    getProviderCountByCategoryAndCity("dental", citySlug),
+    getProviderCountByCategoryAndCity("pharmacy", citySlug),
+  ]);
   return {
     totalProviders: providers.length,
     avgRating,
     ratedProviderCount: ratedCount,
-    topProviders: getTopProviderSummary(citySlug, 5),
+    topProviders,
     regulator: getRegulator(citySlug),
     gpFeeRange: getGpFeeRange(citySlug),
     specialistFeeRange: getSpecialistFeeRange(citySlug),
     emergencyFeeRange: getEmergencyFeeRange(citySlug),
     insuranceNote: getInsuranceNote(citySlug),
-    hospitalCount: getProviderCountByCategoryAndCity("hospitals", citySlug),
-    clinicCount: getProviderCountByCategoryAndCity("clinics", citySlug),
-    dentalCount: getProviderCountByCategoryAndCity("dental", citySlug),
-    pharmacyCount: getProviderCountByCategoryAndCity("pharmacy", citySlug),
+    hospitalCount,
+    clinicCount,
+    dentalCount,
+    pharmacyCount,
   };
 }
 
-export function getCityComparison(cityASlug: string, cityBSlug: string): CityComparisonData | null {
+export async function getCityComparison(cityASlug: string, cityBSlug: string): Promise<CityComparisonData | null> {
   const cityA = CITIES.find((c) => c.slug === cityASlug);
   const cityB = CITIES.find((c) => c.slug === cityBSlug);
   if (!cityA || !cityB) return null;
+
+  const [statsA, statsB] = await Promise.all([
+    buildCityStats(cityASlug),
+    buildCityStats(cityBSlug),
+  ]);
 
   return {
     slug: `${cityASlug}-vs-${cityBSlug}`,
     cityA: { slug: cityA.slug, name: cityA.name, emirate: cityA.emirate },
     cityB: { slug: cityB.slug, name: cityB.name, emirate: cityB.emirate },
-    statsA: buildCityStats(cityASlug),
-    statsB: buildCityStats(cityBSlug),
+    statsA,
+    statsB,
   };
 }
 
 // ─── Category Comparison Data ───────────────────────────────────────────────
 
-function buildCategoryStats(categorySlug: string, citySlug: string): CategoryStats {
-  const { providers } = getProviders({ citySlug, categorySlug, limit: 99999 });
+async function buildCategoryStats(categorySlug: string, citySlug: string): Promise<CategoryStats> {
+  const { providers } = await getProviders({ citySlug, categorySlug, limit: 99999 });
   const { avgRating, ratedCount } = computeAvgRating(providers);
   const top = [...providers]
     .filter((p) => Number(p.googleRating) > 0)
@@ -186,15 +198,20 @@ function buildCategoryStats(categorySlug: string, citySlug: string): CategorySta
   };
 }
 
-export function getCategoryComparison(
+export async function getCategoryComparison(
   catASlug: string,
   catBSlug: string,
   citySlug: string
-): CategoryComparisonData | null {
+): Promise<CategoryComparisonData | null> {
   const city = CITIES.find((c) => c.slug === citySlug);
   const catA = CATEGORIES.find((c) => c.slug === catASlug);
   const catB = CATEGORIES.find((c) => c.slug === catBSlug);
   if (!city || !catA || !catB) return null;
+
+  const [statsA, statsB] = await Promise.all([
+    buildCategoryStats(catASlug, citySlug),
+    buildCategoryStats(catBSlug, citySlug),
+  ]);
 
   return {
     slug: `${catASlug}-vs-${catBSlug}-${citySlug}`,
@@ -202,8 +219,8 @@ export function getCategoryComparison(
     cityName: city.name,
     categoryA: { slug: catA.slug, name: catA.name },
     categoryB: { slug: catB.slug, name: catB.name },
-    statsA: buildCategoryStats(catASlug, citySlug),
-    statsB: buildCategoryStats(catBSlug, citySlug),
+    statsA,
+    statsB,
   };
 }
 

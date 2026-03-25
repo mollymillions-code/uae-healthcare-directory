@@ -12,10 +12,10 @@ export const revalidate = 43200;
 interface Props { params: { city: string; category: string } }
 const WALK_IN_CATEGORY_SLUGS = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities(); const categories = getCategories();
   const params: { city: string; category: string }[] = [];
-  for (const city of cities) { for (const cat of categories) { if (!WALK_IN_CATEGORY_SLUGS.includes(cat.slug)) continue; if (getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0) params.push({ city: city.slug, category: cat.slug }); } }
+  for (const city of cities) { for (const cat of categories) { if (!WALK_IN_CATEGORY_SLUGS.includes(cat.slug)) continue; if (await getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0) params.push({ city: city.slug, category: cat.slug }); } }
   return params;
 }
 
@@ -23,10 +23,10 @@ function getRegulatorName(s: string): string { if (s === "dubai") return "the Du
 function getGPFeeRange(s: string): string { if (s === "dubai") return "AED 150-300"; if (s === "abu-dhabi" || s === "al-ain") return "AED 100-250"; if (s === "sharjah") return "AED 100-200"; return "AED 80-200"; }
 function getWalkInWaitEstimate(s: string): string { if (s === "emergency-care") return "immediate triage; non-critical cases within 30-120 minutes"; if (s === "pharmacy") return "5-15 minutes"; if (s === "labs-diagnostics") return "10-30 minutes"; if (s === "dental") return "15-45 minutes for routine check-ups"; return "15-45 minutes"; }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city); const cat = getCategoryBySlug(params.category);
   if (!city || !cat) return {};
-  const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+  const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
   const base = getBaseUrl(); const url = `${base}/directory/${city.slug}/walk-in/${cat.slug}`;
   return {
     title: `Walk-In ${cat.name} in ${city.name}, UAE | ${count}+ Providers`,
@@ -36,11 +36,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function WalkInCategoryPage({ params }: Props) {
+export default async function WalkInCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city); const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();
   if (!WALK_IN_CATEGORY_SLUGS.includes(cat.slug)) notFound();
-  const { providers: allProviders } = getProviders({ citySlug: city.slug, categorySlug: cat.slug, limit: 99999 });
+  const { providers: allProviders } = await getProviders({ citySlug: city.slug, categorySlug: cat.slug, limit: 99999 });
   if (allProviders.length === 0) notFound();
   const base = getBaseUrl(); const regulator = getRegulatorName(city.slug); const gpFee = getGPFeeRange(city.slug);
   const waitEstimate = getWalkInWaitEstimate(cat.slug); const count = allProviders.length; const catLower = cat.name.toLowerCase();

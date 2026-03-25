@@ -116,7 +116,7 @@ export default async function CategoryCityPricingPage({ params }: Props) {
     therapy: ["physiotherapy", "mental-health"],
   };
   const dirCatSlugs = categoryMap[catSlug] || [];
-  const allCityProviders = getProviders({ citySlug }).providers;
+  const allCityProviders = (await getProviders({ citySlug })).providers;
   const categoryProviders = allCityProviders.filter((p) => dirCatSlugs.includes(p.categorySlug));
 
   // Cost estimator - use average typical for the category

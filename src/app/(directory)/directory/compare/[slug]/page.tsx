@@ -33,7 +33,7 @@ export async function generateMetadata({
   if (!parsed) return { title: "Comparison Not Found" };
 
   if (parsed.type === "city") {
-    const data = getCityComparison(parsed.cityASlug!, parsed.cityBSlug!);
+    const data = await getCityComparison(parsed.cityASlug!, parsed.cityBSlug!);
     if (!data) return { title: "Comparison Not Found" };
     const title = `Healthcare in ${data.cityA.name} vs ${data.cityB.name}: Provider Comparison | UAE Open Healthcare Directory`;
     const description =
@@ -47,7 +47,7 @@ export async function generateMetadata({
     };
   }
 
-  const data = getCategoryComparison(parsed.catASlug!, parsed.catBSlug!, parsed.citySlug!);
+  const data = await getCategoryComparison(parsed.catASlug!, parsed.catBSlug!, parsed.citySlug!);
   if (!data) return { title: "Comparison Not Found" };
   const title = `${data.categoryA.name} vs ${data.categoryB.name} in ${data.cityName}: Comparison | UAE Open Healthcare Directory`;
   const description =
@@ -71,12 +71,12 @@ export default async function ComparisonPage({
   if (!parsed) notFound();
 
   if (parsed.type === "city") {
-    const data = getCityComparison(parsed.cityASlug!, parsed.cityBSlug!);
+    const data = await getCityComparison(parsed.cityASlug!, parsed.cityBSlug!);
     if (!data) notFound();
     return <CityComparisonView data={data} />;
   }
 
-  const data = getCategoryComparison(parsed.catASlug!, parsed.catBSlug!, parsed.citySlug!);
+  const data = await getCategoryComparison(parsed.catASlug!, parsed.catBSlug!, parsed.citySlug!);
   if (!data) notFound();
   return <CategoryComparisonView data={data} />;
 }

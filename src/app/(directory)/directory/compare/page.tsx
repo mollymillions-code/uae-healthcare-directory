@@ -58,13 +58,15 @@ const faqs = [
   },
 ];
 
-export default function CompareHubPage() {
+export default async function CompareHubPage() {
   const base = getBaseUrl();
   const cities = getCities();
   const cityPairs = getAllCityPairSlugs();
   const catComps = getAllCategoryComparisonSlugs();
   const totalPages = cityPairs.length + catComps.length;
-  const totalProviders = cities.reduce((sum, c) => sum + getProviderCountByCity(c.slug), 0);
+  const cityCounts = await Promise.all(cities.map((c) => getProviderCountByCity(c.slug)));
+  const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
+  const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   return (
     <div className="container-tc py-8">
@@ -129,8 +131,8 @@ export default function CompareHubPage() {
             const cityA = cities.find((c) => c.slug === pair.cityASlug);
             const cityB = cities.find((c) => c.slug === pair.cityBSlug);
             if (!cityA || !cityB) return null;
-            const countA = getProviderCountByCity(cityA.slug);
-            const countB = getProviderCountByCity(cityB.slug);
+            const countA = cityCountMap[cityA.slug] ?? 0;
+            const countB = cityCountMap[cityB.slug] ?? 0;
             return (
               <Link
                 key={pair.slug}

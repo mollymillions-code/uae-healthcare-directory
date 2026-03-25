@@ -60,7 +60,7 @@ export default async function ProcedureDetailPage({ params }: Props) {
   if (!proc) notFound();
 
   const base = getBaseUrl();
-  const cityPricing = getProcedureCityPricing(slug);
+  const cityPricing = await getProcedureCityPricing(slug);
   const faqs = generateProcedureFaqs(proc);
   const answerBlock = generateProcedureAnswerBlock(proc);
 

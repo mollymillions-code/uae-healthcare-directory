@@ -11,8 +11,8 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 43200;
 interface Props { params: { city: string } }
 
-function getWalkInProviders(citySlug: string) {
-  const { providers } = getProviders({ citySlug, categorySlug: "clinics", limit: 99999 });
+async function getWalkInProviders(citySlug: string) {
+  const { providers } = await getProviders({ citySlug, categorySlug: "clinics", limit: 99999 });
   return providers;
 }
 
@@ -20,10 +20,10 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = getWalkInProviders(city.slug).length;
+  const count = (await getWalkInProviders(city.slug)).length;
   const base = getBaseUrl();
   const url = `${base}/directory/${city.slug}/walk-in`;
   return {
@@ -47,10 +47,10 @@ function getGPFeeRange(s: string): string {
   return "AED 80-200";
 }
 
-export default function WalkInClinicsPage({ params }: Props) {
+export default async function WalkInClinicsPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
-  const allWalkIns = getWalkInProviders(city.slug);
+  const allWalkIns = await getWalkInProviders(city.slug);
   if (allWalkIns.length === 0) notFound();
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
@@ -59,7 +59,12 @@ export default function WalkInClinicsPage({ params }: Props) {
   const sorted = [...allWalkIns].sort((a, b) => { const r = Number(b.googleRating) - Number(a.googleRating); return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0); });
   const top20 = sorted.slice(0, 20);
   const ratedProviders = sorted.filter((p) => Number(p.googleRating) > 0);
-  const walkInCategories = getCategories().filter((cat) => ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"].includes(cat.slug) && getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0);
+  const walkInCategorySlugs = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
+  const catCounts = await Promise.all(walkInCategorySlugs.map((slug) => getProviderCountByCategoryAndCity(slug, city.slug)));
+  const walkInCategories = getCategories().filter((cat) => {
+    const idx = walkInCategorySlugs.indexOf(cat.slug);
+    return idx >= 0 && catCounts[idx] > 0;
+  });
   const faqs = [
     { question: `How many walk-in clinics are there in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, there are ${count}+ walk-in friendly clinics and polyclinics in ${city.name}, UAE. These include general practice clinics, multi-specialty polyclinics, and family medicine centers that accept patients without prior appointments. Data sourced from official ${regulator} registers, last verified March 2026.` },
     { question: `What is the typical wait time at walk-in clinics in ${city.name}?`, answer: `Walk-in wait times at clinics in ${city.name} typically range from 15 to 45 minutes for GP consultations. Wait times may be longer during morning rush (8-10 AM) and evening hours (5-8 PM). Multi-specialty polyclinics generally have shorter wait times due to multiple practitioners on staff.` },
@@ -92,7 +97,7 @@ export default function WalkInClinicsPage({ params }: Props) {
           <section className="mb-10">
             <div className="section-header"><h2>Walk-In by Specialty</h2><span className="arrows">&gt;&gt;&gt;</span></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {walkInCategories.map((cat) => { const cc = getProviderCountByCategoryAndCity(cat.slug, city.slug); return (
+              {walkInCategories.map((cat) => { const cc = catCounts[walkInCategorySlugs.indexOf(cat.slug)] ?? 0; return (
                 <Link key={cat.slug} href={`/directory/${city.slug}/walk-in/${cat.slug}`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
                   <span className="font-medium">Walk-In {cat.name}</span><span className="text-xs text-muted">{cc} {cc === 1 ? "provider" : "providers"}</span>
                 </Link>); })}

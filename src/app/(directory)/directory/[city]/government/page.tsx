@@ -15,17 +15,26 @@ const GOV_NAME_TERMS = ["- dubai health","- dha","ministry of health","governmen
 const GOV_FT = ["primary healthcare"];
 
 function isGov(name: string, ft: string): boolean { const n = name.toLowerCase(); const f = ft.toLowerCase(); return GOV_NAME_TERMS.some((t) => n.includes(t)) || GOV_FT.some((t) => f.includes(t)); }
-function getGovProviders(citySlug: string) { const { providers } = getProviders({ citySlug, limit: 99999 }); return providers.filter((p) => isGov(p.name, p.facilityType || "")); }
+async function getGovProviders(citySlug: string) { const { providers } = await getProviders({ citySlug, limit: 99999 }); return providers.filter((p) => isGov(p.name, p.facilityType || "")); }
 
-export function generateStaticParams() { return getCities().filter((c) => getGovProviders(c.slug).length > 0).map((c) => ({ city: c.slug })); }
+export async function generateStaticParams() {
+  const cities = getCities();
+  const results: { city: string }[] = [];
+  for (const c of cities) {
+    const govs = await getGovProviders(c.slug);
+    if (govs.length > 0) results.push({ city: c.slug });
+  }
+  return results;
+}
 
 function getRegulatorName(s: string): string { if (s === "dubai") return "the Dubai Health Authority (DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)"; return "the Ministry of Health and Prevention (MOHAP)"; }
 function getRegulatorShort(s: string): string { if (s === "dubai") return "DHA"; if (s === "abu-dhabi" || s === "al-ain") return "DOH"; return "MOHAP"; }
 function getGovOperator(s: string): string { if (s === "dubai") return "Dubai Health (formerly DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under the DOH"; return "the Ministry of Health and Prevention (MOHAP)"; }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city); if (!city) return {};
-  const count = getGovProviders(city.slug).length; const base = getBaseUrl(); const url = `${base}/directory/${city.slug}/government`;
+  const govProvidersMeta = await getGovProviders(city.slug);
+  const count = govProvidersMeta.length; const base = getBaseUrl(); const url = `${base}/directory/${city.slug}/government`;
   return {
     title: `Government Healthcare Facilities in ${city.name}, UAE | ${count} Public Facilities`,
     description: `Find ${count} government and public healthcare facilities in ${city.name}, UAE. Browse government hospitals, primary health centers, and public clinics operated by ${getRegulatorShort(city.slug)}. Updated March 2026.`,
@@ -34,9 +43,9 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function GovernmentPage({ params }: Props) {
+export default async function GovernmentPage({ params }: Props) {
   const city = getCityBySlug(params.city); if (!city) notFound();
-  const govProviders = getGovProviders(city.slug); if (govProviders.length === 0) notFound();
+  const govProviders = await getGovProviders(city.slug); if (govProviders.length === 0) notFound();
   const base = getBaseUrl(); const regulator = getRegulatorName(city.slug); const regulatorShort = getRegulatorShort(city.slug); const govOperator = getGovOperator(city.slug); const count = govProviders.length;
   const hospitals = govProviders.filter((p) => (p.facilityType || "").toLowerCase().includes("hospital"));
   const primaryCare = govProviders.filter((p) => { const ft = (p.facilityType || "").toLowerCase(); const n = p.name.toLowerCase(); return ft.includes("primary healthcare") || n.includes("primary health") || n.includes("health center") || n.includes("health centre"); });

@@ -12,7 +12,14 @@
 - **Driver:** node-postgres (`pg`) via `drizzle-orm/node-postgres` — changed from `@neondatabase/serverless`
 - **Schema (Drizzle):** `src/lib/db/schema.ts` — cities, areas, categories, subcategories, providers, faqs, journal_articles, journal_subscribers, google_reviews, claim_requests, provider_categories
 - **Schema (Research SQL):** `src/lib/research/schema.sql` — pipeline_runs, pipeline_comments, linkedin_posts, email_blasts, performance_scores, automation_schedules, automation_runs, post_queue, automation_notifications, performance_insights
-- **Seeded data:** 8 cities, 62 areas, 28 categories, 53 subcategories, 38+ providers, 88 FAQs, 108 journal articles
+- **Seeded data:** 8 cities, 62 areas, 28 categories, 53 subcategories, 12,519 providers (migrating from JSON to DB), 88 FAQs, 108 journal articles
+
+## ⚠️ ACTIVE MIGRATION: Provider Data JSON → PostgreSQL
+**Read `.ai-collab/DATA-MIGRATION.md` before working on any provider data.**
+- All `data.ts` functions are now **ASYNC** — you must `await` them
+- Provider data comes from PostgreSQL, NOT `providers-scraped.json`
+- The 58MB JSON file is being removed from git
+- Constants (cities, categories, insurance, languages) are still synchronous
 
 ## Hosting & Deployment
 - **Hosting:** Self-hosted on AWS EC2 (`13.205.197.148`) via PM2 + Nginx

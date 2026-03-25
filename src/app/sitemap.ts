@@ -38,7 +38,7 @@ const INSURANCE_GUIDE_SLUGS = [
   "switching-health-insurance",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl();
   const cities = getCities();
   const categories = getCategories();
@@ -71,7 +71,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // City + Category pages — only if providers exist
     for (const cat of categories) {
-      const catCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const catCount = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (catCount > 0) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/${cat.slug}`,
@@ -85,7 +85,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // City + Area pages — only if providers exist
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/${area.slug}`,
@@ -96,7 +96,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
         // Area + Category facet pages — only if providers exist in this combination
         for (const cat of categories) {
-          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
           if (total > 0) {
             entries.push({
               url: `${baseUrl}/directory/${city.slug}/${area.slug}/${cat.slug}`,
@@ -119,7 +119,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ─── Area + Insurance pages — only if area has providers ──────────────
     for (const area of areas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/${area.slug}/insurance`,
@@ -138,7 +138,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const insurer of INSURANCE_PROVIDERS) {
-      const insCount = getProviderCountByInsurance(insurer.slug, city.slug);
+      const insCount = await getProviderCountByInsurance(insurer.slug, city.slug);
       if (insCount > 0) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`,
@@ -148,7 +148,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         });
 
         // Insurance × Category cross-reference pages (only where >= 2 providers)
-        const insurerProviders = getProvidersByInsurance(insurer.slug, city.slug);
+        const insurerProviders = await getProvidersByInsurance(insurer.slug, city.slug);
         for (const cat of categories) {
           const catCount = insurerProviders.filter((p) => p.categorySlug === cat.slug).length;
           if (catCount >= 2) {
@@ -171,7 +171,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const lang of LANGUAGES) {
-      const langCount = getProviderCountByLanguage(lang.slug, city.slug);
+      const langCount = await getProviderCountByLanguage(lang.slug, city.slug);
       if (langCount > 0) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}`,
@@ -184,7 +184,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ─── Language × Category pages per city ─────────────────────────────────
     for (const lang of LANGUAGES) {
-      const langProviders = getProvidersByLanguage(lang.slug, city.slug);
+      const langProviders = await getProvidersByLanguage(lang.slug, city.slug);
       if (langProviders.length === 0) continue;
       for (const cat of categories) {
         const catCount = langProviders.filter((p) => p.categorySlug === cat.slug).length;
@@ -207,9 +207,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     });
     for (const condition of CONDITIONS) {
-      const hasProviders = condition.relatedCategories?.some(
-        (catSlug: string) => getProviderCountByCategoryAndCity(catSlug, city.slug) > 0
-      );
+      const condCounts = await Promise.all((condition.relatedCategories ?? []).map((catSlug: string) => getProviderCountByCategoryAndCity(catSlug, city.slug)));
+      const hasProviders = condCounts.some((c) => c > 0);
       if (hasProviders) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
@@ -242,7 +241,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Category-level: /best/[city]/[category] — only where rated providers exist
     for (const cat of categories) {
-      const bestCatCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const bestCatCount = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (bestCatCount > 0) {
         entries.push({
           url: `${baseUrl}/best/${city.slug}/${cat.slug}`,
@@ -266,7 +265,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Top 10 per category (UAE-wide) — only if 5+ qualified providers
   for (const cat of categories) {
-    const { providers: catProviders } = getProviders({ categorySlug: cat.slug, limit: 99999 });
+    const { providers: catProviders } = await getProviders({ categorySlug: cat.slug, limit: 99999 });
     const qualCat = catProviders.filter(
       (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
     ).length;
@@ -282,7 +281,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Top 10 per city (all categories) — only if 5+ qualified providers
   for (const city of cities) {
-    const { providers: cityAllProviders } = getProviders({ citySlug: city.slug, limit: 99999 });
+    const { providers: cityAllProviders } = await getProviders({ citySlug: city.slug, limit: 99999 });
     const qualCity = cityAllProviders.filter(
       (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
     ).length;
@@ -299,7 +298,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Top 10 city × category combos — only if 10+ qualified providers
   for (const city of cities) {
     for (const cat of categories) {
-      const { providers: cityProviders } = getProviders({
+      const { providers: cityProviders } = await getProviders({
         citySlug: city.slug,
         categorySlug: cat.slug,
         limit: 99999,
@@ -323,7 +322,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
       for (const cat of categories) {
-        const { providers: areaProviders } = getProviders({
+        const { providers: areaProviders } = await getProviders({
           citySlug: city.slug,
           areaSlug: area.slug,
           categorySlug: cat.slug,
@@ -347,7 +346,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // ─── 24-Hour & Emergency pages ────────────────────────────────────────────
   for (const city of cities) {
     // 24-hour city pages — only if 3+ 24-hour providers
-    const twentyFourHourAll = get24HourProviders(city.slug);
+    const twentyFourHourAll = await get24HourProviders(city.slug);
     if (twentyFourHourAll.length >= 3) {
       entries.push({
         url: `${baseUrl}/directory/${city.slug}/24-hour`,
@@ -358,7 +357,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       // 24-hour city × category pages — only if 3+ 24-hour providers in that category
       for (const cat of categories) {
-        const twentyFourHourCat = get24HourProviders(city.slug, cat.slug);
+        const twentyFourHourCat = await get24HourProviders(city.slug, cat.slug);
         if (twentyFourHourCat.length >= 3) {
           entries.push({
             url: `${baseUrl}/directory/${city.slug}/24-hour/${cat.slug}`,
@@ -371,7 +370,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
 
     // Emergency city pages — only if 3+ emergency providers
-    const emergencyProviders = getEmergencyProviders(city.slug);
+    const emergencyProviders = await getEmergencyProviders(city.slug);
     if (emergencyProviders.length >= 3) {
       entries.push({
         url: `${baseUrl}/directory/${city.slug}/emergency`,
@@ -384,7 +383,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ─── Area-level 24-hour & emergency pages ───────────────────────────────
     const areasFor24Hr = getAreasByCity(city.slug);
     for (const area of areasFor24Hr) {
-      const area24Hr = get24HourProviders(city.slug, undefined, area.slug);
+      const area24Hr = await get24HourProviders(city.slug, undefined, area.slug);
       if (area24Hr.length >= 3) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/${area.slug}/24-hour`,
@@ -393,7 +392,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.75,
         });
         for (const cat of categories) {
-          const area24HrCat = get24HourProviders(city.slug, cat.slug, area.slug);
+          const area24HrCat = await get24HourProviders(city.slug, cat.slug, area.slug);
           if (area24HrCat.length >= 3) {
             entries.push({
               url: `${baseUrl}/directory/${city.slug}/${area.slug}/24-hour/${cat.slug}`,
@@ -404,7 +403,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           }
         }
       }
-      const areaEmergency = getEmergencyProviders(city.slug, area.slug);
+      const areaEmergency = await getEmergencyProviders(city.slug, area.slug);
       if (areaEmergency.length >= 3) {
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/${area.slug}/emergency`,
@@ -440,11 +439,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // ─── Walk-In Clinic pages ─────────────────────────────────────────────────
   const WALK_IN_CATS = ["clinics", "dental", "dermatology", "ophthalmology", "pediatrics", "ent", "pharmacy", "labs-diagnostics", "emergency-care"];
   for (const city of cities) {
-    const walkInAll = getWalkInProviders(city.slug);
+    const walkInAll = await getWalkInProviders(city.slug);
     if (walkInAll.length >= 3) {
       entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 });
       for (const cs of WALK_IN_CATS) {
-        const walkInCat = getWalkInProviders(city.slug, cs);
+        const walkInCat = await getWalkInProviders(city.slug, cs);
         if (walkInCat.length >= 3) {
           entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in/${cs}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
         }
@@ -454,11 +453,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Area-level walk-in pages
     const walkInAreas = getAreasByCity(city.slug);
     for (const area of walkInAreas) {
-      const areaWalkIn = getWalkInProviders(city.slug, undefined, area.slug);
+      const areaWalkIn = await getWalkInProviders(city.slug, undefined, area.slug);
       if (areaWalkIn.length >= 3) {
         entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/walk-in`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
         for (const cs of WALK_IN_CATS) {
-          const areaWalkInCat = getWalkInProviders(city.slug, cs, area.slug);
+          const areaWalkInCat = await getWalkInProviders(city.slug, cs, area.slug);
           if (areaWalkInCat.length >= 3) {
             entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/walk-in/${cs}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 });
           }
@@ -469,13 +468,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ─── Government facility pages ──────────────────────────────────────────────
   for (const city of cities) {
-    const govAll = getGovernmentProviders(city.slug);
+    const govAll = await getGovernmentProviders(city.slug);
     if (govAll.length >= 3) {
       entries.push({ url: `${baseUrl}/directory/${city.slug}/government`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 });
 
       // Government city x category pages
       for (const cat of categories) {
-        const govCat = getGovernmentProviders(city.slug, cat.slug);
+        const govCat = await getGovernmentProviders(city.slug, cat.slug);
         if (govCat.length >= 3) {
           entries.push({ url: `${baseUrl}/directory/${city.slug}/government/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
         }
@@ -485,7 +484,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Government area pages
     const govAreas = getAreasByCity(city.slug);
     for (const area of govAreas) {
-      const govArea = getGovernmentProviders(city.slug, undefined, area.slug);
+      const govArea = await getGovernmentProviders(city.slug, undefined, area.slug);
       if (govArea.length >= 3) {
         entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/government`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 });
       }
@@ -493,7 +492,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Provider listing pages ───────────────────────────────────────────────
-  const { providers } = getProviders({ limit: 99999 });
+  const { providers } = await getProviders({ limit: 99999 });
   for (const provider of providers) {
     entries.push({
       url: `${baseUrl}/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`,
@@ -789,10 +788,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // Insurer vs Insurer head-to-head comparison pages (top 10 by network size)
-  const top10Insurers = INSURER_PROFILES.map((p) => {
-    const stats = getInsurerNetworkStats(p.slug);
+  const top10Insurers = (await Promise.all(INSURER_PROFILES.map(async (p) => {
+    const stats = await getInsurerNetworkStats(p.slug);
     return { slug: p.slug, networkSize: stats?.totalProviders ?? 0 };
-  })
+  })))
     .sort((a, b) => b.networkSize - a.networkSize)
     .slice(0, 10);
 
@@ -852,7 +851,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Arabic city+category — only if providers exist
     for (const cat of categories) {
-      const catCount = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+      const catCount = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (catCount > 0) {
         entries.push({
           url: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}`,
@@ -866,7 +865,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Arabic area pages + area+category facets — only if providers exist
     const arAreas = getAreasByCity(city.slug);
     for (const area of arAreas) {
-      const areaCount = getProviderCountByAreaAndCity(area.slug, city.slug);
+      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
       if (areaCount > 0) {
         entries.push({
           url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`,
@@ -875,7 +874,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.6,
         });
         for (const cat of categories) {
-          const { total } = getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
+          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
           if (total > 0) {
             entries.push({
               url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}/${cat.slug}`,

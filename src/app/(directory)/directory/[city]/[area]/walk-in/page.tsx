@@ -33,13 +33,13 @@ const WALK_IN_CATS = [
 ];
 
 /** Only generate pages for city x area combos with 3+ walk-in providers */
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
   for (const city of cities) {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const providers = getWalkInProviders(city.slug, undefined, area.slug);
+      const providers = await getWalkInProviders(city.slug, undefined, area.slug);
       if (providers.length >= 3) {
         params.push({ city: city.slug, area: area.slug });
       }
@@ -83,12 +83,12 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function AreaWalkInPage({ params }: Props) {
+export default async function AreaWalkInPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();
 
-  const providers = getWalkInProviders(city.slug, undefined, area.slug);
+  const providers = await getWalkInProviders(city.slug, undefined, area.slug);
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();

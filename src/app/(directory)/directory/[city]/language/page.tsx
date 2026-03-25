@@ -32,12 +32,18 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function LanguageIndexPage({ params }: Props) {
+export default async function LanguageIndexPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const languages = getLanguagesList();
   const base = getBaseUrl();
+
+  // Pre-fetch all language counts
+  const langCounts = await Promise.all(
+    languages.map((lang) => getProviderCountByLanguage(lang.slug, city.slug))
+  );
+  const langCountMap = Object.fromEntries(languages.map((l, i) => [l.slug, langCounts[i]]));
 
   return (
     <div className="container-tc py-8">
@@ -71,7 +77,7 @@ export default function LanguageIndexPage({ params }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {languages.map((lang) => {
-          const count = getProviderCountByLanguage(lang.slug, city.slug);
+          const count = langCountMap[lang.slug] ?? 0;
           return (
             <Link
               key={lang.slug}

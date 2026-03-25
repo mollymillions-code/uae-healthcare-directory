@@ -23,11 +23,11 @@ function getRegulatorName(citySlug: string): string {
   return "Ministry of Health and Prevention (MOHAP)";
 }
 
-function getTopRatedForCategory(
+async function getTopRatedForCategory(
   citySlug: string,
   categorySlug: string,
-): LocalProvider | undefined {
-  const { providers } = getProviders({
+): Promise<LocalProvider | undefined> {
+  const { providers } = await getProviders({
     citySlug,
     categorySlug,
     sort: "rating",
@@ -57,11 +57,11 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ───────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
 
-  const totalCount = getProviderCountByCity(city.slug);
+  const totalCount = await getProviderCountByCity(city.slug);
   const base = getBaseUrl();
   const url = `${base}/best/${city.slug}`;
 
@@ -78,24 +78,24 @@ export function generateMetadata({ params }: Props): Metadata {
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 
-export default function BestInCityPage({ params }: Props) {
+export default async function BestInCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const totalCount = getProviderCountByCity(city.slug);
+  const totalCount = await getProviderCountByCity(city.slug);
   const categories = getCategories();
 
   // Build category list with counts and top provider
-  const categoryData = categories
-    .map((cat) => {
-      const count = getProviderCountByCategoryAndCity(cat.slug, city.slug);
+  const categoryDataRaw = await Promise.all(categories
+    .map(async (cat) => {
+      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
       if (count === 0) return null;
-      const topProvider = getTopRatedForCategory(city.slug, cat.slug);
+      const topProvider = await getTopRatedForCategory(city.slug, cat.slug);
       return { ...cat, count, topProvider };
-    })
-    .filter(Boolean) as {
+    }));
+  const categoryData = categoryDataRaw.filter(Boolean) as {
       slug: string;
       name: string;
       icon: string;
@@ -105,12 +105,13 @@ export default function BestInCityPage({ params }: Props) {
     }[];
 
   // Other cities for cross-links
-  const otherCities = getCities()
+  const otherCitiesRaw = await Promise.all(getCities()
     .filter((c) => c.slug !== city.slug)
-    .map((c) => ({
+    .map(async (c) => ({
       ...c,
-      totalProviders: getProviderCountByCity(c.slug),
-    }))
+      totalProviders: await getProviderCountByCity(c.slug),
+    })));
+  const otherCities = otherCitiesRaw
     .filter((c) => c.totalProviders > 0)
     .sort((a, b) => b.totalProviders - a.totalProviders);
 

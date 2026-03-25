@@ -7,7 +7,7 @@ import {
   formatLimit,
   getTierLabel,
   getInsurerProfile,
-} from "@/lib/insurance";
+} from "@/lib/constants/insurance-plans";
 
 interface ComparisonTableProps {
   plans: InsurancePlan[];
