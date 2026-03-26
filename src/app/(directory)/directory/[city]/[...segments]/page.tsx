@@ -10,10 +10,9 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCities, getCategoryBySlug, getCategories,
+  getCityBySlug, getCategoryBySlug, getCategories,
   getAreaBySlug, getAreasByCity, getSubcategoriesByCategory,
   getProviderBySlug, getProviders, getTopRatedProviders,
-  getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
   getInsuranceProviders,
 } from "@/lib/data";
 import {
@@ -39,14 +38,16 @@ function getCategoryImageUrl(categorySlug: string, base: string): string {
     "oncology": "oncology", "emergency-care": "hospitals",
   };
   const file = CATEGORY_IMAGE_MAP[categorySlug] || "clinics";
-  return `${base}/images/categories/${file}.png`;
+  return `${base}/images/categories/${file}.webp`;
 }
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
 } from "lucide-react";
 
+// ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
 export const revalidate = 21600;
+export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
@@ -109,52 +110,8 @@ async function resolveSegments(citySlug: string, segments: string[]) {
   return null;
 }
 
-export async function generateStaticParams() {
-  const params: { city: string; segments: string[] }[] = [];
-  const cities = getCities();
-  const categories = getCategories();
-
-  for (const city of cities) {
-    // City + Category pages — only if providers exist
-    for (const cat of categories) {
-      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
-      if (count > 0) {
-        params.push({ city: city.slug, segments: [cat.slug] });
-      }
-    }
-    // City + Area pages — only if providers exist
-    const areas = getAreasByCity(city.slug);
-    for (const area of areas) {
-      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
-      if (areaCount > 0) {
-        params.push({ city: city.slug, segments: [area.slug] });
-        // Area + Category facet pages — only if providers exist in this combination
-        for (const cat of categories) {
-          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
-          if (total > 0) {
-            params.push({ city: city.slug, segments: [area.slug, cat.slug] });
-          }
-        }
-      }
-    }
-
-    // Area + Insurance pages — only if area has providers
-    for (const area of areas) {
-      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
-      if (areaCount > 0) {
-        params.push({ city: city.slug, segments: [area.slug, "insurance"] });
-      }
-    }
-
-    // Individual listing pages — every provider gets a page at /directory/{city}/{category}/{slug}
-    const { providers: cityProviders } = await getProviders({ citySlug: city.slug, limit: 99999 });
-    for (const provider of cityProviders) {
-      params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
-    }
-  }
-
-  return params;
-}
+// No generateStaticParams — pages render on-demand via ISR.
+// Google discovers them via sitemap.xml and internal links.
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);

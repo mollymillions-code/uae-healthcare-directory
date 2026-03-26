@@ -8,10 +8,9 @@ const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCities, getCategoryBySlug, getCategories,
+  getCityBySlug, getCategoryBySlug, getCategories,
   getAreaBySlug, getAreasByCity,
   getProviderBySlug, getProviders, getTopRatedProviders,
-  getProviderCountByCategoryAndCity, getProviderCountByAreaAndCity,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema,
@@ -24,7 +23,9 @@ import {
   CheckCircle, ExternalLink, Calendar,
 } from "lucide-react";
 
+// ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
 export const revalidate = 21600;
+export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
@@ -72,43 +73,7 @@ async function resolveSegments(citySlug: string, segments: string[]) {
   return null;
 }
 
-export async function generateStaticParams() {
-  const params: { city: string; segments: string[] }[] = [];
-  const cities = getCities();
-  const categories = getCategories();
-
-  for (const city of cities) {
-    // City + Category pages — only if providers exist
-    for (const cat of categories) {
-      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
-      if (count > 0) {
-        params.push({ city: city.slug, segments: [cat.slug] });
-      }
-    }
-    // City + Area pages — only if providers exist
-    const areas = getAreasByCity(city.slug);
-    for (const area of areas) {
-      const areaCount = await getProviderCountByAreaAndCity(area.slug, city.slug);
-      if (areaCount > 0) {
-        params.push({ city: city.slug, segments: [area.slug] });
-        // Area + Category facet pages — only if providers exist in this combination
-        for (const cat of categories) {
-          const { total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: cat.slug, limit: 1 });
-          if (total > 0) {
-            params.push({ city: city.slug, segments: [area.slug, cat.slug] });
-          }
-        }
-      }
-    }
-    // Individual provider listing pages — Arabic mirror of every provider
-    const { providers: cityProviders } = await getProviders({ citySlug: city.slug, limit: 99999 });
-    for (const provider of cityProviders) {
-      params.push({ city: city.slug, segments: [provider.categorySlug, provider.slug] });
-    }
-  }
-
-  return params;
-}
+// No generateStaticParams — pages render on-demand via ISR.
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);

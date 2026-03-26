@@ -41,11 +41,11 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
 
 export function getCategoryImagePath(categorySlug: string): string {
   const imageFile = CATEGORY_IMAGE_MAP[categorySlug] || "clinics";
-  return `/images/categories/${imageFile}.png`;
+  return `/images/categories/${imageFile}.webp`;
 }
 
 export function getCityImagePath(citySlug: string): string {
-  return `/images/cities/${citySlug}.png`;
+  return `/images/cities/${citySlug}.webp`;
 }
 
 export function getBaseUrl(): string {

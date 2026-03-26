@@ -66,7 +66,7 @@ export default async function ArabicHomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-dark-500">
             {/* Main hero card */}
             <Link href="/ar/directory/dubai" className="lg:col-span-6 card-hero min-h-[420px] lg:min-h-[500px] group">
-              <Image src="/images/cities/dubai.png" alt="الرعاية الصحية في دبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+              <Image src="/images/cities/dubai.webp" alt="الرعاية الصحية في دبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="overlay" />
               <div className="content">
                 <span className="badge mb-3 w-fit">{getArabicCityName("dubai")}</span>
@@ -82,7 +82,7 @@ export default async function ArabicHomePage() {
             {/* Right column — 2 stacked cards */}
             <div className="lg:col-span-3 flex flex-col gap-px">
               <Link href="/ar/directory/abu-dhabi" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/abu-dhabi.png" alt="الرعاية الصحية في أبوظبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/abu-dhabi.webp" alt="الرعاية الصحية في أبوظبي" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit">{getArabicCityName("abu-dhabi")}</span>
@@ -93,7 +93,7 @@ export default async function ArabicHomePage() {
                 </div>
               </Link>
               <Link href="/ar/directory/sharjah" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/sharjah.png" alt="الرعاية الصحية في الشارقة" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/sharjah.webp" alt="الرعاية الصحية في الشارقة" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit">{getArabicCityName("sharjah")}</span>
@@ -145,7 +145,7 @@ export default async function ArabicHomePage() {
               >
                 {hasImage && (
                   <Image
-                    src={`/images/cities/${city.slug}.png`}
+                    src={`/images/cities/${city.slug}.webp`}
                     alt={getArabicCityName(city.slug)}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

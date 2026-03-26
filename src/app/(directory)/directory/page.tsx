@@ -99,7 +99,7 @@ export default async function DirectoryHomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-dark-500">
             {/* Main hero card — left half */}
             <Link href="/directory/dubai" className="lg:col-span-6 card-hero min-h-[420px] lg:min-h-[500px] group">
-              <Image src="/images/cities/dubai.png" alt="Dubai Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+              <Image src="/images/cities/dubai.webp" alt="Dubai Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="overlay" />
               <div className="content">
                 <span className="badge mb-3 w-fit">Dubai</span>
@@ -115,7 +115,7 @@ export default async function DirectoryHomePage() {
             {/* Right column — 2 stacked cards */}
             <div className="lg:col-span-3 flex flex-col gap-px">
               <Link href="/directory/abu-dhabi" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/abu-dhabi.png" alt="Abu Dhabi Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/abu-dhabi.webp" alt="Abu Dhabi Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit">Abu Dhabi</span>
@@ -126,7 +126,7 @@ export default async function DirectoryHomePage() {
                 </div>
               </Link>
               <Link href="/directory/sharjah" className="card-hero flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/sharjah.png" alt="Sharjah Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/sharjah.webp" alt="Sharjah Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit">Sharjah</span>

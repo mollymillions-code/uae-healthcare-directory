@@ -22,7 +22,7 @@ export function CityCard({ name, slug, emirate, providerCount }: CityCardProps) 
       <div className="h-28 relative bg-gradient-to-br from-dark to-dark-500 overflow-hidden">
         {hasImage && (
           <Image
-            src={`/images/cities/${slug}.png`}
+            src={`/images/cities/${slug}.webp`}
             alt={`${name} skyline`}
             fill
             className="object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"

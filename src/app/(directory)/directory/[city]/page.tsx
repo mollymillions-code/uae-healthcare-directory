@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: 'en_AE',
       siteName: 'UAE Open Healthcare Directory',
       url: `${getBaseUrl()}/directory/${city.slug}`,
-      images: [{ url: `${getBaseUrl()}/images/cities/${city.slug}.png`, width: 1200, height: 630, alt: `Healthcare in ${city.name}, UAE` }],
+      images: [{ url: `${getBaseUrl()}/images/cities/${city.slug}.webp`, width: 1200, height: 630, alt: `Healthcare in ${city.name}, UAE` }],
     },
   };
 }
