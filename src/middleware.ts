@@ -7,6 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
  * 3. Research pipeline API key enforcement
  */
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || '';
+  // Redirect non-www to www
+  if (host === 'zavis.ai') {
+    return NextResponse.redirect(`https://www.zavis.ai${request.nextUrl.pathname}${request.nextUrl.search}`, 301);
+  }
+
   const { pathname } = request.nextUrl;
 
   // ── Legacy redirects ──────────────────────────────────────────────
@@ -68,11 +74,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/uae", "/uae/:path*",
-    "/journal", "/journal/:path*",
-    "/dashboard/:path*",
-    "/api/research/pipeline/:path*",
-    "/api/research/posts/:path*",
-    "/api/research/emails/:path*",
+    "/((?!_next/static|_next/image|favicon\\.png|images/).*)",
   ],
 };

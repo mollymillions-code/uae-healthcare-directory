@@ -4,13 +4,11 @@
 - **Domain:** zavis.ai
 - **Hosting:** AWS EC2 instance
 - **Framework:** Next.js 14 (standalone build)
-- **NOT Vercel** — the `girish` remote was used for Vercel previously but is now deprecated for deployment
 
 ## How to Deploy
 
-### Step 1: Push to both remotes
+### Step 1: Push to remote
 ```bash
-git push origin main
 git push zavis-support main
 ```
 
@@ -20,9 +18,7 @@ Pushing to `zavis-support` (`https://github.com/zavis-support/zavis-landing.git`
 ### Remotes
 | Remote | URL | Purpose |
 |--------|-----|---------|
-| `origin` | `https://github.com/mollymillions-code/uae-healthcare-directory.git` | Source of truth |
 | `zavis-support` | `https://github.com/zavis-support/zavis-landing.git` | **Deployment trigger** (EC2) |
-| `girish` | `https://github.com/girish0120/zavis-ai_landing.git` | Legacy (was Vercel, now deprecated) |
 
 ### Common Issues
 
@@ -48,4 +44,4 @@ git push zavis-support main
 1. `npx next build` passes with zero errors (warnings are OK)
 2. All new pages generate in static output (check `✓ Generating static pages` count)
 3. No secrets in committed files (.env.local is gitignored)
-4. Push to `origin` first, then `zavis-support`
+4. Push to `zavis-support`
