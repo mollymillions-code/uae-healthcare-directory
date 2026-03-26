@@ -19,6 +19,8 @@ const nextConfig = {
       { protocol: "https", hostname: "**.mobihealthnews.com" },
       { protocol: "https", hostname: "**.fiercehealthcare.com" },
       { protocol: "https", hostname: "pub-12b97f7acbe84e70aacc715287b58c72.r2.dev" },
+      { protocol: "https", hostname: "places.googleapis.com" },
+      { protocol: "https", hostname: "**.googleusercontent.com" },
     ],
   },
   async headers() {
