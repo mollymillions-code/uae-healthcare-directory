@@ -1,5 +1,42 @@
 # Zavis Landing - Changelog
 
+## 2026-03-26 — [Claude Code] DB Audit & Stability Fixes
+
+- Fixed recurring `zavis_admin` PostgreSQL password authentication failure — password was being reset by other EC2 services
+- Applied Drizzle migration `0001_round_gabe_jones.sql` — added `city_slug`, `category_slug`, `area_slug`, `subcategory_slug`, `facility_type`, `description_ar`, `review_summary`, `review_summary_ar`, `google_photo_url` columns + 4 indexes to `providers` table
+- Populated slug columns for all 12,504 providers from FK relationships (cities, categories, areas, subcategories)
+- Re-granted all table permissions to `zavis_admin` after schema changes
+- Verified: 12,504 providers, 108 journal articles, 8 cities, 28 categories, 62 areas, 53 subcategories, 88 FAQs — all intact
+- Updated .ai-collab STATUS.md, CHANGELOG.md, .ai-context.md, and CLAUDE.md with comprehensive deployment rules and data layer documentation
+
+## 2026-03-25 — [Claude Code] Data Layer Migration (JSON → PostgreSQL)
+
+- Migrated `src/lib/data.ts` from synchronous JSON reads (58MB `providers-scraped.json`) to async PostgreSQL queries via Drizzle ORM
+- ALL data functions are now ASYNC — `getProviders()`, `getCityBySlug()`, `getProviderBySlug()`, `getAreaBySlug()`, etc.
+- Every page component that calls these functions was updated to `await` them
+- Seeded 12,504 providers to DB via `scripts/seed-providers-to-db.ts`
+- Sitemap changed to `force-dynamic` to prevent build timeout with 32k+ URLs
+- Fallback: if DB is empty, auto-detects and falls back to JSON (commit `ee5de07`)
+
+## 2026-03-25 — [Claude Code] Safe Deploy with Rollback
+
+- Rewrote `.github/workflows/deploy.yml` with safe deploy pipeline:
+  1. Backup current `.next` before pulling new code
+  2. If build fails → restore backup `.next` → PM2 restart → site stays up on previous version
+  3. If health check fails after restart → rollback to backup
+- This prevents the site-down scenario where a broken build wipes `.next` and PM2 crash-loops
+
+## 2026-03-25 — [Claude Code] New Page Types (SEO/AEO Expansion)
+
+- 34 healthcare comparison pages (city vs city, hospitals vs clinics)
+- Procedure cost pages with provider cards and price tables
+- 37 government healthcare filter pages (city, category, area levels)
+- Area-level walk-in clinic pages with wait times and FAQs
+- Area-level 24-hour and emergency directory pages
+- Conditions guide pages with city variants
+- Area-level insurance pages
+- Lab test result interpretation pages (15 tests: CBC, Vitamin D, B12, etc.)
+
 ## 2026-03-25 — [Claude Code] 24-Hour Provider Pages + Area-Level Insurance Pages
 
 - **New file:** `src/app/(directory)/directory/[city]/24-hours/page.tsx` — 24-hour provider filtered pages for all 8 cities
@@ -92,5 +129,6 @@
 - Both issues caused intelligence page to show "No articles published" despite 108 articles in DB, because `getDbArticles()` caches empty array on first failure.
 
 ### Pending
-- SSL via certbot (DNS now pointed)
+- SSL via certbot (DNS pointed, awaiting certbot run)
 - Remove Vercel deployment once EC2 is confirmed stable
+- Neon DB project deletion (credentials leaked via GitGuardian alert — `scripts/run-schema.mjs` had hardcoded URI in git history)

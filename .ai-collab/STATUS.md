@@ -12,14 +12,15 @@
 - **Driver:** node-postgres (`pg`) via `drizzle-orm/node-postgres` — changed from `@neondatabase/serverless`
 - **Schema (Drizzle):** `src/lib/db/schema.ts` — cities, areas, categories, subcategories, providers, faqs, journal_articles, journal_subscribers, google_reviews, claim_requests, provider_categories
 - **Schema (Research SQL):** `src/lib/research/schema.sql` — pipeline_runs, pipeline_comments, linkedin_posts, email_blasts, performance_scores, automation_schedules, automation_runs, post_queue, automation_notifications, performance_insights
-- **Seeded data:** 8 cities, 62 areas, 28 categories, 53 subcategories, 12,519 providers (migrating from JSON to DB), 88 FAQs, 108 journal articles
+- **Seeded data:** 8 cities, 62 areas, 28 categories, 53 subcategories, 12,504 providers, 88 FAQs, 108 journal articles
 
-## ⚠️ ACTIVE MIGRATION: Provider Data JSON → PostgreSQL
-**Read `.ai-collab/DATA-MIGRATION.md` before working on any provider data.**
-- All `data.ts` functions are now **ASYNC** — you must `await` them
-- Provider data comes from PostgreSQL, NOT `providers-scraped.json`
-- The 58MB JSON file is being removed from git
-- Constants (cities, categories, insurance, languages) are still synchronous
+## Data Layer — COMPLETED MIGRATION
+- **Provider data (12,504 rows)** lives in PostgreSQL — NOT the old `providers-scraped.json`
+- All `data.ts` functions are **ASYNC** — you MUST `await` them (e.g., `await getProviders(...)`, `await getCityBySlug(...)`)
+- Constants (CITIES, CATEGORIES, INSURANCE_PROVIDERS, LANGUAGES, CONDITIONS) are still synchronous from TS files
+- Provider schema has 50 columns including `city_slug`, `category_slug`, `area_slug`, `facility_type`, `google_photo_url`, `review_summary`
+- 2 Drizzle migrations applied (initial + slug columns)
+- See `CLAUDE.md` for data access patterns
 
 ## Hosting & Deployment
 - **Hosting:** Self-hosted on AWS EC2 (`13.205.197.148`) via PM2 + Nginx
@@ -31,9 +32,15 @@
 - **GitHub:** https://github.com/zavis-support/zavis-landing
 - **Env file:** `/home/ubuntu/zavis-landing/.env.local` (on EC2, NOT in git)
 
-## Auto-Deploy (two mechanisms)
-1. **GitHub Actions** (`.github/workflows/deploy.yml`) — SSHes into EC2 on push to `main`, runs `git checkout -- . && git pull + npm install + npm run build + pm2 restart`. Prints deploy verification at end. Secrets: `EC2_HOST`, `EC2_SSH_KEY`.
-2. **GitHub Webhook** (port 9100, PM2: `zavis-deploy-webhook`) — Direct HTTP webhook at `/api/deploy-webhook` with HMAC signature verification. Secret: `zavis-deploy-secret-2026`.
+## Auto-Deploy — SAFE DEPLOY with rollback
+**GitHub Actions** (`.github/workflows/deploy.yml`) — on push to `main`:
+1. **Lint gate:** Runs `npm run lint` + `tsc --noEmit` on GitHub runner. If lint fails, deploy is blocked.
+2. **SSH deploy:** Backs up current `.next` → `git pull` → `npm install` → `npm run build`
+3. **Build failure rollback:** If build fails, restores the backup `.next` and restarts PM2 — site stays up on previous version.
+4. **Health check:** After restart, hits `http://localhost:3200/`. If it doesn't return 200, rolls back to backup.
+5. **Verification:** Prints git SHA, PM2 status, and `/api/health` response.
+- Secrets: `EC2_HOST`, `EC2_SSH_KEY`
+- Also: GitHub Webhook (port 9100, PM2: `zavis-deploy-webhook`) with HMAC verification. Secret: `zavis-deploy-secret-2026`.
 
 ## Nginx Configuration
 - **Static file serving:** `/_next/static` served directly from `.next/static` on disk via `alias` directive (required — see CRITICAL below)
@@ -134,19 +141,38 @@ This is a PRODUCTION branch — there is no staging environment. Every push to `
 
 ---
 
-## Active Work
+## Current State (as of 2026-03-26)
 
-None currently.
+- **Site is live** at https://www.zavis.ai — DNS pointed, SSL pending certbot
+- **32k+ pages** generated at build time (providers, cities, categories, areas, labs, comparisons, insurance, 24-hour, walk-in, government, procedures, guides, conditions)
+- **Sitemap is dynamic** (`force-dynamic`) to prevent build timeout — not statically generated
+- **12,504 providers** in PostgreSQL with enriched descriptions, Google photos, slug columns
+- **108 journal articles** in `journal_articles` table
+- **Deploy pipeline** has lint gate + rollback — broken builds no longer take down the site
 
-## Recently Completed (last 48h)
+## Recently Completed
 
-- **Claude Code** (2026-03-25T00:00:00+04:00) — Built `/labs/results/[test]/page.tsx` — AEO interpretation pages for 15 high-traffic lab tests (CBC, Vitamin D, B12, Lipid Profile, HbA1c, TSH, Thyroid Panel, LFT, KFT, Iron Studies, Fasting Glucose, Testosterone, AMH, PSA, HIV, CRP). Each page has full normal ranges table, high/low meaning answer blocks, UAE context, next steps, related tests, price comparison CTA, FAQ (4 per test), MedicalWebPage + FAQPage + BreadcrumbList + SpeakableSpecification JSON-LD, and medical disclaimer.
+### Page Architecture (2026-03-25/26)
+- Data layer migration: all `data.ts` functions now async, querying PostgreSQL instead of 58MB JSON
+- 34 healthcare comparison pages (city vs city, hospitals vs clinics)
+- Procedure cost pages with provider cards and price tables
+- 37 government healthcare filter pages (city, category, area levels)
+- Area-level walk-in clinic pages with wait times and FAQs
+- Area-level 24-hour and emergency directory pages
+- Conditions guide pages with city variants
+- Area-level insurance pages
+- Insurer vs insurer head-to-head comparison pages (~45 matchups)
+- Lab test result interpretation pages (15 tests)
+- Dynamic sitemap to handle 32k+ URLs without build timeout
 
-- **Claude Code** (2026-03-25T22:45:00+04:00) — Built 24-hour provider filtered pages (`/directory/[city]/24-hours`) and area-level insurance pages (`/directory/[city]/[area]/insurance`). 24-hours page includes: answer block with category breakdown, sorted provider list (cap 50), emergency info section (998/999/997/112), 5 FAQs, JSON-LD (BreadcrumbList, ItemList, FAQPage, SpeakableSpecification), cross-links, and sitemap entries. Area insurance page integrated into catch-all `[...segments]` route with insurer breakdown by area, top 5 ranked list, full insurer grid, 5 FAQs, and sitemap entries.
-
-- **Claude Code** (2026-03-25T20:30:00+04:00) — Built insurer vs insurer head-to-head comparison pages at `/insurance/compare/[matchup]`. Generates top ~45 matchups (C(10,2)) from top 10 insurers by network size. Includes hero, answer blocks, side-by-side comparison table, network-by-city bar chart, plan cards, verdict section, 6 dynamic FAQs, JSON-LD (BreadcrumbList, FAQPage, SpeakableSpecification), and cross-links. Updated sitemap.ts with matchup URLs.
-
-- **Claude Code** (2026-03-25T00:00:00+04:00) — Rewrote 500 provider descriptions at indices 1763-2440 containing boilerplate "Licensed and regulated by" text. All 500 descriptions are 80-120 words in FT health desk voice. Saved to scripts/enrichment-chunks/fix2-1763-2440.json
+### Infrastructure (2026-03-25)
+- Full Vercel → EC2 migration (PM2 + Nginx)
+- Neon → local PostgreSQL migration (all 14+ scripts)
+- Safe deploy with rollback in GitHub Actions
+- Lint gate in CI pipeline
+- Provider data seeded to DB (12,504 rows from providers-scraped.json)
+- Drizzle schema migration for slug columns + indexes
+- Provider description enrichment (5000+ descriptions rewritten)
 
 ---
 
