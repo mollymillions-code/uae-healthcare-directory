@@ -1,5 +1,33 @@
 # Zavis Landing - Changelog
 
+## 2026-03-26 — [Claude Code] Major Cleanup, Remotion Extraction & SEO Hardening
+
+### Junk Cleanup
+- Renamed package from `uae-health-directory` to `zavis-landing` in package.json
+- Removed `@neondatabase/serverless` from dependencies (zero neon imports remain)
+- Deleted `.env.prod-check`, `.env.vercel-check`, `.env.vercel` (leaked Neon credentials)
+- Removed mollymillions-code and girish remote references from DEPLOYMENT.md
+- Deleted `.vercel/` directory (no longer on Vercel)
+- Fixed hardcoded Neon URL in `scripts/run-schema.mjs` → uses `process.env.DATABASE_URL`
+- Updated `.env.local.example` with local PostgreSQL connection string
+
+### Remotion Extraction
+- Moved `remotion/` directory to standalone project at `/zavis-remotion/`
+- Moved `scripts/render-slide-video.mjs` and `scripts/generate-voiceover.mjs` to zavis-remotion
+- Removed devDependencies: `remotion`, `@remotion/bundler`, `@remotion/cli`, `@remotion/renderer`
+- Removed npm scripts: `video:studio`, `video:render`, `video:voiceover`
+- Cleaned `tsconfig.json` excludes
+- Net reduction: ~1700 lines removed from codebase
+
+### SEO Hardening
+- **Security headers:** Added HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy to `next.config.mjs` + Nginx
+- **poweredByHeader: false** — no more X-Powered-By leak
+- **Tracking scripts optimized:** Converted 7 inline scripts to Next.js `<Script>` — GTM/GAds use `afterInteractive`, Twitter/Clarity/LinkedIn/Meta/Reb2b use `lazyOnload` (faster LCP/INP)
+- **www canonicalization:** `zavis.ai` → `www.zavis.ai` 301 redirect in middleware.ts + Nginx
+- **llms.txt:** Created `public/llms.txt` for AI search visibility (ChatGPT, Perplexity, etc.)
+- **robots.ts:** Added rules to block training crawlers (CCBot, cohere-ai)
+- **Sitemap rewrite:** Replaced single dynamic sitemap with chunked index (10 chunks via `generateSitemaps()`). Each chunk serves ~3000-5000 URLs. ISR with 1-hour revalidation. Google now gets `/sitemap.xml` → `/sitemap/0.xml` through `/sitemap/9.xml`.
+
 ## 2026-03-26 — [Claude Code] DB Audit & Stability Fixes
 
 - Fixed recurring `zavis_admin` PostgreSQL password authentication failure — password was being reset by other EC2 services

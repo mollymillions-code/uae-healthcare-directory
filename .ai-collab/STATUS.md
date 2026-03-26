@@ -43,10 +43,28 @@
 - Also: GitHub Webhook (port 9100, PM2: `zavis-deploy-webhook`) with HMAC verification. Secret: `zavis-deploy-secret-2026`.
 
 ## Nginx Configuration
+- **Non-www redirect:** `zavis.ai` → `https://www.zavis.ai` (301) in Nginx server block
+- **Security headers:** X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (set in both Nginx and next.config.mjs)
 - **Static file serving:** `/_next/static` served directly from `.next/static` on disk via `alias` directive (required — see CRITICAL below)
 - **Public assets:** `/assets` served directly from `public/assets`
 - **All other requests:** Proxied to `http://127.0.0.1:3200`
 - **Configs:** `/etc/nginx/sites-enabled/zavis.ai`, `/etc/nginx/sites-enabled/zavis-landing-ip`, `/etc/nginx/sites-enabled/landing-preview.zavisinternaltools.in`
+
+## SEO & Performance
+- **Sitemap:** Chunked sitemap index (10 chunks via `generateSitemaps()`) at `/sitemap.xml` → `/sitemap/0.xml` through `/sitemap/9.xml`. ISR with 1-hour revalidation.
+- **Canonical:** `metadataBase` set in root layout; per-page canonical tags with language alternates
+- **Security headers:** HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (next.config.mjs + Nginx)
+- **poweredByHeader:** `false` — no X-Powered-By leak
+- **Tracking scripts:** 7 scripts (GTM, Google Ads, Twitter, Clarity, LinkedIn, Meta, Reb2b) — GTM/GAds use `afterInteractive`, rest use `lazyOnload` via Next.js `<Script>`
+- **llms.txt:** `public/llms.txt` — structured description for AI search crawlers
+- **robots.txt:** Blocks training crawlers (CCBot, cohere-ai), allows search crawlers
+- **www redirect:** `zavis.ai` → `www.zavis.ai` (301) in both middleware.ts and Nginx
+- **JSON-LD:** 8+ schema types (Organization, MedicalBusiness, FAQ, WebSite, Breadcrumb, ItemList, Speakable, Journal)
+
+## Remotion (Video Rendering) — EXTRACTED
+- Remotion was extracted to a standalone project at `/zavis-remotion/` on 2026-03-26
+- **NOT part of zavis-landing anymore** — no remotion dependencies, no remotion/ directory
+- If you need video rendering, use the separate zavis-remotion project
 
 ---
 
