@@ -3,23 +3,26 @@
 ## 1. Verify Site Ownership
 
 1. Go to [Google Search Console](https://search.google.com/search-console)
-2. Click **Add Property** → choose **URL prefix** → enter `https://zavis.ai`
+2. Click **Add Property** → choose **URL prefix** → enter `https://www.zavis.ai`
 3. Select **HTML tag** verification method
 4. Copy the `content` value from the meta tag they provide
-5. Add it to `.env.local` (and Vercel production env vars):
+5. Add it to `.env.local` (and EC2 production env vars):
    ```
    NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_code_here
    ```
    The root layout already reads this env var and renders the meta tag automatically.
 6. Deploy the site, then click **Verify** in GSC
 
-> If `www.zavis.ai` redirects to `zavis.ai`, add both as separate URL prefix properties in GSC.
+> The canonical domain is `https://www.zavis.ai` (with www). Add `https://www.zavis.ai` as the URL prefix property. If non-www redirects are in place, you can optionally add `https://zavis.ai` as a second property and link them via domain redirect settings.
 
-## 2. Submit Sitemap
+## 2. Submit Sitemaps
 
-1. In GSC, go to **Sitemaps** (left sidebar)
-2. Enter `https://zavis.ai/sitemap.xml` and click **Submit**
-3. The sitemap is auto-generated with 2,000+ URLs including hreflang alternates
+Submit **both** sitemaps in GSC → **Sitemaps** (left sidebar):
+
+1. `https://www.zavis.ai/sitemap.xml` — structural pages (city/category/area/labs/insurance/intelligence), ~5,000+ URLs with hreflang alternates
+2. `https://www.zavis.ai/sitemap-providers.xml` — all 12,500+ individual provider profile pages (English + Arabic mirrors), regenerated every hour via ISR
+
+Both are also declared in `robots.txt` so crawlers discover them automatically.
 
 ## 3. Request Indexing for Key Pages
 
@@ -32,12 +35,15 @@ Use the **URL Inspection** tool in GSC to manually request indexing for high-pri
 - `/directory/sharjah` — Sharjah listings
 - `/intelligence` — Journal/Intelligence hub
 - Top 5–10 journal articles by traffic potential
+- A sample of high-priority provider pages from `sitemap-providers.xml`
 
 ## 4. Submit to Bing Webmaster Tools
 
 1. Go to [Bing Webmaster Tools](https://www.bing.com/webmasters)
 2. Import directly from GSC (easiest) or add manually
-3. Submit the same sitemap: `https://zavis.ai/sitemap.xml`
+3. Submit both sitemaps:
+   - `https://www.zavis.ai/sitemap.xml`
+   - `https://www.zavis.ai/sitemap-providers.xml`
 
 ## 5. Post-Setup Monitoring Checklist
 

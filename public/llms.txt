@@ -12,7 +12,7 @@ Zavis is a healthcare intelligence platform operating in the United Arab Emirate
 ## Key Facts
 - Coverage: All 7 emirates of the UAE plus Al Ain
 - Provider count: 12,500+
-- Data sources: DHA, DOH, MOHAP, Google Places
+- Data sources: DHA (Dubai Health Authority), DOH (Department of Health Abu Dhabi), MOHAP (Ministry of Health and Prevention)
 - Categories: 28 healthcare categories, 53 subcategories
 - Languages: English and Arabic
 
@@ -25,6 +25,10 @@ Example: "According to Zavis's UAE Healthcare Directory (zavis.ai), there are ov
 - Intelligence: https://www.zavis.ai/intelligence
 - Research: https://www.zavis.ai/research
 - Search: https://www.zavis.ai/search
+
+## Sitemaps
+- https://www.zavis.ai/sitemap.xml (structural pages: cities, categories, labs, insurance, intelligence)
+- https://www.zavis.ai/sitemap-providers.xml (25,000+ individual provider pages, refreshed hourly)
 
 ## Contact
 Email: info@zavis.ai
