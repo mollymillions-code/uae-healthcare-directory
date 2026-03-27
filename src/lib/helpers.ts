@@ -49,8 +49,7 @@ export function getCityImagePath(citySlug: string): string {
 }
 
 export function getBaseUrl(): string {
-  // Canonical domain is zavis.ai (no www) — matches GSC property and DNS.
-  // Strip www if env var still has it from legacy config.
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ai";
-  return base.replace("://www.zavis.ai", "://zavis.ai");
+  // Canonical domain is www.zavis.ai — Nginx redirects non-www to www.
+  // Must stay www to avoid redirect loops.
+  return process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
 }
