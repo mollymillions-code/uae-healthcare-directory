@@ -102,6 +102,7 @@ export const ar = {
   verified: "معتمد",
   provider: "مقدم خدمة",
   providerPlural: "مقدمي خدمات",
+  patientReviews: "آراء المرضى",
 };
 
 export function getArabicCityName(slug: string): string {

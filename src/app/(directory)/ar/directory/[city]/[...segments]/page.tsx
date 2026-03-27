@@ -20,7 +20,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, ExternalLink, Calendar,
+  CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
 } from "lucide-react";
 
 // ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
@@ -446,7 +446,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             {/* About */}
             <div className="border border-light-200 p-6 mb-6" data-section="about">
               <h2 className="font-semibold text-dark mb-3">{ar.aboutProvider} {provider.name}</h2>
-              <p className="text-muted leading-relaxed">{provider.description}</p>
+              <p className="text-muted leading-relaxed">{provider.descriptionAr || provider.description}</p>
               <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {provider.lastVerified}.</p>
             </div>
 
@@ -482,6 +482,30 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                 <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200">{i}</span>))}</div>
               </div>
             )}
+
+            {/* Review highlights */}
+            {(() => {
+              const reviews = provider.reviewSummaryAr || provider.reviewSummary;
+              if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
+              return (
+                <div className="border border-light-200 p-6 mb-6 bg-light-50" data-section="reviews">
+                  <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MessageSquareQuote className="h-5 w-5 text-accent" /> {ar.patientReviews}</h2>
+                  <ul className="space-y-2">
+                    {reviews.map((point: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-muted">
+                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {provider.googleRating && Number(provider.googleRating) > 0 && (
+                    <p className="text-xs text-muted mt-4 pt-3 border-t border-light-200">
+                      بناءً على {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google. التقييم: {provider.googleRating}/5 نجوم.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Languages */}
             {provider.languages.length > 0 && (
