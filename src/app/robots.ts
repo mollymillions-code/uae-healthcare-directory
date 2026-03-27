@@ -8,6 +8,9 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: 'CCBot', disallow: '/' },
       { userAgent: 'cohere-ai', disallow: '/' },
     ],
-    sitemap: `${getBaseUrl()}/sitemap.xml`,
+    sitemap: [
+      `${getBaseUrl()}/sitemap.xml`,
+      `${getBaseUrl()}/sitemap-providers.xml`,
+    ],
   };
 }
