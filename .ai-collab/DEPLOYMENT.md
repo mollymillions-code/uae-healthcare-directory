@@ -9,24 +9,28 @@
 
 ### Step 1: Push to remote
 ```bash
-git push zavis-support main
+git push origin live
 ```
 
 ### Step 2: Deployment is triggered automatically
-Pushing to `zavis-support` (`https://github.com/zavis-support/zavis-landing.git`) triggers the EC2 deployment pipeline automatically.
+Pushing to the `live` branch on `origin` (`https://github.com/zavis-support/zavis-landing.git`) triggers the EC2 deployment pipeline automatically via GitHub Actions.
+
+### Branch Strategy
+- **`live`** — Production branch. All deploys come from here. This is the default branch on GitHub.
+- **`main`** — Legacy branch. No longer used for deployment.
 
 ### Remotes
 | Remote | URL | Purpose |
 |--------|-----|---------|
-| `zavis-support` | `https://github.com/zavis-support/zavis-landing.git` | **Deployment trigger** (EC2) |
+| `origin` | `https://github.com/zavis-support/zavis-landing.git` | **Deployment trigger** (EC2) — push to `live` branch |
 
 ### Common Issues
 
-**zavis-support rejects push (fetch first):**
-Another agent or process pushed to zavis-support. Pull first:
+**origin rejects push (fetch first):**
+Another agent or process pushed to origin. Pull first:
 ```bash
-git pull zavis-support main --no-rebase --no-edit
-git push zavis-support main
+git pull origin live --no-rebase --no-edit
+git push origin live
 ```
 
 **Merge conflicts on pull:**
@@ -34,7 +38,7 @@ Resolve conflicts keeping the local (HEAD) version unless the remote change is c
 ```bash
 git add <conflicted-files>
 git commit --no-edit
-git push zavis-support main
+git push origin live
 ```
 
 **Large file warnings:**

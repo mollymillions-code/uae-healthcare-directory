@@ -1,5 +1,14 @@
 # Zavis Landing - Changelog
 
+## 2026-03-27 — [Claude Code] Deploy Branch Switch: main → live
+
+- **Deploy workflow** (`.github/workflows/deploy.yml`) now triggers on push to `live` instead of `main`
+- **Journal pipeline** (`.github/workflows/journal-full-pipeline.yml`) now pulls/pushes `live` instead of `main`
+- **Default branch** on GitHub changed to `live`
+- **EC2 server** will pull from `live` on deploy — this also deploys the debloat commit (`5ceb406`) which was previously only on `live` but not `main`
+- Updated all documentation: CLAUDE.md, .ai-collab/DEPLOYMENT.md, .ai-collab/STATUS.md, .ai-context.md
+- **Why:** The `live` branch had the latest work (including the sitemap rewrite and 61% debloat) but the deploy workflow was still pointing at `main`. This caused the sitemap to 404 on production since the old dynamic sitemap on `main` was timing out.
+
 ## 2026-03-26 — [Claude Code] Major Cleanup, Remotion Extraction & SEO Hardening
 
 ### Junk Cleanup

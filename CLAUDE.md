@@ -1,6 +1,6 @@
 # Project Instructions — MANDATORY READING
 
-This is the Zavis Landing production site (zavis.ai). Every push to `main` deploys directly to production. There is NO staging environment.
+This is the Zavis Landing production site (zavis.ai). Every push to `live` deploys directly to production. There is NO staging environment.
 
 ---
 
@@ -48,7 +48,7 @@ import { neon } from "@neondatabase/serverless";
 
 ## Deployment
 
-- **Auto-deploy:** Push to `main` → GitHub Actions runs lint → deploys to EC2 via SSH
+- **Auto-deploy:** Push to `live` → GitHub Actions runs lint → deploys to EC2 via SSH
 - **CI pipeline:** Lint & type-check must pass before deploy proceeds
 - **Safe deploy:** Build failure → automatic rollback to last good build (site stays up)
 - **Health check:** Post-deploy health check at `/api/health` — rollback if site doesn't respond
@@ -91,8 +91,8 @@ scripts/automation/    — Cron orchestrator, daily/weekly pipelines
 
 All scripts run ON EC2 (not GitHub runners) because the DB is on localhost.
 
-- **Deploy workflow:** `.github/workflows/deploy.yml` — SSH into EC2
-- **Content pipeline:** `.github/workflows/journal-full-pipeline.yml` — SSH into EC2, every 2 hours
+- **Deploy workflow:** `.github/workflows/deploy.yml` — triggers on push to `live`, SSH into EC2
+- **Content pipeline:** `.github/workflows/journal-full-pipeline.yml` — SSH into EC2, every 2 hours, pulls `live`
 - **Shared DB module:** `scripts/automation/lib/db.mjs` — used by all automation scripts
 
 If you add a new GitHub Actions workflow that needs the database, it MUST use `appleboy/ssh-action` to run on EC2.

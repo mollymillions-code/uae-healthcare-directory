@@ -88,8 +88,9 @@ data/
 ```
 
 ## Hosting & Deployment
-- **Primary:** Vercel (zavis-projects-97e7f38f) — auto-deploy on push
-- **EC2:** 13.205.197.148 — runs PostgreSQL, Postiz, MCP servers, automation
+- **Production:** AWS EC2 (13.205.197.148) — auto-deploy on push to `live` branch
+- **Deploy branch:** `live` (default branch on GitHub)
+- **EC2 services:** PostgreSQL, Postiz, MCP servers, automation
 - **GitHub:** https://github.com/zavis-support/zavis-landing
 - **Domain:** zavis.ai / www.zavis.ai
 
@@ -115,4 +116,4 @@ data/
 4. **Images use `.webp` format** — PNGs were converted and removed
 5. **Constants barrel export:** `import { CITIES, CATEGORIES } from "@/lib/constants"`
 6. **Sitemap is synchronous** — uses constants only, no DB queries
-7. **Push to `main` deploys to production** — no staging environment
+7. **Push to `live` deploys to production** — no staging environment

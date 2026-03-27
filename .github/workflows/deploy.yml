@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches: [live]
 
 jobs:
   lint:
@@ -52,9 +52,16 @@ jobs:
               echo "[backup] No valid .next to backup — proceeding anyway"
             fi
 
-            # 2. Pull latest code
+            # 2. Pull latest code (switch to live branch if still on main)
             git checkout -- .
-            git pull origin main
+            CURRENT_BRANCH=$(git branch --show-current)
+            if [ "$CURRENT_BRANCH" != "live" ]; then
+              echo "[branch] Switching from $CURRENT_BRANCH to live..."
+              git fetch origin live
+              git checkout live
+              git branch --set-upstream-to=origin/live live
+            fi
+            git pull origin live
             npm install
 
             # 3. Build — if this fails, restore backup

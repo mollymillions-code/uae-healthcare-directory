@@ -20,7 +20,7 @@ jobs:
           command_timeout: 25m
           script: |
             cd /home/ubuntu/zavis-landing
-            git pull origin main
+            git pull origin live
             mkdir -p public/images/intelligence
             npx tsx scripts/run-pipeline-persist.ts
 
@@ -32,7 +32,7 @@ jobs:
               git config user.name "github-actions[bot]"
               git config user.email "github-actions[bot]@users.noreply.github.com"
               git commit -m "auto: add generated article images [skip ci]"
-              git push origin main
+              git push origin live
             fi
 
             echo "Pipeline complete: $(date -u)"
