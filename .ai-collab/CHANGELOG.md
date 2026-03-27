@@ -1,5 +1,104 @@
 # Zavis Landing - Changelog
 
+## 2026-03-28 — [Claude Code] Arabic Individual Insurance Guide Page Created
+
+- **New file:** `src/app/(directory)/ar/insurance/guide/[slug]/page.tsx`
+- **What:** Arabic-language mirror of `/insurance/guide/[slug]` — individual guide article pages for all 5 UAE health insurance guides, fully translated to Modern Standard Arabic
+- **Guides covered (all body content translated):**
+  1. `freelancer-health-insurance` — التأمين الصحي للمستقلين والمقيمين الكفلاء لأنفسهم
+  2. `maternity-insurance-uae` — التأمين الصحي للأمومة
+  3. `how-to-claim-health-insurance` — كيفية تقديم مطالبة التأمين
+  4. `domestic-worker-insurance` — التأمين الصحي للعمالة المنزلية
+  5. `switching-health-insurance` — كيفية تغيير شركة التأمين
+- **Translation rules followed:** Insurer names (Daman, Thiqa, AXA, Cigna, Bupa, MetLife, Orient Insurance), DHA/DOH/MOHAP/HAAD, AED prices all kept as-is; all prose, headings, FAQs, labels in natural MSA
+- **Key labels:** "في هذا الدليل" (In this guide), "النقاط الرئيسية" (Key takeaways), "آخر تحديث" (Last updated), "أدلة ذات صلة" (Related guides)
+- **SEO:** canonical `${base}/ar/insurance/guide/${slug}`, hreflang `en-AE → /insurance/guide/[slug]` and `ar-AE → /ar/insurance/guide/[slug]`
+- **JSON-LD:** Article schema with `inLanguage: "ar"`, FAQPage schema (20 questions), BreadcrumbList, SpeakableSpecification
+- **Breadcrumb:** الإمارات → دليل التأمين الصحي → الأدلة الإرشادية → [Guide Title]
+- **ISR:** `revalidate = 43200` (12 hours, matching English page)
+- **Static params:** `GUIDES.map(g => ({ slug: g.slug }))` — all 5 guides pre-rendered
+- **Layout extras:** "في هذا الدليل" TOC block listing FAQ questions, "النقاط الرئيسية" accent callout, "أدلة ذات صلة" 3-card grid of related guides, `dir="rtl"` on prose and page wrapper
+- **Verified:** `tsc --noEmit` and `eslint` both pass with zero errors/warnings
+- **Impact:** Arabic-speaking users searching for specific insurance guidance can now land on properly localised guide article pages with full RTL layout and natural MSA prose
+
+## 2026-03-28 — [Claude Code] Arabic At-Home Lab Collection Page Created
+
+- **New file:** `src/app/(directory)/ar/labs/home-collection/page.tsx`
+- **What:** Arabic-language mirror of `/labs/home-collection` — full MSA translation including all headings, stats, step-by-step 4-card guide, summary comparison table, popular tests grid, packages section, home vs walk-in pros/cons, city coverage grid (using getArabicCityName()), regulatory note, 6 FAQs, disclaimer.
+- **SEO:** canonical `${base}/ar/labs/home-collection`, hreflang `en-AE → /labs/home-collection` and `ar-AE → /ar/labs/home-collection`
+- **ISR:** `revalidate = 43200`. Root div `dir="rtl" lang="ar"`.
+- **Rules:** Lab names, test abbreviations, AED prices, DHA/DOH/MOHAP all kept in English/as-is. City names via `getArabicCityName()`.
+- **Verified:** `tsc --noEmit` zero errors.
+- **Impact:** Arabic SEO coverage for UAE home blood test collection queries.
+
+## 2026-03-28 — [Claude Code] Arabic City Insurance Index Page Created
+
+- **New file:** `src/app/(directory)/ar/directory/[city]/insurance/page.tsx`
+- **What:** Arabic-language mirror of `/directory/[city]/insurance` — city-level insurance index listing all insurer cards sorted by provider count
+- **Translations:** All UI text in Modern Standard Arabic — heading, answer block (with city-specific DHA/DOH/MOHAP regulatory notes), breadcrumb labels, provider count label "مقدم خدمة يقبل"
+- **Insurer names** (Daman, Thiqa, AXA, Cigna, Bupa, etc.) kept in English per project rules
+- **City names:** displayed via `getArabicCityName()` from `@/lib/i18n`
+- **SEO:** canonical `/ar/directory/${city.slug}/insurance`, hreflang en-AE → `/directory/[city]/insurance`, ar-AE → `/ar/directory/[city]/insurance`
+- **Insurer links:** `/ar/directory/${city.slug}/insurance/${ins.slug}` (Arabic sub-pages)
+- **Sort:** insurers sorted descending by provider count before render
+- **ISR:** `revalidate = 43200`
+- **generateStaticParams:** `getCities().map(c => ({ city: c.slug }))`
+- **Layout:** RTL (`dir="rtl"`), language switch footer link to English equivalent
+
+## 2026-03-28 — [Claude Code] Arabic Insurer Detail Page Created
+
+- **New file:** `src/app/(directory)/ar/insurance/[insurer]/page.tsx`
+- **What:** Arabic-language mirror of `/insurance/[insurer]` at `/ar/insurance/[insurer]` — full MSA translation of all headings, coverage table column labels, section headers, 6 FAQ questions and answers, claims process block, "other insurers" section, compare CTA, and disclaimer
+- **Rules followed:** Insurer names (Daman, Thiqa, AXA, Cigna, Bupa, Oman Insurance), TPA names (NAS, Nextcare, Mednet), plan names, AED prices, percentages, DHA/DOH/MOHAP/HAAD abbreviations, and `PlanCard`/`NetworkStats` components all kept as-is in English
+- **Key labels translated:** "Key Facts" → "حقائق رئيسية", "Health Insurance Plans" → "خطط التأمين الصحي", "Provider Network" → "شبكة مقدمي الخدمة", "Coverage" → "التغطية", "Co-pay" → "المشاركة في الدفع", "Annual Limit" → "الحد السنوي", "Premium" → "قسط التأمين", "Dental" → "طب الأسنان", "Maternity" → "الأمومة", "regulated" → "معتمد", "Est." → "تأسست"
+- **SEO:** `generateMetadata` sets canonical to `${base}/ar/insurance/${profile.slug}` with hreflang alternates `en-AE → /insurance/[insurer]` and `ar-AE → /ar/insurance/[insurer]`
+- **ISR:** `revalidate = 43200` (12 hours, matching English page)
+- **Static params:** `INSURER_PROFILES.map(p => ({ insurer: p.slug }))` — all insurers pre-rendered
+- **Page direction:** `dir="rtl"` set on wrapper div; table headers right-aligned
+- **Breadcrumb:** الإمارات → دليل التأمين الصحي → {profile.name}
+- **"Other insurers" links:** Point to `/ar/insurance/[slug]` (Arabic versions)
+- **Verified:** `tsc --noEmit` and `eslint` both pass with zero errors/warnings
+- **Impact:** Arabic-speaking users searching for specific insurer information in Arabic now have a properly localised page with correct RTL layout and natural MSA copy
+
+## 2026-03-28 — [Claude Code] Arabic Test Category Page Created
+
+- **New file:** `src/app/(directory)/ar/labs/category/[category]/page.tsx`
+- **What:** Arabic-language mirror of the English test category page at `/ar/labs/category/[category]` — dynamic route covering all TEST_CATEGORIES slugs
+- **Translations:** All headings, stat labels, badge labels ("يُشترط الصيام" for fasting, "النتائج خلال Xh" for turnaround), FAQ answers, disclaimer — written directly in Modern Standard Arabic
+- **Test names** (CBC, HbA1c, etc.), lab names, and AED prices kept in English per project rules
+- **Category names** (e.g. "Cardiovascular") kept in English as they come from the shared `TEST_CATEGORIES` constant
+- **SEO:** `generateMetadata` sets canonical to `${base}/ar/labs/category/${cat.slug}`, hreflang alternates to `/labs/category/[category]` (en-AE) and `/ar/labs/category/[category]` (ar-AE)
+- **ISR:** `revalidate = 43200`
+- **generateStaticParams:** `TEST_CATEGORIES.map(cat => ({ category: cat.slug }))`
+- **Breadcrumbs:** Home → مقارنة أسعار الفحوصات المخبرية → فحوصات {cat.name}; breadcrumb home link points to `/ar`
+- **Other categories grid:** links to `/ar/labs/category/[slug]` (Arabic); count label uses "فحص في هذه الفئة"
+- **Language switch:** Footer link to English `/labs/category/[cat.slug]`
+- **No unused imports**, `dir="rtl" lang="ar"` on root div
+- **Impact:** Arabic-speaking users searching for specific test categories in UAE now have a properly localized, indexable page with full MSA copy
+
+## 2026-03-28 — [Claude Code] Arabic Insurance Guide Hub Page Created
+
+- **New file:** `src/app/(directory)/ar/insurance/guide/page.tsx`
+- **What:** Arabic-language hub page listing all 5 insurance guides at `/ar/insurance/guide` — full MSA translation of guide titles, descriptions, heading, and intro paragraph
+- **Guide slugs kept as-is** (URL paths, not translated)
+- **DHA, DOH, MOHAP** kept as abbreviations per project rules
+- **Links:** Each guide card points to `/ar/insurance/guide/[slug]` (Arabic versions)
+- **SEO:** `generateMetadata` sets canonical to `${base}/ar/insurance/guide`, hreflang alternates to `/insurance/guide` (en-AE) and `/ar/insurance/guide` (ar-AE)
+- **ISR:** `revalidate = 43200` (12 hours)
+- **JSON-LD:** breadcrumbSchema and speakableSchema applied
+- **No unused imports**, zero lint errors expected
+- **Impact:** Arabic-speaking users searching for UAE health insurance guides now land on a properly localized hub page
+
+## 2026-03-28 — [Claude Code] Arabic Labs Page Created
+
+- **New file:** `src/app/(directory)/ar/labs/page.tsx`
+- **What:** Arabic-language mirror of `/labs` at `/ar/labs` — full MSA translation of all headings, stats labels, answer-block paragraphs, 6 FAQ answers, and disclaimer
+- **Rules followed:** Lab names (Al Borg, Thumbay, Medsol, DarDoc), test names (CBC, Vitamin D, HbA1c), AED prices, and accreditation names (DHA, DOH, MOHAP, CAP, ISO) kept in English
+- **SEO:** `generateMetadata` sets canonical to `${base}/ar/labs` with hreflang alternates pointing to `/labs` (en-AE) and `/ar/labs` (ar-AE)
+- **ISR:** `revalidate = 43200` (12 hours, matching English page)
+- **Verified:** `tsc --noEmit` and `eslint` both pass with zero errors
+- **Impact:** Arabic-speaking users and Arabic-language search queries now have a proper localized landing page for UAE lab test price comparison
+
 ## 2026-03-27 — [Claude Code] Canonical Domain Fix: www.zavis.ai → zavis.ai
 
 - **`getBaseUrl()`** now always returns `https://zavis.ai` (strips www even if env var has it)

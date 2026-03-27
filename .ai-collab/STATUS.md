@@ -109,6 +109,24 @@ data/
 - **SSG → ISR:** Eliminated 30k+ page pre-rendering that caused OOM crashes
 - **Bloat dump:** `/Users/sayanmukherjee/Desktop/Zavis (MASTER)/Zavis Bloat Dump/` (279MB of originals preserved)
 
+## Active Work
+
+- **[Claude Code] 2026-03-28T13:00:00+04:00** — Created Arabic individual insurance guide page at `src/app/(directory)/ar/insurance/guide/[slug]/page.tsx` — all 5 guide articles fully translated to MSA, 20 FAQs translated, hreflang alternates (en-AE/ar-AE), canonical `/ar/insurance/guide/[slug]`, ISR 43200, generateStaticParams, "في هذا الدليل" TOC, "النقاط الرئيسية" callout, "أدلة ذات صلة" section, Article + FAQPage + BreadcrumbList JSON-LD, zero tsc/eslint errors. COMPLETE.
+
+- **[Claude Code] 2026-03-28T12:00:00+04:00** — Created Arabic at-home lab collection page at `src/app/(directory)/ar/labs/home-collection/page.tsx` — full MSA translation, 6 FAQs, step-by-step 4-card guide, comparison table, city grid using getArabicCityName(), packages section, pros/cons comparison, hreflang alternates (en-AE/ar-AE), canonical `/ar/labs/home-collection`, ISR 43200. Zero tsc errors. COMPLETE.
+
+- **[Claude Code] 2026-03-28T11:30:00+04:00** — Created Arabic city insurance index page at `src/app/(directory)/ar/directory/[city]/insurance/page.tsx` — full MSA translation, all insurers sorted by count, hreflang alternates (en-AE/ar-AE), canonical `/ar/directory/${city.slug}/insurance`, ISR 43200, breadcrumb Home→[City]→التأمين الصحي, city-specific regulatory notes (DHA/DOH/MOHAP). COMPLETE.
+
+- **[Claude Code] 2026-03-28T11:00:00+04:00** — Created Arabic test category page at `src/app/(directory)/ar/labs/category/[category]/page.tsx` — full MSA translation, all TEST_CATEGORIES static params, 4 FAQs, hreflang alternates, ISR 43200. COMPLETE.
+
+- **[Claude Code] 2026-03-28T10:30:00+04:00** — Created Arabic insurance guide hub page at `src/app/(directory)/ar/insurance/guide/page.tsx` — 5 guide cards fully translated to MSA, hreflang alternates, canonical, ISR 43200. COMPLETE.
+
+## Recently Completed (last 48h)
+
+- **[Claude Code] 2026-03-28T00:00:00+04:00** — Created Arabic insurer detail page at `src/app/(directory)/ar/insurance/[insurer]/page.tsx` — full MSA translation, 6 FAQs, coverage table, claims block, "other insurers" section, compare CTA, hreflang alternates, ISR 43200. Zero tsc/eslint errors. COMPLETE.
+
+- **[Claude Code] 2026-03-28T00:00:00+04:00** — Created Arabic insurance page at `src/app/(directory)/ar/insurance/page.tsx` — full MSA translation of the UAE Health Insurance Navigator. 399 lines. All 8 FAQs translated, all sections translated, PlanBrowser + InsuranceQuiz kept as-is (interactive), hreflang alternates set (en-AE/ar-AE), ISR revalidate=43200, zero lint errors.
+
 ## CRITICAL Rules
 1. **NEVER use `@neondatabase/serverless`** — use `pg` (node-postgres)
 2. **All `data.ts` functions are ASYNC** — you MUST `await` them
