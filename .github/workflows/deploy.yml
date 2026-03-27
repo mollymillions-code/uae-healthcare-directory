@@ -66,28 +66,27 @@ jobs:
             git pull origin live
             npm install
 
-            # 3. Build — if this fails, restore backup
-            echo "[build] Starting build..."
-            if npm run build; then
-              echo "[build] SUCCESS — new BUILD_ID: $(cat .next/BUILD_ID)"
+            # 3. Build into .next-new so PM2 keeps serving old .next the entire time
+            echo "[build] Starting build into .next-new..."
+            rm -rf .next-new
+            if NEXT_DIST_DIR=.next-new npm run build; then
+              echo "[build] SUCCESS — new BUILD_ID: $(cat .next-new/BUILD_ID)"
             else
-              echo "[build] FAILED — restoring backup .next"
-              if [ -d $BACKUP_DIR/.next ]; then
-                rm -rf .next
-                cp -a $BACKUP_DIR/.next .next
-                echo "[build] Restored BUILD_ID: $(cat .next/BUILD_ID)"
-                echo "[build] Site will continue serving previous version"
-              else
-                echo "[build] NO BACKUP AVAILABLE — site may be down"
-              fi
-              pm2 restart zavis-landing
+              echo "[build] FAILED — .next untouched, site still serving old build"
+              rm -rf .next-new
               exit 1
             fi
 
-            # 4. Restart PM2
+            # 4. Atomic swap: replace .next with the completed new build
+            echo "[swap] Swapping .next-new → .next..."
+            rm -rf .next
+            mv .next-new .next
+            echo "[swap] Done — BUILD_ID: $(cat .next/BUILD_ID)"
+
+            # 5. Restart PM2 (now pointing at a complete, valid build)
             pm2 restart zavis-landing
 
-            # 5. Health check — if app doesn't respond, rollback
+            # 6. Health check — if app doesn't respond, rollback
             sleep 4
             HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3200/ || echo "000")
             if [ "$HTTP_CODE" = "200" ]; then
@@ -104,7 +103,7 @@ jobs:
               exit 1
             fi
 
-            # 6. Verification
+            # 7. Verification
             echo "===== DEPLOY VERIFICATION ====="
             echo "Server SHA: $(git rev-parse HEAD | cut -c1-7)"
             echo "Server Time: $(date -u)"
