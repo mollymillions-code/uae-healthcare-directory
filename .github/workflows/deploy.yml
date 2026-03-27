@@ -58,6 +58,8 @@ jobs:
             if [ "$CURRENT_BRANCH" != "live" ]; then
               echo "[branch] Switching from $CURRENT_BRANCH to live..."
               git fetch origin live
+              # Clean untracked files that conflict with the live branch
+              git clean -fd .vscode/ 2>/dev/null || true
               git checkout live
               git branch --set-upstream-to=origin/live live
             fi
