@@ -106,7 +106,7 @@ If you add a new GitHub Actions workflow that needs the database, it MUST use `a
 `.env.local` lives on EC2 at `/home/ubuntu/zavis-landing/.env.local`. It is NOT in git. Key vars:
 - `DATABASE_URL` — local PostgreSQL connection string
 - `GEMINI_API_KEY` — content generation
-- `NEXT_PUBLIC_BASE_URL` — https://www.zavis.ai
+- `NEXT_PUBLIC_BASE_URL` — https://zavis.ai (canonical, no www)
 - `R2_*` — Cloudflare R2 storage
 - `DASHBOARD_KEY` — research dashboard auth
 

@@ -1,5 +1,13 @@
 # Zavis Landing - Changelog
 
+## 2026-03-27 — [Claude Code] Canonical Domain Fix: www.zavis.ai → zavis.ai
+
+- **`getBaseUrl()`** now always returns `https://zavis.ai` (strips www even if env var has it)
+- **Middleware redirect** flipped: `www.zavis.ai` → `zavis.ai` (was the opposite)
+- **Why:** GSC property is `zavis.ai` (no www), but sitemap/robots.txt/canonicals all pointed to `www.zavis.ai`. Google couldn't fetch the sitemap because of the domain mismatch.
+- **Impact:** All sitemaps, canonical URLs, OG URLs, JSON-LD schema now use `zavis.ai`. Google will re-index with non-www URLs (301 redirect ensures no broken links).
+- **Note:** Nginx on EC2 may still have a non-www→www redirect that should be flipped to match. The middleware handles it at the Next.js layer so the site works correctly regardless.
+
 ## 2026-03-27 — [Claude Code] Deploy Branch Switch: main → live
 
 - **Deploy workflow** (`.github/workflows/deploy.yml`) now triggers on push to `live` instead of `main`

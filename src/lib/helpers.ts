@@ -49,11 +49,8 @@ export function getCityImagePath(citySlug: string): string {
 }
 
 export function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL;
-  }
-  // Always use the canonical domain — the directory app is proxied through
-  // www.zavis.ai via Vercel rewrites, so the .vercel.app URL should never
-  // appear in canonicals, schema, or sitemaps.
-  return "https://www.zavis.ai";
+  // Canonical domain is zavis.ai (no www) — matches GSC property and DNS.
+  // Strip www if env var still has it from legacy config.
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://zavis.ai";
+  return base.replace("://www.zavis.ai", "://zavis.ai");
 }

@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
-  // Redirect non-www to www
-  if (host === 'zavis.ai') {
-    return NextResponse.redirect(`https://www.zavis.ai${request.nextUrl.pathname}${request.nextUrl.search}`, 301);
+  // Redirect www to non-www (zavis.ai is the canonical domain)
+  if (host === 'www.zavis.ai') {
+    return NextResponse.redirect(`https://zavis.ai${request.nextUrl.pathname}${request.nextUrl.search}`, 301);
   }
 
   const { pathname } = request.nextUrl;
