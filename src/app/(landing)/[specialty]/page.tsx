@@ -33,7 +33,13 @@ export async function generateMetadata({
     : "Specialty Not Found";
   const description = data?.heroDescription ?? "";
 
-  return { title, description };
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `https://www.zavis.ai/${specialty}`,
+    },
+  };
 }
 
 export default async function SpecialtyPage({

@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Captain AI Operations Co-Pilot",
   description:
     "AI-powered operations assistant that provides daily briefings, flags urgent issues, and recommends actions for healthcare managers.",
+  alternates: {
+    canonical: "https://www.zavis.ai/captain",
+  },
 };
 
 export default function CaptainPage() {

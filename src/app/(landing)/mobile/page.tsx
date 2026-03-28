@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Mobile App for Healthcare Teams",
   description:
     "Manage patient conversations, bookings, and team tasks on the go with the Zavis mobile app for iOS and Android.",
+  alternates: {
+    canonical: "https://www.zavis.ai/mobile",
+  },
 };
 
 export default function MobilePage() {

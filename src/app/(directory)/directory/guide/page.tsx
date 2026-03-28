@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Healthcare Guide | UAE Open Healthcare Directory",
   description:
     "Understand the UAE healthcare system. Guides on DHA, DOH, MOHAP, health insurance, choosing a doctor, free zones, and emergency services.",
+  alternates: {
+    canonical: "https://www.zavis.ai/directory/guide",
+  },
 };
 
 const GUIDE_LINKS = [

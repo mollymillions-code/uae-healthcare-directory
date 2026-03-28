@@ -4,7 +4,7 @@ import { getBaseUrl } from "@/lib/helpers";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/', disallow: ['/api/', '/claim/', '/search'] },
+      { userAgent: '*', allow: '/', disallow: ['/api/', '/claim/', '/search', '/dashboard/', '/admin/', '/login/'] },
       { userAgent: 'CCBot', disallow: '/' },
       { userAgent: 'cohere-ai', disallow: '/' },
     ],

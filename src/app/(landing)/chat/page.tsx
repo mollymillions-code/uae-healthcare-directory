@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Omnichannel Patient Inbox",
   description:
     "Manage WhatsApp, Instagram, Facebook, and web chat patient conversations in one unified inbox. AI-assisted replies and smart routing for healthcare teams.",
+  alternates: {
+    canonical: "https://www.zavis.ai/chat",
+  },
 };
 
 export default function ChatPage() {

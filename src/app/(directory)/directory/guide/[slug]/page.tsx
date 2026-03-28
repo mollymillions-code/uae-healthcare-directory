@@ -297,6 +297,9 @@ export function generateMetadata({
   return {
     title: `${article.title} | UAE Open Healthcare Directory`,
     description: article.metaDescription,
+    alternates: {
+      canonical: `https://www.zavis.ai/directory/guide/${params.slug}`,
+    },
   };
 }
 
