@@ -187,6 +187,47 @@ Return the improved version as JSON with the same fields (slug, title, excerpt, 
   };
 }
 
+// ─── Gemini Image Generator ─────────────────────────────────────────────────────
+
+async function generateImage(title: string): Promise<string | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are a photo editor. Generate ONE unique photorealistic image for this healthcare article. Depict the SPECIFIC subject, NOT a generic skyline.
+
+ARTICLE: "${title}"
+
+1. IPO/stock: stock exchange floor. Insurance: billing desk. Nursing: nurses. Drug law: pharmacy. Acquisition: boardroom. Funding: startup office. Tourism: airport/luxury hospital. Mental health: counseling room.
+2. Vary composition: close-up, wide, overhead, portrait.
+3. Vary color: warm for human stories, cool for tech, dark for financial, bright for openings.
+
+NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Visually unique.` }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        }),
+        signal: AbortSignal.timeout(30000),
+      }
+    );
+
+    if (!response.ok) return null;
+    const data = await response.json();
+    for (const part of data.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData) {
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── OG Image Fetcher ───────────────────────────────────────────────────────────
 
 async function fetchOgImage(url: string): Promise<string | null> {
@@ -226,7 +267,11 @@ async function main() {
     process.exit(1);
   }
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL!,
+    max: 2, // Pipeline only needs 1-2 connections — don't exhaust slots
+    idleTimeoutMillis: 10000,
+  });
   const sql = createSql(pool);
   console.log("=== Full Autonomous Pipeline (Claude CLI) ===\n");
 
@@ -297,7 +342,7 @@ async function main() {
   for (const article of articles) {
     let imageUrl: string | null = null;
 
-    // Try OG image from source
+    // Try 1: OG image from source
     if (article.sourceUrl) {
       imageUrl = await fetchOgImage(article.sourceUrl);
       if (imageUrl) {
@@ -305,7 +350,16 @@ async function main() {
       }
     }
 
-    // Fallback: category-default R2 image
+    // Try 2: Generate via Gemini
+    if (!imageUrl) {
+      imageUrl = await generateImage(article.title);
+      if (imageUrl) {
+        console.log(`  [gemini] ${article.slug.slice(0, 40)}`);
+      }
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+
+    // Try 3: category-default R2 image
     if (!imageUrl) {
       imageUrl = CATEGORY_FALLBACK[article.category] ||
         `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`;
