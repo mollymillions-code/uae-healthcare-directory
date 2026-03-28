@@ -202,3 +202,4 @@ When updating design:
 1. Update tokens in this document first
 2. Apply to shared components (affects all pages using them)
 3. Then update individual page files if needed
+
