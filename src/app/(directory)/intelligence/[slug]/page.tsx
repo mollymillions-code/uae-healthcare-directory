@@ -21,12 +21,6 @@ interface PageProps {
   params: { slug: string };
 }
 
-// Disabled: pre-rendering 90+ articles exceeds Vercel Hobby 19MB limit.
-// Articles are rendered on-demand with CDN edge caching via vercel.json headers.
-// export async function generateStaticParams() {
-//   return getLatestArticles(100).map((a) => ({ slug: a.slug }));
-// }
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const article = getArticleBySlug(params.slug);
   if (!article) return {};
@@ -59,7 +53,6 @@ export default async function ArticlePage({ params }: PageProps) {
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
 
-  // Fetch full body separately (not included in listing queries to avoid 20MB page bloat)
   const body = await getArticleBodyBySlug(params.slug);
   const fullArticle = { ...article, body: body || article.body };
 
@@ -74,17 +67,17 @@ export default async function ArticlePage({ params }: PageProps) {
       <JsonLd data={faqPageSchema(articleFaqs)} />
 
       {/* Back link */}
-      <div className="container-tc pt-6">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
           href="/intelligence"
-          className="inline-flex items-center gap-1.5 label hover:text-accent transition-colors"
+          className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-black/40 hover:text-[#006828] transition-colors"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to Intelligence
         </Link>
       </div>
 
-      <article className="container-tc pt-8 pb-16">
+      <article className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Article body */}
           <div className="lg:col-span-2">
@@ -92,12 +85,12 @@ export default async function ArticlePage({ params }: PageProps) {
             <div className="flex items-center gap-2 mb-4">
               <Link
                 href={`/intelligence/category/${article.category}`}
-                className="label text-accent hover:text-accent-dark transition-colors"
+                className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] hover:text-[#004d1c] transition-colors"
               >
                 {category?.name}
               </Link>
               {article.isBreaking && (
-                <span className="inline-flex items-center gap-1 label text-red-600">
+                <span className="inline-flex items-center gap-1 font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-red-600">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
                   Breaking
                 </span>
@@ -106,7 +99,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* Hero image */}
             {article.imageUrl && (
-              <div className="relative w-full aspect-[16/9] mb-6 overflow-hidden bg-light-200">
+              <div className="relative w-full aspect-[16/9] mb-6 overflow-hidden rounded-2xl bg-[#f8f8f6]">
                 <Image
                   src={article.imageUrl}
                   alt={article.title}
@@ -119,33 +112,33 @@ export default async function ArticlePage({ params }: PageProps) {
             )}
 
             {/* Headline */}
-            <h1 className="headline-serif-xl mb-5">
+            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[26px] sm:text-[32px] lg:text-[38px] leading-[1.1] text-[#1c1c1c] tracking-tight mb-5">
               {article.title}
             </h1>
 
             {/* Excerpt */}
-            <p className="font-serif text-lg text-muted leading-relaxed mb-6">
+            <p className="font-['Geist',sans-serif] font-medium text-[16px] text-black/50 leading-relaxed mb-6">
               {article.excerpt}
             </p>
 
             {/* Byline */}
-            <div className="border-b-2 border-dark" />
+            <div className="border-b-2 border-[#1c1c1c]" />
             <div className="flex items-center justify-between py-3 mb-8">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-dark">
+                <span className="font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c]">
                   {article.author.name}
                 </span>
                 {article.author.role && (
                   <>
-                    <span className="text-muted">·</span>
-                    <span className="label">{article.author.role}</span>
+                    <span className="text-black/30">·</span>
+                    <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{article.author.role}</span>
                   </>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <span className="label">{formatDate(article.publishedAt)}</span>
-                <span className="text-muted">·</span>
-                <span className="label">{article.readTimeMinutes} min read</span>
+                <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{formatDate(article.publishedAt)}</span>
+                <span className="text-black/30">·</span>
+                <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{article.readTimeMinutes} min read</span>
               </div>
             </div>
 
@@ -153,27 +146,27 @@ export default async function ArticlePage({ params }: PageProps) {
             <ArticleBody html={fullArticle.body} />
 
             {/* Author bio */}
-            <div className="border border-light-200 p-4 mt-10 flex items-center gap-3">
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-accent flex items-center justify-center text-white font-bold text-sm">
+            <div className="border border-black/[0.06] rounded-2xl p-5 mt-10 flex items-center gap-4">
+              <div className="flex-shrink-0 h-11 w-11 rounded-full bg-[#006828] flex items-center justify-center text-white font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm">
                 {article.author.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <p className="text-sm font-medium text-dark">{article.author.name}</p>
+                <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight">{article.author.name}</p>
                 {article.author.role && (
-                  <p className="text-xs text-muted">{article.author.role}</p>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40">{article.author.role}</p>
                 )}
-                <p className="text-xs text-muted mt-0.5">Contributing to UAE healthcare industry coverage</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">Contributing to UAE healthcare industry coverage</p>
               </div>
             </div>
 
             {/* Tags */}
-            <div className="border-b border-light-200 mt-10 pt-6">
+            <div className="border-b border-black/[0.06] mt-10 pt-6">
               <div className="flex flex-wrap gap-1.5">
                 {article.tags.map((tag) => (
                   <Link
                     key={tag}
                     href={`/intelligence/tag/${tag}`}
-                    className="inline-block px-2.5 py-1 text-xs font-mono bg-canvas-200 text-muted hover:bg-dark hover:text-white transition-colors"
+                    className="inline-block font-['Geist',sans-serif] px-3 py-1 text-xs font-medium bg-[#f8f8f6] text-black/50 rounded-full border border-black/[0.06] hover:bg-[#1c1c1c] hover:text-white hover:border-[#1c1c1c] transition-colors"
                   >
                     {tag}
                   </Link>
@@ -183,8 +176,8 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* Source attribution */}
             {article.sourceName && (
-              <div className="border-b border-light-200 mt-6 pt-4">
-                <span className="label">
+              <div className="border-b border-black/[0.06] mt-6 pt-4">
+                <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">
                   Source: {article.sourceName}
                   {article.source === "government" && " (Official)"}
                 </span>
@@ -194,14 +187,14 @@ export default async function ArticlePage({ params }: PageProps) {
             {/* Related articles */}
             {related.length > 0 && (
               <div className="mt-12">
-                <div className="rule-warm" />
-                <h2 className="font-sans text-xl font-bold text-dark pt-4 mb-6">
+                <div className="border-b-2 border-[#1c1c1c]" />
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-xl text-[#1c1c1c] tracking-tight pt-4 mb-6">
                   Related coverage
                 </h2>
                 <div className="space-y-0">
                   {related.map((rel, i) => (
                     <div key={rel.id}>
-                      {i > 0 && <div className="border-b border-light-200 my-4" />}
+                      {i > 0 && <div className="border-b border-black/[0.06] my-4" />}
                       <ArticleCard article={rel} variant="horizontal" />
                     </div>
                   ))}
@@ -215,15 +208,15 @@ export default async function ArticlePage({ params }: PageProps) {
           {/* Sidebar */}
           <aside className="space-y-8">
             <div>
-              <div className="border-b-2 border-dark mb-4" />
-              <h3 className="label text-accent mb-4">Topics</h3>
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">Topics</h3>
               <TagCloud tags={tags} limit={20} />
             </div>
 
             {/* More in this category */}
             <div>
-              <div className="border-b-2 border-dark mb-4" />
-              <h3 className="label text-accent mb-4">
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">
                 More in {category?.name}
               </h3>
               <div className="space-y-3">
@@ -236,12 +229,12 @@ export default async function ArticlePage({ params }: PageProps) {
             </div>
 
             {/* Cross-link to directory */}
-            <div className="border border-light-200 p-4">
-              <h3 className="text-sm font-bold text-dark mb-3">Browse the Directory</h3>
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight mb-3">Browse the Directory</h3>
               <div className="space-y-2">
-                <Link href="/directory/dubai" className="block text-sm text-muted hover:text-accent">Dubai Healthcare Providers</Link>
-                <Link href="/directory/abu-dhabi" className="block text-sm text-muted hover:text-accent">Abu Dhabi Healthcare Providers</Link>
-                <Link href="/directory/sharjah" className="block text-sm text-muted hover:text-accent">Sharjah Healthcare Providers</Link>
+                <Link href="/directory/dubai" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Dubai Healthcare Providers</Link>
+                <Link href="/directory/abu-dhabi" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Abu Dhabi Healthcare Providers</Link>
+                <Link href="/directory/sharjah" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Sharjah Healthcare Providers</Link>
               </div>
             </div>
           </aside>

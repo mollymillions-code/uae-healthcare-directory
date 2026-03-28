@@ -43,14 +43,14 @@ export function CompareClient() {
             return plan ? (
               <div
                 key={id}
-                className="flex items-center gap-2 bg-accent-muted border border-accent px-3 py-1.5"
+                className="flex items-center gap-2 bg-[#006828]/[0.04] border border-[#006828] px-3 py-1.5"
               >
-                <span className="text-xs font-bold text-dark">
+                <span className="text-xs font-bold text-[#1c1c1c]">
                   {insurer?.name}: {plan.name}
                 </span>
                 <button
                   onClick={() => removePlan(id)}
-                  className="text-accent hover:text-accent-dark text-xs font-bold"
+                  className="text-[#006828] hover:text-[#006828]-dark text-xs font-bold"
                 >
                   ×
                 </button>
@@ -60,15 +60,15 @@ export function CompareClient() {
         </div>
 
         {selectedPlanIds.length < 4 && (
-          <div className="border border-light-200 p-4">
-            <p className="text-xs font-bold text-dark mb-3 flex items-center gap-1.5">
+          <div className="border border-black/[0.06] p-4">
+            <p className="text-xs font-bold text-[#1c1c1c] mb-3 flex items-center gap-1.5">
               <Plus className="w-3.5 h-3.5" />
               Add a plan ({4 - selectedPlanIds.length} remaining)
             </p>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {INSURER_PROFILES.map((insurer) => (
                 <div key={insurer.slug}>
-                  <p className="text-[10px] text-muted font-bold uppercase tracking-wide mb-1">
+                  <p className="text-[10px] text-black/40 font-bold uppercase tracking-wide mb-1">
                     {insurer.name}
                   </p>
                   <div className="flex flex-wrap gap-1.5 mb-2">
@@ -79,8 +79,8 @@ export function CompareClient() {
                         disabled={selectedPlanIds.includes(plan.id)}
                         className={`text-[11px] px-2.5 py-1 border transition-colors ${
                           selectedPlanIds.includes(plan.id)
-                            ? "bg-accent-muted border-accent text-accent-dark cursor-default"
-                            : "border-light-200 text-dark hover:border-accent hover:bg-accent-muted"
+                            ? "bg-[#006828]/[0.04] border-[#006828] text-[#006828]-dark cursor-default"
+                            : "border-black/[0.06] text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04]"
                         }`}
                       >
                         {plan.name}
@@ -96,15 +96,15 @@ export function CompareClient() {
 
       {/* Comparison */}
       {comparedPlans.length >= 2 ? (
-        <div className="border border-light-200 p-4">
+        <div className="border border-black/[0.06] p-4">
           <ComparisonTable plans={comparedPlans} onRemove={removePlan} />
         </div>
       ) : (
-        <div className="text-center py-16 border border-light-200">
-          <p className="text-muted mb-2">Select at least 2 plans to compare</p>
-          <p className="text-xs text-muted">
+        <div className="text-center py-16 border border-black/[0.06]">
+          <p className="text-black/40 mb-2">Select at least 2 plans to compare</p>
+          <p className="text-xs text-black/40">
             Use the selector above to add plans, or{" "}
-            <Link href="/insurance" className="text-accent font-bold">
+            <Link href="/insurance" className="text-[#006828] font-bold">
               browse all plans
             </Link>{" "}
             first.
@@ -116,7 +116,7 @@ export function CompareClient() {
       <div className="mt-8">
         <Link
           href="/insurance"
-          className="flex items-center gap-1.5 text-sm text-accent font-bold hover:text-accent-dark"
+          className="flex items-center gap-1.5 text-sm text-[#006828] font-bold hover:text-[#006828]-dark"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Insurance Navigator
         </Link>

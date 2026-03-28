@@ -134,7 +134,7 @@ export default async function AreaProceduresPage({ params }: Props) {
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
@@ -149,18 +149,18 @@ export default async function AreaProceduresPage({ params }: Props) {
         />
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-dark mb-3">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
             Medical Procedures in {area.name}, {city.name}
           </h1>
-          <p className="text-muted leading-relaxed mb-4">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
             Compare costs and find providers for {available.length} medical procedures available
             in {area.name}, {city.name}, UAE. All pricing is in AED and reflects observed ranges
             across government, private, and premium facilities. Healthcare in {city.name} is
             regulated by {regulator}.
           </p>
 
-          <div className="answer-block mb-6" data-answer-block="true">
-            <p className="text-muted leading-relaxed">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
               According to the UAE Open Healthcare Directory, {area.name} in {city.name} has
               providers offering {available.length} medical procedures. Costs vary by facility
               tier, insurance coverage, and procedure complexity. Data sourced from official
@@ -172,20 +172,19 @@ export default async function AreaProceduresPage({ params }: Props) {
         {/* Procedure categories */}
         {Array.from(grouped.entries()).map(([catSlug, procs]) => (
           <section key={catSlug} className="mb-10">
-            <div className="section-header">
-              <h2>{catSlug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{catSlug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b-2 border-light-200">
-                    <th className="text-left py-3 pr-4 font-bold text-dark">Procedure</th>
-                    <th className="text-right py-3 px-4 font-bold text-dark">
+                  <tr className="border-b-2 border-black/[0.06]">
+                    <th className="text-left py-3 pr-4 font-bold text-[#1c1c1c]">Procedure</th>
+                    <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
                       Cost in {city.name}
                     </th>
-                    <th className="text-center py-3 px-4 font-bold text-dark">Insurance</th>
-                    <th className="text-right py-3 pl-4 font-bold text-dark">Duration</th>
+                    <th className="text-center py-3 px-4 font-bold text-[#1c1c1c]">Insurance</th>
+                    <th className="text-right py-3 pl-4 font-bold text-[#1c1c1c]">Duration</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,18 +216,18 @@ export default async function AreaProceduresPage({ params }: Props) {
                       return (
                         <tr
                           key={proc.slug}
-                          className="border-b border-light-200 hover:bg-light-50 transition-colors"
+                          className="border-b border-black/[0.06] hover:bg-[#f8f8f6] transition-colors"
                         >
                           <td className="py-3 pr-4">
                             <Link
                               href={`/directory/${city.slug}/${area.slug}/procedures/${proc.slug}`}
-                              className="font-medium text-dark hover:text-accent transition-colors"
+                              className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                             >
                               {proc.name}
                             </Link>
-                            <p className="text-xs text-muted mt-0.5">{proc.nameAr}</p>
+                            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">{proc.nameAr}</p>
                           </td>
-                          <td className="text-right py-3 px-4 font-semibold text-dark whitespace-nowrap">
+                          <td className="text-right py-3 px-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight whitespace-nowrap">
                             {priceDisplay}
                           </td>
                           <td className="text-center py-3 px-4">
@@ -238,7 +237,7 @@ export default async function AreaProceduresPage({ params }: Props) {
                               {insuranceLabel}
                             </span>
                           </td>
-                          <td className="text-right py-3 pl-4 text-muted whitespace-nowrap">
+                          <td className="text-right py-3 pl-4 text-black/40 whitespace-nowrap">
                             {proc.duration}
                           </td>
                         </tr>
@@ -252,20 +251,19 @@ export default async function AreaProceduresPage({ params }: Props) {
 
         {/* Cross-links */}
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Explore {area.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Explore {area.name}</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <Link
               href={`/directory/${city.slug}/${area.slug}`}
-              className="inline-block bg-light-100 text-dark text-sm px-4 py-2 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+              className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-4 py-2 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"
             >
               All providers in {area.name}
             </Link>
             <Link
               href={`/directory/${city.slug}`}
-              className="inline-block bg-light-100 text-dark text-sm px-4 py-2 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+              className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-4 py-2 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"
             >
               Healthcare in {city.name}
             </Link>

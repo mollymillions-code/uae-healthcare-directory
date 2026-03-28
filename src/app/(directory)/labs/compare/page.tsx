@@ -65,7 +65,7 @@ export default function LabComparePage() {
   const labCount = LAB_PROFILES.length;
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Schema.org */}
       <JsonLd
         data={breadcrumbSchema([
@@ -104,14 +104,14 @@ export default function LabComparePage() {
       {/* Hero */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <Scale className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <Scale className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Compare UAE Labs Side-by-Side
           </h1>
         </div>
 
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed mb-4">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
             The UAE has {labCount} major diagnostic laboratory networks with hundreds of branches
             across Dubai, Abu Dhabi, Sharjah, Ajman, Fujairah, and Ras Al Khaimah. For the same
             blood test, prices can vary by <strong>40–60%</strong> between labs — making comparison
@@ -123,47 +123,46 @@ export default function LabComparePage() {
 
       {/* Why Compare Section */}
       <div className="mb-8">
-        <div className="section-header">
-          <h2>Why Lab Price Comparison Matters in the UAE</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Why Lab Price Comparison Matters in the UAE</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-light-50 border border-light-200 p-4">
-            <TrendingDown className="w-5 h-5 text-accent mb-2" />
-            <p className="text-xs font-bold text-dark mb-1">Up to 60% Price Variance</p>
-            <p className="text-[11px] text-muted leading-relaxed">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+            <TrendingDown className="w-5 h-5 text-[#006828] mb-2" />
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">Up to 60% Price Variance</p>
+            <p className="text-[11px] text-black/40 leading-relaxed">
               The same CBC test can cost AED 30 at one lab and AED 85 at another. Comparing
               saves real money, especially for routine annual screens.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
-            <CheckCircle className="w-5 h-5 text-accent mb-2" />
-            <p className="text-xs font-bold text-dark mb-1">Accreditation Differences</p>
-            <p className="text-[11px] text-muted leading-relaxed">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+            <CheckCircle className="w-5 h-5 text-[#006828] mb-2" />
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">Accreditation Differences</p>
+            <p className="text-[11px] text-black/40 leading-relaxed">
               CAP-accredited labs follow international quality standards with mandated proficiency
               testing. Useful to know for complex panels or specialist referrals.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
-            <MapPin className="w-5 h-5 text-accent mb-2" />
-            <p className="text-xs font-bold text-dark mb-1">Home Collection</p>
-            <p className="text-[11px] text-muted leading-relaxed">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+            <MapPin className="w-5 h-5 text-[#006828] mb-2" />
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">Home Collection</p>
+            <p className="text-[11px] text-black/40 leading-relaxed">
               Multiple UAE labs offer home phlebotomy — some free of charge. Ideal for fasting
               tests where early-morning sample collection avoids the commute.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
-            <AlertCircle className="w-5 h-5 text-accent mb-2" />
-            <p className="text-xs font-bold text-dark mb-1">Insurance Network Status</p>
-            <p className="text-[11px] text-muted leading-relaxed">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+            <AlertCircle className="w-5 h-5 text-[#006828] mb-2" />
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">Insurance Network Status</p>
+            <p className="text-[11px] text-black/40 leading-relaxed">
               Not every lab is in-network for every UAE health plan. Hospital-affiliated labs
               tend to have broader insurance coverage than standalone chains.
             </p>
           </div>
         </div>
 
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-sm text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
             <strong>How this tool works:</strong> Select any 2–4 of the {labCount} labs listed
             below. The comparison table automatically shows side-by-side prices for tests
             available at all selected labs, with the cheapest option highlighted in green.
@@ -185,8 +184,8 @@ export default function LabComparePage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative and sourced from publicly
           available lab price lists, aggregator platforms, and direct lab communications as of
           March 2026. Prices may vary by branch, insurance status, and current promotions.

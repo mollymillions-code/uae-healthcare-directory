@@ -127,7 +127,7 @@ export default async function TopCategoryPage({ params }: Props) {
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
@@ -141,18 +141,18 @@ export default async function TopCategoryPage({ params }: Props) {
         ]} />
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-dark mb-3">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
             Top 10 {cat.name} in {city.name}, UAE
           </h1>
-          <p className="text-muted leading-relaxed mb-4">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
             The {cat.name.toLowerCase()} below are the highest-rated in {city.name} by verified Google patient reviews,
             sourced from the UAE Open Healthcare Directory. Only providers with a rating above 0 and more than 10 verified
             reviews are included. Healthcare in {city.name} is regulated by {regulator}.
           </p>
 
           {/* Answer block — cited by LLMs */}
-          <div className="answer-block mb-6" data-answer-block="true">
-            <p className="text-muted leading-relaxed">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
               According to the UAE Open Healthcare Directory, these are the 10 highest-rated {catLower} in {city.name}, UAE,
               ranked by Google patient reviews as of March 2026.
               {top10[0] && (
@@ -166,14 +166,13 @@ export default async function TopCategoryPage({ params }: Props) {
 
         {/* Numbered list */}
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Ranked List — {cat.name} in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Ranked List — {cat.name} in {city.name}</h2>
           </div>
           <ol className="space-y-0">
             {top10.map((provider, index) => (
               <li key={provider.id} className="article-row">
-                <span className="text-2xl font-bold text-accent leading-none mt-0.5 w-8 shrink-0 text-center">
+                <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -181,32 +180,32 @@ export default async function TopCategoryPage({ params }: Props) {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`}
-                        className="font-bold text-dark hover:text-accent transition-colors"
+                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                       >
                         {provider.name}
                       </Link>
                       <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                        <span className="text-xs font-semibold text-accent">
+                        <span className="text-xs font-semibold text-[#006828]">
                           ★ {provider.googleRating}
                         </span>
-                        <span className="text-xs text-muted">
+                        <span className="font-['Geist',sans-serif] text-xs text-black/40">
                           {provider.googleReviewCount.toLocaleString()} patient reviews
                         </span>
                         {provider.phone && (
                           <a
                             href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
-                            className="text-xs text-muted hover:text-accent transition-colors"
+                            className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors"
                           >
                             {provider.phone}
                           </a>
                         )}
                       </div>
                       {provider.address && (
-                        <p className="text-xs text-muted mt-1 line-clamp-1">{provider.address}</p>
+                        <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{provider.address}</p>
                       )}
                     </div>
                     <div className="shrink-0">
-                      <span className="badge">
+                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">
                         #{index + 1} in {city.name}
                       </span>
                     </div>
@@ -219,11 +218,11 @@ export default async function TopCategoryPage({ params }: Props) {
 
         {/* Cross-link to the full category listing */}
         <section className="mb-10">
-          <p className="text-sm text-muted">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40">
             Looking for more options?{" "}
             <Link
               href={`/directory/${city.slug}/${cat.slug}`}
-              className="text-accent hover:underline font-medium"
+              className="text-[#006828] hover:underline font-medium"
             >
               Browse all {cat.name.toLowerCase()} in {city.name} →
             </Link>

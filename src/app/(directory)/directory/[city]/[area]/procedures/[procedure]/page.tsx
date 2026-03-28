@@ -210,7 +210,7 @@ export default async function AreaProcedurePage({ params }: Props) {
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
@@ -250,23 +250,23 @@ export default async function AreaProcedurePage({ params }: Props) {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <span className="badge text-[10px]">{categoryName}</span>
+            <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[10px]">{categoryName}</span>
             <span className={`inline-block text-[10px] font-bold px-2 py-0.5 ${insuranceBadgeClass}`}>
               {insuranceLabel}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-dark mb-2">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
             {proc.name} in {area.name}, {city.name}
           </h1>
-          <p className="text-sm text-muted">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40">
             {proc.nameAr} &middot; CPT {proc.cptCode} &middot; {proc.duration} &middot;{" "}
             {proc.recoveryTime} recovery
           </p>
         </div>
 
         {/* Answer block */}
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, {proc.name.toLowerCase()} in{" "}
             {area.name}, {city.name} costs between AED {priceMin.toLocaleString()} and AED{" "}
             {priceMax.toLocaleString()}, with a typical price of AED{" "}
@@ -283,33 +283,32 @@ export default async function AreaProcedurePage({ params }: Props) {
           <div className="lg:col-span-2">
             {/* Cost table */}
             <section className="mb-8">
-              <div className="section-header">
-                <h2>{proc.name} Cost in {area.name}, {city.name}</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{proc.name} Cost in {area.name}, {city.name}</h2>
               </div>
-              <div className="border border-light-200">
-                <div className="grid grid-cols-3 gap-0 border-b border-light-200">
-                  <div className="p-4 text-center border-r border-light-200">
-                    <p className="text-xs text-muted mb-1">Minimum</p>
-                    <p className="text-lg font-bold text-dark">
+              <div className="border border-black/[0.06]">
+                <div className="grid grid-cols-3 gap-0 border-b border-black/[0.06]">
+                  <div className="p-4 text-center border-r border-black/[0.06]">
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Minimum</p>
+                    <p className="text-lg font-bold text-[#1c1c1c]">
                       AED {priceMin.toLocaleString()}
                     </p>
                   </div>
-                  <div className="p-4 text-center border-r border-light-200 bg-accent-muted">
-                    <p className="text-xs text-muted mb-1">Typical</p>
-                    <p className="text-lg font-bold text-accent">
+                  <div className="p-4 text-center border-r border-black/[0.06] bg-[#006828]/[0.04]">
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Typical</p>
+                    <p className="text-lg font-bold text-[#006828]">
                       AED {priceTypical.toLocaleString()}
                     </p>
                   </div>
                   <div className="p-4 text-center">
-                    <p className="text-xs text-muted mb-1">Maximum</p>
-                    <p className="text-lg font-bold text-dark">
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Maximum</p>
+                    <p className="text-lg font-bold text-[#1c1c1c]">
                       AED {priceMax.toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="p-4">
-                  <p className="text-xs text-muted">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40">
                     Prices reflect observed ranges across government, private, and premium facilities
                     in {city.name}. Individual provider quotes may differ. Prices in AED, excluding
                     VAT where applicable.
@@ -320,18 +319,17 @@ export default async function AreaProcedurePage({ params }: Props) {
 
             {/* UAE city comparison table */}
             <section className="mb-8">
-              <div className="section-header">
-                <h2>{proc.name} Cost Across UAE Cities</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{proc.name} Cost Across UAE Cities</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b-2 border-light-200">
-                      <th className="text-left py-3 pr-4 font-bold text-dark">City</th>
-                      <th className="text-right py-3 px-4 font-bold text-dark">Min</th>
-                      <th className="text-right py-3 px-4 font-bold text-dark">Typical</th>
-                      <th className="text-right py-3 pl-4 font-bold text-dark">Max</th>
+                    <tr className="border-b-2 border-black/[0.06]">
+                      <th className="text-left py-3 pr-4 font-bold text-[#1c1c1c]">City</th>
+                      <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">Min</th>
+                      <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">Typical</th>
+                      <th className="text-right py-3 pl-4 font-bold text-[#1c1c1c]">Max</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -340,12 +338,12 @@ export default async function AreaProcedurePage({ params }: Props) {
                       return (
                         <tr
                           key={slug}
-                          className={`border-b border-light-200 ${isCurrentCity ? "bg-accent-muted font-semibold" : ""}`}
+                          className={`border-b border-black/[0.06] ${isCurrentCity ? "bg-[#006828]/[0.04] font-semibold" : ""}`}
                         >
                           <td className="py-2.5 pr-4">
                             {cityNames[slug] || slug}
                             {isCurrentCity && (
-                              <span className="ml-2 text-[10px] font-bold text-accent">
+                              <span className="ml-2 text-[10px] font-bold text-[#006828]">
                                 (current)
                               </span>
                             )}
@@ -365,7 +363,7 @@ export default async function AreaProcedurePage({ params }: Props) {
                   </tbody>
                 </table>
               </div>
-              <p className="text-xs text-muted mt-2">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-2">
                 Source: DOH Mandatory Tariff (Shafafiya), DHA DRG parameters, and market-observed data
                 2024-2026. Base tariff: AED {proc.baseTariffAed.toLocaleString()}.
               </p>
@@ -373,32 +371,31 @@ export default async function AreaProcedurePage({ params }: Props) {
 
             {/* About the procedure */}
             <section className="mb-8">
-              <div className="section-header">
-                <h2>About {proc.name}</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">About {proc.name}</h2>
               </div>
-              <div className="border border-light-200 p-6">
-                <p className="text-muted leading-relaxed mb-4">{proc.description}</p>
+              <div className="border border-black/[0.06] rounded-2xl p-6">
+                <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{proc.description}</p>
 
-                <h3 className="font-bold text-dark mb-2">What to Expect</h3>
-                <p className="text-muted leading-relaxed mb-4">{proc.whatToExpect}</p>
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">What to Expect</h3>
+                <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{proc.whatToExpect}</p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-light-200">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-black/[0.06]">
                   <div>
-                    <p className="text-xs text-muted mb-1">Duration</p>
-                    <p className="font-semibold text-dark text-sm">{proc.duration}</p>
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Duration</p>
+                    <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight text-sm">{proc.duration}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted mb-1">Recovery</p>
-                    <p className="font-semibold text-dark text-sm">{proc.recoveryTime}</p>
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Recovery</p>
+                    <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight text-sm">{proc.recoveryTime}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted mb-1">Setting</p>
-                    <p className="font-semibold text-dark text-sm capitalize">{proc.setting}</p>
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Setting</p>
+                    <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight text-sm capitalize">{proc.setting}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted mb-1">Anaesthesia</p>
-                    <p className="font-semibold text-dark text-sm capitalize">{proc.anaesthesia}</p>
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">Anaesthesia</p>
+                    <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight text-sm capitalize">{proc.anaesthesia}</p>
                   </div>
                 </div>
               </div>
@@ -406,29 +403,27 @@ export default async function AreaProcedurePage({ params }: Props) {
 
             {/* Insurance coverage */}
             <section className="mb-8">
-              <div className="section-header">
-                <h2>Insurance Coverage for {proc.name}</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage for {proc.name}</h2>
               </div>
-              <div className="border border-light-200 p-6">
+              <div className="border border-black/[0.06] rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <span className={`inline-block text-xs font-bold px-3 py-1 ${insuranceBadgeClass}`}>
                     {insuranceLabel}
                   </span>
                 </div>
-                <p className="text-muted leading-relaxed">{proc.insuranceNotes}</p>
+                <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{proc.insuranceNotes}</p>
               </div>
             </section>
 
             {/* Providers in this area */}
             <section className="mb-8">
-              <div className="section-header">
-                <h2>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
                   {categoryName} in {area.name}, {city.name}
                 </h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
               </div>
-              <p className="text-sm text-muted mb-4">
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
                 These {categoryName.toLowerCase()} in {area.name} offer {proc.name.toLowerCase()} or
                 related services. Ranked by patient reviews.
               </p>
@@ -451,10 +446,10 @@ export default async function AreaProcedurePage({ params }: Props) {
                   />
                 ))}
               </div>
-              <p className="text-sm text-muted mt-4">
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-4">
                 <Link
                   href={`/directory/${city.slug}/${area.slug}/${proc.categorySlug}`}
-                  className="text-accent hover:underline font-medium"
+                  className="text-[#006828] hover:underline font-medium"
                 >
                   View all {categoryName.toLowerCase()} in {area.name} &rarr;
                 </Link>
@@ -466,39 +461,39 @@ export default async function AreaProcedurePage({ params }: Props) {
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-4">
               {/* Quick facts card */}
-              <div className="border border-light-200 p-6">
-                <h3 className="font-bold text-dark mb-4">Quick Facts</h3>
+              <div className="border border-black/[0.06] rounded-2xl p-6">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">Quick Facts</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Cost</span>
-                    <span className="font-semibold text-dark">
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Cost</span>
+                    <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">
                       AED {priceMin.toLocaleString()} - {priceMax.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Typical</span>
-                    <span className="font-bold text-accent">
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Typical</span>
+                    <span className="font-bold text-[#006828]">
                       AED {priceTypical.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Duration</span>
-                    <span className="font-semibold text-dark">{proc.duration}</span>
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Duration</span>
+                    <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{proc.duration}</span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Recovery</span>
-                    <span className="font-semibold text-dark">{proc.recoveryTime}</span>
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Recovery</span>
+                    <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{proc.recoveryTime}</span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Setting</span>
-                    <span className="font-semibold text-dark capitalize">{proc.setting}</span>
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Setting</span>
+                    <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight capitalize">{proc.setting}</span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-light-200 pb-2">
-                    <span className="text-muted">Anaesthesia</span>
-                    <span className="font-semibold text-dark capitalize">{proc.anaesthesia}</span>
+                  <div className="flex justify-between text-sm border-b border-black/[0.06] pb-2">
+                    <span className="text-black/40">Anaesthesia</span>
+                    <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight capitalize">{proc.anaesthesia}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted">Insurance</span>
+                    <span className="text-black/40">Insurance</span>
                     <span className={`text-xs font-bold px-2 py-0.5 ${insuranceBadgeClass}`}>
                       {proc.insuranceCoverage === "typically-covered"
                         ? "Covered"
@@ -514,8 +509,8 @@ export default async function AreaProcedurePage({ params }: Props) {
 
               {/* Related procedures */}
               {relatedProcedures.length > 0 && (
-                <div className="border border-light-200 p-6">
-                  <h3 className="font-bold text-dark mb-3">Related Procedures</h3>
+                <div className="border border-black/[0.06] rounded-2xl p-6">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">Related Procedures</h3>
                   <div className="space-y-2">
                     {relatedProcedures.map((rp) => {
                       const rpCityPrice = rp.cityPricing[city.slug];
@@ -526,10 +521,10 @@ export default async function AreaProcedurePage({ params }: Props) {
                         <Link
                           key={rp.slug}
                           href={`/directory/${city.slug}/${area.slug}/procedures/${rp.slug}`}
-                          className="block text-sm hover:text-accent transition-colors"
+                          className="block text-sm hover:text-[#006828] transition-colors"
                         >
-                          <p className="font-medium text-dark">{rp.name}</p>
-                          <p className="text-xs text-muted">{rpPrice}</p>
+                          <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{rp.name}</p>
+                          <p className="font-['Geist',sans-serif] text-xs text-black/40">{rpPrice}</p>
                         </Link>
                       );
                     })}
@@ -538,9 +533,9 @@ export default async function AreaProcedurePage({ params }: Props) {
               )}
 
               {/* CTA */}
-              <div className="border border-light-200 p-6 bg-accent-muted">
-                <h3 className="font-bold text-dark mb-2">Need {proc.name}?</h3>
-                <p className="text-sm text-muted mb-4">
+              <div className="border border-black/[0.06] rounded-2xl p-6 bg-[#006828]/[0.04]">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Need {proc.name}?</h3>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
                   Browse verified {categoryName.toLowerCase()} in {area.name}, {city.name} and
                   compare ratings, reviews, and insurance acceptance.
                 </p>

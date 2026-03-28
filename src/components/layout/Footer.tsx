@@ -4,10 +4,10 @@ import { CITIES } from "@/lib/constants/cities";
 export function Footer() {
   return (
     <footer className="bg-dark text-white mt-16">
-      <div className="container-tc pt-12 pb-6">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
         {/* Top — logo + tagline */}
         <div className="flex items-center gap-3 mb-8">
-          <span className="bg-accent w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
+          <span className="bg-[#006828] w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
             Z
           </span>
           <span className="font-bold text-lg">UAE Open Healthcare Directory</span>
@@ -16,7 +16,7 @@ export function Footer() {
         {/* Columns — 4 columns: Cities, Directory, Data Sources, Insights */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Cities</h5>
+            <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
               {CITIES.map((city) => (
                 <li key={city.slug}>
@@ -28,7 +28,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Directory</h5>
+            <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Directory</h5>
             <ul className="space-y-2">
               <li><Link href="/search" className="text-sm text-white/60 hover:text-white transition-colors">Search</Link></li>
               <li><Link href="/directory/dubai/top/hospitals" className="text-sm text-white/60 hover:text-white transition-colors">Top Rated</Link></li>
@@ -41,7 +41,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Data Sources</h5>
+            <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Data Sources</h5>
             <ul className="space-y-2">
               <li><span className="text-sm text-white/60">DHA — Dubai</span></li>
               <li><span className="text-sm text-white/60">DOH — Abu Dhabi</span></li>
@@ -50,7 +50,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h5 className="text-xs font-bold text-accent uppercase tracking-wider mb-4">Insights</h5>
+            <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Insights</h5>
             <ul className="space-y-2">
               <li><Link href="/intelligence" className="text-sm text-white/60 hover:text-white transition-colors">Industry Insights</Link></li>
               <li><Link href="/research" className="text-sm text-white/60 hover:text-white transition-colors">Research Reports</Link></li>
@@ -68,7 +68,7 @@ export function Footer() {
           </span>
           <span className="text-xs text-white/40">
             by{" "}
-            <a href="https://zavis.ai" className="text-accent hover:text-accent-light transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href="https://zavis.ai" className="text-[#006828] hover:text-[#006828]-light transition-colors" target="_blank" rel="noopener noreferrer">
               Zavis
             </a>
           </span>

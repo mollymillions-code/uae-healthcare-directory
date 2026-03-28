@@ -1,5 +1,24 @@
 # Zavis Landing - Changelog
 
+## 2026-03-28 — [Claude Code] Full Zavis Design System Overhaul (Directory + Intelligence)
+
+- **Scope:** All 103 English directory pages + 36 shared components redesigned to match Zavis brand design system
+- **Fonts:** Replaced DM Sans/Lora/Space Mono with Bricolage Grotesque (headings) + Geist (body/UI) across entire codebase
+- **Colors:** Replaced `#00c853` (tailwind accent) with `#006828` (Zavis green) everywhere. Replaced named grays (`text-muted`, `text-dark`) with opacity-based hierarchy (`text-black/40`, `text-[#1c1c1c]`)
+- **Borders:** `border-light-200` → `border-black/[0.06]`, `border-dark` → `border-[#1c1c1c]`
+- **Backgrounds:** `bg-light-50` → `#f8f8f6`, `bg-dark` → `#1c1c1c`
+- **Cards:** Added `rounded-2xl` to all cards, `hover:shadow-card hover:border-[#006828]/15` hover states
+- **Badges:** Square `bg-accent` → rounded-full green pills
+- **Answer blocks:** Green left border + subtle tint + `rounded-xl`
+- **Header:** Rebuilt as Bloomberg-style 2-row nav (masthead + city tabs)
+- **Section headers:** Kept bold border-bottom-2 divider pattern, updated font to Bricolage
+- **Intelligence pages:** Heavier font weight (`font-semibold`) throughout for editorial feel
+- **Removed old CSS classes:** `section-header`, `container-tc`, `.badge`, `.badge-outline`, `.label`, `.category-ribbon`, `.byline`, `.headline-serif-*`, `.article-row` — all replaced with inline Zavis tokens
+- **Design templates doc:** Created `docs/design-templates.md` cataloging all 20 template archetypes with exact classes
+- **Deploy fix:** Reverted `NEXT_DIST_DIR=.next-new` build approach that caused `_document` module error — back to proven backup/build/rollback pattern
+- **Zero type errors, zero lint errors**
+- **All 20 page templates verified returning 200 on localhost**
+
 ## 2026-03-28 — [Claude Code] Arabic Individual Insurance Guide Page Created
 
 - **New file:** `src/app/(directory)/ar/insurance/guide/[slug]/page.tsx`

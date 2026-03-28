@@ -114,7 +114,7 @@ export default function TestCategoryPage({
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -169,11 +169,11 @@ export default function TestCategoryPage({
 
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {cat.name} — Price Comparison Across UAE Labs
         </h1>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Compare prices for {tests.length} {cat.name.toLowerCase()} tests
             across diagnostic laboratories in Dubai, Abu Dhabi, Sharjah, and
             across the UAE.
@@ -190,38 +190,37 @@ export default function TestCategoryPage({
 
         {/* Quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{tests.length}</p>
-            <p className="text-xs text-muted">Tests tracked</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{tests.length}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Tests tracked</p>
           </div>
           {cheapestOverall !== null && (
-            <div className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">
+            <div className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">
                 AED {cheapestOverall}
               </p>
-              <p className="text-xs text-muted">Starting from</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">Starting from</p>
             </div>
           )}
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">
               {totalPricePoints}
             </p>
-            <p className="text-xs text-muted">Price points</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Price points</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">12+</p>
-            <p className="text-xs text-muted">Labs compared</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">12+</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Labs compared</p>
           </div>
         </div>
       </div>
 
       {/* All tests in this category */}
-      <div className="section-header">
-        <h2>All {cat.name} Tests</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {cat.name} Tests</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Click any test below to see a full price comparison across all UAE
           laboratories, home collection options, and preparation instructions.
         </p>
@@ -231,16 +230,16 @@ export default function TestCategoryPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted line-clamp-1">
+              <p className="text-[11px] text-black/40 line-clamp-1">
                 {test.name}
               </p>
-              <p className="text-[11px] text-muted mt-1 line-clamp-1">
+              <p className="text-[11px] text-black/40 mt-1 line-clamp-1">
                 {test.description}
               </p>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -249,10 +248,10 @@ export default function TestCategoryPage({
                     Fasting required
                   </span>
                 )}
-                <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium capitalize">
+                <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium capitalize">
                   {test.sampleType}
                 </span>
-                <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium">
+                <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium">
                   Results in {test.turnaroundHours}h
                 </span>
               </div>
@@ -260,31 +259,30 @@ export default function TestCategoryPage({
             <div className="text-right flex-shrink-0">
               {test.priceRange ? (
                 <>
-                  <p className="text-sm font-bold text-accent">
+                  <p className="text-sm font-bold text-[#006828]">
                     {formatPrice(test.priceRange.min)}
                   </p>
                   {test.priceRange.min !== test.priceRange.max && (
-                    <p className="text-[10px] text-muted">
+                    <p className="text-[10px] text-black/40">
                       – {formatPrice(test.priceRange.max)}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted">
+                  <p className="text-[10px] text-black/40">
                     {test.priceRange.labCount} labs
                   </p>
                 </>
               ) : (
-                <p className="text-[10px] text-muted">Contact labs</p>
+                <p className="text-[10px] text-black/40">Contact labs</p>
               )}
-              <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors ml-auto mt-1" />
+              <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors ml-auto mt-1" />
             </div>
           </Link>
         ))}
       </div>
 
       {/* Other categories */}
-      <div className="section-header">
-        <h2>Other Test Categories</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Test Categories</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-12">
         {TEST_CATEGORIES.filter((c) => c.slug !== cat.slug).map((c) => {
@@ -293,12 +291,12 @@ export default function TestCategoryPage({
             <Link
               key={c.slug}
               href={`/labs/category/${c.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {c.name}
               </h3>
-              <p className="text-[11px] text-muted">{count} tests</p>
+              <p className="text-[11px] text-black/40">{count} tests</p>
             </Link>
           );
         })}
@@ -313,8 +311,8 @@ export default function TestCategoryPage({
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for {cat.name.toLowerCase()} tests
           are indicative and based on publicly available data from UAE
           diagnostic laboratories. Actual prices may vary by branch, insurance

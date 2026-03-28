@@ -897,7 +897,7 @@ export default async function LabGuideCityPage({
         }}
       />
 
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -911,21 +911,21 @@ export default async function LabGuideCityPage({
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-3">
-            <FlaskConical className="w-5 h-5 text-accent" />
-            <span className="text-xs font-bold text-accent uppercase tracking-wider">
+            <FlaskConical className="w-5 h-5 text-[#006828]" />
+            <span className="text-xs font-bold text-[#006828] uppercase tracking-wider">
               {city.name} Lab Guide
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-dark leading-tight mb-4">
+          <h1 className="text-2xl md:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight leading-tight mb-4">
             {guide.name} in {city.name}
           </h1>
 
           {/* Answer Block */}
           <div
-            className="answer-block bg-light-50 border-l-4 border-accent p-4 md:p-5"
+            className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border-l-4 border-[#006828] p-4 md:p-5"
             data-answer-block="true"
           >
-            <p className="text-sm md:text-base text-dark leading-relaxed">
+            <p className="text-sm md:text-base text-[#1c1c1c] leading-relaxed">
               {cityContext
                 ? cityContext.intro
                 : `${guide.name} services in ${city.name} are regulated by the ${regulator}. Labs in ${city.name} offer the relevant blood tests and screening panels for this guide. Browse the labs below to compare prices and find the most convenient option.`}
@@ -934,60 +934,60 @@ export default async function LabGuideCityPage({
         </header>
 
         {/* Key Facts for City */}
-        <div className="key-facts-box bg-light-50 border border-light-200 p-4 mb-8">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
+        <div className="key-facts-box bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 mb-8">
+          <p className="text-xs font-bold text-black/40 uppercase tracking-wider mb-3">
             Key Facts for {city.name}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="flex items-start gap-2">
-              <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-[#006828] flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                   Key Areas
                 </p>
-                <p className="text-xs font-semibold text-dark mt-0.5">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                   {cityContext ? cityContext.areas : city.name}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <FileText className="w-4 h-4 text-accent flex-shrink-0" />
+              <FileText className="w-4 h-4 text-[#006828] flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                   Cost Range
                 </p>
-                <p className="text-xs font-semibold text-dark mt-0.5">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                   {guide.costRange}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Clock className="w-4 h-4 text-accent flex-shrink-0" />
+              <Clock className="w-4 h-4 text-[#006828] flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                   Processing Time
                 </p>
-                <p className="text-xs font-semibold text-dark mt-0.5">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                   {guide.processingTime}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Shield className="w-4 h-4 text-accent flex-shrink-0" />
+              <Shield className="w-4 h-4 text-[#006828] flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                   Regulator
                 </p>
-                <p className="text-xs font-semibold text-dark mt-0.5">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                   {regulatorShort}
                 </p>
               </div>
             </div>
           </div>
           {cityContext?.tips && (
-            <div className="mt-3 pt-3 border-t border-light-200">
-              <p className="text-xs text-muted leading-relaxed">
-                <strong className="text-dark">Tip:</strong> {cityContext.tips}
+            <div className="mt-3 pt-3 border-t border-black/[0.06]">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
+                <strong className="text-[#1c1c1c]">Tip:</strong> {cityContext.tips}
               </p>
             </div>
           )}
@@ -999,11 +999,10 @@ export default async function LabGuideCityPage({
             {/* Where to Get Tested */}
             {relevantLabs.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Where to Get Tested in {city.name}</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Where to Get Tested in {city.name}</h2>
                 </div>
-                <p className="text-sm text-muted mb-4">
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
                   {relevantLabs.length} lab{relevantLabs.length !== 1 ? "s" : ""} in {city.name}{" "}
                   offer tests relevant to this guide. Sorted by number of matching tests and price.
                 </p>
@@ -1021,7 +1020,7 @@ export default async function LabGuideCityPage({
                   <div className="mt-4 text-center">
                     <Link
                       href={`/labs?city=${citySlug}`}
-                      className="text-xs font-bold text-accent hover:text-accent-dark transition-colors"
+                      className="text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
                     >
                       View all {relevantLabs.length} labs in {city.name} →
                     </Link>
@@ -1033,11 +1032,10 @@ export default async function LabGuideCityPage({
             {/* Tests & Prices */}
             {relatedTests.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Tests &amp; Prices in {city.name}</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tests &amp; Prices in {city.name}</h2>
                 </div>
-                <p className="text-sm text-muted mb-4">
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
                   Price ranges for tests relevant to {guide.name.toLowerCase()}, filtered to labs
                   operating in {city.name}.
                 </p>
@@ -1046,38 +1044,38 @@ export default async function LabGuideCityPage({
                     <Link
                       key={test.slug}
                       href={`/labs/test/${test.slug}`}
-                      className="border border-light-200 hover:border-accent p-4 transition-colors group block"
+                      className="border border-black/[0.06] hover:border-[#006828]/15 p-4 transition-colors group block"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                             {test.shortName}
                           </p>
-                          <p className="text-[11px] text-muted mt-0.5 line-clamp-2">
+                          <p className="text-[11px] text-black/40 mt-0.5 line-clamp-2">
                             {test.description}
                           </p>
                         </div>
                         {range ? (
                           <div className="text-right flex-shrink-0">
-                            <p className="text-xs font-bold text-accent">
+                            <p className="text-xs font-bold text-[#006828]">
                               {formatPrice(range.min)}
                             </p>
                             {range.max > range.min && (
-                              <p className="text-[10px] text-muted">
+                              <p className="text-[10px] text-black/40">
                                 – {formatPrice(range.max)}
                               </p>
                             )}
-                            <p className="text-[10px] text-muted mt-0.5">
+                            <p className="text-[10px] text-black/40 mt-0.5">
                               {range.labCount} lab{range.labCount !== 1 ? "s" : ""}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-[10px] text-muted flex-shrink-0">
+                          <p className="text-[10px] text-black/40 flex-shrink-0">
                             Not priced in {city.name}
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 mt-2 text-[10px] text-muted">
+                      <div className="flex items-center gap-1 mt-2 text-[10px] text-black/40">
                         <span className="capitalize">{test.sampleType}</span>
                         <span>·</span>
                         <span>{test.fastingRequired ? "Fasting required" : "No fast needed"}</span>
@@ -1093,12 +1091,11 @@ export default async function LabGuideCityPage({
             {/* Home Collection */}
             {homeCollectionLabs.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Home Collection Available in {city.name}</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Home Collection Available in {city.name}</h2>
                 </div>
-                <div className="bg-light-50 border border-light-200 p-4 mb-4">
-                  <p className="text-sm text-dark leading-relaxed">
+                <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 mb-4">
+                  <p className="text-sm text-[#1c1c1c] leading-relaxed">
                     {homeCollectionLabs.length} lab{homeCollectionLabs.length !== 1 ? "s" : ""}{" "}
                     operating in {city.name} offer home sample collection. A phlebotomist visits
                     your home, office, or hotel to draw blood samples — convenient for fasting tests,
@@ -1110,22 +1107,22 @@ export default async function LabGuideCityPage({
                     <Link
                       key={lab.slug}
                       href={`/labs/${lab.slug}`}
-                      className="flex items-center justify-between border border-light-200 hover:border-accent p-3 transition-colors group block"
+                      className="flex items-center justify-between border border-black/[0.06] hover:border-[#006828]/15 p-3 transition-colors group block"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <Home className="w-4 h-4 text-accent flex-shrink-0" />
+                        <Home className="w-4 h-4 text-[#006828] flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                             {lab.name}
                           </p>
-                          <p className="text-[11px] text-muted">
+                          <p className="text-[11px] text-black/40">
                             Home collection fee:{" "}
                             {lab.homeCollectionFee === 0 ? "Free" : `AED ${lab.homeCollectionFee}`}
                             {" · "}Results in {lab.turnaroundHours}h
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors flex-shrink-0" />
                     </Link>
                   ))}
                 </div>
@@ -1139,18 +1136,17 @@ export default async function LabGuideCityPage({
 
             {/* Cross-links: Same guide in other cities */}
             <section>
-              <div className="section-header mb-4">
-                <h2>{guide.name} in Other Cities</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{guide.name} in Other Cities</h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {otherCities.map((c) => (
                   <Link
                     key={c.slug}
                     href={`/labs/guides/${guideSlug}/${c.slug}`}
-                    className="border border-light-200 hover:border-accent p-3 transition-colors group text-center"
+                    className="border border-black/[0.06] hover:border-[#006828]/15 p-3 transition-colors group text-center"
                   >
-                    <p className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                    <p className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                       {c.name}
                     </p>
                   </Link>
@@ -1160,19 +1156,18 @@ export default async function LabGuideCityPage({
 
             {/* Cross-links: Other guides in this city */}
             <section>
-              <div className="section-header mb-4">
-                <h2>More Lab Guides for {city.name}</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More Lab Guides for {city.name}</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {otherGuides.map((g) => (
                   <Link
                     key={g.slug}
                     href={`/labs/guides/${g.slug}/${citySlug}`}
-                    className="flex items-center gap-2 border border-light-200 hover:border-accent p-3 transition-colors group"
+                    className="flex items-center gap-2 border border-black/[0.06] hover:border-[#006828]/15 p-3 transition-colors group"
                   >
-                    <ArrowRight className="w-3 h-3 text-accent flex-shrink-0" />
-                    <span className="text-xs text-dark group-hover:text-accent transition-colors">
+                    <ArrowRight className="w-3 h-3 text-[#006828] flex-shrink-0" />
+                    <span className="text-xs text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                       {g.name} in {city.name}
                     </span>
                   </Link>
@@ -1181,11 +1176,11 @@ export default async function LabGuideCityPage({
             </section>
 
             {/* Disclaimer */}
-            <div className="border border-light-200 bg-light-50 p-4 text-xs text-muted leading-relaxed">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4 text-xs text-black/40 leading-relaxed">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-muted flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-3.5 h-3.5 text-black/40 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-dark">Medical Disclaimer:</strong> This guide is for
+                  <strong className="text-[#1c1c1c]">Medical Disclaimer:</strong> This guide is for
                   informational purposes only and does not constitute medical advice. Information
                   about {guide.name.toLowerCase()} in {city.name} is based on publicly available
                   data from the {regulator} and lab pricing as of March 2026. Prices and availability
@@ -1199,25 +1194,25 @@ export default async function LabGuideCityPage({
           {/* Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Parent Guide */}
-            <div className="border border-light-200 bg-light-50 p-4">
-              <p className="text-xs font-bold text-dark mb-2">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
                 Full Guide
               </p>
-              <p className="text-[11px] text-muted mb-3 leading-relaxed">
+              <p className="text-[11px] text-black/40 mb-3 leading-relaxed">
                 Read the complete UAE-wide {guide.name.toLowerCase()} guide with detailed
                 information on required tests, process, and costs.
               </p>
               <Link
                 href={`/labs/guides/${guideSlug}`}
-                className="text-[11px] font-bold text-accent hover:text-accent-dark transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
               >
                 {guide.name} — Full Guide →
               </Link>
             </div>
 
             {/* Other Guides in This City */}
-            <div className="border border-light-200 p-4">
-              <div className="section-header mb-3">
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-3">
                 <h3 className="text-sm">{city.name} Lab Guides</h3>
                 <span className="arrows text-xs">&gt;&gt;&gt;</span>
               </div>
@@ -1226,10 +1221,10 @@ export default async function LabGuideCityPage({
                   <Link
                     key={g.slug}
                     href={`/labs/guides/${g.slug}/${citySlug}`}
-                    className="flex items-start gap-2 group py-1.5 border-b border-light-100 last:border-b-0"
+                    className="flex items-start gap-2 group py-1.5 border-b border-black/[0.06] last:border-b-0"
                   >
-                    <ArrowRight className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-xs text-dark group-hover:text-accent transition-colors leading-tight">
+                    <ArrowRight className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-[#1c1c1c] group-hover:text-[#006828] transition-colors leading-tight">
                       {g.name} in {city.name}
                     </span>
                   </Link>
@@ -1237,34 +1232,34 @@ export default async function LabGuideCityPage({
               </div>
               <Link
                 href="/labs/guides"
-                className="text-[11px] font-bold text-accent hover:text-accent-dark mt-3 block transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark mt-3 block transition-colors"
               >
                 All lab guides →
               </Link>
             </div>
 
             {/* City Quick Info */}
-            <div className="border border-light-200 p-4">
-              <div className="section-header mb-3">
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-3">
                 <h3 className="text-sm">About {city.name}</h3>
                 <span className="arrows text-xs">&gt;&gt;&gt;</span>
               </div>
-              <div className="space-y-2 text-[11px] text-muted leading-relaxed">
+              <div className="space-y-2 text-[11px] text-black/40 leading-relaxed">
                 <div className="flex items-start gap-2">
-                  <Building2 className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
+                  <Building2 className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
                   <span>Emirate: {city.emirate}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Shield className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
+                  <Shield className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
                   <span>Regulator: {regulatorShort}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <FlaskConical className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
+                  <FlaskConical className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
                   <span>{cityLabs.length} labs in directory</span>
                 </div>
                 {homeCollectionLabs.length > 0 && (
                   <div className="flex items-start gap-2">
-                    <Home className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
+                    <Home className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
                     <span>{homeCollectionLabs.length} with home collection</span>
                   </div>
                 )}
@@ -1272,16 +1267,16 @@ export default async function LabGuideCityPage({
             </div>
 
             {/* Browse All Tests */}
-            <div className="border border-light-200 bg-light-50 p-4">
-              <p className="text-xs font-bold text-dark mb-2">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
                 Compare Blood Test Prices
               </p>
-              <p className="text-[11px] text-muted mb-3 leading-relaxed">
+              <p className="text-[11px] text-black/40 mb-3 leading-relaxed">
                 Browse and compare prices for 30+ tests across labs in {city.name} and the UAE.
               </p>
               <Link
                 href="/labs"
-                className="text-[11px] font-bold text-accent hover:text-accent-dark transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
               >
                 Browse all tests →
               </Link>

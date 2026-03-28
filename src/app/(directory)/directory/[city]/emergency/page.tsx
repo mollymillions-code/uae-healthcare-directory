@@ -128,7 +128,7 @@ export default async function EmergencyCityPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -150,10 +150,10 @@ export default async function EmergencyCityPage({ params }: Props) {
       />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           Emergency Healthcare in {city.name}, UAE
         </h1>
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           {count} emergency & urgent care facilities · Last updated March 2026
         </p>
 
@@ -180,8 +180,8 @@ export default async function EmergencyCityPage({ params }: Props) {
           </p>
         </div>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are {count}{" "}
             healthcare facilities in {city.name} offering emergency or urgent
             care services. These include hospital emergency departments and
@@ -206,9 +206,8 @@ export default async function EmergencyCityPage({ params }: Props) {
 
       {/* Provider grid */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Emergency & Urgent Care Facilities in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Emergency & Urgent Care Facilities in {city.name}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
@@ -233,20 +232,20 @@ export default async function EmergencyCityPage({ params }: Props) {
 
       {/* Cross-links */}
       <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Need 24-hour non-emergency care?{" "}
           <Link
             href={`/directory/${city.slug}/24-hour`}
-            className="text-accent hover:underline font-medium"
+            className="text-[#006828] hover:underline font-medium"
           >
             24-hour healthcare in {city.name} &rarr;
           </Link>
         </p>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Browse all providers?{" "}
           <Link
             href={`/directory/${city.slug}`}
-            className="text-accent hover:underline font-medium"
+            className="text-[#006828] hover:underline font-medium"
           >
             All healthcare providers in {city.name} &rarr;
           </Link>

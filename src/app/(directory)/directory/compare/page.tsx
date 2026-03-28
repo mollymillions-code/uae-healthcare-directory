@@ -69,7 +69,7 @@ export default async function CompareHubPage() {
   const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -90,14 +90,14 @@ export default async function CompareHubPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <GitCompareArrows className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <GitCompareArrows className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Compare UAE Healthcare: City vs City & Category Comparisons
           </h1>
         </div>
 
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are{" "}
             {totalProviders.toLocaleString()}+ licensed healthcare providers across
             8 UAE cities. Healthcare in the UAE is regulated by three authorities:
@@ -114,14 +114,13 @@ export default async function CompareHubPage() {
       </div>
 
       <div className="mb-10">
-        <div className="section-header">
-          <h2>
-            <MapPin className="inline w-5 h-5 mr-1 text-accent" />
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <MapPin className="inline w-5 h-5 mr-1 text-[#006828]" />
             City vs City ({cityPairs.length} comparisons)
           </h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
         </div>
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           Compare healthcare systems, provider counts, average ratings,
           consultation costs, and top providers between any two UAE cities.
         </p>
@@ -137,12 +136,12 @@ export default async function CompareHubPage() {
               <Link
                 key={pair.slug}
                 href={`/directory/compare/${pair.slug}`}
-                className="flex items-center justify-between py-3 px-3 border-b border-light-200 hover:bg-light-50 transition-colors group"
+                className="flex items-center justify-between py-3 px-3 border-b border-black/[0.06] hover:bg-[#f8f8f6] transition-colors group"
               >
-                <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
+                <span className="text-sm font-medium text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {cityA.name} vs {cityB.name}
                 </span>
-                <span className="text-xs text-muted font-mono whitespace-nowrap">
+                <span className="font-['Geist',sans-serif] text-xs text-black/40 font-['Geist',sans-serif] whitespace-nowrap">
                   {countA + countB} providers
                 </span>
               </Link>
@@ -152,14 +151,13 @@ export default async function CompareHubPage() {
       </div>
 
       <div className="mb-10">
-        <div className="section-header">
-          <h2>
-            <Layers className="inline w-5 h-5 mr-1 text-accent" />
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <Layers className="inline w-5 h-5 mr-1 text-[#006828]" />
             Hospitals vs Clinics ({catComps.length} comparisons)
           </h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
         </div>
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           Compare hospitals and clinics within the same city: provider counts,
           costs, ratings, and when to choose one over the other.
         </p>
@@ -172,12 +170,12 @@ export default async function CompareHubPage() {
               <Link
                 key={comp.slug}
                 href={`/directory/compare/${comp.slug}`}
-                className="flex items-center justify-between py-3 px-3 border-b border-light-200 hover:bg-light-50 transition-colors group"
+                className="flex items-center justify-between py-3 px-3 border-b border-black/[0.06] hover:bg-[#f8f8f6] transition-colors group"
               >
-                <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
+                <span className="text-sm font-medium text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   Hospitals vs Clinics in {city.name}
                 </span>
-                <span className="text-xs text-muted font-mono whitespace-nowrap">
+                <span className="font-['Geist',sans-serif] text-xs text-black/40 font-['Geist',sans-serif] whitespace-nowrap">
                   compare &rarr;
                 </span>
               </Link>
@@ -190,8 +188,8 @@ export default async function CompareHubPage() {
         <FaqSection faqs={faqs} title="Healthcare Comparison FAQ" />
       </div>
 
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All provider counts, ratings, and cost
           estimates are based on data from official UAE health authority
           registers (DHA, DOH, MOHAP) and Google Maps, last verified March

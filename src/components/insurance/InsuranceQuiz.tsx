@@ -76,21 +76,21 @@ export function InsuranceQuiz() {
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-bold text-dark flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-accent" />
+            <h3 className="text-lg font-bold text-[#1c1c1c] flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#006828]" />
               Your Recommended Plans
             </h3>
-            <p className="text-xs text-muted mt-1">{results.length} plans match your preferences</p>
+            <p className="text-xs text-black/40 mt-1">{results.length} plans match your preferences</p>
           </div>
-          <button onClick={handleReset} className="text-xs text-accent font-bold hover:text-accent-dark">
+          <button onClick={handleReset} className="text-xs text-[#006828] font-bold hover:text-[#006828]-dark">
             Start over
           </button>
         </div>
 
         {results.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-muted mb-2">No plans matched your criteria closely.</p>
-            <button onClick={handleReset} className="text-accent font-bold text-sm">
+            <p className="text-black/40 mb-2">No plans matched your criteria closely.</p>
+            <button onClick={handleReset} className="text-[#006828] font-bold text-sm">
               Try different preferences
             </button>
           </div>
@@ -99,7 +99,7 @@ export function InsuranceQuiz() {
             {results.map((rec, i) => (
               <div key={rec.plan.id} className="relative">
                 {i === 0 && (
-                  <div className="absolute -top-3 left-3 bg-accent text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 z-10">
+                  <div className="absolute -top-3 left-3 bg-[#006828] text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 z-10">
                     Best match
                   </div>
                 )}
@@ -110,12 +110,12 @@ export function InsuranceQuiz() {
                   networkSize={rec.networkSize}
                 />
                 {rec.reasons.length > 0 && (
-                  <div className="border border-t-0 border-light-200 px-3 py-2">
-                    <p className="text-[10px] text-muted font-bold uppercase mb-1">Why this plan</p>
+                  <div className="border border-t-0 border-black/[0.06] px-3 py-2">
+                    <p className="text-[10px] text-black/40 font-bold uppercase mb-1">Why this plan</p>
                     <ul className="space-y-0.5">
                       {rec.reasons.slice(0, 3).map((r) => (
-                        <li key={r} className="text-[11px] text-dark flex items-start gap-1.5">
-                          <span className="text-accent mt-0.5">▸</span> {r}
+                        <li key={r} className="text-[11px] text-[#1c1c1c] flex items-start gap-1.5">
+                          <span className="text-[#006828] mt-0.5">▸</span> {r}
                         </li>
                       ))}
                     </ul>
@@ -136,12 +136,12 @@ export function InsuranceQuiz() {
         {STEPS.map((_, i) => (
           <div
             key={i}
-            className={`h-1 flex-1 ${i <= step ? "bg-accent" : "bg-light-200"} transition-colors`}
+            className={`h-1 flex-1 ${i <= step ? "bg-[#006828]" : "bg-light-200"} transition-colors`}
           />
         ))}
       </div>
 
-      <h3 className="text-lg font-bold text-dark mb-4">{STEPS[step].title}</h3>
+      <h3 className="text-lg font-bold text-[#1c1c1c] mb-4">{STEPS[step].title}</h3>
 
       {/* Step: Budget */}
       {step === 0 && (
@@ -156,12 +156,12 @@ export function InsuranceQuiz() {
               onClick={() => setAnswers({ ...answers, budget: value })}
               className={`p-4 border text-left transition-colors ${
                 answers.budget === value
-                  ? "border-accent bg-accent-muted"
-                  : "border-light-200 hover:border-accent"
+                  ? "border-[#006828] bg-[#006828]/[0.04]"
+                  : "border-black/[0.06] hover:border-[#006828]/15"
               }`}
             >
-              <p className="text-sm font-bold text-dark">{label}</p>
-              <p className="text-[11px] text-muted mt-1">{desc}</p>
+              <p className="text-sm font-bold text-[#1c1c1c]">{label}</p>
+              <p className="text-[11px] text-black/40 mt-1">{desc}</p>
             </button>
           ))}
         </div>
@@ -180,11 +180,11 @@ export function InsuranceQuiz() {
               onClick={() => setAnswers({ ...answers, familySize: value })}
               className={`p-4 border text-left transition-colors ${
                 answers.familySize === value
-                  ? "border-accent bg-accent-muted"
-                  : "border-light-200 hover:border-accent"
+                  ? "border-[#006828] bg-[#006828]/[0.04]"
+                  : "border-black/[0.06] hover:border-[#006828]/15"
               }`}
             >
-              <p className="text-sm font-bold text-dark">{label}</p>
+              <p className="text-sm font-bold text-[#1c1c1c]">{label}</p>
             </button>
           ))}
         </div>
@@ -202,7 +202,7 @@ export function InsuranceQuiz() {
             <label
               key={key}
               className={`flex items-center gap-3 p-3 border cursor-pointer transition-colors ${
-                answers[key] ? "border-accent bg-accent-muted" : "border-light-200 hover:border-accent"
+                answers[key] ? "border-[#006828] bg-[#006828]/[0.04]" : "border-black/[0.06] hover:border-[#006828]/15"
               }`}
             >
               <input
@@ -211,7 +211,7 @@ export function InsuranceQuiz() {
                 onChange={(e) => setAnswers({ ...answers, [key]: e.target.checked })}
                 className="w-4 h-4 accent-[#00c853]"
               />
-              <span className="text-sm text-dark font-medium">{label}</span>
+              <span className="text-sm text-[#1c1c1c] font-medium">{label}</span>
             </label>
           ))}
         </div>
@@ -226,11 +226,11 @@ export function InsuranceQuiz() {
               onClick={() => setAnswers({ ...answers, preferredCity: city.slug })}
               className={`p-3 border text-center transition-colors ${
                 answers.preferredCity === city.slug
-                  ? "border-accent bg-accent-muted"
-                  : "border-light-200 hover:border-accent"
+                  ? "border-[#006828] bg-[#006828]/[0.04]"
+                  : "border-black/[0.06] hover:border-[#006828]/15"
               }`}
             >
-              <p className="text-sm font-bold text-dark">{city.name}</p>
+              <p className="text-sm font-bold text-[#1c1c1c]">{city.name}</p>
             </button>
           ))}
         </div>
@@ -241,7 +241,7 @@ export function InsuranceQuiz() {
         <button
           onClick={handleBack}
           disabled={step === 0}
-          className="flex items-center gap-1 text-sm text-muted hover:text-dark disabled:opacity-30 transition-colors"
+          className="flex items-center gap-1 text-sm text-black/40 hover:text-[#1c1c1c] disabled:opacity-30 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>

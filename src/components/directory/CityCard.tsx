@@ -16,7 +16,7 @@ export function CityCard({ name, slug, emirate, providerCount }: CityCardProps) 
   return (
     <Link
       href={`/directory/${slug}`}
-      className="group relative overflow-hidden border border-light-200 hover:border-accent transition-colors"
+      className="group relative overflow-hidden border border-black/[0.06] hover:border-[#006828]/15 transition-colors"
     >
       {/* City image or gradient background */}
       <div className="h-28 relative bg-gradient-to-br from-dark to-dark-500 overflow-hidden">
@@ -38,16 +38,16 @@ export function CityCard({ name, slug, emirate, providerCount }: CityCardProps) 
 
       <div className="p-4 flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-black/40">
             {emirate !== name ? `${emirate} Emirate` : "Emirate"}
           </p>
           {providerCount !== undefined && (
-            <p className="text-sm font-medium text-accent">
+            <p className="text-sm font-medium text-[#006828]">
               {providerCount} {providerCount === 1 ? "provider" : "providers"}
             </p>
           )}
         </div>
-        <ArrowRight className="h-4 w-4 text-light-300 group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
+        <ArrowRight className="h-4 w-4 text-light-300 group-hover:text-[#006828] group-hover:translate-x-0.5 transition-all" />
       </div>
     </Link>
   );

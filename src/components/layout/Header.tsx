@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
 
-const NAV_LINKS = [
+const CITY_LINKS = [
   { label: "Dubai", href: "/directory/dubai" },
   { label: "Abu Dhabi", href: "/directory/abu-dhabi" },
   { label: "Sharjah", href: "/directory/sharjah" },
@@ -17,21 +17,28 @@ const NAV_LINKS = [
   { label: "Al Ain", href: "/directory/al-ain" },
 ];
 
+const SECTION_LINKS = [
+  { label: "Search", href: "/search" },
+  { label: "Insights", href: "/intelligence" },
+  { label: "Research", href: "/research" },
+  { label: "About", href: "/about" },
+];
+
 function getArabicPath(pathname: string): string | null {
   if (pathname.startsWith('/ar')) {
     return pathname.replace(/^\/ar/, '') || '/';
   }
-  // Only directory and homepage have Arabic versions
   if (pathname === '/' || pathname.startsWith('/directory')) {
     return `/ar${pathname}`;
   }
-  // No Arabic version for this page
   return null;
 }
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+
+  const activeCity = CITY_LINKS.find((c) => pathname.startsWith(c.href))?.href;
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -42,79 +49,118 @@ export function Header() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [mobileOpen]);
 
-  return (
-    <header className="bg-dark text-white sticky top-0 z-50">
-      <div className="container-tc">
-        <div className="flex items-center justify-between h-14">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="bg-accent w-7 h-7 flex items-center justify-center text-white font-bold text-xs">
-              Z
-            </span>
-            <span className="font-bold text-base tracking-tight hidden sm:inline">
-              UAE Open Healthcare Directory
-            </span>
-          </Link>
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <span className="w-px h-5 bg-white/20 mx-2" />
-            <Link href="/search" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
-              Search
+  return (
+    <header className="sticky top-0 z-50">
+      {/* ─── Top bar: brand + CTA ─── */}
+      <div className="bg-[#1c1c1c]">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo — prominent like Bloomberg masthead */}
+            <Link href="/directory" className="flex items-center gap-3 flex-shrink-0">
+              <span className="bg-[#006828] w-8 h-8 rounded-lg flex items-center justify-center text-white font-medium text-sm font-['Bricolage_Grotesque',sans-serif]">
+                Z
+              </span>
+              <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[20px] sm:text-[22px] tracking-tight text-white whitespace-nowrap">
+                UAE Healthcare Directory
+              </span>
             </Link>
-            <Link href="/intelligence" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
-              Insights
-            </Link>
-            <Link href="/research" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
-              Research
-            </Link>
-            <Link href="/about" className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
-              About
-            </Link>
-            {getArabicPath(pathname) && (
-              <>
-                <span className="w-px h-5 bg-white/20 mx-2" />
-                <Link href={getArabicPath(pathname)!} className="px-3 py-1.5 text-[13px] font-medium text-white/80 hover:text-white transition-colors">
+
+            {/* Right side — clean, minimal */}
+            <div className="hidden lg:flex items-center gap-4">
+              {getArabicPath(pathname) && (
+                <Link
+                  href={getArabicPath(pathname)!}
+                  className="font-['Geist',sans-serif] text-[14px] font-semibold text-white/60 hover:text-white transition-colors"
+                >
                   {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
                 </Link>
-              </>
-            )}
-          </nav>
+              )}
+              <Link
+                href="/claim"
+                className="inline-flex items-center bg-transparent border border-white/20 hover:border-white/40 text-white text-[13px] font-semibold px-5 py-2 rounded-full transition-colors whitespace-nowrap font-['Geist',sans-serif]"
+              >
+                Claim Listing
+              </Link>
+              <Link href="/search" className="p-2 text-white/60 hover:text-white transition-colors">
+                <Search className="h-5 w-5" />
+              </Link>
+            </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-3">
-            <Link href="/claim" className="hidden sm:inline-flex items-center bg-accent hover:bg-accent-dark text-white text-xs font-bold px-4 py-2 transition-colors">
-              Claim Listing
-            </Link>
-            <Link href="/search" className="lg:hidden p-2 text-white/70 hover:text-white">
-              <Search className="h-5 w-5" />
-            </Link>
-            <button className="lg:hidden p-2 text-white/70 hover:text-white" onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-label="Toggle navigation menu">
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            {/* Mobile controls */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <Link href="/search" className="p-2 text-white/60 hover:text-white transition-colors">
+                <Search className="h-5 w-5" />
+              </Link>
+              <button
+                className="p-2 text-white/60 hover:text-white transition-colors"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-expanded={mobileOpen}
+                aria-label="Toggle navigation menu"
+              >
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile nav */}
+      {/* ─── Bottom bar: city tabs + section links ─── */}
+      <div className="bg-[#111] border-b border-white/10 hidden lg:block">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* City tabs — left */}
+            <nav className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+              {CITY_LINKS.map((link) => {
+                const isActive = activeCity === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-4 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors font-['Geist',sans-serif] ${
+                      isActive
+                        ? "text-white"
+                        : "text-white/50 hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Section links — right */}
+            <nav className="flex items-center gap-0 flex-shrink-0">
+              {SECTION_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-4 py-3 text-[14px] font-semibold whitespace-nowrap transition-colors font-['Geist',sans-serif] ${
+                    pathname.startsWith(link.href) ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Mobile nav ─── */}
       {mobileOpen && (
-        <div className="lg:hidden bg-dark-800 border-t border-white/10">
-          <div className="container-tc py-4 space-y-3">
+        <div className="lg:hidden bg-[#111] border-t border-white/10">
+          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+            <p className="uppercase text-[10px] tracking-widest font-medium text-white/30 font-['Geist',sans-serif]">Emirates</p>
             <div className="grid grid-cols-2 gap-1">
               {CITIES.map((city) => (
                 <Link
                   key={city.slug}
                   href={`/directory/${city.slug}`}
-                  className="text-sm text-white/70 hover:text-white py-1.5 px-2"
+                  className="font-['Geist',sans-serif] text-sm text-white/60 hover:text-white py-1.5 px-2 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {city.name}
@@ -122,13 +168,13 @@ export function Header() {
               ))}
             </div>
             <div className="border-t border-white/10 pt-3 flex flex-wrap gap-4">
-              <Link href="/search" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Search</Link>
-              <Link href="/intelligence" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Insights</Link>
-              <Link href="/research" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Research</Link>
-              <Link href="/claim" className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
-              <Link href="/about" className="text-sm text-white/70" onClick={() => setMobileOpen(false)}>About</Link>
+              <Link href="/search" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Search</Link>
+              <Link href="/intelligence" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Insights</Link>
+              <Link href="/research" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Research</Link>
+              <Link href="/claim" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
+              <Link href="/about" className="font-['Geist',sans-serif] text-sm text-white/60" onClick={() => setMobileOpen(false)}>About</Link>
               {getArabicPath(pathname) && (
-                <Link href={getArabicPath(pathname)!} className="text-sm font-bold text-accent" onClick={() => setMobileOpen(false)}>
+                <Link href={getArabicPath(pathname)!} className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>
                   {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
                 </Link>
               )}

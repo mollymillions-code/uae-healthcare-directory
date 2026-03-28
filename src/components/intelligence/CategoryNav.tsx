@@ -7,14 +7,14 @@ interface CategoryNavProps {
 
 export function CategoryNav({ activeCategory }: CategoryNavProps) {
   return (
-    <nav className="border-b-2 border-dark">
-      <div className="flex items-center gap-0 -mb-px overflow-x-auto">
+    <nav className="border-b-2 border-[#1c1c1c]">
+      <div className="flex items-center gap-0 -mb-px overflow-x-auto scrollbar-none">
         <Link
           href="/intelligence"
-          className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+          className={`px-4 py-2.5 font-['Geist',sans-serif] text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
             !activeCategory
-              ? "text-dark border-accent"
-              : "text-muted border-transparent hover:text-dark hover:border-accent"
+              ? "text-[#1c1c1c] border-[#006828]"
+              : "text-black/40 border-transparent hover:text-[#1c1c1c] hover:border-black/20"
           }`}
         >
           All
@@ -23,10 +23,10 @@ export function CategoryNav({ activeCategory }: CategoryNavProps) {
           <Link
             key={cat.slug}
             href={`/intelligence/category/${cat.slug}`}
-            className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-4 py-2.5 font-['Geist',sans-serif] text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
               activeCategory === cat.slug
-                ? "text-dark border-accent"
-                : "text-muted border-transparent hover:text-dark hover:border-accent"
+                ? "text-[#1c1c1c] border-[#006828]"
+                : "text-black/40 border-transparent hover:text-[#1c1c1c] hover:border-black/20"
             }`}
           >
             {cat.name}

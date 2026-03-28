@@ -111,7 +111,7 @@ export default function AdminLeadsPage() {
                   value={adminKey}
                   onChange={(e) => setAdminKey(e.target.value)}
                   placeholder="Enter admin key"
-                  className="w-full px-4 py-3 border border-input rounded bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 border border-input rounded bg-background text-foreground placeholder:text-black/40-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
               </div>
@@ -127,7 +127,7 @@ export default function AdminLeadsPage() {
                 Access Leads
               </button>
             </form>
-            <p className="text-sm text-muted-foreground mt-4">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40-foreground mt-4">
               Default key: zavis_admin_2025
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function AdminLeadsPage() {
             <h1 className="text-4xl font-degular font-bold text-foreground mb-2">
               Lead Management
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-black/40-foreground">
               Total Leads: <span className="text-primary font-semibold">{leads.length}</span>
             </p>
           </div>
@@ -172,11 +172,11 @@ export default function AdminLeadsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading leads...</p>
+            <p className="text-black/40-foreground">Loading leads...</p>
           </div>
         ) : leads.length === 0 ? (
           <div className="text-center py-12 bg-muted/30 rounded-lg">
-            <p className="text-muted-foreground text-lg">No leads collected yet.</p>
+            <p className="text-black/40-foreground text-lg">No leads collected yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -199,7 +199,7 @@ export default function AdminLeadsPage() {
                     <td className="px-4 py-3 text-sm text-foreground whitespace-nowrap">
                       {new Date(lead.timestamp).toLocaleDateString()}
                       <br />
-                      <span className="text-xs text-muted-foreground">
+                      <span className="font-['Geist',sans-serif] text-xs text-black/40-foreground">
                         {new Date(lead.timestamp).toLocaleTimeString()}
                       </span>
                     </td>

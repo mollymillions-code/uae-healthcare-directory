@@ -599,7 +599,7 @@ export default function LabResultsPage({ params }: { params: { test: string } })
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Structured Data */}
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -619,17 +619,17 @@ export default function LabResultsPage({ params }: { params: { test: string } })
       {/* Hero */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-[11px] bg-accent-muted text-accent-dark px-2 py-0.5 font-bold uppercase tracking-wide">
+          <span className="text-[11px] bg-[#006828]/[0.04] text-[#006828]-dark px-2 py-0.5 font-bold uppercase tracking-wide">
             Test Results Guide
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           Understanding Your {interp.title} Results
         </h1>
 
         {/* Answer block — AEO primary target */}
-        <div className="answer-block result-summary bg-light-50 border-l-4 border-accent p-5 mb-6" data-answer-block="true">
-          <p className="text-sm text-muted leading-relaxed">{interp.overview}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 result-summary bg-[#f8f8f6] border-l-4 border-[#006828] p-5 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.overview}</p>
         </div>
 
         {/* Fasting notice */}
@@ -645,95 +645,95 @@ export default function LabResultsPage({ params }: { params: { test: string } })
 
       {/* Normal Reference Ranges */}
       <section className="mb-8">
-        <div className="section-header mb-4">
-          <h2 className="text-base font-bold text-dark">Normal Reference Ranges</h2>
-          <span className="arrows text-accent">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+          <h2 className="text-base font-bold text-[#1c1c1c]">Normal Reference Ranges</h2>
+          <span className="arrows text-[#006828]">&gt;&gt;&gt;</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-light-100">
-                <th className="text-left text-xs font-bold text-dark px-4 py-3 border border-light-200">Parameter</th>
-                <th className="text-left text-xs font-bold text-dark px-4 py-3 border border-light-200">Normal Range</th>
-                <th className="text-left text-xs font-bold text-dark px-4 py-3 border border-light-200">Unit</th>
-                <th className="text-left text-xs font-bold text-dark px-4 py-3 border border-light-200">Note</th>
+              <tr className="bg-[#f8f8f6]">
+                <th className="text-left text-xs font-bold text-[#1c1c1c] px-4 py-3 border border-black/[0.06]">Parameter</th>
+                <th className="text-left text-xs font-bold text-[#1c1c1c] px-4 py-3 border border-black/[0.06]">Normal Range</th>
+                <th className="text-left text-xs font-bold text-[#1c1c1c] px-4 py-3 border border-black/[0.06]">Unit</th>
+                <th className="text-left text-xs font-bold text-[#1c1c1c] px-4 py-3 border border-black/[0.06]">Note</th>
               </tr>
             </thead>
             <tbody>
               {interp.normalRanges.map((row, i) => (
-                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-light-50"}>
-                  <td className="px-4 py-3 border border-light-200 font-medium text-dark text-xs">{row.parameter}</td>
-                  <td className="px-4 py-3 border border-light-200 font-bold text-accent text-xs">{row.range}</td>
-                  <td className="px-4 py-3 border border-light-200 text-muted text-xs">{row.unit}</td>
-                  <td className="px-4 py-3 border border-light-200 text-muted text-xs">{row.note ?? "—"}</td>
+                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+                  <td className="px-4 py-3 border border-black/[0.06] font-medium text-[#1c1c1c] text-xs">{row.parameter}</td>
+                  <td className="px-4 py-3 border border-black/[0.06] font-bold text-[#006828] text-xs">{row.range}</td>
+                  <td className="px-4 py-3 border border-black/[0.06] text-black/40 text-xs">{row.unit}</td>
+                  <td className="px-4 py-3 border border-black/[0.06] text-black/40 text-xs">{row.note ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="text-[11px] text-muted mt-2">
+        <p className="text-[11px] text-black/40 mt-2">
           Reference ranges may vary slightly between laboratories. Always compare your result to the range printed on your specific lab report.
         </p>
       </section>
 
       {/* What High Results Mean */}
-      <section className="answer-block mb-6" data-answer-block="true">
+      <section className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
         <div className="bg-red-50 border-l-4 border-red-400 p-5">
-          <h2 className="text-base font-bold text-dark mb-2 flex items-center gap-2">
+          <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 flex items-center gap-2">
             <FlaskConical className="w-4 h-4 text-red-500" />
             What High {interp.title} Results Mean
           </h2>
-          <p className="text-sm text-muted leading-relaxed">{interp.highMeaning}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.highMeaning}</p>
         </div>
       </section>
 
       {/* What Low Results Mean */}
-      <section className="answer-block mb-6" data-answer-block="true">
+      <section className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
         <div className="bg-blue-50 border-l-4 border-blue-400 p-5">
-          <h2 className="text-base font-bold text-dark mb-2 flex items-center gap-2">
+          <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 flex items-center gap-2">
             <FlaskConical className="w-4 h-4 text-blue-500" />
             What Low {interp.title} Results Mean
           </h2>
-          <p className="text-sm text-muted leading-relaxed">{interp.lowMeaning}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.lowMeaning}</p>
         </div>
       </section>
 
       {/* When to See a Doctor */}
-      <section className="answer-block mb-6" data-answer-block="true">
+      <section className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
         <div className="bg-orange-50 border-l-4 border-orange-400 p-5">
-          <h2 className="text-base font-bold text-dark mb-2 flex items-center gap-2">
+          <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-orange-500" />
             When to See a Doctor
           </h2>
-          <p className="text-sm text-muted leading-relaxed">{interp.whenToWorry}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.whenToWorry}</p>
         </div>
       </section>
 
       {/* UAE Health Context */}
-      <section className="answer-block mb-6" data-answer-block="true">
-        <div className="bg-light-50 border border-light-200 p-5">
-          <h2 className="text-base font-bold text-dark mb-2 flex items-center gap-2">
-            <Info className="w-4 h-4 text-accent" />
+      <section className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4 text-[#006828]" />
             UAE Health Context
           </h2>
-          <p className="text-sm text-muted leading-relaxed">{interp.uaeContext}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.uaeContext}</p>
         </div>
       </section>
 
       {/* What to Do Next */}
-      <section className="answer-block mb-8" data-answer-block="true">
+      <section className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
         <div className="bg-green-50 border-l-4 border-green-400 p-5">
-          <h2 className="text-base font-bold text-dark mb-2">What to Do Next</h2>
-          <p className="text-sm text-muted leading-relaxed">{interp.nextSteps}</p>
+          <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">What to Do Next</h2>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{interp.nextSteps}</p>
         </div>
       </section>
 
       {/* Related Tests */}
       {interp.relatedTests.length > 0 && (
         <section className="mb-8">
-          <div className="section-header mb-4">
-            <h2 className="text-base font-bold text-dark">Related Tests Often Ordered Together</h2>
-            <span className="arrows text-accent">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+            <h2 className="text-base font-bold text-[#1c1c1c]">Related Tests Often Ordered Together</h2>
+            <span className="arrows text-[#006828]">&gt;&gt;&gt;</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {interp.relatedTests.map((slug) => {
@@ -745,7 +745,7 @@ export default function LabResultsPage({ params }: { params: { test: string } })
                 <Link
                   key={slug}
                   href={hasResultsPage ? `/labs/results/${slug}` : `/labs/test/${slug}`}
-                  className="inline-flex items-center gap-1 text-xs bg-light-100 border border-light-200 text-dark px-3 py-1.5 hover:bg-accent-muted hover:text-accent-dark hover:border-accent transition-colors"
+                  className="inline-flex items-center gap-1 text-xs bg-[#f8f8f6] border border-black/[0.06] text-[#1c1c1c] px-3 py-1.5 hover:bg-[#006828]/[0.04] hover:text-[#006828]-dark hover:border-[#006828]/15 transition-colors"
                 >
                   {label}
                   <ArrowRight className="w-3 h-3" />
@@ -759,18 +759,18 @@ export default function LabResultsPage({ params }: { params: { test: string } })
       {/* Compare Prices CTA */}
       {labTest && priceRange && (
         <section className="mb-8">
-          <div className="bg-accent-muted border border-accent p-5">
-            <h2 className="text-base font-bold text-dark mb-1">
+          <div className="bg-[#006828]/[0.04] border border-[#006828] p-5">
+            <h2 className="text-base font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">
               Compare Prices for This Test in the UAE
             </h2>
-            <p className="text-sm text-muted mb-3">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
               {interp.title} costs from{" "}
-              <strong className="text-accent">{formatPrice(priceRange.min)}</strong> to{" "}
+              <strong className="text-[#006828]">{formatPrice(priceRange.min)}</strong> to{" "}
               <strong>{formatPrice(priceRange.max)}</strong> across UAE labs. Compare all prices and book directly.
             </p>
             <Link
               href={`/labs/test/${interp.testSlug}`}
-              className="inline-flex items-center gap-2 bg-accent text-white text-xs font-bold px-4 py-2 hover:bg-accent-dark transition-colors"
+              className="inline-flex items-center gap-2 bg-[#006828] text-white text-xs font-bold px-4 py-2 hover:bg-[#004d1c] transition-colors"
             >
               See all prices for {labTest.shortName}
               <ArrowRight className="w-3.5 h-3.5" />
@@ -784,9 +784,9 @@ export default function LabResultsPage({ params }: { params: { test: string } })
 
       {/* Medical Disclaimer */}
       <section className="mt-10 mb-6">
-        <div className="bg-light-50 border border-light-200 p-5">
-          <p className="text-xs text-muted leading-relaxed">
-            <strong className="text-dark">Medical Disclaimer:</strong> The information on this page is provided for
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
+            <strong className="text-[#1c1c1c]">Medical Disclaimer:</strong> The information on this page is provided for
             general educational purposes only and is not a substitute for professional medical advice, diagnosis, or
             treatment. Reference ranges are general guidelines — your doctor will interpret your results in the context
             of your full clinical picture, symptoms, and medical history. If you have concerns about your test results,

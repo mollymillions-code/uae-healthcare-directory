@@ -106,7 +106,7 @@ export default async function BestIndexPage() {
   const sortedCities = [...cityData].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
@@ -123,10 +123,10 @@ export default async function BestIndexPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           Best Healthcare Providers in the UAE
         </h1>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {totalProviders.toLocaleString()} providers across {cityData.length} cities
           {" "}&middot; Ranked by Google rating &middot; DHA / DOH / MOHAP
           {" "}&middot; Updated March 2026
@@ -134,8 +134,8 @@ export default async function BestIndexPage() {
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           The UAE Open Healthcare Directory lists {totalProviders.toLocaleString()} healthcare
           providers across {cityData.length} cities in the United Arab Emirates. Select a city
           below to find the best-rated hospitals, clinics, dental practices, and specialists —
@@ -146,37 +146,36 @@ export default async function BestIndexPage() {
 
       {/* City Grid */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Select a City</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Select a City</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {sortedCities.map((city) => (
             <Link
               key={city.slug}
               href={`/best/${city.slug}`}
-              className="block border border-light-200 p-4 hover:border-accent transition-colors group"
+              className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-base font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="text-base font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {city.name}
                 </h3>
-                <span className="text-xs text-muted">{city.emirate}</span>
+                <span className="font-['Geist',sans-serif] text-xs text-black/40">{city.emirate}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted">
+                <span className="text-black/40">
                   {city.count.toLocaleString()} providers
                 </span>
-                <span className="text-muted">
+                <span className="text-black/40">
                   {city.catCount} categories
                 </span>
               </div>
               {city.topProvider && Number(city.topProvider.googleRating) > 0 && (
-                <div className="border-t border-light-200 mt-3 pt-3">
-                  <p className="text-[10px] text-muted uppercase tracking-wider mb-1">
+                <div className="border-t border-black/[0.06] mt-3 pt-3">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wider mb-1">
                     Top-Rated
                   </p>
-                  <p className="text-xs font-bold text-dark truncate">
+                  <p className="text-xs font-bold text-[#1c1c1c] truncate">
                     {city.topProvider.name}
                   </p>
                   <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 mt-1 inline-block">
@@ -192,21 +191,20 @@ export default async function BestIndexPage() {
       {/* Popular Category x City Combos */}
       {topCombos.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Popular Searches</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Popular Searches</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {topCombos.map((combo) => (
               <Link
                 key={`${combo.citySlug}-${combo.catSlug}`}
                 href={`/best/${combo.citySlug}/${combo.catSlug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
-                <p className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   Best {combo.catName} in {combo.cityName}
                 </p>
-                <p className="text-[11px] text-accent font-bold mt-1">
+                <p className="text-[11px] text-[#006828] font-bold mt-1">
                   {combo.count} providers
                 </p>
               </Link>
@@ -223,23 +221,22 @@ export default async function BestIndexPage() {
 
       {/* Methodology */}
       <section className="mb-10 mt-10">
-        <div className="section-header">
-          <h2>Ranking Methodology</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Ranking Methodology</h2>
         </div>
-        <div className="bg-light-50 border border-light-200 p-5">
-          <p className="text-sm text-muted leading-relaxed mb-3">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             The UAE Open Healthcare Directory ranks providers by <strong>Google rating</strong>{" "}
             (highest first), using <strong>review count</strong> as a tiebreaker. Only
             providers with a rating above 0 are included in rankings.
           </p>
-          <p className="text-sm text-muted leading-relaxed mb-3">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             All provider data is sourced from three official UAE health authority registers:
             the <strong>Dubai Health Authority (DHA)</strong>, the{" "}
             <strong>Department of Health Abu Dhabi (DOH)</strong>, and the{" "}
             <strong>Ministry of Health and Prevention (MOHAP)</strong>.
           </p>
-          <p className="text-[11px] text-muted">
+          <p className="text-[11px] text-black/40">
             These rankings do not constitute medical advice. Always verify credentials and
             consult with your healthcare provider before making decisions.
           </p>
@@ -247,8 +244,8 @@ export default async function BestIndexPage() {
       </section>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings
           and review counts and do not constitute a medical recommendation. Provider data is
           sourced from official DHA, DOH, and MOHAP registers, last verified March 2026.

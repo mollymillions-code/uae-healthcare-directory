@@ -415,7 +415,7 @@ export default function HomeCollectionCityCategoryPage({
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
       <JsonLd data={speakableSchema([".answer-block", "h1"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -434,15 +434,15 @@ export default function HomeCollectionCityCategoryPage({
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Home className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <Home className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             At-Home {cat.name} Tests in {city.name} — Compare {labsOfferingCategory.length} Lab{labsOfferingCategory.length !== 1 ? "s" : ""}
           </h1>
         </div>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed mb-3">{content.whatItMeasures}</p>
-          <p className="text-muted leading-relaxed">{content.whyHomeConvenient}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-3">{content.whatItMeasures}</p>
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{content.whyHomeConvenient}</p>
         </div>
 
         {/* Quick stats */}
@@ -467,24 +467,23 @@ export default function HomeCollectionCityCategoryPage({
           ].map(({ value, label }) => (
             <div
               key={label}
-              className="bg-light-50 p-4 text-center border border-light-200"
+              className="bg-[#f8f8f6] p-4 text-center border border-black/[0.06]"
             >
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted mt-1">{label}</p>
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* All tests in this category available at home */}
-      <div className="section-header">
-        <h2>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
           All {cat.name} Tests Available at Home in {city.name}
         </h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Prices below are from home-collection labs in {city.name} only.
           Click any test for a full price comparison across all UAE labs.
         </p>
@@ -494,13 +493,13 @@ export default function HomeCollectionCityCategoryPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted mt-0.5 line-clamp-1">
+              <p className="text-[11px] text-black/40 mt-0.5 line-clamp-1">
                 {test.description.split(".")[0]}.
               </p>
               <div className="flex items-center gap-3 mt-1.5 text-[10px]">
@@ -509,36 +508,35 @@ export default function HomeCollectionCityCategoryPage({
                     Fasting required
                   </span>
                 ) : (
-                  <span className="bg-light-50 text-muted border border-light-200 px-1.5 py-0.5">
+                  <span className="bg-[#f8f8f6] text-black/40 border border-black/[0.06] px-1.5 py-0.5">
                     No fasting
                   </span>
                 )}
-                <span className="text-muted flex items-center gap-1">
+                <span className="text-black/40 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {test.turnaroundHours}h
                 </span>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-sm font-bold text-accent">{formatPrice(minPrice)}</p>
+              <p className="text-sm font-bold text-[#006828]">{formatPrice(minPrice)}</p>
               {minPrice !== maxPrice && (
-                <p className="text-[10px] text-muted">– {formatPrice(maxPrice)}</p>
+                <p className="text-[10px] text-black/40">– {formatPrice(maxPrice)}</p>
               )}
-              <p className="text-[10px] text-muted">{labCount} labs</p>
+              <p className="text-[10px] text-black/40">{labCount} labs</p>
             </div>
           </Link>
         ))}
       </div>
 
       {/* Labs offering this category at home */}
-      <div className="section-header">
-        <h2>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
           Labs Offering {cat.name} Home Collection in {city.name}
         </h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           All {labsOfferingCategory.length} lab{labsOfferingCategory.length !== 1 ? "s" : ""} below
           are licensed under {regulator.full} and offer home
           sample collection for {cat.name.toLowerCase()} tests in {city.name}.
@@ -567,14 +565,13 @@ export default function HomeCollectionCityCategoryPage({
       </div>
 
       {/* Preparation tips */}
-      <div className="section-header">
-        <h2>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
           How to Prepare for Home {cat.name} Testing in {city.name}
         </h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="answer-block mb-6" data-answer-block="true">
-        <p className="text-sm text-muted leading-relaxed mb-4">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
           {content.prepTips}
         </p>
         {content.fastingNote && (
@@ -591,14 +588,14 @@ export default function HomeCollectionCityCategoryPage({
       </div>
 
       {/* Regulatory note */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
-          <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-dark mb-2">
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
               {regulator.full} oversight
             </p>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
               All {labsOfferingCategory.length} lab{labsOfferingCategory.length !== 1 ? "s" : ""} offering {cat.name.toLowerCase()} home collection in {city.name} operate under {regulator.full} licensing. Sample collection follows {regulator.abbrev} clinical laboratory standards. Samples are transported in validated cold-chain containers and processed in the same accredited facilities used for walk-in patients. Results carry the same clinical weight as tests drawn at the lab.
             </p>
           </div>
@@ -608,9 +605,8 @@ export default function HomeCollectionCityCategoryPage({
       {/* Other categories available at home */}
       {otherCategories.length > 0 && (
         <>
-          <div className="section-header">
-            <h2>Other Test Categories Available at Home in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Test Categories Available at Home in {city.name}</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-10">
             {otherCategories.slice(0, 8).map((otherCat) => {
@@ -631,15 +627,15 @@ export default function HomeCollectionCityCategoryPage({
                 <Link
                   key={otherCat.slug}
                   href={`/labs/home-collection/${city.slug}/${otherCat.slug}`}
-                  className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                  className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
                 >
-                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                     {otherCat.name}
                   </h3>
-                  <p className="text-[11px] text-muted mt-1">
+                  <p className="text-[11px] text-black/40 mt-1">
                     {otherCount} test{otherCount !== 1 ? "s" : ""} at home
                   </p>
-                  <div className="flex items-center gap-1 mt-2 text-accent text-xs font-medium">
+                  <div className="flex items-center gap-1 mt-2 text-[#006828] text-xs font-medium">
                     <span>Compare</span>
                     <ArrowRight className="w-3 h-3" />
                   </div>
@@ -660,37 +656,37 @@ export default function HomeCollectionCityCategoryPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 mb-8">
         <Link
           href={`/labs/home-collection/${city.slug}`}
-          className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center justify-between gap-3"
+          className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group flex items-center justify-between gap-3"
         >
           <div>
-            <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
               All home collection labs in {city.name}
             </p>
-            <p className="text-xs text-muted mt-0.5">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">
               {homeCollectionLabs.length} labs · all categories
             </p>
           </div>
-          <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0" />
+          <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors flex-shrink-0" />
         </Link>
         <Link
           href={`/labs/category/${cat.slug}`}
-          className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center justify-between gap-3"
+          className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group flex items-center justify-between gap-3"
         >
           <div>
-            <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
               {cat.name} tests — all UAE labs
             </p>
-            <p className="text-xs text-muted mt-0.5">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">
               Walk-in and home collection · all cities
             </p>
           </div>
-          <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0" />
+          <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors flex-shrink-0" />
         </Link>
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Pricing information is sourced from
           publicly available lab websites and aggregator platforms (2024–2025).
           Actual prices may vary by location, time of day, insurance coverage,

@@ -55,11 +55,11 @@ export function PlanBrowser() {
     <div>
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <SlidersHorizontal className="w-4 h-4 text-muted" />
+        <SlidersHorizontal className="w-4 h-4 text-black/40" />
         <select
           value={tierFilter}
           onChange={(e) => setTierFilter(e.target.value as TierFilter)}
-          className="text-xs border border-light-200 px-3 py-2 bg-white text-dark focus:border-accent focus:outline-none"
+          className="text-xs border border-black/[0.06] px-3 py-2 bg-white text-[#1c1c1c] focus:border-[#006828] focus:outline-none"
         >
           <option value="all">All tiers</option>
           <option value="basic">Basic</option>
@@ -70,14 +70,14 @@ export function PlanBrowser() {
         <select
           value={insurerFilter}
           onChange={(e) => setInsurerFilter(e.target.value)}
-          className="text-xs border border-light-200 px-3 py-2 bg-white text-dark focus:border-accent focus:outline-none"
+          className="text-xs border border-black/[0.06] px-3 py-2 bg-white text-[#1c1c1c] focus:border-[#006828] focus:outline-none"
         >
           <option value="all">All insurers</option>
           {INSURER_PROFILES.map((p) => (
             <option key={p.slug} value={p.slug}>{p.name}</option>
           ))}
         </select>
-        <span className="text-xs text-muted ml-auto">
+        <span className="text-xs text-black/40 ml-auto">
           {filteredPlans.length} plans
         </span>
       </div>
@@ -98,7 +98,7 @@ export function PlanBrowser() {
             {selectedPlanIds.length >= 2 && (
               <button
                 onClick={() => setShowComparison(!showComparison)}
-                className="text-xs font-bold bg-accent text-white px-4 py-1.5 hover:bg-accent-dark transition-colors"
+                className="text-xs font-bold bg-[#006828] text-white px-4 py-1.5 hover:bg-[#004d1c] transition-colors"
               >
                 {showComparison ? "Hide comparison" : "Compare side-by-side"}
               </button>
@@ -109,8 +109,8 @@ export function PlanBrowser() {
 
       {/* Comparison table */}
       {showComparison && comparedPlans.length >= 2 && (
-        <div className="mb-8 border border-accent p-4">
-          <h3 className="text-sm font-bold text-dark mb-4">Side-by-Side Comparison</h3>
+        <div className="mb-8 border border-[#006828] p-4">
+          <h3 className="text-sm font-bold text-[#1c1c1c] mb-4">Side-by-Side Comparison</h3>
           <ComparisonTable
             plans={comparedPlans}
             onRemove={(id) => {
@@ -141,7 +141,7 @@ export function PlanBrowser() {
 
       {filteredPlans.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted">No plans match your filters.</p>
+          <p className="text-black/40">No plans match your filters.</p>
         </div>
       )}
     </div>

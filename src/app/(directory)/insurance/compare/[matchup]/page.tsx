@@ -316,7 +316,7 @@ export default async function MatchupPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD Structured Data */}
       <JsonLd
         data={breadcrumbSchema([
@@ -341,39 +341,39 @@ export default async function MatchupPage({ params }: Props) {
 
       {/* ── Hero Section ─────────────────────────────────────────────────────── */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           {profileA.name} vs {profileB.name}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           UAE Health Insurance Comparison 2026
         </p>
 
         {/* Side-by-side hero stats */}
         <div className="grid grid-cols-2 gap-4 mt-6">
           {/* Insurer A */}
-          <div className="border border-light-200 p-4 bg-white">
+          <div className="border border-black/[0.06] rounded-2xl p-5 bg-white">
             <div className="flex items-start justify-between gap-2 mb-3">
-              <h2 className="text-lg font-bold text-dark">{profileA.name}</h2>
-              <span className="badge text-[9px] flex-shrink-0">{profileA.type}</span>
+              <h2 className="text-lg font-bold text-[#1c1c1c]">{profileA.name}</h2>
+              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{profileA.type}</span>
             </div>
-            <div className="space-y-1.5 text-xs text-muted">
-              <p><span className="font-bold text-dark">{statsA?.totalProviders.toLocaleString() ?? "0"}</span> providers</p>
-              <p><span className="font-bold text-dark">{profileA.plans.length}</span> plan{profileA.plans.length !== 1 ? "s" : ""}</p>
-              <p>Est. <span className="font-bold text-dark">{profileA.foundedYear}</span></p>
+            <div className="space-y-1.5 text-xs text-black/40">
+              <p><span className="font-bold text-[#1c1c1c]">{statsA?.totalProviders.toLocaleString() ?? "0"}</span> providers</p>
+              <p><span className="font-bold text-[#1c1c1c]">{profileA.plans.length}</span> plan{profileA.plans.length !== 1 ? "s" : ""}</p>
+              <p>Est. <span className="font-bold text-[#1c1c1c]">{profileA.foundedYear}</span></p>
               <p>{profileA.regulators.map((r) => r.toUpperCase()).join(", ")} regulated</p>
             </div>
           </div>
 
           {/* Insurer B */}
-          <div className="border border-light-200 p-4 bg-white">
+          <div className="border border-black/[0.06] rounded-2xl p-5 bg-white">
             <div className="flex items-start justify-between gap-2 mb-3">
-              <h2 className="text-lg font-bold text-dark">{profileB.name}</h2>
-              <span className="badge text-[9px] flex-shrink-0">{profileB.type}</span>
+              <h2 className="text-lg font-bold text-[#1c1c1c]">{profileB.name}</h2>
+              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{profileB.type}</span>
             </div>
-            <div className="space-y-1.5 text-xs text-muted">
-              <p><span className="font-bold text-dark">{statsB?.totalProviders.toLocaleString() ?? "0"}</span> providers</p>
-              <p><span className="font-bold text-dark">{profileB.plans.length}</span> plan{profileB.plans.length !== 1 ? "s" : ""}</p>
-              <p>Est. <span className="font-bold text-dark">{profileB.foundedYear}</span></p>
+            <div className="space-y-1.5 text-xs text-black/40">
+              <p><span className="font-bold text-[#1c1c1c]">{statsB?.totalProviders.toLocaleString() ?? "0"}</span> providers</p>
+              <p><span className="font-bold text-[#1c1c1c]">{profileB.plans.length}</span> plan{profileB.plans.length !== 1 ? "s" : ""}</p>
+              <p>Est. <span className="font-bold text-[#1c1c1c]">{profileB.foundedYear}</span></p>
               <p>{profileB.regulators.map((r) => r.toUpperCase()).join(", ")} regulated</p>
             </div>
           </div>
@@ -381,8 +381,8 @@ export default async function MatchupPage({ params }: Props) {
       </div>
 
       {/* ── Answer Block ─────────────────────────────────────────────────────── */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           {profileA.name} has {profileA.plans.length} plan{profileA.plans.length !== 1 ? "s" : ""} starting
           from AED {cheapestA.toLocaleString()}/yr with {statsA?.totalProviders.toLocaleString() ?? "0"} providers
           across {statsA?.byCity.length ?? 0} cities.{" "}
@@ -396,14 +396,13 @@ export default async function MatchupPage({ params }: Props) {
       </div>
 
       {/* ── Side-by-Side Comparison Table ────────────────────────────────────── */}
-      <div className="section-header">
-        <h2>{profileA.name} vs {profileB.name} — At a Glance</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{profileA.name} vs {profileB.name} — At a Glance</h2>
       </div>
       <div className="mb-10 overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="bg-dark text-white">
+            <tr className="bg-[#1c1c1c] text-white">
               <th className="px-3 py-2 text-left font-semibold w-1/3">Attribute</th>
               <th className="px-3 py-2 text-left font-semibold w-1/3">{profileA.name}</th>
               <th className="px-3 py-2 text-left font-semibold w-1/3">{profileB.name}</th>
@@ -505,7 +504,7 @@ export default async function MatchupPage({ params }: Props) {
             />
           </tbody>
         </table>
-        <p className="text-[10px] text-muted mt-1.5">
+        <p className="text-[10px] text-black/40 mt-1.5">
           Coverage columns reflect whether at least one plan from the insurer includes that benefit. Premiums are indicative annual ranges.
         </p>
       </div>
@@ -513,14 +512,13 @@ export default async function MatchupPage({ params }: Props) {
       {/* ── Network Comparison by City ───────────────────────────────────────── */}
       {citiesInNetwork.length > 0 && (
         <>
-          <div className="section-header">
-            <h2>Network Comparison by City</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Network Comparison by City</h2>
           </div>
           <div className="mb-10 overflow-x-auto">
             <table className="w-full text-xs border-collapse">
               <thead>
-                <tr className="bg-dark text-white">
+                <tr className="bg-[#1c1c1c] text-white">
                   <th className="px-3 py-2 text-left font-semibold">City</th>
                   <th className="px-3 py-2 text-right font-semibold">{profileA.name}</th>
                   <th className="px-3 py-2 text-center font-semibold w-24">vs</th>
@@ -536,16 +534,16 @@ export default async function MatchupPage({ params }: Props) {
                   const barWidthB = (countB / maxCount) * 100;
 
                   return (
-                    <tr key={city.slug} className={i % 2 === 0 ? "bg-white" : "bg-light-50"}>
-                      <td className="px-3 py-2.5 font-medium text-dark border-b border-light-200">
+                    <tr key={city.slug} className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+                      <td className="px-3 py-2.5 font-medium text-[#1c1c1c] border-b border-black/[0.06]">
                         {city.name}
                       </td>
-                      <td className="px-3 py-2.5 border-b border-light-200">
+                      <td className="px-3 py-2.5 border-b border-black/[0.06]">
                         <div className="flex items-center justify-end gap-2">
-                          <span className={`font-bold ${countA >= countB && countA > 0 ? "text-[#00c853]" : "text-muted"}`}>
+                          <span className={`font-bold ${countA >= countB && countA > 0 ? "text-[#00c853]" : "text-black/40"}`}>
                             {countA.toLocaleString()}
                           </span>
-                          <div className="w-20 h-3 bg-light-100 overflow-hidden" style={{ direction: "rtl" }}>
+                          <div className="w-20 h-3 bg-[#f8f8f6] overflow-hidden" style={{ direction: "rtl" }}>
                             <div
                               className={`h-full ${countA >= countB ? "bg-[#00c853]" : "bg-light-300"}`}
                               style={{ width: `${barWidthA}%` }}
@@ -553,18 +551,18 @@ export default async function MatchupPage({ params }: Props) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 border-b border-light-200 text-center text-muted">
+                      <td className="px-3 py-2.5 border-b border-black/[0.06] text-center text-black/40">
                         vs
                       </td>
-                      <td className="px-3 py-2.5 border-b border-light-200">
+                      <td className="px-3 py-2.5 border-b border-black/[0.06]">
                         <div className="flex items-center gap-2">
-                          <div className="w-20 h-3 bg-light-100 overflow-hidden">
+                          <div className="w-20 h-3 bg-[#f8f8f6] overflow-hidden">
                             <div
                               className={`h-full ${countB >= countA ? "bg-[#00c853]" : "bg-light-300"}`}
                               style={{ width: `${barWidthB}%` }}
                             />
                           </div>
-                          <span className={`font-bold ${countB >= countA && countB > 0 ? "text-[#00c853]" : "text-muted"}`}>
+                          <span className={`font-bold ${countB >= countA && countB > 0 ? "text-[#00c853]" : "text-black/40"}`}>
                             {countB.toLocaleString()}
                           </span>
                         </div>
@@ -574,7 +572,7 @@ export default async function MatchupPage({ params }: Props) {
                 })}
               </tbody>
             </table>
-            <p className="text-[10px] text-muted mt-1.5">
+            <p className="text-[10px] text-black/40 mt-1.5">
               Provider counts from the UAE Open Healthcare Directory. Green highlights the city leader.
             </p>
           </div>
@@ -582,9 +580,8 @@ export default async function MatchupPage({ params }: Props) {
       )}
 
       {/* ── Plan-Level Comparison ────────────────────────────────────────────── */}
-      <div className="section-header">
-        <h2>{profileA.name} Plans</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{profileA.name} Plans</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
         {profileA.plans.map((plan) => (
@@ -598,9 +595,8 @@ export default async function MatchupPage({ params }: Props) {
         ))}
       </div>
 
-      <div className="section-header">
-        <h2>{profileB.name} Plans</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{profileB.name} Plans</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
         {profileB.plans.map((plan) => (
@@ -615,13 +611,12 @@ export default async function MatchupPage({ params }: Props) {
       </div>
 
       {/* ── Verdict ──────────────────────────────────────────────────────────── */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
-        <div className="section-header">
-          <h2>Verdict</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-10">
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Verdict</h2>
         </div>
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             <strong>Choose {profileA.name}</strong> if you need {verdict.chooseA}.{" "}
             <strong>Choose {profileB.name}</strong> if you prioritise {verdict.chooseB}.{" "}
             Both are established insurers in the UAE market. The best choice depends on your
@@ -639,28 +634,27 @@ export default async function MatchupPage({ params }: Props) {
 
       {/* ── Cross-Links ──────────────────────────────────────────────────────── */}
       <div className="mt-10 mb-8">
-        <div className="section-header">
-          <h2>Related Comparisons</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Comparisons</h2>
         </div>
 
         {/* Links to each insurer's detail page + compare tool */}
         <div className="flex flex-wrap gap-3 mb-6">
           <Link
             href={`/insurance/${profileA.slug}`}
-            className="text-xs font-bold text-accent hover:text-accent-dark transition-colors border border-light-200 px-3 py-2 bg-white hover:border-accent"
+            className="text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors border border-black/[0.06] px-3 py-2 bg-white hover:border-[#006828]/15"
           >
             {profileA.name} Plans &rarr;
           </Link>
           <Link
             href={`/insurance/${profileB.slug}`}
-            className="text-xs font-bold text-accent hover:text-accent-dark transition-colors border border-light-200 px-3 py-2 bg-white hover:border-accent"
+            className="text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors border border-black/[0.06] px-3 py-2 bg-white hover:border-[#006828]/15"
           >
             {profileB.name} Plans &rarr;
           </Link>
           <Link
             href="/insurance/compare"
-            className="text-xs font-bold text-accent hover:text-accent-dark transition-colors border border-light-200 px-3 py-2 bg-white hover:border-accent"
+            className="text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors border border-black/[0.06] px-3 py-2 bg-white hover:border-[#006828]/15"
           >
             Compare All Plans &rarr;
           </Link>
@@ -675,12 +669,12 @@ export default async function MatchupPage({ params }: Props) {
               <Link
                 key={m.slug}
                 href={`/insurance/compare/${m.slug}`}
-                className="block border border-light-200 bg-white p-3 hover:border-accent hover:shadow-sm transition-all group"
+                className="block border border-black/[0.06] bg-white p-3 hover:border-[#006828]/15 hover:shadow-sm transition-all group"
               >
-                <span className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {pA.name} vs {pB.name}
                 </span>
-                <p className="text-[11px] text-accent font-semibold mt-1">
+                <p className="text-[11px] text-[#006828] font-semibold mt-1">
                   Compare &rarr;
                 </p>
               </Link>
@@ -693,15 +687,15 @@ export default async function MatchupPage({ params }: Props) {
       <div className="mt-6">
         <Link
           href="/insurance"
-          className="flex items-center gap-1.5 text-sm text-accent font-bold hover:text-accent-dark"
+          className="flex items-center gap-1.5 text-sm text-[#006828] font-bold hover:text-[#006828]-dark"
         >
           <ArrowLeft className="w-4 h-4" /> All insurers
         </Link>
       </div>
 
       {/* ── Disclaimer ───────────────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Plan details, premiums, and network sizes are indicative,
           based on publicly available UAE insurance market data. Obtain personalised quotes from{" "}
           {profileA.name} and {profileB.name} or an authorised broker. Provider network data
@@ -727,8 +721,8 @@ function ComparisonRow({
   idx: number;
   highlightHigher?: boolean;
 }) {
-  let classA = "text-muted";
-  let classB = "text-muted";
+  let classA = "text-black/40";
+  let classB = "text-black/40";
 
   if (highlightHigher) {
     const numA = parseFloat(valueA.replace(/,/g, ""));
@@ -740,10 +734,10 @@ function ComparisonRow({
   }
 
   return (
-    <tr className={idx % 2 === 0 ? "bg-white" : "bg-light-50"}>
-      <td className="px-3 py-2 font-medium text-dark border-b border-light-200">{label}</td>
-      <td className={`px-3 py-2 border-b border-light-200 ${classA}`}>{valueA}</td>
-      <td className={`px-3 py-2 border-b border-light-200 ${classB}`}>{valueB}</td>
+    <tr className={idx % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+      <td className="px-3 py-2 font-medium text-[#1c1c1c] border-b border-black/[0.06]">{label}</td>
+      <td className={`px-3 py-2 border-b border-black/[0.06] ${classA}`}>{valueA}</td>
+      <td className={`px-3 py-2 border-b border-black/[0.06] ${classB}`}>{valueB}</td>
     </tr>
   );
 }
@@ -760,20 +754,20 @@ function CoverageRow({
   idx: number;
 }) {
   return (
-    <tr className={idx % 2 === 0 ? "bg-white" : "bg-light-50"}>
-      <td className="px-3 py-2 font-medium text-dark border-b border-light-200">{label}</td>
-      <td className="px-3 py-2 border-b border-light-200">
+    <tr className={idx % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+      <td className="px-3 py-2 font-medium text-[#1c1c1c] border-b border-black/[0.06]">{label}</td>
+      <td className="px-3 py-2 border-b border-black/[0.06]">
         {hasA ? (
           <span className="text-[#00c853] font-bold">Yes</span>
         ) : (
-          <span className="text-muted">No</span>
+          <span className="text-black/40">No</span>
         )}
       </td>
-      <td className="px-3 py-2 border-b border-light-200">
+      <td className="px-3 py-2 border-b border-black/[0.06]">
         {hasB ? (
           <span className="text-[#00c853] font-bold">Yes</span>
         ) : (
-          <span className="text-muted">No</span>
+          <span className="text-black/40">No</span>
         )}
       </td>
     </tr>

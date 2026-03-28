@@ -95,7 +95,7 @@ export default function LabsPage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -138,13 +138,13 @@ export default function LabsPage() {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <FlaskConical className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <FlaskConical className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             UAE Lab Test & Diagnostic Price Comparison
           </h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Compare prices for {stats.totalTests} lab tests across {stats.totalLabs} diagnostic
             laboratories in Dubai, Abu Dhabi, Sharjah, and across the UAE. A CBC
             costs between AED 69 and AED 120 depending on the lab. Vitamin D
@@ -162,21 +162,20 @@ export default function LabsPage() {
             { value: stats.totalPackages.toString(), label: "Health packages" },
             { value: stats.labsWithHomeCollection.toString(), label: "With home collection" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Popular Tests */}
-      <div className="section-header">
-        <h2>Most Popular Lab Tests in the UAE</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Most Popular Lab Tests in the UAE</h2>
       </div>
-      <div className="answer-block mb-2" data-answer-block="true">
-        <p className="text-xs text-muted mb-4">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-2" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           These are the most commonly ordered lab tests in the UAE. Vitamin D testing is
           particularly prevalent due to widespread deficiency among UAE residents — despite
           abundant sunlight, indoor lifestyles and clothing coverage lead to low levels in
@@ -188,26 +187,26 @@ export default function LabsPage() {
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted line-clamp-1">{test.name}</p>
+              <p className="text-[11px] text-black/40 line-clamp-1">{test.name}</p>
             </div>
             <div className="text-right flex-shrink-0">
               {test.priceRange && (
                 <>
-                  <p className="text-sm font-bold text-accent">
+                  <p className="text-sm font-bold text-[#006828]">
                     {formatPrice(test.priceRange.min)}
                   </p>
                   {test.priceRange.min !== test.priceRange.max && (
-                    <p className="text-[10px] text-muted">
+                    <p className="text-[10px] text-black/40">
                       – {formatPrice(test.priceRange.max)}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted">
+                  <p className="text-[10px] text-black/40">
                     {test.priceRange.labCount} labs
                   </p>
                 </>
@@ -218,12 +217,11 @@ export default function LabsPage() {
       </div>
 
       {/* Labs */}
-      <div className="section-header">
-        <h2>Diagnostic Laboratories</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Diagnostic Laboratories</h2>
       </div>
-      <div className="answer-block mb-2" data-answer-block="true">
-        <p className="text-xs text-muted mb-4">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-2" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           The UAE has {stats.totalLabs} major diagnostic laboratory providers, from large chains
           like Al Borg Diagnostics (17 branches, exclusive Quest Diagnostics partner) to
           home-service platforms like DarDoc that bring the lab to your door. Most labs are
@@ -249,12 +247,11 @@ export default function LabsPage() {
       </div>
 
       {/* Health Packages */}
-      <div className="section-header">
-        <h2>Health Check Packages</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Health Check Packages</h2>
       </div>
-      <div className="answer-block mb-2" data-answer-block="true">
-        <p className="text-xs text-muted mb-4">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-2" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           Health check packages bundle multiple tests at a discounted price compared to
           ordering tests individually. A basic package (CBC, lipid profile, glucose, liver,
           kidney) starts from AED 99 at Medsol, while comprehensive wellness packages
@@ -269,9 +266,8 @@ export default function LabsPage() {
       </div>
 
       {/* Test Categories */}
-      <div className="section-header">
-        <h2>Browse by Category</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by Category</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-12">
         {TEST_CATEGORIES.map((cat) => {
@@ -280,21 +276,20 @@ export default function LabsPage() {
             <Link
               key={cat.slug}
               href={`/labs/category/${cat.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
-              <h3 className="text-sm font-bold text-dark mb-1 group-hover:text-accent transition-colors">{cat.name}</h3>
-              <p className="text-[11px] text-muted">{testCount} tests</p>
+              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1 group-hover:text-[#006828] transition-colors">{cat.name}</h3>
+              <p className="text-[11px] text-black/40">{testCount} tests</p>
             </Link>
           );
         })}
       </div>
 
       {/* Full Test Browser */}
-      <div className="section-header">
-        <h2>Search All {stats.totalTests} Tests</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Search All {stats.totalTests} Tests</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Search for any lab test to see prices across all {stats.totalLabs} laboratories.
       </p>
       <div className="mb-12">
@@ -307,8 +302,8 @@ export default function LabsPage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative and based on publicly
           available pricing from lab websites, aggregator platforms, and walk-in price lists
           (2024-2025). Actual prices may vary by branch location, insurance coverage,

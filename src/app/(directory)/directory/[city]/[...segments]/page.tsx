@@ -7,7 +7,7 @@ import { ProviderCard } from "@/components/provider/ProviderCard";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 // StarRating available if needed
 import dynamic from "next/dynamic";
-const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
+const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-[#f8f8f6] animate-pulse" /> });
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
@@ -251,7 +251,7 @@ export default async function CatchAllPage({ params }: Props) {
     const facetFaqs = generateFacetFaqs(city, category, null, total);
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: category.name }])} />
         <JsonLd data={itemListSchema(`${category.name} in ${city.name}`, providers, city.name, base)} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
@@ -260,7 +260,7 @@ export default async function CatchAllPage({ params }: Props) {
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name }]} />
 
         {/* Category hero banner — compact */}
-        <div className="relative h-32 w-full mb-6 overflow-hidden">
+        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
           <Image
             src={getCategoryImagePath(category.slug)}
             alt={`${category.name} in ${city.name}`}
@@ -270,22 +270,22 @@ export default async function CatchAllPage({ params }: Props) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="text-2xl font-bold text-white mb-1">{category.name} in {city.name}, UAE</h1>
-            <p className="text-sm text-white/80">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white mb-1 tracking-tight">{category.name} in {city.name}, UAE</h1>
+            <p className="font-['Geist',sans-serif] text-sm text-white/70">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
           </div>
         </div>
 
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
         </div>
 
         {/* Subcategory links hidden — no providers have subcategory data yet */}
 
         {areas.length > 0 && (
           <div className="mb-6">
-            <p className="text-sm font-medium text-dark mb-2">Browse by area:</p>
+            <p className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c] mb-2">Browse by area:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {areas.map((a) => (<Link key={a.slug} href={`/directory/${city.slug}/${a.slug}/${category.slug}`} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors">{a.name}</Link>))}
+              {areas.map((a) => (<Link key={a.slug} href={`/directory/${city.slug}/${a.slug}/${category.slug}`} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors">{a.name}</Link>))}
             </div>
           </div>
         )}
@@ -322,24 +322,23 @@ export default async function CatchAllPage({ params }: Props) {
     ];
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: area.name }])} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(areaFaqs)} />
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name }]} />
 
-        <h1 className="text-3xl font-bold text-dark mb-2">Healthcare in {area.name}, {city.name}</h1>
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted">According to the UAE Open Healthcare Directory, {area.name} in {city.name} has {total} healthcare {total === 1 ? "provider" : "providers"}. Browse by specialty below. Data from official UAE health authority registers. Last verified March 2026.</p>
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">Healthcare in {area.name}, {city.name}</h1>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="text-black/40">According to the UAE Open Healthcare Directory, {area.name} in {city.name} has {total} healthcare {total === 1 ? "provider" : "providers"}. Browse by specialty below. Data from official UAE health authority registers. Last verified March 2026.</p>
         </div>
 
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Specialties in {area.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Specialties in {area.name}</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {categories.map((cat) => (<Link key={cat.slug} href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors">{cat.name}</Link>))}
+            {categories.map((cat) => (<Link key={cat.slug} href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors">{cat.name}</Link>))}
           </div>
         </div>
 
@@ -362,7 +361,7 @@ export default async function CatchAllPage({ params }: Props) {
     const facetFaqs = generateFacetFaqs(city, category, area, total);
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: area.name, url: `${base}/directory/${city.slug}/${area.slug}` }, { name: category.name }])} />
         <JsonLd data={itemListSchema(`${category.name} in ${area.name}, ${city.name}`, providers, city.name, base)} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
@@ -371,7 +370,7 @@ export default async function CatchAllPage({ params }: Props) {
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name, href: `/directory/${city.slug}/${area.slug}` }, { label: category.name }]} />
 
         {/* Category hero banner — compact */}
-        <div className="relative h-32 w-full mb-6 overflow-hidden">
+        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
           <Image
             src={getCategoryImagePath(category.slug)}
             alt={`${category.name} in ${area.name}, ${city.name}`}
@@ -381,13 +380,13 @@ export default async function CatchAllPage({ params }: Props) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="text-2xl font-bold text-white mb-1">{category.name} in {area.name}, {city.name}</h1>
-            <p className="text-sm text-white/80">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
+            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white tracking-tight mb-1">{category.name} in {area.name}, {city.name}</h1>
+            <p className="font-['Geist',sans-serif] text-sm text-white/70">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
           </div>
         </div>
 
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{generateFacetAnswerBlock(city, category, area, total, topProvider)}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{generateFacetAnswerBlock(city, category, area, total, topProvider)}</p>
         </div>
 
         {providers.length > 0 ? (
@@ -396,8 +395,8 @@ export default async function CatchAllPage({ params }: Props) {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted mb-2">No {category.name.toLowerCase()} found in {area.name} yet.</p>
-            <Link href={`/directory/${city.slug}/${category.slug}`} className="text-accent text-sm">View all {category.name.toLowerCase()} in {city.name} &rarr;</Link>
+            <p className="text-black/40 mb-2">No {category.name.toLowerCase()} found in {area.name} yet.</p>
+            <Link href={`/directory/${city.slug}/${category.slug}`} className="text-[#006828] text-sm">View all {category.name.toLowerCase()} in {city.name} &rarr;</Link>
           </div>
         )}
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${area.name} — FAQ`} />
@@ -464,7 +463,7 @@ export default async function CatchAllPage({ params }: Props) {
     ];
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* JSON-LD */}
         <JsonLd data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -484,16 +483,16 @@ export default async function CatchAllPage({ params }: Props) {
         ]} />
 
         {/* Header */}
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           Insurance Coverage in {area.name}, {city.name}
         </h1>
-        <p className="text-sm text-muted mb-6">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">
           {totalProviders} providers &middot; {insurerBreakdown.length} accepted insurers &middot; Last updated March 2026
         </p>
 
         {/* Answer Block */}
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, {totalProviders} healthcare {totalProviders === 1 ? "provider" : "providers"} in {area.name}, {city.name} accept
             insurance from {insurerBreakdown.length} different {insurerBreakdown.length === 1 ? "plan" : "plans"}.
             {top5.length > 0 && ` The most widely accepted insurers are ${top5.map((i) => i.name).join(", ")}.`}
@@ -504,27 +503,26 @@ export default async function CatchAllPage({ params }: Props) {
         {/* Top 5 Insurers */}
         {top5.length > 0 && (
           <section className="mb-10">
-            <div className="section-header">
-              <h2>Most Accepted Insurers in {area.name}</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Most Accepted Insurers in {area.name}</h2>
             </div>
             <div className="space-y-0">
               {top5.map((ins, idx) => (
-                <div key={ins.slug} className="flex items-center gap-3 py-3 border-b border-light-200 last:border-b-0">
-                  <span className="text-xs font-bold text-muted w-5 flex-shrink-0">#{idx + 1}</span>
+                <div key={ins.slug} className="flex items-center gap-3 py-3 border-b border-black/[0.06] last:border-b-0">
+                  <span className="text-xs font-bold text-black/40 w-5 flex-shrink-0">#{idx + 1}</span>
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/directory/${city.slug}/insurance/${ins.slug}`}
-                      className="text-sm font-bold text-dark hover:text-accent transition-colors block truncate"
+                      className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors block truncate"
                     >
                       {ins.name}
                     </Link>
-                    <p className="text-xs text-muted truncate">{ins.description}</p>
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">{ins.description}</p>
                   </div>
-                  <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                  <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
                     {ins.count} {ins.count === 1 ? "provider" : "providers"}
                   </span>
-                  <span className="badge text-[9px] flex-shrink-0">{ins.type}</span>
+                  <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{ins.type}</span>
                 </div>
               ))}
             </div>
@@ -533,9 +531,8 @@ export default async function CatchAllPage({ params }: Props) {
 
         {/* All Insurers Grid */}
         <section className="mb-10">
-          <div className="section-header">
-            <h2>All Insurance Plans Accepted in {area.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All Insurance Plans Accepted in {area.name}</h2>
           </div>
           {insurerBreakdown.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -543,23 +540,23 @@ export default async function CatchAllPage({ params }: Props) {
                 <Link
                   key={ins.slug}
                   href={`/directory/${city.slug}/insurance/${ins.slug}`}
-                  className="block border border-light-200 p-4 hover:border-accent transition-colors"
+                  className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
-                    <span className="badge text-[9px]">{ins.type}</span>
+                    <h3 className="font-bold text-[#1c1c1c] text-sm">{ins.name}</h3>
+                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{ins.type}</span>
                   </div>
-                  <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
-                  <p className="text-xs font-bold text-accent">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-2 mb-2">{ins.description}</p>
+                  <p className="text-xs font-bold text-[#006828]">
                     {ins.count} {ins.count === 1 ? "provider" : "providers"} in {area.name}
                   </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 border border-light-200">
-              <p className="text-muted mb-2">No insurance data available for {area.name} yet.</p>
-              <Link href={`/directory/${city.slug}/insurance`} className="text-accent text-sm font-bold">
+            <div className="text-center py-12 border border-black/[0.06]">
+              <p className="text-black/40 mb-2">No insurance data available for {area.name} yet.</p>
+              <Link href={`/directory/${city.slug}/insurance`} className="text-[#006828] text-sm font-bold">
                 View insurance plans for all of {city.name} &rarr;
               </Link>
             </div>
@@ -571,32 +568,31 @@ export default async function CatchAllPage({ params }: Props) {
 
         {/* Cross-links */}
         <section className="mt-10 mb-10">
-          <div className="section-header">
-            <h2>Related Pages</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Pages</h2>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
             <Link
               href={`/directory/${city.slug}/insurance`}
-              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+              className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
             >
               Insurance in {city.name}
             </Link>
             <Link
               href={`/directory/${city.slug}/${area.slug}`}
-              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+              className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
             >
               All healthcare in {area.name}
             </Link>
             <Link
               href={`/directory/${city.slug}`}
-              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+              className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
             >
               All healthcare in {city.name}
             </Link>
             <Link
               href="/insurance/compare"
-              className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+              className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
             >
               Compare insurers
             </Link>
@@ -604,8 +600,8 @@ export default async function CatchAllPage({ params }: Props) {
         </section>
 
         {/* Disclaimer */}
-        <div className="border-t border-light-200 pt-4">
-          <p className="text-[11px] text-muted leading-relaxed">
+        <div className="border-t border-black/[0.06] pt-4">
+          <p className="text-[11px] text-black/40 leading-relaxed">
             <strong>Disclaimer:</strong> Insurance acceptance data is sourced from official health authority registers and provider-submitted data, last verified March 2026.
             Insurance networks can change — always confirm with the provider&apos;s insurance desk before your visit.
           </p>
@@ -631,7 +627,7 @@ export default async function CatchAllPage({ params }: Props) {
     ];
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={medicalOrganizationSchema(provider, city, category, area, city.slug)} />
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: category.name, url: `${base}/directory/${city.slug}/${category.slug}` }, { name: provider.name }])} />
         <JsonLd data={faqPageSchema(providerFaqs)} />
@@ -640,7 +636,7 @@ export default async function CatchAllPage({ params }: Props) {
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
 
         {/* Listing hero banner with category image */}
-        <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden">
+        <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden rounded-2xl">
           <Image
             src={provider.coverImageUrl || getCategoryImagePath(category.slug)}
             alt={`${provider.name} — ${category.name} in ${city.name}`}
@@ -652,17 +648,17 @@ export default async function CatchAllPage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <div className="flex items-center gap-2 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">{provider.name}</h1>
-              {provider.isVerified && <CheckCircle className="h-6 w-6 text-accent" />}
+              <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl text-white tracking-tight">{provider.name}</h1>
+              {provider.isVerified && <CheckCircle className="h-6 w-6 text-[#006828]" />}
             </div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="inline-block bg-accent text-white text-[11px] font-bold uppercase tracking-wide px-2 py-0.5">{category.name}</span>
-              {area && <span className="inline-block bg-white/20 text-white text-[11px] font-bold uppercase tracking-wide px-2 py-0.5">{area.name}</span>}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-0.5 rounded-full font-['Geist',sans-serif]">{category.name}</span>
+              {area && <span className="inline-block bg-white/20 text-white text-[11px] font-medium uppercase tracking-wide px-3 py-0.5 rounded-full font-['Geist',sans-serif]">{area.name}</span>}
             </div>
             {provider.googleRating && Number(provider.googleRating) > 0 && (
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-accent">{provider.googleRating}/5 ★</span>
-                {provider.googleReviewCount && <span className="text-sm text-white/70">({provider.googleReviewCount.toLocaleString()} reviews)</span>}
+                <span className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]">{provider.googleRating}/5 ★</span>
+                {provider.googleReviewCount && <span className="font-['Geist',sans-serif] text-sm text-white/60">({provider.googleReviewCount.toLocaleString()} reviews)</span>}
               </div>
             )}
           </div>
@@ -672,91 +668,91 @@ export default async function CatchAllPage({ params }: Props) {
           <div className="lg:col-span-2">
 
             {/* 50-word LLM answer block */}
-            <div className="answer-block mb-6" data-answer-block="true" data-last-verified={provider.lastVerified}>
-              <p className="text-dark/80 leading-relaxed font-medium">{answerBlock}</p>
+            <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true" data-last-verified={provider.lastVerified}>
+              <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">{answerBlock}</p>
             </div>
 
-            {/* About -- self-contained chunk */}
-            <div className="border border-light-200 p-6 mb-6" data-section="about">
-              <h2 className="font-semibold text-dark mb-3">About {provider.name}</h2>
-              <p className="text-muted leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
-              <p className="text-xs text-muted mt-3">Source: Official UAE health authority register. Last verified: {provider.lastVerified}.</p>
+            {/* About */}
+            <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="about">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">About {provider.name}</h2>
+              <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {provider.lastVerified}.</p>
             </div>
 
-            {/* Services -- self-contained chunk */}
+            {/* Services */}
             {provider.services.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="services">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Stethoscope className="h-5 w-5 text-accent" /> Services</h2>
-                <p className="text-sm text-muted mb-3">{provider.name} provides these services in {city.name}:</p>
-                <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="badge-outline px-3 py-1">{s}</span>))}</div>
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="services">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Stethoscope className="h-5 w-5 text-[#006828]" /> Services</h2>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} provides these services in {city.name}:</p>
+                <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="inline-block font-['Geist',sans-serif] border border-[#006828]/20 text-[#006828] text-sm px-3 py-1 rounded-full">{s}</span>))}</div>
               </div>
             )}
 
-            {/* Hours -- compact 2-column grid */}
+            {/* Hours */}
             {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="hours">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> Operating Hours</h2>
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="hours">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Clock className="h-5 w-5 text-[#006828]" /> Operating Hours</h2>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                   {Object.entries(provider.operatingHours).map(([d, h]) => (
-                    <div key={d} className="flex justify-between text-sm py-1 border-b border-light-200 last:border-b-0">
-                      <span className="text-muted">{DAY_NAMES[d]}</span>
-                      <span className="font-medium text-dark">{h.open === "00:00" && h.close === "23:59" ? "24 Hours" : `${h.open} – ${h.close}`}</span>
+                    <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
+                      <span className="font-['Geist',sans-serif] text-black/40">{DAY_NAMES[d]}</span>
+                      <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{h.open === "00:00" && h.close === "23:59" ? "24 Hours" : `${h.open} – ${h.close}`}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Insurance -- self-contained chunk */}
+            {/* Insurance */}
             {provider.insurance.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="insurance">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Shield className="h-5 w-5 text-accent" /> Accepted Insurance</h2>
-                <p className="text-sm text-muted mb-3">{provider.name} accepts these insurance plans:</p>
-                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200">{i}</span>))}</div>
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="insurance">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Shield className="h-5 w-5 text-[#006828]" /> Accepted Insurance</h2>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} accepts these insurance plans:</p>
+                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]">{i}</span>))}</div>
               </div>
             )}
 
-            {/* Review highlights -- from AI-enriched reviewSummary */}
+            {/* Review highlights */}
             {provider.reviewSummary && provider.reviewSummary.length > 0 && provider.reviewSummary[0] !== "No patient reviews available yet" && (
-              <div className="border border-light-200 p-6 mb-6 bg-light-50" data-section="reviews">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MessageSquareQuote className="h-5 w-5 text-accent" /> What patients say</h2>
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say</h2>
                 <ul className="space-y-2">
                   {provider.reviewSummary.map((point: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-muted">
-                      <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50">
+                      <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
                       <span>{point}</span>
                     </li>
                   ))}
                 </ul>
                 {hasValidRating && (
-                  <p className="text-xs text-muted mt-4 pt-3 border-t border-light-200">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
                     Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
                   </p>
                 )}
               </div>
             )}
 
-            {/* Languages -- self-contained chunk */}
+            {/* Languages */}
             {provider.languages.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="languages">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Languages className="h-5 w-5 text-accent" /> Languages Spoken</h2>
-                <p className="text-sm text-muted">Staff at {provider.name} speak: {provider.languages.join(", ")}.</p>
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="languages">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Languages className="h-5 w-5 text-[#006828]" /> Languages Spoken</h2>
+                <p className="font-['Geist',sans-serif] text-sm text-black/50">Staff at {provider.name} speak: {provider.languages.join(", ")}.</p>
               </div>
             )}
 
-            {/* Map -- self-contained chunk */}
-            <div className="border border-light-200 p-6 mb-6" data-section="location">
-              <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MapPin className="h-5 w-5 text-accent" /> Location</h2>
-              <GoogleMapEmbed query={`${provider.name}, ${provider.address}`} />
-              <p className="text-sm text-muted mt-3">{provider.address}</p>
+            {/* Map */}
+            <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="location">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><MapPin className="h-5 w-5 text-[#006828]" /> Location</h2>
+              <div className="rounded-xl overflow-hidden"><GoogleMapEmbed query={`${provider.name}, ${provider.address}`} /></div>
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-3">{provider.address}</p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-muted mb-6">
+            <div className="flex items-center gap-2 font-['Geist',sans-serif] text-xs text-black/30 mb-6">
               <Calendar className="h-3.5 w-3.5" />
               <span>Last verified: {provider.lastVerified} · Data from official UAE health authority register</span>
             </div>
 
-            <div className="bg-accent-muted p-6">
+            <div className="bg-[#006828]/[0.04] rounded-2xl p-6">
               <FaqSection faqs={providerFaqs} title={`${provider.name} — FAQ`} />
             </div>
           </div>
@@ -764,36 +760,36 @@ export default async function CatchAllPage({ params }: Props) {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-4">
-              <div className="border border-light-200 p-6">
-                <h2 className="font-semibold text-dark mb-4">Contact</h2>
+              <div className="border border-black/[0.06] rounded-2xl p-6">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-4 tracking-tight">Contact</h2>
                 <div className="space-y-3">
-                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-3 text-sm text-dark/70 hover:text-accent transition-colors"><Phone className="h-4 w-4" /> {provider.phone}</a>}
-                  {provider.website && <a href={provider.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-dark/70 hover:text-accent transition-colors"><Globe className="h-4 w-4" /> Website <ExternalLink className="h-3 w-3" /></a>}
-                  <div className="flex items-center gap-3 text-sm text-dark/70"><MapPin className="h-4 w-4" /> {provider.address}</div>
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-3 font-['Geist',sans-serif] text-sm text-black/50 hover:text-[#006828] transition-colors"><Phone className="h-4 w-4" /> {provider.phone}</a>}
+                  {provider.website && <a href={provider.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 font-['Geist',sans-serif] text-sm text-black/50 hover:text-[#006828] transition-colors"><Globe className="h-4 w-4" /> Website <ExternalLink className="h-3 w-3" /></a>}
+                  <div className="flex items-center gap-3 font-['Geist',sans-serif] text-sm text-black/50"><MapPin className="h-4 w-4" /> {provider.address}</div>
                 </div>
                 <div className="mt-4 space-y-2">
-                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="btn-accent w-full"><Phone className="h-4 w-4 mr-2" /> Call Now</a>}
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`} target="_blank" rel="noopener noreferrer" className="btn-dark w-full"><MapPin className="h-4 w-4 mr-2" /> Directions</a>
+                  {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="flex items-center justify-center gap-2 w-full bg-[#006828] hover:bg-[#004d1c] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full transition-colors"><Phone className="h-4 w-4" /> Call Now</a>}
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-[#1c1c1c] hover:bg-black text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full transition-colors"><MapPin className="h-4 w-4" /> Directions</a>
                 </div>
               </div>
 
               {!provider.isClaimed && (
-                <div className="border border-light-200 p-6 bg-accent-muted">
-                  <h3 className="font-semibold text-dark mb-2">Is this your business?</h3>
-                  <p className="text-sm text-muted mb-4">Claim your listing to update information.</p>
-                  <Link href={`/claim/${provider.id}`} className="btn-accent w-full">Claim Listing</Link>
+                <div className="border border-black/[0.06] rounded-2xl p-6 bg-[#006828]/[0.04]">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-2 tracking-tight">Is this your business?</h3>
+                  <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">Claim your listing to update information.</p>
+                  <Link href={`/claim/${provider.id}`} className="flex items-center justify-center w-full bg-[#006828] hover:bg-[#004d1c] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full transition-colors">Claim Listing</Link>
                 </div>
               )}
 
               {nearbyProviders.length > 0 && (
-                <div className="border border-light-200 p-6">
-                  <h3 className="font-semibold text-dark mb-3">Nearby</h3>
+                <div className="border border-black/[0.06] rounded-2xl p-6">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">Nearby</h3>
                   <div className="space-y-3">
                     {nearbyProviders.map((np) => (
-                      <Link key={np.id} href={`/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block text-sm hover:text-accent transition-colors">
-                        <p className="font-medium text-dark">{np.name}</p>
+                      <Link key={np.id} href={`/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block font-['Geist',sans-serif] text-sm hover:text-[#006828] transition-colors">
+                        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{np.name}</p>
                         {Number(np.googleRating) > 0 && (
-                          <p className="text-xs text-muted">{np.googleRating} stars</p>
+                          <p className="font-['Geist',sans-serif] text-xs text-black/30">{np.googleRating} stars</p>
                         )}
                       </Link>
                     ))}
@@ -805,11 +801,11 @@ export default async function CatchAllPage({ params }: Props) {
         </div>
 
         {/* Sticky mobile CTA bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-light-200 p-3 flex gap-2 z-40 lg:hidden">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] p-3 flex gap-2 z-40 lg:hidden">
           {provider.phone && (
             <a
               href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
-              className="btn-accent flex-1 flex items-center justify-center gap-2"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#006828] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full"
             >
               <Phone className="h-4 w-4" /> Call
             </a>
@@ -818,7 +814,7 @@ export default async function CatchAllPage({ params }: Props) {
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-dark flex-1 flex items-center justify-center gap-2"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#1c1c1c] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full"
           >
             <MapPin className="h-4 w-4" /> Directions
           </a>
@@ -833,15 +829,15 @@ export default async function CatchAllPage({ params }: Props) {
     const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page: 1, limit: 20, sort: "rating" });
 
     return (
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: subcategory.name }]} />
-        <h1 className="text-3xl font-bold text-dark mb-2">{subcategory.name} in {city.name}</h1>
-        <p className="text-sm text-muted mb-6">{total} {total === 1 ? "provider" : "providers"}</p>
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">{subcategory.name} in {city.name}</h1>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">{total} {total === 1 ? "provider" : "providers"}</p>
         {providers.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
           </div>
-        ) : (<div className="text-center py-12"><p className="text-muted">No providers found yet.</p></div>)}
+        ) : (<div className="text-center py-12"><p className="text-black/40">No providers found yet.</p></div>)}
         <Pagination currentPage={1} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
       </div>
     );

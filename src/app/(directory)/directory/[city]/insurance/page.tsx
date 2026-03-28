@@ -46,7 +46,7 @@ export default async function InsuranceIndexPage({ params }: Props) {
   const insurersWithCounts = insurers.map((ins, i) => ({ ...ins, count: insurerCounts[i] }));
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
         { name: city.name, url: `${base}/directory/${city.slug}` },
@@ -60,12 +60,12 @@ export default async function InsuranceIndexPage({ params }: Props) {
         { label: "Insurance" },
       ]} />
 
-      <h1 className="text-3xl font-bold text-dark mb-2">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
         Health Insurance in {city.name}
       </h1>
 
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, healthcare providers in {city.name} accept a wide range of insurance plans.
           {city.name === "Dubai" && " Dubai mandates health insurance for all residents under DHA regulations."}
           {city.name === "Abu Dhabi" && " Abu Dhabi requires mandatory health insurance (Daman/Thiqa) for all residents and nationals under DOH regulations."}
@@ -74,9 +74,8 @@ export default async function InsuranceIndexPage({ params }: Props) {
         </p>
       </div>
 
-      <div className="section-header">
-        <h2>Insurance Providers</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Providers</h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -84,14 +83,14 @@ export default async function InsuranceIndexPage({ params }: Props) {
           <Link
             key={ins.slug}
             href={`/directory/${city.slug}/insurance/${ins.slug}`}
-            className="block border border-light-200 p-4 hover:border-accent transition-colors"
+            className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
-              <span className="badge text-[9px]">{ins.type}</span>
+              <h3 className="font-bold text-[#1c1c1c] text-sm">{ins.name}</h3>
+              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{ins.type}</span>
             </div>
-            <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
-            <p className="text-xs font-bold text-accent">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-2 mb-2">{ins.description}</p>
+            <p className="text-xs font-bold text-[#006828]">
               {ins.count} {ins.count === 1 ? "provider" : "providers"}
             </p>
           </Link>

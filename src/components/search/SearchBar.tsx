@@ -49,7 +49,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
     <form onSubmit={handleSearch}>
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
         <div className="sm:col-span-5">
-          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">Search</label>
+          <label className="text-[11px] font-bold text-black/40 uppercase tracking-wider mb-1.5 block">Search</label>
           <input
             type="text"
             value={query}
@@ -59,7 +59,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           />
         </div>
         <div className="sm:col-span-3">
-          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">City</label>
+          <label className="text-[11px] font-bold text-black/40 uppercase tracking-wider mb-1.5 block">City</label>
           <select value={city} onChange={(e) => setCity(e.target.value)} className="input-tc cursor-pointer">
             <option value="">All cities</option>
             {CITIES.map((c) => (
@@ -68,7 +68,7 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
           </select>
         </div>
         <div className="sm:col-span-3">
-          <label className="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5 block">Specialty</label>
+          <label className="text-[11px] font-bold text-black/40 uppercase tracking-wider mb-1.5 block">Specialty</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-tc cursor-pointer">
             <option value="">All specialties</option>
             {CATEGORIES.map((c) => (

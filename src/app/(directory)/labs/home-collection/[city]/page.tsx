@@ -356,7 +356,7 @@ export default function HomeCollectionCityPage({
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
       <JsonLd data={speakableSchema([".answer-block", "h1"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -374,14 +374,14 @@ export default function HomeCollectionCityPage({
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Home className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <Home className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             At-Home Lab Tests in {city.name} — {homeCollectionLabs.length} Lab{homeCollectionLabs.length !== 1 ? "s" : ""} With Home Collection
           </h1>
         </div>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             {content.intro}
           </p>
         </div>
@@ -408,22 +408,21 @@ export default function HomeCollectionCityPage({
           ].map(({ value, label }) => (
             <div
               key={label}
-              className="bg-light-50 p-4 text-center border border-light-200"
+              className="bg-[#f8f8f6] p-4 text-center border border-black/[0.06]"
             >
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted mt-1">{label}</p>
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Labs offering home collection */}
-      <div className="section-header">
-        <h2>Labs Offering Home Collection in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Labs Offering Home Collection in {city.name}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           The {homeCollectionLabs.length} labs below all offer home blood test collection
           in {city.name}. Sorted by collection fee (free first), then by lowest
           test price. All operate under {content.regulator} licensing.
@@ -448,12 +447,11 @@ export default function HomeCollectionCityPage({
       </div>
 
       {/* Free vs Paid Comparison Table */}
-      <div className="section-header">
-        <h2>Free vs Paid Home Collection in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Free vs Paid Home Collection in {city.name}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Of the {homeCollectionLabs.length} labs offering home collection in {city.name},{" "}
           {freeCollectionLabs.length} charge nothing for the visit itself.
           The remaining {homeCollectionLabs.length - freeCollectionLabs.length} labs
@@ -461,20 +459,20 @@ export default function HomeCollectionCityPage({
         </p>
       </div>
       <div className="overflow-x-auto mb-10">
-        <table className="w-full text-xs border border-light-200">
+        <table className="w-full text-xs border border-black/[0.06]">
           <thead>
-            <tr className="bg-light-50">
-              <th className="text-left p-3 font-bold text-dark border-b border-light-200">Lab</th>
-              <th className="text-left p-3 font-bold text-dark border-b border-light-200">
+            <tr className="bg-[#f8f8f6]">
+              <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">Lab</th>
+              <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">
                 Collection Fee
               </th>
-              <th className="text-left p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">
                 Turnaround
               </th>
-              <th className="text-left p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">
                 Accreditations
               </th>
-              <th className="text-left p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">
                 Tests Available
               </th>
             </tr>
@@ -487,37 +485,37 @@ export default function HomeCollectionCityPage({
               return (
                 <tr
                   key={lab.slug}
-                  className={i % 2 === 0 ? "bg-white" : "bg-light-50"}
+                  className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}
                 >
-                  <td className="p-3 border-b border-light-200">
+                  <td className="p-3 border-b border-black/[0.06]">
                     <Link
                       href={`/labs/${lab.slug}`}
-                      className="font-bold text-dark hover:text-accent transition-colors"
+                      className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                     >
                       {lab.name}
                     </Link>
-                    <div className="text-[10px] text-muted mt-0.5">
+                    <div className="text-[10px] text-black/40 mt-0.5">
                       {lab.type === "home-service"
                         ? "Home-service platform"
                         : "Lab chain"}
                     </div>
                   </td>
-                  <td className="p-3 border-b border-light-200">
+                  <td className="p-3 border-b border-black/[0.06]">
                     {lab.homeCollectionFee === 0 ? (
-                      <span className="font-bold text-accent">Free</span>
+                      <span className="font-bold text-[#006828]">Free</span>
                     ) : (
-                      <span className="font-medium text-dark">
+                      <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">
                         AED {lab.homeCollectionFee}
                       </span>
                     )}
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-black/40">
                     {lab.turnaroundHours}h
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-black/40">
                     {lab.accreditations.slice(0, 3).join(", ")}
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-black/40">
                     {labTestCount > 0 ? `${labTestCount} tests` : "Contact lab"}
                   </td>
                 </tr>
@@ -528,12 +526,11 @@ export default function HomeCollectionCityPage({
       </div>
 
       {/* Test Categories Available */}
-      <div className="section-header">
-        <h2>Test Categories Available at Home in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Test Categories Available at Home in {city.name}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           The {homeCollectionCategories.length} categories below all have at least one
           test available from a home-collection lab in {city.name}. Click any
           category to see all available tests with prices from labs offering home
@@ -549,15 +546,15 @@ export default function HomeCollectionCityPage({
             <Link
               key={cat.slug}
               href={`/labs/home-collection/${city.slug}/${cat.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {cat.name}
               </h3>
-              <p className="text-[11px] text-muted mt-1">
+              <p className="text-[11px] text-black/40 mt-1">
                 {catTests.length} test{catTests.length !== 1 ? "s" : ""} available at home
               </p>
-              <div className="flex items-center gap-1 mt-2 text-accent text-xs font-medium">
+              <div className="flex items-center gap-1 mt-2 text-[#006828] text-xs font-medium">
                 <span>Compare</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
@@ -567,12 +564,11 @@ export default function HomeCollectionCityPage({
       </div>
 
       {/* Popular Tests for Home Collection */}
-      <div className="section-header">
-        <h2>Popular Tests for Home Collection in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Popular Tests for Home Collection in {city.name}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Price ranges below are from home-collection labs in {city.name} only.
           Prices are similar to walk-in rates — your only additional cost may be
           the home collection fee (free at {freeCollectionLabs.length} labs).
@@ -583,39 +579,38 @@ export default function HomeCollectionCityPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted mt-0.5">
+              <p className="text-[11px] text-black/40 mt-0.5">
                 {test.fastingRequired ? "Fasting required · " : "No fasting · "}
                 {test.turnaroundHours}h turnaround
               </p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-sm font-bold text-accent">
+              <p className="text-sm font-bold text-[#006828]">
                 {formatPrice(minPrice!)}
               </p>
               {minPrice !== maxPrice && (
-                <p className="text-[10px] text-muted">
+                <p className="text-[10px] text-black/40">
                   – {formatPrice(maxPrice!)}
                 </p>
               )}
-              <p className="text-[10px] text-muted">{labCount} labs</p>
+              <p className="text-[10px] text-black/40">{labCount} labs</p>
             </div>
           </Link>
         ))}
       </div>
 
       {/* How home collection works in this city */}
-      <div className="section-header">
-        <h2>How Home Collection Works in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How Home Collection Works in {city.name}</h2>
       </div>
-      <div className="answer-block mb-6" data-answer-block="true">
-        <p className="text-sm text-muted leading-relaxed">{content.howItWorks}</p>
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{content.howItWorks}</p>
       </div>
 
       {/* Steps */}
@@ -646,28 +641,28 @@ export default function HomeCollectionCityPage({
             body: "Samples reach the processing lab within hours. Results are delivered via secure app, email, or WhatsApp PDF. Most providers allow you to share results directly with your doctor.",
           },
         ].map(({ icon: Icon, step, title, body }) => (
-          <div key={step} className="border border-light-200 p-4 bg-light-50">
+          <div key={step} className="border border-black/[0.06] rounded-2xl p-5 bg-[#f8f8f6]">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-accent text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+              <div className="w-8 h-8 bg-[#006828] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                 {step}
               </div>
-              <Icon className="w-5 h-5 text-accent" />
+              <Icon className="w-5 h-5 text-[#006828]" />
             </div>
-            <h3 className="font-bold text-dark text-sm mb-2">{title}</h3>
-            <p className="text-xs text-muted leading-relaxed">{body}</p>
+            <h3 className="font-bold text-[#1c1c1c] text-sm mb-2">{title}</h3>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{body}</p>
           </div>
         ))}
       </div>
 
       {/* Regulatory note */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
-          <Award className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <Award className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-dark mb-2">
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
               {content.regulator} licensing
             </p>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
               {content.regulatorFullNote}
             </p>
           </div>
@@ -675,27 +670,27 @@ export default function HomeCollectionCityPage({
       </div>
 
       {/* Fasting prep */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
-          <Microscope className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <Microscope className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-dark mb-2">
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
               Preparation tips for home collection in {city.name}
             </p>
-            <p className="text-xs text-muted leading-relaxed">{content.fastingTip}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{content.fastingTip}</p>
           </div>
         </div>
       </div>
 
       {/* Insurance note */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
-          <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-dark mb-2">
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
               Insurance &amp; coverage in {city.name}
             </p>
-            <p className="text-xs text-muted leading-relaxed">{content.insuranceNote}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{content.insuranceNote}</p>
           </div>
         </div>
       </div>
@@ -709,9 +704,8 @@ export default function HomeCollectionCityPage({
       {/* Other cities */}
       {otherCitiesWithHome.length > 0 && (
         <>
-          <div className="section-header mt-8">
-            <h2>Home Collection in Other UAE Cities</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mt-8">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Home Collection in Other UAE Cities</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-10">
             {otherCitiesWithHome.map((otherCity) => {
@@ -722,16 +716,16 @@ export default function HomeCollectionCityPage({
                 <Link
                   key={otherCity.slug}
                   href={`/labs/home-collection/${otherCity.slug}`}
-                  className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                  className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                    <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                       {otherCity.name}
                     </h3>
-                    <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent transition-colors" />
+                    <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] transition-colors" />
                   </div>
-                  <div className="flex items-center gap-1.5 mt-2 text-xs text-muted">
-                    <Home className="w-3 h-3 text-accent" />
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-black/40">
+                    <Home className="w-3 h-3 text-[#006828]" />
                     {otherHomeLabs.length} labs
                   </div>
                 </Link>
@@ -742,26 +736,26 @@ export default function HomeCollectionCityPage({
       )}
 
       {/* Browse all */}
-      <div className="border border-light-200 p-4 flex items-center justify-between gap-4 mb-8">
+      <div className="border border-black/[0.06] rounded-2xl p-5 flex items-center justify-between gap-4 mb-8">
         <div>
-          <p className="text-sm font-bold text-dark">
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
             Compare all home collection services in the UAE
           </p>
-          <p className="text-xs text-muted mt-0.5">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">
             {homeCollectionLabs.length} labs in {city.name} · see all UAE cities
           </p>
         </div>
         <Link
           href="/labs/home-collection"
-          className="flex items-center gap-1.5 text-sm font-bold text-accent hover:text-accent-dark transition-colors flex-shrink-0"
+          className="flex items-center gap-1.5 text-sm font-bold text-[#006828] hover:text-[#006828]-dark transition-colors flex-shrink-0"
         >
           All cities <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Home collection fee and pricing information
           is based on publicly available data from lab websites and aggregator
           platforms (2024–2025). Actual fees may vary by location, time of day,

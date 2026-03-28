@@ -155,7 +155,7 @@ export default async function CategoryCityPricingPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -199,13 +199,13 @@ export default async function CategoryCityPricingPage({ params }: Props) {
 
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-dark mb-2">
+        <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           {cat.name} Costs in {city.name}
         </h1>
-        <p className="text-xs text-muted mb-1">{city.nameAr} · Regulated by {regulator}</p>
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1">{city.nameAr} · Regulated by {regulator}</p>
 
-        <div className="answer-block mt-4 bg-light-50 border border-light-200 p-4" data-answer-block="true">
-          <p className="text-sm text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mt-4 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
             There are {procs.length} {cat.name.toLowerCase()} procedures priced in {city.name}, UAE,
             with costs ranging from {formatAed(procs.reduce((m, p) => Math.min(m, p.cityPricing[citySlug].min), Infinity))} to{" "}
             {formatAed(procs.reduce((m, p) => Math.max(m, p.cityPricing[citySlug].max), 0))}. The
@@ -218,33 +218,32 @@ export default async function CategoryCityPricingPage({ params }: Props) {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-        <div className="bg-light-50 p-4 text-center">
-          <p className="text-xl font-bold text-accent">{procs.length}</p>
-          <p className="text-xs text-muted">Procedures</p>
+        <div className="bg-[#f8f8f6] p-4 text-center">
+          <p className="text-xl font-bold text-[#006828]">{procs.length}</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Procedures</p>
         </div>
-        <div className="bg-light-50 p-4 text-center">
-          <p className="text-xl font-bold text-accent">{formatAed(avgTypical)}</p>
-          <p className="text-xs text-muted">Avg. typical</p>
+        <div className="bg-[#f8f8f6] p-4 text-center">
+          <p className="text-xl font-bold text-[#006828]">{formatAed(avgTypical)}</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Avg. typical</p>
         </div>
-        <div className="bg-light-50 p-4 text-center">
-          <p className="text-xl font-bold text-accent">{categoryProviders.length}</p>
-          <p className="text-xs text-muted">Providers</p>
+        <div className="bg-[#f8f8f6] p-4 text-center">
+          <p className="text-xl font-bold text-[#006828]">{categoryProviders.length}</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Providers</p>
         </div>
-        <div className="bg-light-50 p-4 text-center">
-          <p className="text-xl font-bold text-accent">
+        <div className="bg-[#f8f8f6] p-4 text-center">
+          <p className="text-xl font-bold text-[#006828]">
             {coveredCount}/{procs.length}
           </p>
-          <p className="text-xs text-muted">Insured</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Insured</p>
         </div>
       </div>
 
       {/* Procedure pricing table */}
-      <div className="section-header">
-        <h2>All {cat.name} in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {cat.name} in {city.name}</h2>
       </div>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
-        <div className="hidden sm:grid grid-cols-5 gap-4 p-3 bg-light-50 text-[11px] font-bold text-muted uppercase tracking-wider">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
+        <div className="hidden sm:grid grid-cols-5 gap-4 p-3 bg-[#f8f8f6] text-[11px] font-bold text-black/40 uppercase tracking-wider">
           <div className="col-span-2">Procedure</div>
           <div className="text-right">Typical</div>
           <div className="text-right">Range</div>
@@ -267,19 +266,19 @@ export default async function CategoryCityPricingPage({ params }: Props) {
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}/${citySlug}`}
-              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 p-3 hover:bg-light-50 transition-colors group items-center"
+              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 p-3 hover:bg-[#f8f8f6] transition-colors group items-center"
             >
               <div className="col-span-2 sm:col-span-2">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828]">
                   {proc.name}
                 </h3>
-                <p className="text-[11px] text-muted">{proc.duration} · {proc.setting}</p>
+                <p className="text-[11px] text-black/40">{proc.duration} · {proc.setting}</p>
               </div>
               <div className="text-right">
-                <span className="text-sm font-bold text-dark">{formatAed(pricing.typical)}</span>
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{formatAed(pricing.typical)}</span>
               </div>
               <div className="text-right">
-                <span className="text-xs text-muted">
+                <span className="font-['Geist',sans-serif] text-xs text-black/40">
                   {formatAed(pricing.min)}–{formatAed(pricing.max)}
                 </span>
               </div>
@@ -294,20 +293,19 @@ export default async function CategoryCityPricingPage({ params }: Props) {
       </div>
 
       {/* Compare with other cities */}
-      <div className="section-header">
-        <h2>{cat.name} in Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name} in Other Cities</h2>
       </div>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
-        <div className="grid grid-cols-3 gap-4 p-3 bg-accent/5 border-l-2 border-accent">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
+        <div className="grid grid-cols-3 gap-4 p-3 bg-[#006828]/5 border-l-2 border-[#006828]">
           <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 text-accent" />
-            <span className="text-sm font-bold text-accent">{city.name}</span>
+            <MapPin className="w-3.5 h-3.5 text-[#006828]" />
+            <span className="text-sm font-bold text-[#006828]">{city.name}</span>
           </div>
           <div className="text-right">
-            <span className="text-sm font-bold text-dark">{formatAed(avgTypical)}</span>
+            <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{formatAed(avgTypical)}</span>
           </div>
-          <div className="text-right text-xs text-muted">Current</div>
+          <div className="text-right text-xs text-black/40">Current</div>
         </div>
         {otherCities.map((c) => {
           const diff = c.avg - avgTypical;
@@ -316,17 +314,17 @@ export default async function CategoryCityPricingPage({ params }: Props) {
             <Link
               key={c.slug}
               href={`/pricing/category/${catSlug}/${c.slug}`}
-              className="grid grid-cols-3 gap-4 p-3 hover:bg-light-50 transition-colors group"
+              className="grid grid-cols-3 gap-4 p-3 hover:bg-[#f8f8f6] transition-colors group"
             >
               <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-muted" />
-                <span className="text-sm text-dark group-hover:text-accent">{c.name}</span>
+                <MapPin className="w-3.5 h-3.5 text-black/40" />
+                <span className="text-sm text-[#1c1c1c] group-hover:text-[#006828]">{c.name}</span>
               </div>
               <div className="text-right">
-                <span className="text-sm font-bold text-dark">{formatAed(c.avg)}</span>
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{formatAed(c.avg)}</span>
               </div>
               <div className="text-right">
-                <span className={`text-xs font-medium ${diff < 0 ? "text-green-700" : diff > 0 ? "text-red-700" : "text-muted"}`}>
+                <span className={`text-xs font-medium ${diff < 0 ? "text-green-700" : diff > 0 ? "text-red-700" : "text-black/40"}`}>
                   {diff < 0 ? `${pctDiff}%` : diff > 0 ? `+${pctDiff}%` : "Same"}
                 </span>
               </div>
@@ -336,11 +334,10 @@ export default async function CategoryCityPricingPage({ params }: Props) {
       </div>
 
       {/* Cost Estimator for category average */}
-      <div className="section-header">
-        <h2>Estimate Your Cost</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Estimate Your Cost</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Estimate based on the average {cat.name.toLowerCase()} cost in {city.name} ({formatAed(avgTypical)}).
         For procedure-specific estimates, visit individual procedure pages.
       </p>
@@ -358,8 +355,8 @@ export default async function CategoryCityPricingPage({ params }: Props) {
       <FaqSection faqs={faqs} title={`${cat.name} in ${city.name} — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for {cat.name.toLowerCase()} in {city.name} are
           indicative ranges based on DOH/DHA tariff data and market-observed prices as of
           March 2026. Healthcare in {city.name} is regulated by the {regulator}. Always confirm

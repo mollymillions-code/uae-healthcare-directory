@@ -138,7 +138,7 @@ export default async function LanguageCategoryPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD: BreadcrumbList */}
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
@@ -174,25 +174,24 @@ export default async function LanguageCategoryPage({ params }: Props) {
       ]} />
 
       {/* Heading */}
-      <h1 className="text-3xl font-bold text-dark mb-2">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
         {language.name}-Speaking {category.name} in {city.name}
       </h1>
-      <p className="text-sm text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
         {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
       </p>
 
       {/* Answer block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           {count} {category.name.toLowerCase()} in {city.name} have staff who speak {language.name}, according to the UAE Open Healthcare Directory. The UAE&apos;s diverse healthcare workforce ensures patients can access specialist care in their preferred language. Providers are sorted by Google rating below. Data sourced from official government registers (DHA, DOH, MOHAP), last verified March 2026.
         </p>
       </div>
 
       {/* Provider list — sorted by rating, cap 30 */}
       <div className="mb-8">
-        <div className="section-header">
-          <h2>{language.name}-Speaking {category.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{language.name}-Speaking {category.name}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {capped.map((p) => (
@@ -214,7 +213,7 @@ export default async function LanguageCategoryPage({ params }: Props) {
           ))}
         </div>
         {providers.length > 30 && (
-          <div className="text-center mt-6 py-4 border-t border-light-200">
+          <div className="text-center mt-6 py-4 border-t border-black/[0.06]">
             <Link
               href={`/search?city=${city.slug}&q=${language.name}+${category.name}`}
               className="btn-accent"
@@ -229,16 +228,15 @@ export default async function LanguageCategoryPage({ params }: Props) {
       <div className="mb-8 space-y-6">
         {/* All language providers in city */}
         <div>
-          <div className="section-header">
-            <h2>More {language.name}-Speaking Providers in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More {language.name}-Speaking Providers in {city.name}</h2>
           </div>
-          <p className="text-sm text-muted mb-3">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
             {totalLangProviders} total {language.name}-speaking healthcare providers in {city.name}.
           </p>
           <Link
             href={`/directory/${city.slug}/language/${language.slug}`}
-            className="text-sm font-medium text-accent hover:underline"
+            className="text-sm font-medium text-[#006828] hover:underline"
           >
             All {language.name}-speaking providers in {city.name} &rarr;
           </Link>
@@ -246,16 +244,15 @@ export default async function LanguageCategoryPage({ params }: Props) {
 
         {/* All category providers in city */}
         <div>
-          <div className="section-header">
-            <h2>All {category.name} in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {category.name} in {city.name}</h2>
           </div>
-          <p className="text-sm text-muted mb-3">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
             {totalCatProviders} total {category.name.toLowerCase()} across all languages in {city.name}.
           </p>
           <Link
             href={`/directory/${city.slug}/${category.slug}`}
-            className="text-sm font-medium text-accent hover:underline"
+            className="text-sm font-medium text-[#006828] hover:underline"
           >
             All {category.name.toLowerCase()} in {city.name} &rarr;
           </Link>
@@ -264,16 +261,15 @@ export default async function LanguageCategoryPage({ params }: Props) {
         {/* Other languages for this category */}
         {otherLanguages.length > 0 && (
           <div>
-            <div className="section-header">
-              <h2>Other Languages for {category.name} in {city.name}</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Languages for {category.name} in {city.name}</h2>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {otherLanguages.slice(0, 12).map((l) => (
                 <Link
                   key={l.slug}
                   href={`/directory/${city.slug}/language/${l.slug}/${category.slug}`}
-                  className="badge"
+                  className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]"
                 >
                   {l.name}
                 </Link>
@@ -285,16 +281,15 @@ export default async function LanguageCategoryPage({ params }: Props) {
         {/* Other categories for this language */}
         {otherCategories.length > 0 && (
           <div>
-            <div className="section-header">
-              <h2>Other {language.name}-Speaking Specialties in {city.name}</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other {language.name}-Speaking Specialties in {city.name}</h2>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {otherCategories.slice(0, 12).map((c) => (
                 <Link
                   key={c.slug}
                   href={`/directory/${city.slug}/language/${language.slug}/${c.slug}`}
-                  className="badge"
+                  className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]"
                 >
                   {c.name}
                 </Link>

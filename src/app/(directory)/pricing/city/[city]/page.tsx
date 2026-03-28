@@ -115,7 +115,7 @@ export default async function CityPricingHubPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -137,13 +137,13 @@ export default async function CityPricingHubPage({ params }: Props) {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <MapPin className="w-8 h-8 text-accent" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-dark">
+          <MapPin className="w-8 h-8 text-[#006828]" />
+          <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Medical Procedure Costs in {city.name}
           </h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Compare prices for {procsInCity.length} medical procedures in {city.name}, UAE.
             Average typical cost: {formatAed(avgTypical)}. Healthcare in {city.name} is
             regulated by the {regulator}. Pricing based on {citySlug === "abu-dhabi" || citySlug === "al-ain" ? "DOH Mandatory Tariff (Shafafiya)" : citySlug === "dubai" ? "DHA DRG parameters" : "MOHAP guidelines"} and
@@ -158,9 +158,9 @@ export default async function CityPricingHubPage({ params }: Props) {
             { value: `#${cityAvgs.findIndex((c) => c.slug === citySlug) + 1} of ${cityAvgs.length}`, label: "Cost ranking" },
             { value: regulator.split("(")[1]?.replace(")", "") || regulator, label: "Regulator" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-lg font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-lg font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
@@ -168,19 +168,17 @@ export default async function CityPricingHubPage({ params }: Props) {
 
       {/* Search */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Search Procedures in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Search Procedures in {city.name}</h2>
         </div>
         <ProcedureSearch procedures={searchData} />
       </div>
 
       {/* City comparison */}
-      <div className="section-header">
-        <h2>{city.name} vs Other Emirates</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{city.name} vs Other Emirates</h2>
       </div>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
         {cityAvgs.map((c) => {
           const isCurrent = c.slug === citySlug;
           const diff = c.avg - avgTypical;
@@ -188,33 +186,33 @@ export default async function CityPricingHubPage({ params }: Props) {
           return (
             <div
               key={c.slug}
-              className={`grid grid-cols-3 gap-4 p-3 ${isCurrent ? "bg-accent/5 border-l-2 border-accent" : "hover:bg-light-50"}`}
+              className={`grid grid-cols-3 gap-4 p-3 ${isCurrent ? "bg-[#006828]/5 border-l-2 border-[#006828]" : "hover:bg-[#f8f8f6]"}`}
             >
               {isCurrent ? (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-accent" />
-                  <span className="text-sm font-bold text-accent">{c.name}</span>
+                  <MapPin className="w-3.5 h-3.5 text-[#006828]" />
+                  <span className="text-sm font-bold text-[#006828]">{c.name}</span>
                 </div>
               ) : (
                 <Link
                   href={`/pricing/city/${c.slug}`}
                   className="flex items-center gap-2 group"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-muted" />
-                  <span className="text-sm text-dark group-hover:text-accent">{c.name}</span>
+                  <MapPin className="w-3.5 h-3.5 text-black/40" />
+                  <span className="text-sm text-[#1c1c1c] group-hover:text-[#006828]">{c.name}</span>
                 </Link>
               )}
               <div className="text-right">
-                <span className="text-sm font-bold text-dark">
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                   {formatAed(c.avg)}
                 </span>
-                <span className="text-[10px] text-muted ml-1">avg</span>
+                <span className="text-[10px] text-black/40 ml-1">avg</span>
               </div>
               <div className="text-right">
                 {isCurrent ? (
-                  <span className="text-xs text-muted">Current</span>
+                  <span className="font-['Geist',sans-serif] text-xs text-black/40">Current</span>
                 ) : (
-                  <span className={`text-xs font-medium ${diff < 0 ? "text-green-700" : diff > 0 ? "text-red-700" : "text-muted"}`}>
+                  <span className={`text-xs font-medium ${diff < 0 ? "text-green-700" : diff > 0 ? "text-red-700" : "text-black/40"}`}>
                     {diff < 0 ? `${pctDiff}%` : diff > 0 ? `+${pctDiff}%` : "Same"}
                   </span>
                 )}
@@ -246,15 +244,14 @@ export default async function CityPricingHubPage({ params }: Props) {
 
         return (
           <div key={cat.slug} className="mb-8">
-            <div className="section-header">
-              <h2>
-                <Link href={`/pricing/category/${cat.slug}/${citySlug}`} className="hover:text-accent">
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                <Link href={`/pricing/category/${cat.slug}/${citySlug}`} className="hover:text-[#006828]">
                   {cat.name} in {city.name}
                 </Link>
               </h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
             </div>
-            <div className="border border-light-200 divide-y divide-light-200">
+            <div className="border border-black/[0.06] divide-y divide-light-200">
               {catProcs.map((proc) => {
                 const pricing = proc.cityPricing[citySlug];
                 const coverageColor =
@@ -272,22 +269,22 @@ export default async function CityPricingHubPage({ params }: Props) {
                   <Link
                     key={proc.slug}
                     href={`/pricing/${proc.slug}/${citySlug}`}
-                    className="flex items-center justify-between p-3 hover:bg-light-50 transition-colors group"
+                    className="flex items-center justify-between p-3 hover:bg-[#f8f8f6] transition-colors group"
                   >
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold text-dark group-hover:text-accent truncate">
+                      <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] truncate">
                         {proc.name}
                       </h3>
-                      <p className="text-[11px] text-muted">{proc.duration}</p>
+                      <p className="text-[11px] text-black/40">{proc.duration}</p>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                       <span className={`text-[10px] font-medium px-2 py-0.5 hidden sm:inline ${coverageColor}`}>
                         {coverageLabel}
                       </span>
-                      <span className="text-sm font-bold text-dark">
+                      <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                         {formatAed(pricing.typical)}
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent" />
+                      <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828]" />
                     </div>
                   </Link>
                 );
@@ -301,8 +298,8 @@ export default async function CityPricingHubPage({ params }: Props) {
       <FaqSection faqs={faqs} title={`Medical Costs in ${city.name} — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for {city.name} are indicative ranges based on
           {citySlug === "abu-dhabi" || citySlug === "al-ain" ? " DOH Mandatory Tariff (Shafafiya) methodology" : citySlug === "dubai" ? " DHA DRG parameters" : " MOHAP guidelines"} and
           market-observed data as of March 2026. Actual costs vary by facility, doctor,

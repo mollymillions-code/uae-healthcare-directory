@@ -118,7 +118,7 @@ export default function ProcedureIndexPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -137,17 +137,17 @@ export default function ProcedureIndexPage({ params }: Props) {
         ]}
       />
 
-      <h1 className="text-3xl font-bold text-dark mb-3">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
         Medical Procedure Costs in {city.name}
       </h1>
 
-      <p className="text-sm text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
         {procsInCity.length} procedures with verified pricing &middot; Last
         updated March 2026
       </p>
 
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, {city.name} has
           verified pricing data for {procsInCity.length} common medical
           procedures. Costs range from basic consultations and blood tests
@@ -162,37 +162,36 @@ export default function ProcedureIndexPage({ params }: Props) {
 
       {/* Quick stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        <div className="bg-light-50 border border-light-200 p-4">
-          <DollarSign className="h-5 w-5 text-accent mb-2" />
-          <p className="text-2xl font-bold text-dark">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+          <DollarSign className="h-5 w-5 text-[#006828] mb-2" />
+          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
             {procsInCity.length}
           </p>
-          <p className="text-xs text-muted">Procedures with pricing</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Procedures with pricing</p>
         </div>
-        <div className="bg-light-50 border border-light-200 p-4">
-          <Shield className="h-5 w-5 text-accent mb-2" />
-          <p className="text-2xl font-bold text-dark">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+          <Shield className="h-5 w-5 text-[#006828] mb-2" />
+          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
             {procsInCity.filter((p) => p.insuranceCoverage === "typically-covered").length}
           </p>
-          <p className="text-xs text-muted">Covered by insurance</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Covered by insurance</p>
         </div>
-        <div className="bg-light-50 border border-light-200 p-4">
-          <Clock className="h-5 w-5 text-accent mb-2" />
-          <p className="text-2xl font-bold text-dark">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+          <Clock className="h-5 w-5 text-[#006828] mb-2" />
+          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
             {procsInCity.filter((p) => p.setting === "outpatient").length}
           </p>
-          <p className="text-xs text-muted">Outpatient procedures</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40">Outpatient procedures</p>
         </div>
       </div>
 
       {/* Procedure categories */}
       {procsByCategory.map((cat) => (
         <section key={cat.slug} className="mb-10">
-          <div className="section-header">
-            <h2>{cat.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name}</h2>
           </div>
-          <p className="text-sm text-muted mb-4">{cat.description}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">{cat.description}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {cat.procedures.map((proc) => {
@@ -203,32 +202,32 @@ export default function ProcedureIndexPage({ params }: Props) {
                 <Link
                   key={proc.slug}
                   href={`/directory/${city.slug}/procedures/${proc.slug}`}
-                  className="block border border-light-200 p-4 hover:border-accent transition-colors group"
+                  className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
                 >
-                  <h3 className="font-bold text-dark text-sm mb-1 group-hover:text-accent transition-colors">
+                  <h3 className="font-bold text-[#1c1c1c] text-sm mb-1 group-hover:text-[#006828] transition-colors">
                     {proc.name}
                   </h3>
-                  <p className="text-xs text-muted mb-2 line-clamp-2">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-2 line-clamp-2">
                     {proc.description.slice(0, 100)}...
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-accent">
+                    <span className="text-sm font-bold text-[#006828]">
                       {formatAed(pricing.min)}–{formatAed(pricing.max)}
                     </span>
-                    <span className="text-[10px] text-muted">
+                    <span className="text-[10px] text-black/40">
                       {proc.duration}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     {proc.insuranceCoverage === "typically-covered" && (
-                      <span className="badge text-[9px]">
+                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">
                         Insurance covered
                       </span>
                     )}
                     {proc.insuranceCoverage === "not-covered" && (
-                      <span className="badge text-[9px]">Self-pay only</span>
+                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Self-pay only</span>
                     )}
-                    <span className="badge text-[9px]">{proc.setting}</span>
+                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{proc.setting}</span>
                   </div>
                 </Link>
               );
@@ -238,17 +237,17 @@ export default function ProcedureIndexPage({ params }: Props) {
       ))}
 
       {/* Cross-link to full pricing hub */}
-      <div className="bg-light-50 border border-light-200 p-6 mb-6">
-        <h3 className="font-bold text-dark mb-2">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-6">
+        <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
           Compare prices across all UAE cities
         </h3>
-        <p className="text-sm text-muted mb-3">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
           See how {city.name} compares to Dubai, Abu Dhabi, Sharjah, and other
           emirates for each procedure.
         </p>
         <Link
           href="/pricing"
-          className="text-sm font-bold text-accent hover:underline"
+          className="text-sm font-bold text-[#006828] hover:underline"
         >
           View UAE Medical Pricing Hub &rarr;
         </Link>

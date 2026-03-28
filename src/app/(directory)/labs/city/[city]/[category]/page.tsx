@@ -460,7 +460,7 @@ export default function CityLabCategoryPage({
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd
         data={breadcrumbSchema([
@@ -487,19 +487,19 @@ export default function CityLabCategoryPage({
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-2 mb-2">
-          <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
-          <span className="text-xs font-bold text-accent uppercase tracking-wide">
+          <MapPin className="w-4 h-4 text-[#006828] flex-shrink-0" />
+          <span className="text-xs font-bold text-[#006828] uppercase tracking-wide">
             {cityName} · {regulator}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {catName} in {cityName} — Compare Prices Across{" "}
           {labsOfferingCategory.length || labsInCity.length} Labs
         </h1>
 
         {/* Primary answer block */}
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             {medContent.shortDescription}{" "}
             {testsWithAnyPrice.length > 0 && (
               <>
@@ -532,47 +532,46 @@ export default function CityLabCategoryPage({
 
         {/* Quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{testsInCat.length}</p>
-            <p className="text-xs text-muted">Tests in category</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{testsInCat.length}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Tests in category</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">
               {labsOfferingCategory.length || labsInCity.length}
             </p>
-            <p className="text-xs text-muted">Labs in {cityName}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Labs in {cityName}</p>
           </div>
           {overallCheapest !== null ? (
-            <div className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">
+            <div className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">
                 {formatPrice(overallCheapest)}
               </p>
-              <p className="text-xs text-muted">Cheapest price</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">Cheapest price</p>
             </div>
           ) : (
-            <div className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">—</p>
-              <p className="text-xs text-muted">Price data</p>
+            <div className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">—</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">Price data</p>
             </div>
           )}
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">
               {homeCollectionLabs.length > 0 ? homeCollectionLabs.length : "—"}
             </p>
-            <p className="text-xs text-muted">Home collection</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Home collection</p>
           </div>
         </div>
       </div>
 
       {/* ── Tests section ─────────────────────────────────────────────────── */}
-      <div className="section-header">
-        <h2>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
           All {catName} Tests Available in {cityName}
         </h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           {medContent.whoShouldTest} Prices shown are filtered to{" "}
           {labsOfferingCategory.length} labs operating in {cityName}. Click any
           test for a full price breakdown, preparation instructions, and lab
@@ -585,14 +584,14 @@ export default function CityLabCategoryPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-start justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-start justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted mt-0.5">{test.name}</p>
-              <p className="text-[11px] text-muted mt-1 line-clamp-2">
+              <p className="text-[11px] text-black/40 mt-0.5">{test.name}</p>
+              <p className="text-[11px] text-black/40 mt-1 line-clamp-2">
                 {test.description}
               </p>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -601,15 +600,15 @@ export default function CityLabCategoryPage({
                     Fasting required
                   </span>
                 )}
-                <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium capitalize">
+                <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium capitalize">
                   {test.sampleType}
                 </span>
-                <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium flex items-center gap-1">
+                <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium flex items-center gap-1">
                   <Clock className="w-2.5 h-2.5" />
                   {test.turnaroundHours}h
                 </span>
                 {test.labCount > 0 && (
-                  <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium">
+                  <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium">
                     {test.labCount} lab{test.labCount !== 1 ? "s" : ""} in {cityName}
                   </span>
                 )}
@@ -618,22 +617,22 @@ export default function CityLabCategoryPage({
             <div className="text-right flex-shrink-0">
               {test.priceMin !== null ? (
                 <>
-                  <p className="text-sm font-bold text-accent">
+                  <p className="text-sm font-bold text-[#006828]">
                     {formatPrice(test.priceMin)}
                   </p>
                   {test.priceMax !== null && test.priceMax !== test.priceMin && (
-                    <p className="text-[10px] text-muted">
+                    <p className="text-[10px] text-black/40">
                       – {formatPrice(test.priceMax)}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted">
+                  <p className="text-[10px] text-black/40">
                     {test.labCount} lab{test.labCount !== 1 ? "s" : ""}
                   </p>
                 </>
               ) : (
-                <p className="text-[10px] text-muted">Contact labs</p>
+                <p className="text-[10px] text-black/40">Contact labs</p>
               )}
-              <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors ml-auto mt-1" />
+              <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors ml-auto mt-1" />
             </div>
           </Link>
         ))}
@@ -642,14 +641,13 @@ export default function CityLabCategoryPage({
       {/* ── Labs in city section ───────────────────────────────────────────── */}
       {labsWithCategoryStats.length > 0 && (
         <>
-          <div className="section-header">
-            <h2>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
               Labs in {cityName} Offering {catName} Tests
             </h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
           </div>
-          <div className="answer-block mb-4" data-answer-block="true">
-            <p className="text-xs text-muted">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">
               {labsWithCategoryStats.length} laboratory provider
               {labsWithCategoryStats.length !== 1 ? "s" : ""} in {cityName}{" "}
               offer {catName.toLowerCase()} tests. All are licensed by the{" "}
@@ -665,23 +663,23 @@ export default function CityLabCategoryPage({
               <Link
                 key={lab.slug}
                 href={`/labs/lab/${lab.slug}`}
-                className="flex items-start justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+                className="flex items-start justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                    <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                       {lab.name}
                     </h3>
                     {lab.accreditations.slice(0, 2).map((acc) => (
                       <span
                         key={acc}
-                        className="text-[10px] bg-light-50 border border-light-200 px-1.5 py-0.5 font-medium text-dark"
+                        className="text-[10px] bg-[#f8f8f6] border border-black/[0.06] px-1.5 py-0.5 font-medium text-[#1c1c1c]"
                       >
                         {acc}
                       </span>
                     ))}
                   </div>
-                  <p className="text-[11px] text-muted mt-1 line-clamp-1">
+                  <p className="text-[11px] text-black/40 mt-1 line-clamp-1">
                     {lab.description}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -692,11 +690,11 @@ export default function CityLabCategoryPage({
                         {lab.homeCollectionFee === 0 ? " (free)" : ` (AED ${lab.homeCollectionFee})`}
                       </span>
                     )}
-                    <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium">
+                    <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium">
                       {lab.categoryTestCount} {catName.toLowerCase()} test
                       {lab.categoryTestCount !== 1 ? "s" : ""}
                     </span>
-                    <span className="text-[10px] bg-light-100 text-dark px-1.5 py-0.5 font-medium">
+                    <span className="text-[10px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-medium">
                       Results in {lab.turnaroundHours}h
                     </span>
                   </div>
@@ -704,13 +702,13 @@ export default function CityLabCategoryPage({
                 <div className="text-right flex-shrink-0">
                   {lab.cheapestCategoryPrice !== null && (
                     <>
-                      <p className="text-xs text-muted">from</p>
-                      <p className="text-sm font-bold text-accent">
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40">from</p>
+                      <p className="text-sm font-bold text-[#006828]">
                         {formatPrice(lab.cheapestCategoryPrice)}
                       </p>
                     </>
                   )}
-                  <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors ml-auto mt-1" />
+                  <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors ml-auto mt-1" />
                 </div>
               </Link>
             ))}
@@ -719,49 +717,48 @@ export default function CityLabCategoryPage({
       )}
 
       {/* ── Deep medical education block ──────────────────────────────────── */}
-      <div className="section-header">
-        <h2>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
           About {catName} Testing in {cityName}
         </h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="answer-block mb-12" data-answer-block="true">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-12" data-answer-block="true">
         <div className="space-y-4">
-          <p className="text-muted leading-relaxed text-sm">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed text-sm">
             {medContent.longDescription}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <div className="bg-light-50 border border-light-200 p-4">
+            <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <Droplets className="w-4 h-4 text-accent flex-shrink-0" />
-                <h3 className="text-xs font-bold text-dark uppercase tracking-wide">
+                <Droplets className="w-4 h-4 text-[#006828] flex-shrink-0" />
+                <h3 className="text-xs font-bold text-[#1c1c1c] uppercase tracking-wide">
                   Who Should Test
                 </h3>
               </div>
-              <p className="text-[12px] text-muted leading-relaxed">
+              <p className="text-[12px] text-black/40 leading-relaxed">
                 {medContent.whoShouldTest}
               </p>
             </div>
-            <div className="bg-light-50 border border-light-200 p-4">
+            <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-4 h-4 text-accent flex-shrink-0" />
-                <h3 className="text-xs font-bold text-dark uppercase tracking-wide">
+                <Clock className="w-4 h-4 text-[#006828] flex-shrink-0" />
+                <h3 className="text-xs font-bold text-[#1c1c1c] uppercase tracking-wide">
                   When to Test
                 </h3>
               </div>
-              <p className="text-[12px] text-muted leading-relaxed">
+              <p className="text-[12px] text-black/40 leading-relaxed">
                 {medContent.whenToTest}
               </p>
             </div>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="w-4 h-4 text-accent flex-shrink-0" />
-              <h3 className="text-xs font-bold text-dark uppercase tracking-wide">
+              <AlertCircle className="w-4 h-4 text-[#006828] flex-shrink-0" />
+              <h3 className="text-xs font-bold text-[#1c1c1c] uppercase tracking-wide">
                 UAE Health Context
               </h3>
             </div>
-            <p className="text-[12px] text-muted leading-relaxed">
+            <p className="text-[12px] text-black/40 leading-relaxed">
               {medContent.uaeContext}
             </p>
           </div>
@@ -769,9 +766,8 @@ export default function CityLabCategoryPage({
       </div>
 
       {/* ── Other categories in city ───────────────────────────────────────── */}
-      <div className="section-header">
-        <h2>Other Test Categories in {cityName}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Test Categories in {cityName}</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-12">
         {otherCategories.map((c) => {
@@ -780,12 +776,12 @@ export default function CityLabCategoryPage({
             <Link
               key={c.slug}
               href={`/labs/city/${citySlug}/${c.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {c.name}
               </h3>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-black/40">
                 {count} tests · {cityName}
               </p>
             </Link>
@@ -802,8 +798,8 @@ export default function CityLabCategoryPage({
       </div>
 
       {/* ── Disclaimer ────────────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for {catName.toLowerCase()} tests
           in {cityName} are indicative and based on publicly available data from
           UAE diagnostic laboratory websites, aggregator platforms, and

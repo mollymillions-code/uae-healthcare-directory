@@ -53,29 +53,29 @@ export function ProcedureSearch({ procedures }: { procedures: Procedure[] }) {
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder='Search procedures — e.g. "MRI", "dental implant", "knee replacement"'
-          className="w-full pl-10 pr-4 py-3 border border-light-200 bg-white text-sm text-dark placeholder:text-muted focus:outline-none focus:border-accent"
+          className="w-full pl-10 pr-4 py-3 border border-black/[0.06] bg-white text-sm text-[#1c1c1c] placeholder:text-black/40 focus:outline-none focus:border-[#006828]"
           aria-label="Search medical procedures"
         />
       </div>
 
       {results.length > 0 && (
-        <div className="absolute z-40 w-full bg-white border border-light-200 border-t-0 shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute z-40 w-full bg-white border border-black/[0.06] border-t-0 shadow-lg max-h-96 overflow-y-auto">
           {results.map((proc) => (
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}`}
-              className="flex items-center justify-between p-3 hover:bg-light-50 border-b border-light-200 last:border-0"
+              className="flex items-center justify-between p-3 hover:bg-[#f8f8f6] border-b border-black/[0.06] last:border-0"
               onClick={() => setQuery("")}
             >
               <div>
-                <p className="text-sm font-bold text-dark">{proc.name}</p>
-                <p className="text-[11px] text-muted">
+                <p className="text-sm font-bold text-[#1c1c1c]">{proc.name}</p>
+                <p className="text-[11px] text-black/40">
                   AED {proc.priceRange.min.toLocaleString()} – AED{" "}
                   {proc.priceRange.max.toLocaleString()}
                 </p>
@@ -91,8 +91,8 @@ export function ProcedureSearch({ procedures }: { procedures: Procedure[] }) {
       )}
 
       {query.length > 2 && results.length === 0 && (
-        <div className="absolute z-40 w-full bg-white border border-light-200 border-t-0 shadow-lg p-4">
-          <p className="text-sm text-muted text-center">
+        <div className="absolute z-40 w-full bg-white border border-black/[0.06] border-t-0 shadow-lg p-4">
+          <p className="text-sm text-black/40 text-center">
             No procedures found for &ldquo;{query}&rdquo;. Try a different term.
           </p>
         </div>

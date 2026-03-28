@@ -17,8 +17,8 @@ export function NetworkStats({ stats, compact = false }: NetworkStatsProps) {
   if (compact) {
     return (
       <div className="flex items-center gap-4 text-xs">
-        <span className="font-bold text-accent text-lg">{stats.totalProviders.toLocaleString()}</span>
-        <span className="text-muted">providers across {stats.byCity.length} cities</span>
+        <span className="font-bold text-[#006828] text-lg">{stats.totalProviders.toLocaleString()}</span>
+        <span className="text-black/40">providers across {stats.byCity.length} cities</span>
       </div>
     );
   }
@@ -27,13 +27,13 @@ export function NetworkStats({ stats, compact = false }: NetworkStatsProps) {
     <div className="space-y-6">
       {/* Total */}
       <div className="flex items-baseline gap-3">
-        <span className="text-3xl font-bold text-accent">{stats.totalProviders.toLocaleString()}</span>
-        <span className="text-sm text-muted">total providers in network</span>
+        <span className="text-3xl font-bold text-[#006828]">{stats.totalProviders.toLocaleString()}</span>
+        <span className="text-sm text-black/40">total providers in network</span>
       </div>
 
       {/* By City */}
       <div>
-        <h3 className="text-sm font-bold text-dark mb-3">Providers by City</h3>
+        <h3 className="text-sm font-bold text-[#1c1c1c] mb-3">Providers by City</h3>
         <div className="space-y-2">
           {stats.byCity.map((city) => {
             const pct = stats.totalProviders > 0 ? (city.providerCount / stats.totalProviders) * 100 : 0;
@@ -42,15 +42,15 @@ export function NetworkStats({ stats, compact = false }: NetworkStatsProps) {
                 <div className="flex items-center justify-between text-xs mb-1">
                   <Link
                     href={`/directory/${city.citySlug}/insurance/${stats.slug}`}
-                    className="text-dark hover:text-accent transition-colors font-medium"
+                    className="text-[#1c1c1c] hover:text-[#006828] transition-colors font-medium"
                   >
                     {city.cityName}
                   </Link>
-                  <span className="text-muted font-bold">{city.providerCount.toLocaleString()}</span>
+                  <span className="text-black/40 font-bold">{city.providerCount.toLocaleString()}</span>
                 </div>
                 <div className="h-1.5 bg-light-200 rounded-none overflow-hidden">
                   <div
-                    className="h-full bg-accent"
+                    className="h-full bg-[#006828]"
                     style={{ width: `${Math.max(pct, 2)}%` }}
                   />
                 </div>
@@ -62,14 +62,14 @@ export function NetworkStats({ stats, compact = false }: NetworkStatsProps) {
 
       {/* By Category (top 10) */}
       <div>
-        <h3 className="text-sm font-bold text-dark mb-3">Top Specialties in Network</h3>
+        <h3 className="text-sm font-bold text-[#1c1c1c] mb-3">Top Specialties in Network</h3>
         <div className="flex flex-wrap gap-1.5">
           {stats.byCategory.slice(0, 10).map((cat) => (
             <span
               key={cat.categorySlug}
-              className="text-[11px] bg-light-100 text-dark px-2 py-1 font-medium"
+              className="text-[11px] bg-[#f8f8f6] text-[#1c1c1c] px-2 py-1 font-medium"
             >
-              {cat.categoryName} <span className="text-accent font-bold">{cat.providerCount}</span>
+              {cat.categoryName} <span className="text-[#006828] font-bold">{cat.providerCount}</span>
             </span>
           ))}
         </div>

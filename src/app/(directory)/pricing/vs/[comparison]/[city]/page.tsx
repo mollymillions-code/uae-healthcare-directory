@@ -110,7 +110,7 @@ export default async function CityComparisonPage({ params }: PageProps) {
       case "partially-covered": return "text-yellow-700 bg-yellow-50";
       case "rarely-covered": return "text-orange-700 bg-orange-50";
       case "not-covered": return "text-red-700 bg-red-50";
-      default: return "text-muted bg-light-50";
+      default: return "text-black/40 bg-[#f8f8f6]";
     }
   };
 
@@ -156,7 +156,7 @@ export default async function CityComparisonPage({ params }: PageProps) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -182,16 +182,16 @@ export default async function CityComparisonPage({ params }: PageProps) {
       {/* Hero */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ArrowLeftRight className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <ArrowLeftRight className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             {procA.name} vs {procB.name} Cost in {city.name}
           </h1>
         </div>
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block bg-light-50 border border-light-200 p-6 mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           In {city.name}, a {procA.name.toLowerCase()} typically costs{" "}
           {formatAed(pricingA.typical)} while a {procB.name.toLowerCase()} costs{" "}
           {formatAed(pricingB.typical)} — making {cheaperProc.name.toLowerCase()}{" "}
@@ -205,90 +205,89 @@ export default async function CityComparisonPage({ params }: PageProps) {
 
       {/* Side-by-Side City-Specific Comparison */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Side-by-Side Comparison in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Side-by-Side Comparison in {city.name}</h2>
         </div>
         <div className="comparison-summary grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Procedure A Card */}
-          <div className="border border-light-200 p-5">
-            <h3 className="text-lg font-bold text-dark mb-4">{procA.name}</h3>
+          <div className="border border-black/[0.06] p-5">
+            <h3 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">{procA.name}</h3>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Price Range ({city.name})</span>
-                <span className="font-bold text-dark">{formatAed(pricingA.min)} – {formatAed(pricingA.max)}</span>
+                <span className="text-black/40">Price Range ({city.name})</span>
+                <span className="font-bold text-[#1c1c1c]">{formatAed(pricingA.min)} – {formatAed(pricingA.max)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Typical Cost</span>
-                <span className="font-bold text-accent">{formatAed(pricingA.typical)}</span>
+                <span className="text-black/40">Typical Cost</span>
+                <span className="font-bold text-[#006828]">{formatAed(pricingA.typical)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Duration</span>
-                <span className="text-dark">{procA.duration}</span>
+                <span className="text-black/40">Duration</span>
+                <span className="text-[#1c1c1c]">{procA.duration}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Recovery</span>
-                <span className="text-dark">{procA.recoveryTime}</span>
+                <span className="text-black/40">Recovery</span>
+                <span className="text-[#1c1c1c]">{procA.recoveryTime}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Anaesthesia</span>
-                <span className="text-dark capitalize">{procA.anaesthesia}</span>
+                <span className="text-black/40">Anaesthesia</span>
+                <span className="text-[#1c1c1c] capitalize">{procA.anaesthesia}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Setting</span>
-                <span className="text-dark capitalize">{procA.setting}</span>
+                <span className="text-black/40">Setting</span>
+                <span className="text-[#1c1c1c] capitalize">{procA.setting}</span>
               </div>
               <div className="flex justify-between text-sm items-center">
-                <span className="text-muted">Insurance</span>
+                <span className="text-black/40">Insurance</span>
                 <span className={`text-[11px] font-medium px-2 py-0.5 ${insuranceColor(procA.insuranceCoverage)}`}>
                   {insuranceLabel(procA.insuranceCoverage)}
                 </span>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-light-200">
-              <Link href={`/pricing/${procA.slug}/${citySlug}`} className="text-xs text-accent hover:underline flex items-center gap-1">
+            <div className="mt-4 pt-3 border-t border-black/[0.06]">
+              <Link href={`/pricing/${procA.slug}/${citySlug}`} className="text-xs text-[#006828] hover:underline flex items-center gap-1">
                 {procA.name} pricing in {city.name} <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </div>
 
           {/* Procedure B Card */}
-          <div className="border border-light-200 p-5">
-            <h3 className="text-lg font-bold text-dark mb-4">{procB.name}</h3>
+          <div className="border border-black/[0.06] p-5">
+            <h3 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">{procB.name}</h3>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Price Range ({city.name})</span>
-                <span className="font-bold text-dark">{formatAed(pricingB.min)} – {formatAed(pricingB.max)}</span>
+                <span className="text-black/40">Price Range ({city.name})</span>
+                <span className="font-bold text-[#1c1c1c]">{formatAed(pricingB.min)} – {formatAed(pricingB.max)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Typical Cost</span>
-                <span className="font-bold text-accent">{formatAed(pricingB.typical)}</span>
+                <span className="text-black/40">Typical Cost</span>
+                <span className="font-bold text-[#006828]">{formatAed(pricingB.typical)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Duration</span>
-                <span className="text-dark">{procB.duration}</span>
+                <span className="text-black/40">Duration</span>
+                <span className="text-[#1c1c1c]">{procB.duration}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Recovery</span>
-                <span className="text-dark">{procB.recoveryTime}</span>
+                <span className="text-black/40">Recovery</span>
+                <span className="text-[#1c1c1c]">{procB.recoveryTime}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Anaesthesia</span>
-                <span className="text-dark capitalize">{procB.anaesthesia}</span>
+                <span className="text-black/40">Anaesthesia</span>
+                <span className="text-[#1c1c1c] capitalize">{procB.anaesthesia}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Setting</span>
-                <span className="text-dark capitalize">{procB.setting}</span>
+                <span className="text-black/40">Setting</span>
+                <span className="text-[#1c1c1c] capitalize">{procB.setting}</span>
               </div>
               <div className="flex justify-between text-sm items-center">
-                <span className="text-muted">Insurance</span>
+                <span className="text-black/40">Insurance</span>
                 <span className={`text-[11px] font-medium px-2 py-0.5 ${insuranceColor(procB.insuranceCoverage)}`}>
                   {insuranceLabel(procB.insuranceCoverage)}
                 </span>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-light-200">
-              <Link href={`/pricing/${procB.slug}/${citySlug}`} className="text-xs text-accent hover:underline flex items-center gap-1">
+            <div className="mt-4 pt-3 border-t border-black/[0.06]">
+              <Link href={`/pricing/${procB.slug}/${citySlug}`} className="text-xs text-[#006828] hover:underline flex items-center gap-1">
                 {procB.name} pricing in {city.name} <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
@@ -298,30 +297,29 @@ export default async function CityComparisonPage({ params }: PageProps) {
 
       {/* Key Differences (condensed for city page) */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Key Differences</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Key Differences</h2>
         </div>
-        <div className="border border-light-200 overflow-x-auto">
+        <div className="border border-black/[0.06] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-light-50 border-b border-light-200">
-                <th className="text-left p-3 text-muted font-medium w-1/4">Category</th>
-                <th className="text-left p-3 text-dark font-bold w-[37.5%]">{procA.name}</th>
-                <th className="text-left p-3 text-dark font-bold w-[37.5%]">{procB.name}</th>
+              <tr className="bg-[#f8f8f6] border-b border-black/[0.06]">
+                <th className="text-left p-3 text-black/40 font-medium w-1/4">Category</th>
+                <th className="text-left p-3 text-[#1c1c1c] font-bold w-[37.5%]">{procA.name}</th>
+                <th className="text-left p-3 text-[#1c1c1c] font-bold w-[37.5%]">{procB.name}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-light-200">
-              <tr className="bg-light-50">
-                <td className="p-3 text-muted font-medium">Cost in {city.name}</td>
-                <td className="p-3 font-bold text-accent">{formatAed(pricingA.typical)}</td>
-                <td className="p-3 font-bold text-accent">{formatAed(pricingB.typical)}</td>
+              <tr className="bg-[#f8f8f6]">
+                <td className="p-3 text-black/40 font-medium">Cost in {city.name}</td>
+                <td className="p-3 font-bold text-[#006828]">{formatAed(pricingA.typical)}</td>
+                <td className="p-3 font-bold text-[#006828]">{formatAed(pricingB.typical)}</td>
               </tr>
               {comp.keyDifferences.slice(0, 5).map((diff, i) => (
-                <tr key={i} className="hover:bg-light-50">
-                  <td className="p-3 text-muted font-medium">{diff.category}</td>
-                  <td className="p-3 text-dark">{diff.procedureA}</td>
-                  <td className="p-3 text-dark">{diff.procedureB}</td>
+                <tr key={i} className="hover:bg-[#f8f8f6]">
+                  <td className="p-3 text-black/40 font-medium">{diff.category}</td>
+                  <td className="p-3 text-[#1c1c1c]">{diff.procedureA}</td>
+                  <td className="p-3 text-[#1c1c1c]">{diff.procedureB}</td>
                 </tr>
               ))}
             </tbody>
@@ -331,47 +329,46 @@ export default async function CityComparisonPage({ params }: PageProps) {
 
       {/* Compare This City vs Others */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Compare {city.name} vs Other Cities</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare {city.name} vs Other Cities</h2>
         </div>
-        <div className="border border-light-200 overflow-x-auto">
+        <div className="border border-black/[0.06] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-light-50 border-b border-light-200">
-                <th className="text-left p-3 text-muted font-medium">City</th>
-                <th className="text-right p-3 text-dark font-bold">{procA.name}</th>
-                <th className="text-right p-3 text-dark font-bold">{procB.name}</th>
+              <tr className="bg-[#f8f8f6] border-b border-black/[0.06]">
+                <th className="text-left p-3 text-black/40 font-medium">City</th>
+                <th className="text-right p-3 text-[#1c1c1c] font-bold">{procA.name}</th>
+                <th className="text-right p-3 text-[#1c1c1c] font-bold">{procB.name}</th>
                 <th className="p-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-light-200">
               {/* Current city highlighted */}
-              <tr className="bg-light-50">
+              <tr className="bg-[#f8f8f6]">
                 <td className="p-3">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3 text-accent" />
-                    <span className="text-dark font-bold">{city.name} (this city)</span>
+                    <MapPin className="w-3 h-3 text-[#006828]" />
+                    <span className="text-[#1c1c1c] font-bold">{city.name} (this city)</span>
                   </div>
                 </td>
-                <td className="p-3 text-right font-bold text-accent">{formatAed(pricingA.typical)}</td>
-                <td className="p-3 text-right font-bold text-accent">{formatAed(pricingB.typical)}</td>
+                <td className="p-3 text-right font-bold text-[#006828]">{formatAed(pricingA.typical)}</td>
+                <td className="p-3 text-right font-bold text-[#006828]">{formatAed(pricingB.typical)}</td>
                 <td className="p-3"></td>
               </tr>
               {otherCities.map((other) => (
-                <tr key={other.slug} className="hover:bg-light-50">
+                <tr key={other.slug} className="hover:bg-[#f8f8f6]">
                   <td className="p-3">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3 text-muted" />
-                      <span className="text-dark">{other.name}</span>
+                      <MapPin className="w-3 h-3 text-black/40" />
+                      <span className="text-[#1c1c1c]">{other.name}</span>
                     </div>
                   </td>
-                  <td className="p-3 text-right text-dark">{formatAed(other.typicalA)}</td>
-                  <td className="p-3 text-right text-dark">{formatAed(other.typicalB)}</td>
+                  <td className="p-3 text-right text-[#1c1c1c]">{formatAed(other.typicalA)}</td>
+                  <td className="p-3 text-right text-[#1c1c1c]">{formatAed(other.typicalB)}</td>
                   <td className="p-3 text-right">
                     <Link
                       href={`/pricing/vs/${comp.slug}/${other.slug}`}
-                      className="text-[11px] text-accent hover:underline"
+                      className="text-[11px] text-[#006828] hover:underline"
                     >
                       Compare
                     </Link>
@@ -386,32 +383,30 @@ export default async function CityComparisonPage({ params }: PageProps) {
       {/* When to Choose Each (compact) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div>
-          <div className="section-header">
-            <h2>When to Choose {procA.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">When to Choose {procA.name}</h2>
           </div>
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <ul className="space-y-2">
               {comp.whenToChooseA.slice(0, 4).map((reason, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-muted">{reason}</span>
+                  <CheckCircle className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                  <span className="font-['Geist',sans-serif] text-sm text-black/40">{reason}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
         <div>
-          <div className="section-header">
-            <h2>When to Choose {procB.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">When to Choose {procB.name}</h2>
           </div>
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <ul className="space-y-2">
               {comp.whenToChooseB.slice(0, 4).map((reason, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-muted">{reason}</span>
+                  <CheckCircle className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                  <span className="font-['Geist',sans-serif] text-sm text-black/40">{reason}</span>
                 </li>
               ))}
             </ul>
@@ -421,49 +416,47 @@ export default async function CityComparisonPage({ params }: PageProps) {
 
       {/* Insurance Comparison */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Insurance Coverage in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage in {city.name}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Shield className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-bold text-dark">{procA.name}</h3>
+              <Shield className="w-4 h-4 text-[#006828]" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{procA.name}</h3>
             </div>
             <span className={`inline-block text-[11px] font-medium px-2 py-1 mb-3 ${insuranceColor(procA.insuranceCoverage)}`}>
               {insuranceLabel(procA.insuranceCoverage)}
             </span>
-            <p className="text-xs text-muted leading-relaxed">{procA.insuranceNotes}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{procA.insuranceNotes}</p>
           </div>
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Shield className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-bold text-dark">{procB.name}</h3>
+              <Shield className="w-4 h-4 text-[#006828]" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{procB.name}</h3>
             </div>
             <span className={`inline-block text-[11px] font-medium px-2 py-1 mb-3 ${insuranceColor(procB.insuranceCoverage)}`}>
               {insuranceLabel(procB.insuranceCoverage)}
             </span>
-            <p className="text-xs text-muted leading-relaxed">{procB.insuranceNotes}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{procB.insuranceNotes}</p>
           </div>
         </div>
       </div>
 
       {/* Links to UAE-wide and other city comparisons */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Compare in Other Cities</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare in Other Cities</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link
             href={`/pricing/vs/${comp.slug}`}
-            className="border border-accent p-3 hover:bg-light-50 transition-colors group text-center"
+            className="border border-[#006828] p-3 hover:bg-[#f8f8f6] transition-colors group text-center"
           >
-            <p className="text-sm font-bold text-accent">
+            <p className="text-sm font-bold text-[#006828]">
               All UAE
             </p>
-            <p className="text-[11px] text-muted mt-1">UAE-wide comparison</p>
+            <p className="text-[11px] text-black/40 mt-1">UAE-wide comparison</p>
           </Link>
           {CITIES.filter((c) => c.slug !== citySlug).map((c) => {
             const hasA = procA.cityPricing[c.slug];
@@ -473,12 +466,12 @@ export default async function CityComparisonPage({ params }: PageProps) {
               <Link
                 key={c.slug}
                 href={`/pricing/vs/${comp.slug}/${c.slug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {c.name}
                 </p>
-                <p className="text-[11px] text-muted mt-1">
+                <p className="text-[11px] text-black/40 mt-1">
                   {formatAed(hasA.typical)} vs {formatAed(hasB.typical)}
                 </p>
               </Link>
@@ -494,8 +487,8 @@ export default async function CityComparisonPage({ params }: PageProps) {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges for {city.name}{" "}
           based on the DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG parameters,
           and market-observed data as of March 2026. Actual costs vary by facility, doctor,

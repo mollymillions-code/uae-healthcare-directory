@@ -101,7 +101,7 @@ export default async function ProcedureDetailPage({ params }: Props) {
       : "Not Covered by Insurance";
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Schema.org */}
       <JsonLd data={procedureSchema(proc)} />
       <JsonLd
@@ -124,58 +124,58 @@ export default async function ProcedureDetailPage({ params }: Props) {
 
       {/* Hero */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-dark mb-2">
+        <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           {proc.name} Cost in the UAE
         </h1>
-        <p className="text-sm text-muted mb-1">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-1">
           {proc.nameAr} · CPT {proc.cptCode}
         </p>
 
         {/* Answer block — AEO optimised */}
-        <div className="answer-block mt-4 bg-light-50 border border-light-200 p-4" data-answer-block="true">
-          <p className="text-sm text-muted leading-relaxed">{answerBlock}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mt-4 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{answerBlock}</p>
         </div>
       </div>
 
       {/* Price headline + key facts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
         {/* Price card */}
-        <div className="lg:col-span-2 border border-light-200 p-6">
+        <div className="lg:col-span-2 border border-black/[0.06] rounded-2xl p-6">
           <div className="flex items-baseline gap-2 mb-1">
-            <p className="text-3xl font-bold text-dark">
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
               {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
             </p>
           </div>
-          <p className="text-xs text-muted mb-6">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-6">
             Price range across all UAE facilities · Typical: {formatAed(proc.averageTypical)}
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-light-50 p-3 text-center">
-              <p className="text-[11px] text-muted mb-1">Cheapest City</p>
+            <div className="bg-[#f8f8f6] p-3 text-center">
+              <p className="text-[11px] text-black/40 mb-1">Cheapest City</p>
               <p className="text-sm font-bold text-green-700">
                 {proc.cheapestCity.name}
               </p>
-              <p className="text-xs text-muted">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
                 ~{formatAed(proc.cheapestCity.typical)}
               </p>
             </div>
-            <div className="bg-light-50 p-3 text-center">
-              <p className="text-[11px] text-muted mb-1">Most Expensive</p>
+            <div className="bg-[#f8f8f6] p-3 text-center">
+              <p className="text-[11px] text-black/40 mb-1">Most Expensive</p>
               <p className="text-sm font-bold text-red-700">
                 {proc.mostExpensiveCity.name}
               </p>
-              <p className="text-xs text-muted">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
                 ~{formatAed(proc.mostExpensiveCity.typical)}
               </p>
             </div>
-            <div className="bg-light-50 p-3 text-center">
-              <p className="text-[11px] text-muted mb-1">Duration</p>
-              <p className="text-sm font-bold text-dark">{proc.duration}</p>
+            <div className="bg-[#f8f8f6] p-3 text-center">
+              <p className="text-[11px] text-black/40 mb-1">Duration</p>
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{proc.duration}</p>
             </div>
-            <div className="bg-light-50 p-3 text-center">
-              <p className="text-[11px] text-muted mb-1">Recovery</p>
-              <p className="text-sm font-bold text-dark">{proc.recoveryTime}</p>
+            <div className="bg-[#f8f8f6] p-3 text-center">
+              <p className="text-[11px] text-black/40 mb-1">Recovery</p>
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{proc.recoveryTime}</p>
             </div>
           </div>
         </div>
@@ -190,11 +190,11 @@ export default async function ProcedureDetailPage({ params }: Props) {
             <p className="text-xs">{proc.insuranceNotes.slice(0, 150)}...</p>
           </div>
 
-          <div className="border border-light-200 p-4 space-y-2">
+          <div className="border border-black/[0.06] rounded-2xl p-5 space-y-2">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted" />
-              <p className="text-xs text-muted">
-                <strong className="text-dark">Setting:</strong>{" "}
+              <Clock className="w-4 h-4 text-black/40" />
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
+                <strong className="text-[#1c1c1c]">Setting:</strong>{" "}
                 {proc.setting === "inpatient"
                   ? "Hospital admission required"
                   : proc.setting === "outpatient"
@@ -205,9 +205,9 @@ export default async function ProcedureDetailPage({ params }: Props) {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-muted" />
-              <p className="text-xs text-muted">
-                <strong className="text-dark">Anaesthesia:</strong>{" "}
+              <Activity className="w-4 h-4 text-black/40" />
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
+                <strong className="text-[#1c1c1c]">Anaesthesia:</strong>{" "}
                 {proc.anaesthesia === "none"
                   ? "None required"
                   : proc.anaesthesia.charAt(0).toUpperCase() + proc.anaesthesia.slice(1)}
@@ -218,13 +218,12 @@ export default async function ProcedureDetailPage({ params }: Props) {
       </div>
 
       {/* City-by-City Pricing Table */}
-      <div className="section-header">
-        <h2>Price by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Price by City</h2>
       </div>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
         {/* Header */}
-        <div className="hidden sm:grid grid-cols-5 gap-4 p-3 bg-light-50 text-[11px] font-bold text-muted uppercase tracking-wider">
+        <div className="hidden sm:grid grid-cols-5 gap-4 p-3 bg-[#f8f8f6] text-[11px] font-bold text-black/40 uppercase tracking-wider">
           <div>City</div>
           <div className="text-right">Low</div>
           <div className="text-right">Typical</div>
@@ -237,57 +236,55 @@ export default async function ProcedureDetailPage({ params }: Props) {
             <Link
               key={city.citySlug}
               href={`/pricing/${slug}/${city.citySlug}`}
-              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 p-3 hover:bg-light-50 transition-colors group items-center"
+              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 p-3 hover:bg-[#f8f8f6] transition-colors group items-center"
             >
               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
-                <MapPin className="w-3.5 h-3.5 text-muted" />
-                <span className="text-sm font-bold text-dark group-hover:text-accent">
+                <MapPin className="w-3.5 h-3.5 text-black/40" />
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828]">
                   {city.cityName}
                 </span>
               </div>
               <div className="text-right">
-                <span className="sm:hidden text-[10px] text-muted mr-1">Low:</span>
-                <span className="text-sm text-muted">{formatAed(city.pricing.min)}</span>
+                <span className="sm:hidden text-[10px] text-black/40 mr-1">Low:</span>
+                <span className="font-['Geist',sans-serif] text-sm text-black/40">{formatAed(city.pricing.min)}</span>
               </div>
               <div className="text-right">
-                <span className="sm:hidden text-[10px] text-muted mr-1">Typical:</span>
-                <span className="text-sm font-bold text-dark">
+                <span className="sm:hidden text-[10px] text-black/40 mr-1">Typical:</span>
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                   {formatAed(city.pricing.typical)}
                 </span>
               </div>
               <div className="text-right">
-                <span className="sm:hidden text-[10px] text-muted mr-1">High:</span>
-                <span className="text-sm text-muted">{formatAed(city.pricing.max)}</span>
+                <span className="sm:hidden text-[10px] text-black/40 mr-1">High:</span>
+                <span className="font-['Geist',sans-serif] text-sm text-black/40">{formatAed(city.pricing.max)}</span>
               </div>
               <div className="text-right flex items-center justify-end gap-1">
-                <span className="text-xs text-muted">
+                <span className="font-['Geist',sans-serif] text-xs text-black/40">
                   {city.providerCount} provider{city.providerCount !== 1 ? "s" : ""}
                 </span>
-                <ArrowRight className="w-3 h-3 text-muted group-hover:text-accent" />
+                <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-[#006828]" />
               </div>
             </Link>
           ))}
       </div>
 
       {/* About the Procedure */}
-      <div className="section-header">
-        <h2>About {proc.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">About {proc.name}</h2>
       </div>
       <div className="mb-10 space-y-4">
-        <div className="prose-sm text-muted leading-relaxed">
+        <div className="prose-sm text-black/40 leading-relaxed">
           <p>{proc.description}</p>
         </div>
-        <div className="bg-light-50 border border-light-200 p-4">
-          <h3 className="text-sm font-bold text-dark mb-2">What to Expect</h3>
-          <p className="text-sm text-muted leading-relaxed">{proc.whatToExpect}</p>
+        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
+          <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">What to Expect</h3>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{proc.whatToExpect}</p>
         </div>
       </div>
 
       {/* Insurance Cost Estimator */}
-      <div className="section-header">
-        <h2>Insurance Cost Estimator</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Cost Estimator</h2>
       </div>
       <div className="mb-10">
         <CostEstimator
@@ -303,21 +300,20 @@ export default async function ProcedureDetailPage({ params }: Props) {
       {/* Related Procedures */}
       {related.length > 0 && (
         <>
-          <div className="section-header">
-            <h2>Related Procedures</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Procedures</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
             {related.map((rel) => (
               <Link
                 key={rel!.slug}
                 href={`/pricing/${rel!.slug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent mb-1">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] mb-1">
                   {rel!.name}
                 </h3>
-                <p className="text-xs text-muted">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">
                   {formatAed(rel!.priceRange.min)} – {formatAed(rel!.priceRange.max)}
                 </p>
               </Link>
@@ -333,8 +329,8 @@ export default async function ProcedureDetailPage({ params }: Props) {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative ranges based on the DOH
           Mandatory Tariff (Shafafiya) methodology, DHA DRG parameters, and market-observed
           data as of March 2026. Actual costs vary by facility, doctor, clinical complexity,

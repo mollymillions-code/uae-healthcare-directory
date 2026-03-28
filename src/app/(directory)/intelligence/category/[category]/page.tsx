@@ -50,10 +50,10 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <>
       {/* Back link */}
-      <div className="container-tc pt-6">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
           href="/intelligence"
-          className="inline-flex items-center gap-1.5 label hover:text-accent transition-colors"
+          className="inline-flex items-center gap-1.5 label hover:text-[#006828] transition-colors"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to Intelligence
@@ -61,31 +61,31 @@ export default async function CategoryPage({ params }: PageProps) {
       </div>
 
       {/* Category header */}
-      <div className="container-tc pt-8 pb-4">
-        <h1 className="font-sans text-2xl font-bold text-dark">{cat.name}</h1>
-        <p className="font-sans text-muted mt-2 max-w-2xl">{cat.description}</p>
-        <span className="label mt-3 block">{total} articles</span>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <h1 className="font-['Geist',sans-serif] text-2xl font-bold text-[#1c1c1c]">{cat.name}</h1>
+        <p className="font-['Geist',sans-serif] text-black/40 mt-2 max-w-2xl">{cat.description}</p>
+        <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold mt-3 block">{total} articles</span>
       </div>
 
       {/* Category navigation */}
-      <div className="container-tc pb-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <CategoryNav activeCategory={params.category} />
       </div>
 
       {/* Articles + sidebar */}
-      <section className="container-tc pb-16">
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Article feed */}
           <div className="lg:col-span-2">
             {articles.length === 0 ? (
-              <p className="font-sans text-muted py-12">
+              <p className="font-['Geist',sans-serif] text-black/40 py-12">
                 No articles in this category yet. Check back soon.
               </p>
             ) : (
               <div className="space-y-0">
                 {articles.map((article, i) => (
                   <div key={article.id}>
-                    {i > 0 && <div className="border-b border-light-200 my-5" />}
+                    {i > 0 && <div className="border-b border-black/[0.06] my-5" />}
                     <ArticleCard article={article} variant="horizontal" />
                   </div>
                 ))}
@@ -96,13 +96,13 @@ export default async function CategoryPage({ params }: PageProps) {
           {/* Sidebar */}
           <aside className="space-y-8">
             <div>
-              <div className="border-b-2 border-dark mb-4" />
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
               <EventsSidebar events={events} />
             </div>
 
             <div>
-              <div className="border-b-2 border-dark mb-4" />
-              <h3 className="label text-accent mb-4">Topics</h3>
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">Topics</h3>
               <TagCloud tags={tags} limit={20} />
             </div>
           </aside>
@@ -110,9 +110,9 @@ export default async function CategoryPage({ params }: PageProps) {
       </section>
 
       {/* AEO block */}
-      <section className="container-tc pb-16">
-        <div className="answer-block" data-answer-block="true">
-          <p className="font-sans text-muted leading-relaxed">
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Zavis Healthcare Industry Insights covers {cat.name.toLowerCase()} for the
             healthcare industry in the United Arab Emirates. {cat.description}{" "}
             Updated daily for healthcare professionals. Last updated March 2026.

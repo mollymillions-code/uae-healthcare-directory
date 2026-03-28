@@ -294,7 +294,7 @@ export default async function GuidePage({ params }: PageProps) {
   const faqs = generateGuideFaqs(guide, featuredProcs);
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -325,13 +325,13 @@ export default async function GuidePage({ params }: PageProps) {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Icon className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">{guide.name}</h1>
+          <Icon className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">{guide.name}</h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{guide.description}</p>
-          <p className="text-sm text-muted mt-2">
-            <strong className="text-dark">Who this is for:</strong>{" "}
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{guide.description}</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-2">
+            <strong className="text-[#1c1c1c]">Who this is for:</strong>{" "}
             {guide.audience}
           </p>
         </div>
@@ -352,25 +352,24 @@ export default async function GuidePage({ params }: PageProps) {
               label: "Cheapest city",
             },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Featured Procedures Table */}
-      <div className="section-header">
-        <h2>Procedure Prices</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Procedure Prices</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Prices shown are UAE-wide ranges. Click any procedure for city-specific
         pricing and insurance details.
       </p>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
-        <div className="hidden sm:grid grid-cols-12 gap-2 p-3 bg-light-50 text-[10px] font-bold text-muted uppercase tracking-wider">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
+        <div className="hidden sm:grid grid-cols-12 gap-2 p-3 bg-[#f8f8f6] text-[10px] font-bold text-black/40 uppercase tracking-wider">
           <div className="col-span-4">Procedure</div>
           <div className="col-span-2 text-right">Min</div>
           <div className="col-span-2 text-right">Typical</div>
@@ -407,24 +406,24 @@ export default async function GuidePage({ params }: PageProps) {
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}`}
-              className="grid grid-cols-12 gap-2 p-3 hover:bg-light-50 transition-colors group items-center"
+              className="grid grid-cols-12 gap-2 p-3 hover:bg-[#f8f8f6] transition-colors group items-center"
             >
               <div className="col-span-12 sm:col-span-4">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {proc.name}
                 </h3>
-                <p className="text-[10px] text-muted sm:hidden">
+                <p className="text-[10px] text-black/40 sm:hidden">
                   {formatAed(proc.priceRange.min)} –{" "}
                   {formatAed(proc.priceRange.max)}
                 </p>
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm text-muted">
+              <div className="hidden sm:block col-span-2 text-right text-sm text-black/40">
                 {formatAed(proc.priceRange.min)}
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm font-bold text-dark">
+              <div className="hidden sm:block col-span-2 text-right font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                 {formatAed(avgTypical)}
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm text-muted">
+              <div className="hidden sm:block col-span-2 text-right text-sm text-black/40">
                 {formatAed(proc.priceRange.max)}
               </div>
               <div className="hidden sm:flex col-span-2 justify-end">
@@ -440,29 +439,27 @@ export default async function GuidePage({ params }: PageProps) {
       </div>
 
       {/* Tips Section */}
-      <div className="section-header">
-        <h2>Expert Tips</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Expert Tips</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
         <div className="space-y-4">
           {guide.tips.map((tip, i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-accent text-white flex items-center justify-center text-xs font-bold">
+              <div className="flex-shrink-0 w-6 h-6 bg-[#006828] text-white flex items-center justify-center text-xs font-bold">
                 {i + 1}
               </div>
-              <p className="text-sm text-muted leading-relaxed">{tip}</p>
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{tip}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* City Comparison */}
-      <div className="section-header">
-        <h2>City Price Comparison</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">City Price Comparison</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Average typical prices for this guide&apos;s featured procedures by city.
         Click a city for detailed pricing.
       </p>
@@ -471,12 +468,12 @@ export default async function GuidePage({ params }: PageProps) {
           <Link
             key={city.slug}
             href={`/pricing/guide/${guide.slug}/${city.slug}`}
-            className="border border-light-200 p-4 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <MapPin className="w-4 h-4 text-[#006828]" />
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {city.name}
                 </h3>
               </div>
@@ -491,10 +488,10 @@ export default async function GuidePage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <p className="text-lg font-bold text-dark">
+            <p className="text-lg font-bold text-[#1c1c1c]">
               {formatAed(avg)}
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               avg. typical price
             </p>
           </Link>
@@ -502,25 +499,24 @@ export default async function GuidePage({ params }: PageProps) {
       </div>
 
       {/* Insurance Relevance */}
-      <div className="section-header">
-        <h2>Insurance Considerations</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Considerations</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <div className="answer-block space-y-3" data-answer-block="true">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 space-y-3" data-answer-block="true">
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Mandatory since Jan 2025:</strong>{" "}
+            <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Mandatory since Jan 2025:</strong>{" "}
               Health insurance is mandatory for all UAE residents. Employers must
               provide coverage. If you do not have insurance, you may face fines
               and will pay full self-pay rates at all facilities.
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <TrendingDown className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Covered procedures:</strong> Of the{" "}
+            <TrendingDown className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Covered procedures:</strong> Of the{" "}
               {featuredProcs.length} procedures in this guide,{" "}
               {
                 featuredProcs.filter(
@@ -546,9 +542,9 @@ export default async function GuidePage({ params }: PageProps) {
           </div>
           {cheapestCity && mostExpensiveCity && (
             <div className="flex items-start gap-3">
-              <TrendingUp className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-muted">
-                <strong className="text-dark">Price gap:</strong> The same set
+              <TrendingUp className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+              <p className="font-['Geist',sans-serif] text-sm text-black/40">
+                <strong className="text-[#1c1c1c]">Price gap:</strong> The same set
                 of procedures costs an average of{" "}
                 {formatAed(cheapestCity.avg)} in {cheapestCity.city.name}{" "}
                 versus {formatAed(mostExpensiveCity.avg)} in{" "}
@@ -566,9 +562,8 @@ export default async function GuidePage({ params }: PageProps) {
       </div>
 
       {/* Other guides */}
-      <div className="section-header">
-        <h2>Other Pricing Guides</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Pricing Guides</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
         {PRICING_GUIDES.filter((g) => g.slug !== guide.slug).map((g) => {
@@ -577,18 +572,18 @@ export default async function GuidePage({ params }: PageProps) {
             <Link
               key={g.slug}
               href={`/pricing/guide/${g.slug}`}
-              className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center gap-3"
+              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group flex items-center gap-3"
             >
-              <OtherIcon className="w-5 h-5 text-accent flex-shrink-0" />
+              <OtherIcon className="w-5 h-5 text-[#006828] flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                   {g.name}
                 </h3>
-                <p className="text-[10px] text-muted truncate">
+                <p className="text-[10px] text-black/40 truncate">
                   {g.featuredProcedures.length} procedures
                 </p>
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0" />
+              <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0" />
             </Link>
           );
         })}
@@ -598,8 +593,8 @@ export default async function GuidePage({ params }: PageProps) {
       <FaqSection faqs={faqs} title={`${guide.name} — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges
           based on the DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG
           parameters, and market-observed data as of March 2026. Actual costs

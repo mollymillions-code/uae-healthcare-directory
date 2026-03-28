@@ -29,7 +29,7 @@ export default function PricingListsHubPage() {
   const base = getBaseUrl();
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -49,13 +49,13 @@ export default function PricingListsHubPage() {
 
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <List className="w-8 h-8 text-accent" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-dark">
+          <List className="w-8 h-8 text-[#006828]" />
+          <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             UAE Medical Pricing Lists
           </h1>
         </div>
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Browse {PRICING_LISTS.length} curated rankings of medical procedure costs
             across 8 UAE cities. Find the cheapest procedures, most expensive surgeries,
             what insurance covers, and quick outpatient options.
@@ -66,9 +66,9 @@ export default function PricingListsHubPage() {
       {/* List cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
         {PRICING_LISTS.map((list) => (
-          <div key={list.slug} className="border border-light-200 p-4">
-            <h2 className="text-sm font-bold text-dark mb-2">{list.title}</h2>
-            <p className="text-xs text-muted mb-3">{list.description}</p>
+          <div key={list.slug} className="border border-black/[0.06] rounded-2xl p-5">
+            <h2 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{list.title}</h2>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3">{list.description}</p>
             <div className="flex flex-wrap gap-2">
               {CITIES.slice(0, 4).map((city) => {
                 const items = list.getItems(city.slug);
@@ -77,14 +77,14 @@ export default function PricingListsHubPage() {
                   <Link
                     key={city.slug}
                     href={`/pricing/lists/${list.slug}/${city.slug}`}
-                    className="text-[11px] text-accent hover:underline"
+                    className="text-[11px] text-[#006828] hover:underline"
                   >
                     {city.name} →
                   </Link>
                 );
               })}
               {CITIES.length > 4 && (
-                <span className="text-[11px] text-muted">
+                <span className="text-[11px] text-black/40">
                   +{CITIES.length - 4} more cities
                 </span>
               )}
@@ -94,14 +94,13 @@ export default function PricingListsHubPage() {
       </div>
 
       {/* All cities quick links */}
-      <div className="section-header">
-        <h2>Browse by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by City</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {CITIES.map((city) => (
-          <div key={city.slug} className="border border-light-200 p-3">
-            <h3 className="text-sm font-bold text-dark mb-2">{city.name}</h3>
+          <div key={city.slug} className="border border-black/[0.06] p-3">
+            <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{city.name}</h3>
             <div className="space-y-1">
               {PRICING_LISTS.slice(0, 4).map((list) => {
                 const items = list.getItems(city.slug);
@@ -110,7 +109,7 @@ export default function PricingListsHubPage() {
                   <Link
                     key={list.slug}
                     href={`/pricing/lists/${list.slug}/${city.slug}`}
-                    className="flex items-center justify-between text-[11px] text-muted hover:text-accent"
+                    className="flex items-center justify-between text-[11px] text-black/40 hover:text-[#006828]"
                   >
                     <span className="truncate">{list.titleTemplate.replace("{city}", "")}</span>
                     <ArrowRight className="w-3 h-3 flex-shrink-0" />

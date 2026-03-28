@@ -31,11 +31,11 @@ export function StarRating({ rating, reviewCount, size = "md" }: StarRatingProps
           />
         ))}
       </div>
-      <span className={`${textSize} font-semibold text-dark`}>
+      <span className={`${textSize} font-semibold text-[#1c1c1c]`}>
         {numRating.toFixed(1)}
       </span>
       {reviewCount !== undefined && (
-        <span className={`${textSize} text-muted`}>
+        <span className={`${textSize} text-black/40`}>
           ({reviewCount.toLocaleString()} {reviewCount === 1 ? "review" : "reviews"})
         </span>
       )}

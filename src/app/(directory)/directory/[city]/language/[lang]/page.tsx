@@ -79,7 +79,7 @@ export default async function LanguageProviderPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
         { name: city.name, url: `${base}/directory/${city.slug}` },
@@ -99,15 +99,15 @@ export default async function LanguageProviderPage({ params }: Props) {
         { label: language.name },
       ]} />
 
-      <h1 className="text-3xl font-bold text-dark mb-2">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
         {language.name}-Speaking Healthcare Providers in {city.name}
       </h1>
-      <p className="text-sm text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
         {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
       </p>
 
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} with {language.name}-speaking staff. The UAE&apos;s multicultural healthcare system ensures patients can receive care in their preferred language. Data from official government registers, last verified March 2026.
         </p>
       </div>
@@ -134,7 +134,7 @@ export default async function LanguageProviderPage({ params }: Props) {
             ))}
           </div>
           {providers.length > 48 && (
-            <div className="text-center mt-6 py-4 border-t border-light-200">
+            <div className="text-center mt-6 py-4 border-t border-black/[0.06]">
               <Link href={`/search?city=${city.slug}&q=${language.name}`} className="btn-accent">
                 View all {count} {language.name}-speaking providers
               </Link>
@@ -143,8 +143,8 @@ export default async function LanguageProviderPage({ params }: Props) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted mb-2">No providers with {language.name}-speaking staff found in {city.name} yet.</p>
-          <Link href={`/directory/${city.slug}`} className="text-accent text-sm">
+          <p className="text-black/40 mb-2">No providers with {language.name}-speaking staff found in {city.name} yet.</p>
+          <Link href={`/directory/${city.slug}`} className="text-[#006828] text-sm">
             View all healthcare providers in {city.name} &rarr;
           </Link>
         </div>

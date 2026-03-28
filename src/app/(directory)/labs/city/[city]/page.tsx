@@ -339,7 +339,7 @@ export default async function LabCityPage({
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -358,16 +358,16 @@ export default async function LabCityPage({
       {/* ── Hero ──────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <FlaskConical className="w-8 h-8 text-accent flex-shrink-0" />
-          <h1 className="text-3xl font-bold text-dark">
+          <FlaskConical className="w-8 h-8 text-[#006828] flex-shrink-0" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Lab Tests in {city.name} — Compare Prices Across {labs.length}{" "}
             Laboratories
           </h1>
         </div>
 
         {/* Answer block 1 — short editorial intro */}
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             {content?.intro ??
               `Compare lab test prices across ${labs.length} ${content?.regulatorAbbrev ?? "MOHAP"}-licensed diagnostic laboratories in ${city.name}, UAE. CBC from AED ${content?.cbcFrom ?? 69}. Vitamin D from AED ${content?.vitaminDFrom ?? 85}. ${homeCollectionLabs.length} labs offer home sample collection — many for free.`}
           </p>
@@ -401,22 +401,21 @@ export default async function LabCityPage({
           ].map(({ icon, value, label }) => (
             <div
               key={label}
-              className="bg-light-50 border border-light-200 p-4 text-center"
+              className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 text-center"
             >
-              <div className="flex justify-center mb-1 text-accent">{icon}</div>
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+              <div className="flex justify-center mb-1 text-[#006828]">{icon}</div>
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── Section: Labs in City ─────────────────────────────────── */}
-      <div className="section-header">
-        <h2>Laboratories in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Laboratories in {city.name}</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         All {labs.length} diagnostic labs below are licensed by the{" "}
         {content?.regulator ?? "UAE health authority"} and operate in{" "}
         {city.name}. Click any lab to compare its full test menu and prices.
@@ -442,11 +441,10 @@ export default async function LabCityPage({
       </div>
 
       {/* ── Section: Test Categories ──────────────────────────────── */}
-      <div className="section-header">
-        <h2>Test Categories</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Test Categories</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Browse tests by category. Each category page shows prices for that test
         type across all {labs.length} labs in {city.name}.
       </p>
@@ -455,25 +453,24 @@ export default async function LabCityPage({
           <Link
             key={cat.slug}
             href={`/labs/city/${citySlug}/${cat.slug}`}
-            className="border border-light-200 p-3 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
           >
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {cat.name}
               </h3>
-              <ChevronRight className="w-3.5 h-3.5 text-muted group-hover:text-accent transition-colors" />
+              <ChevronRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] transition-colors" />
             </div>
-            <p className="text-[11px] text-muted">{cat.testCount} tests</p>
+            <p className="text-[11px] text-black/40">{cat.testCount} tests</p>
           </Link>
         ))}
       </div>
 
       {/* ── Section: Popular Tests in City ───────────────────────── */}
-      <div className="section-header">
-        <h2>Popular Tests in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Popular Tests in {city.name}</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         The most frequently ordered lab tests in {city.name}. Click any test to
         compare prices across all{" "}
         {content?.regulatorAbbrev ?? "UAE"}-licensed labs.
@@ -483,35 +480,35 @@ export default async function LabCityPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
           >
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {test.shortName}
               </h3>
-              <p className="text-[11px] text-muted line-clamp-1">{test.name}</p>
-              <span className="text-[10px] bg-accent-muted text-accent-dark px-1.5 py-0.5 font-medium capitalize inline-block mt-1">
+              <p className="text-[11px] text-black/40 line-clamp-1">{test.name}</p>
+              <span className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5 font-medium capitalize inline-block mt-1">
                 {test.category.replace(/-/g, " ")}
               </span>
             </div>
             <div className="text-right flex-shrink-0">
               {test.priceRange ? (
                 <>
-                  <p className="text-sm font-bold text-accent">
+                  <p className="text-sm font-bold text-[#006828]">
                     {formatPrice(test.priceRange.min)}
                   </p>
                   {test.priceRange.min !== test.priceRange.max && (
-                    <p className="text-[10px] text-muted">
+                    <p className="text-[10px] text-black/40">
                       – {formatPrice(test.priceRange.max)}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted">
+                  <p className="text-[10px] text-black/40">
                     {test.priceRange.labCount} lab
                     {test.priceRange.labCount !== 1 ? "s" : ""}
                   </p>
                 </>
               ) : (
-                <p className="text-xs text-muted">Prices vary</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">Prices vary</p>
               )}
             </div>
           </Link>
@@ -519,14 +516,14 @@ export default async function LabCityPage({
       </div>
 
       {/* ── Answer block 2 — deep editorial ──────────────────────── */}
-      <div className="answer-block mb-10 bg-light-50 border border-light-200 p-5" data-answer-block="true">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-10 bg-[#f8f8f6] border border-black/[0.06] p-5" data-answer-block="true">
         <div className="flex items-center gap-2 mb-3">
-          <BarChart3 className="w-4 h-4 text-accent flex-shrink-0" />
-          <h2 className="text-sm font-bold text-dark">
+          <BarChart3 className="w-4 h-4 text-[#006828] flex-shrink-0" />
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
             Lab Testing in {city.name} — What You Need to Know
           </h2>
         </div>
-        <p className="text-sm text-muted leading-relaxed">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
           {content?.deepDive ??
             `Lab testing in ${city.name} is regulated by the ${content?.regulator ?? "UAE Ministry of Health and Prevention (MOHAP)"}. All licensed diagnostic laboratories must meet national quality standards and are subject to regular inspection. Most routine blood tests — including CBC, lipid profile, liver and kidney function, and glucose — do not require a doctor's prescription at standalone labs. Vitamin D deficiency is particularly prevalent among UAE residents despite abundant sunshine, due to indoor lifestyles and protective clothing; routine screening is recommended annually. Home collection is available across ${city.name} through multiple licensed providers. Always confirm that your chosen lab is on your insurance plan's network before booking.`}
         </p>
@@ -534,9 +531,9 @@ export default async function LabCityPage({
         {/* Popular areas */}
         {content?.popularAreas && content.popularAreas.length > 0 && (
           <div className="mt-4 flex items-start gap-2">
-            <MapPin className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-muted">
-              <span className="font-semibold text-dark">Lab hubs in {city.name}:</span>{" "}
+            <MapPin className="w-3.5 h-3.5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">
+              <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Lab hubs in {city.name}:</span>{" "}
               {content.popularAreas.join(", ")}
             </p>
           </div>
@@ -551,9 +548,8 @@ export default async function LabCityPage({
 
       {/* ── Cross-links: other cities ─────────────────────────────── */}
       <div className="mt-12">
-        <div className="section-header">
-          <h2>Compare Lab Prices in Other Cities</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare Lab Prices in Other Cities</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {CITIES.filter((c) => c.slug !== citySlug).map((otherCity) => {
@@ -562,15 +558,15 @@ export default async function LabCityPage({
               <Link
                 key={otherCity.slug}
                 href={`/labs/city/${otherCity.slug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                  <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                     {otherCity.name}
                   </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-muted group-hover:text-accent" />
+                  <ChevronRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828]" />
                 </div>
-                <p className="text-[11px] text-muted">
+                <p className="text-[11px] text-black/40">
                   {otherLabs.length} lab{otherLabs.length !== 1 ? "s" : ""}
                 </p>
               </Link>
@@ -580,8 +576,8 @@ export default async function LabCityPage({
       </div>
 
       {/* ── Disclaimer ────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative, based on
           publicly available pricing from lab websites, aggregator platforms
           (ServiceMarket, Healthchecks360, DarDoc), and published walk-in price

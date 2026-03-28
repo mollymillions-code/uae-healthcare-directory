@@ -82,7 +82,7 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -116,13 +116,13 @@ export default function PricingPage() {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <DollarSign className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <DollarSign className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             UAE Medical Procedure Costs
           </h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Compare prices for {procedureCount} medical procedures across Dubai, Abu Dhabi,
             Sharjah, and all UAE emirates. Pricing based on the DOH Mandatory Tariff
             (Shafafiya) methodology and market-observed data. Use our insurance calculator
@@ -138,9 +138,9 @@ export default function PricingPage() {
             { value: "8", label: "UAE cities compared" },
             { value: "85+", label: "Insurance plans mapped" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
@@ -148,17 +148,15 @@ export default function PricingPage() {
 
       {/* Search */}
       <div className="mb-12">
-        <div className="section-header">
-          <h2>Search Procedures</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Search Procedures</h2>
         </div>
         <ProcedureSearch procedures={searchData} />
       </div>
 
       {/* Categories */}
-      <div className="section-header">
-        <h2>Browse by Category</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by Category</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
         {PROCEDURE_CATEGORIES.map((cat) => {
@@ -182,12 +180,12 @@ export default function PricingPage() {
             <Link
               key={cat.slug}
               href={`/pricing#${cat.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors mb-1">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
                 {cat.name}
               </h3>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-black/40">
                 {count} procedure{count !== 1 ? "s" : ""}
               </p>
             </Link>
@@ -196,9 +194,8 @@ export default function PricingPage() {
       </div>
 
       {/* Popular Procedures */}
-      <div className="section-header">
-        <h2>Most Searched Procedures</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Most Searched Procedures</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
         {popular.map((proc) => {
@@ -224,19 +221,19 @@ export default function PricingPage() {
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}`}
-              className="border border-light-200 p-4 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {proc.name}
                 </h3>
-                <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0 mt-0.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
               </div>
-              <p className="text-xs text-muted mb-3 line-clamp-2">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3 line-clamp-2">
                 {proc.description.slice(0, 120)}...
               </p>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-dark">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                   {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
                 </p>
                 <span className={`text-[10px] font-medium px-2 py-0.5 ${coverageColor}`}>
@@ -270,35 +267,34 @@ export default function PricingPage() {
 
         return (
           <div key={cat.slug} id={cat.slug} className="mb-10">
-            <div className="section-header">
-              <h2>{cat.name}</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name}</h2>
             </div>
-            <p className="text-xs text-muted mb-4">{cat.description}</p>
-            <div className="border border-light-200 divide-y divide-light-200">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">{cat.description}</p>
+            <div className="border border-black/[0.06] divide-y divide-light-200">
               {catProcs.map((proc) => (
                 <Link
                   key={proc.slug}
                   href={`/pricing/${proc.slug}`}
-                  className="flex items-center justify-between p-3 hover:bg-light-50 transition-colors group"
+                  className="flex items-center justify-between p-3 hover:bg-[#f8f8f6] transition-colors group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                      <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                         {proc.name}
                       </h3>
                       {proc.cptCode && (
-                        <span className="text-[9px] text-muted font-mono hidden sm:inline">
+                        <span className="text-[9px] text-black/40 font-['Geist',sans-serif] hidden sm:inline">
                           CPT {proc.cptCode}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-muted">
+                    <p className="text-[11px] text-black/40">
                       {proc.duration} · {proc.setting} · {proc.recoveryTime} recovery
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0 ml-4">
-                    <p className="text-sm font-bold text-dark">
+                    <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                       {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
                     </p>
                   </div>
@@ -310,39 +306,39 @@ export default function PricingPage() {
       })}
 
       {/* Key Insights (AEO content) */}
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <h2 className="text-lg font-bold text-dark mb-4">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <h2 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">
           UAE Medical Pricing — Key Facts
         </h2>
-        <div className="answer-block space-y-3" data-answer-block="true">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 space-y-3" data-answer-block="true">
           <div className="flex items-start gap-3">
-            <TrendingDown className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Cheapest emirate:</strong> Northern emirates
+            <TrendingDown className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Cheapest emirate:</strong> Northern emirates
               (Sharjah, Ajman, UAQ) consistently offer the lowest medical procedure prices,
               often 30–40% less than Dubai for the same procedure.
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <DollarSign className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Abu Dhabi pricing:</strong> Governed by the DOH
+            <DollarSign className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Abu Dhabi pricing:</strong> Governed by the DOH
               Mandatory Tariff (Shafafiya) — base rates derived from US Medicare rates ×
               3.672 AED/USD, with facility-negotiated multipliers of 1x–3x.
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Insurance since Jan 2025:</strong> Health
+            <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Insurance since Jan 2025:</strong> Health
               insurance is mandatory for all UAE residents across all seven emirates. Most
               medically necessary procedures are covered with 0–20% co-pay.
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <Search className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Price variation:</strong> The same procedure can
+            <Search className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Price variation:</strong> The same procedure can
               cost 2–3x more at a premium hospital versus a government or basic private
               facility. Always compare multiple providers.
             </p>
@@ -357,8 +353,8 @@ export default function PricingPage() {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges based on the
           DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG parameters, and
           market-observed data as of March 2026. Actual costs vary by facility, doctor,

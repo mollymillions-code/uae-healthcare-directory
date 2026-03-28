@@ -174,7 +174,7 @@ export default async function JourneyCityPage({ params }: Props) {
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -206,59 +206,59 @@ export default async function JourneyCityPage({ params }: Props) {
 
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {journey.name} Cost in {city.name}
         </h1>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{answerBlock}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerBlock}</p>
         </div>
 
         {/* Cost summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">
               Typical Total ({city.name})
             </p>
-            <p className="text-lg font-bold text-accent">
+            <p className="text-lg font-bold text-[#006828]">
               {formatAed(cost.requiredTypical)}
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               {formatAed(cost.requiredMin)} – {formatAed(cost.requiredMax)}
             </p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">vs. UAE Average</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">vs. UAE Average</p>
             <p
               className={`text-lg font-bold ${
                 vsUaeAvg > 0
                   ? "text-red-600"
                   : vsUaeAvg < 0
                   ? "text-green-600"
-                  : "text-dark"
+                  : "text-[#1c1c1c]"
               }`}
             >
               {vsUaeAvg > 0 ? "+" : ""}
               {vsUaeAvg}%
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               UAE avg: {formatAed(uaeCost.requiredTypical)}
             </p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">City Rank</p>
-            <p className="text-lg font-bold text-dark">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">City Rank</p>
+            <p className="text-lg font-bold text-[#1c1c1c]">
               #{thisRank} of 8
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               {thisRank <= 3 ? "Affordable" : thisRank <= 6 ? "Mid-range" : "Premium"}
             </p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">Duration</p>
-            <p className="text-lg font-bold text-dark">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">Duration</p>
+            <p className="text-lg font-bold text-[#1c1c1c]">
               {journey.totalDuration}
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               {cost.steps.filter((s) => !s.isOptional).length} steps
             </p>
           </div>
@@ -266,52 +266,51 @@ export default async function JourneyCityPage({ params }: Props) {
       </div>
 
       {/* Step-by-step Breakdown (city-specific prices) */}
-      <div className="section-header">
-        <h2>Step-by-Step Cost in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Step-by-Step Cost in {city.name}</h2>
       </div>
-      <div className="border border-light-200 mb-8 overflow-x-auto">
+      <div className="border border-black/[0.06] mb-8 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-light-50 text-left">
-              <th className="p-3 font-bold text-dark">Procedure</th>
-              <th className="p-3 font-bold text-dark text-center">Qty</th>
-              <th className="p-3 font-bold text-dark text-right">
+            <tr className="bg-[#f8f8f6] text-left">
+              <th className="p-3 font-bold text-[#1c1c1c]">Procedure</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-center">Qty</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-right">
                 Unit Cost ({city.name})
               </th>
-              <th className="p-3 font-bold text-dark text-right">Subtotal</th>
-              <th className="p-3 font-bold text-dark text-center">Type</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-right">Subtotal</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-center">Type</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-light-200">
             {cost.steps.map((step, i) => (
               <tr
                 key={`${step.procedureSlug}-${i}`}
-                className={step.isOptional ? "bg-light-50/50" : ""}
+                className={step.isOptional ? "bg-[#f8f8f6]/50" : ""}
               >
                 <td className="p-3">
                   <Link
                     href={`/pricing/${step.procedureSlug}/${citySlug}`}
-                    className="text-accent hover:underline font-medium"
+                    className="text-[#006828] hover:underline font-medium"
                   >
                     {step.procedureName}
                   </Link>
                   {step.note && (
-                    <span className="text-[11px] text-muted block">
+                    <span className="text-[11px] text-black/40 block">
                       {step.note}
                     </span>
                   )}
                 </td>
                 <td className="p-3 text-center">{step.quantity}</td>
-                <td className="p-3 text-right text-muted">
+                <td className="p-3 text-right text-black/40">
                   {formatAed(step.unitMin)} – {formatAed(step.unitMax)}
                 </td>
-                <td className="p-3 text-right font-bold text-dark">
+                <td className="p-3 text-right font-bold text-[#1c1c1c]">
                   {formatAed(step.subtotalMin)} – {formatAed(step.subtotalMax)}
                 </td>
                 <td className="p-3 text-center">
                   {step.isOptional ? (
-                    <span className="text-[10px] text-muted bg-light-50 px-2 py-0.5">
+                    <span className="text-[10px] text-black/40 bg-[#f8f8f6] px-2 py-0.5">
                       Optional
                     </span>
                   ) : (
@@ -322,21 +321,21 @@ export default async function JourneyCityPage({ params }: Props) {
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-light-50 font-bold">
-              <td className="p-3 text-dark" colSpan={3}>
+            <tr className="bg-[#f8f8f6] font-bold">
+              <td className="p-3 text-[#1c1c1c]" colSpan={3}>
                 Total (Required Steps)
               </td>
-              <td className="p-3 text-right text-accent">
+              <td className="p-3 text-right text-[#006828]">
                 {formatAed(cost.requiredMin)} – {formatAed(cost.requiredMax)}
               </td>
               <td />
             </tr>
             {cost.optionalTypical > 0 && (
-              <tr className="bg-light-50/50">
-                <td className="p-3 text-muted" colSpan={3}>
+              <tr className="bg-[#f8f8f6]/50">
+                <td className="p-3 text-black/40" colSpan={3}>
                   + Optional Add-ons
                 </td>
-                <td className="p-3 text-right text-muted">
+                <td className="p-3 text-right text-black/40">
                   {formatAed(cost.optionalMin)} – {formatAed(cost.optionalMax)}
                 </td>
                 <td />
@@ -347,16 +346,15 @@ export default async function JourneyCityPage({ params }: Props) {
       </div>
 
       {/* Compare with Other Cities */}
-      <div className="section-header">
-        <h2>Compare with Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare with Other Cities</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         How does {city.name} compare to other UAE cities for{" "}
         {journey.name.toLowerCase()} cost? Showing typical cost for required
         steps.
       </p>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
         {cityComparison.map((comp) => {
           const isThis = comp.citySlug === citySlug;
           const diff = comp.requiredTypical - cost.requiredTypical;
@@ -369,28 +367,28 @@ export default async function JourneyCityPage({ params }: Props) {
             <Link
               key={comp.citySlug}
               href={`/pricing/journey/${journey.slug}/${comp.citySlug}`}
-              className={`flex items-center justify-between p-3 hover:bg-light-50 transition-colors group ${
-                isThis ? "bg-accent/5 border-l-2 border-l-accent" : ""
+              className={`flex items-center justify-between p-3 hover:bg-[#f8f8f6] transition-colors group ${
+                isThis ? "bg-[#006828]/5 border-l-2 border-l-[#006828]" : ""
               }`}
             >
               <div className="flex items-center gap-3">
                 <MapPin
                   className={`w-3.5 h-3.5 ${
-                    isThis ? "text-accent" : "text-muted"
+                    isThis ? "text-[#006828]" : "text-black/40"
                   }`}
                 />
                 <div>
                   <span
                     className={`text-sm font-bold ${
                       isThis
-                        ? "text-accent"
-                        : "text-dark group-hover:text-accent"
+                        ? "text-[#006828]"
+                        : "text-[#1c1c1c] group-hover:text-[#006828]"
                     } transition-colors`}
                   >
                     {comp.cityName}
                     {isThis && " (current)"}
                   </span>
-                  <span className="text-[11px] text-muted block">
+                  <span className="text-[11px] text-black/40 block">
                     {formatAed(comp.requiredMin)} –{" "}
                     {formatAed(comp.requiredMax)}
                   </span>
@@ -398,7 +396,7 @@ export default async function JourneyCityPage({ params }: Props) {
               </div>
               <div className="text-right flex items-center gap-3">
                 <div>
-                  <p className="text-sm font-bold text-dark">
+                  <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                     {formatAed(comp.requiredTypical)}
                   </p>
                   {!isThis && pctDiff !== 0 && (
@@ -418,7 +416,7 @@ export default async function JourneyCityPage({ params }: Props) {
                   )}
                 </div>
                 {!isThis && (
-                  <ArrowRight className="w-3 h-3 text-muted group-hover:text-accent" />
+                  <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-[#006828]" />
                 )}
               </div>
             </Link>
@@ -427,11 +425,10 @@ export default async function JourneyCityPage({ params }: Props) {
       </div>
 
       {/* Find Providers */}
-      <div className="section-header">
-        <h2>Find Providers in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Find Providers in {city.name}</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Links to individual procedure pricing pages in {city.name} for each step
         of this journey.
       </p>
@@ -440,28 +437,27 @@ export default async function JourneyCityPage({ params }: Props) {
           <Link
             key={`provider-${step.procedureSlug}-${i}`}
             href={`/pricing/${step.procedureSlug}/${citySlug}`}
-            className="border border-light-200 p-3 hover:border-accent transition-colors group flex items-center justify-between"
+            className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group flex items-center justify-between"
           >
             <div>
-              <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {step.procedureName}
                 {step.quantity > 1 && (
-                  <span className="text-muted"> x{step.quantity}</span>
+                  <span className="text-black/40"> x{step.quantity}</span>
                 )}
               </p>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-black/40">
                 {formatAed(step.unitTypical)} typical in {city.name}
               </p>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0" />
+            <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0" />
           </Link>
         ))}
       </div>
 
       {/* Other Cities for This Journey */}
-      <div className="section-header">
-        <h2>{journey.name} in Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{journey.name} in Other Cities</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {CITIES.filter((c) => c.slug !== citySlug).map((c) => {
@@ -470,12 +466,12 @@ export default async function JourneyCityPage({ params }: Props) {
             <Link
               key={c.slug}
               href={`/pricing/journey/${journey.slug}/${c.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
             >
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {c.name}
               </h3>
-              <p className="text-xs text-muted">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
                 {formatAed(cCost.requiredTypical)} typical
               </p>
             </Link>
@@ -484,9 +480,8 @@ export default async function JourneyCityPage({ params }: Props) {
       </div>
 
       {/* Other Journeys in This City */}
-      <div className="section-header">
-        <h2>Other Journeys in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Journeys in {city.name}</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
         {CARE_JOURNEYS.filter((j) => j.slug !== journey.slug)
@@ -497,12 +492,12 @@ export default async function JourneyCityPage({ params }: Props) {
               <Link
                 key={j.slug}
                 href={`/pricing/journey/${j.slug}/${citySlug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors mb-1">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
                   {j.name}
                 </h3>
-                <p className="text-xs text-muted">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">
                   {formatAed(jCost.requiredMin)} –{" "}
                   {formatAed(jCost.requiredMax)} in {city.name}
                 </p>
@@ -518,8 +513,8 @@ export default async function JourneyCityPage({ params }: Props) {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges for{" "}
           {city.name} based on the DOH Mandatory Tariff (Shafafiya) methodology
           and market-observed data as of March 2026. Actual costs vary by facility,

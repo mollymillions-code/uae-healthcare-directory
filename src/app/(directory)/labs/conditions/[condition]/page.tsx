@@ -884,7 +884,7 @@ export default async function ConditionPage({
         }}
       />
 
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -897,21 +897,21 @@ export default async function ConditionPage({
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-3">
-            <Stethoscope className="w-5 h-5 text-accent" />
-            <span className="text-xs font-bold text-accent uppercase tracking-wider">
+            <Stethoscope className="w-5 h-5 text-[#006828]" />
+            <span className="text-xs font-bold text-[#006828] uppercase tracking-wider">
               Condition-Based Lab Guide
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-dark leading-tight mb-4">
+          <h1 className="text-2xl md:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight leading-tight mb-4">
             {condition.h1}
           </h1>
 
           {/* Answer Block / Overview */}
           <div
-            className="answer-block bg-light-50 border-l-4 border-accent p-4 md:p-5"
+            className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border-l-4 border-[#006828] p-4 md:p-5"
             data-answer-block="true"
           >
-            <p className="text-sm md:text-base text-dark leading-relaxed">
+            <p className="text-sm md:text-base text-[#1c1c1c] leading-relaxed">
               {condition.overview}
             </p>
           </div>
@@ -922,40 +922,39 @@ export default async function ConditionPage({
           <main className="lg:col-span-3 space-y-8">
             {/* Tests You Need */}
             <section>
-              <div className="section-header mb-4">
-                <h2>Tests You Need</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tests You Need</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {resolvedTests.map(({ test, range }) => (
                   <Link
                     key={test.slug}
                     href={`/labs/test/${test.slug}`}
-                    className="border border-light-200 hover:border-accent p-4 transition-colors group block"
+                    className="border border-black/[0.06] hover:border-[#006828]/15 p-4 transition-colors group block"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                        <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                           {test.shortName}
                         </p>
-                        <p className="text-[11px] text-muted mt-0.5 line-clamp-2">
+                        <p className="text-[11px] text-black/40 mt-0.5 line-clamp-2">
                           {test.description}
                         </p>
                       </div>
                       {range && (
                         <div className="text-right flex-shrink-0">
-                          <p className="text-xs font-bold text-accent">
+                          <p className="text-xs font-bold text-[#006828]">
                             {formatPrice(range.min)}
                           </p>
                           {range.max > range.min && (
-                            <p className="text-[10px] text-muted">
+                            <p className="text-[10px] text-black/40">
                               &ndash; {formatPrice(range.max)}
                             </p>
                           )}
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 mt-2 text-[10px] text-muted">
+                    <div className="flex items-center gap-1 mt-2 text-[10px] text-black/40">
                       {test.fastingRequired && (
                         <>
                           <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 font-bold rounded-sm">
@@ -975,21 +974,20 @@ export default async function ConditionPage({
 
             {/* Estimated Cost */}
             {estimatedCost > 0 && (
-              <section className="estimated-cost-box bg-light-50 border border-light-200 p-5">
-                <div className="section-header mb-4">
-                  <h2>Estimated Cost</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+              <section className="estimated-cost-box bg-[#f8f8f6] border border-black/[0.06] p-5">
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Estimated Cost</h2>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Calculator className="w-6 h-6 text-accent flex-shrink-0 mt-0.5" />
+                  <Calculator className="w-6 h-6 text-[#006828] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-2xl font-bold text-accent">
+                    <p className="text-2xl font-bold text-[#006828]">
                       {formatPrice(estimatedCost)}
-                      <span className="text-sm font-normal text-muted ml-1">
+                      <span className="text-sm font-normal text-black/40 ml-1">
                         estimated minimum
                       </span>
                     </p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">
+                    <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-1 leading-relaxed">
                       This is the sum of the cheapest available price for each
                       test in the panel across all UAE labs. Your actual cost
                       depends on which lab you choose — ordering all tests at the
@@ -1004,15 +1002,14 @@ export default async function ConditionPage({
 
             {/* Risk Factors */}
             <section>
-              <div className="section-header mb-4">
-                <h2>Risk Factors</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Risk Factors</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {condition.riskFactors.map((factor) => (
                   <span
                     key={factor}
-                    className="inline-flex items-center gap-1.5 bg-light-50 border border-light-200 px-3 py-1.5 text-xs text-dark"
+                    className="inline-flex items-center gap-1.5 bg-[#f8f8f6] border border-black/[0.06] px-3 py-1.5 text-xs text-[#1c1c1c]"
                   >
                     <AlertTriangle className="w-3 h-3 text-amber-500 flex-shrink-0" />
                     {factor}
@@ -1023,17 +1020,16 @@ export default async function ConditionPage({
 
             {/* Symptoms */}
             <section>
-              <div className="section-header mb-4">
-                <h2>Common Symptoms</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Common Symptoms</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {condition.symptoms.map((symptom) => (
                   <span
                     key={symptom}
-                    className="inline-flex items-center gap-1.5 bg-light-50 border border-light-200 px-3 py-1.5 text-xs text-dark"
+                    className="inline-flex items-center gap-1.5 bg-[#f8f8f6] border border-black/[0.06] px-3 py-1.5 text-xs text-[#1c1c1c]"
                   >
-                    <Activity className="w-3 h-3 text-accent flex-shrink-0" />
+                    <Activity className="w-3 h-3 text-[#006828] flex-shrink-0" />
                     {symptom}
                   </span>
                 ))}
@@ -1042,15 +1038,14 @@ export default async function ConditionPage({
 
             {/* UAE Health Context */}
             <section>
-              <div className="section-header mb-4">
-                <h2>UAE Health Context</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">UAE Health Context</h2>
               </div>
               <div
-                className="answer-block bg-light-50 border-l-4 border-accent p-4 md:p-5"
+                className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border-l-4 border-[#006828] p-4 md:p-5"
                 data-answer-block="true"
               >
-                <p className="text-sm text-dark leading-relaxed">
+                <p className="text-sm text-[#1c1c1c] leading-relaxed">
                   {condition.uaeContext}
                 </p>
               </div>
@@ -1059,11 +1054,10 @@ export default async function ConditionPage({
             {/* Where to Get Tested */}
             {labsOffering.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Where to Get Tested</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Where to Get Tested</h2>
                 </div>
-                <p className="text-sm text-muted mb-4">
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
                   Labs ranked by how many of the {condition.testSlugs.length}{" "}
                   recommended tests they offer in their price list.
                 </p>
@@ -1072,25 +1066,25 @@ export default async function ConditionPage({
                     <Link
                       key={lab.labSlug}
                       href={`/labs/${lab.labSlug}`}
-                      className="flex items-center justify-between border border-light-200 hover:border-accent p-3 transition-colors group"
+                      className="flex items-center justify-between border border-black/[0.06] hover:border-[#006828]/15 p-3 transition-colors group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-light-50 border border-light-200 flex items-center justify-center flex-shrink-0">
-                          <Stethoscope className="w-4 h-4 text-accent" />
+                        <div className="w-8 h-8 bg-[#f8f8f6] border border-black/[0.06] flex items-center justify-center flex-shrink-0">
+                          <Stethoscope className="w-4 h-4 text-[#006828]" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                             {lab.labName}
                           </p>
-                          <p className="text-[11px] text-muted">
+                          <p className="text-[11px] text-black/40">
                             {lab.testCount} of {lab.totalTests} tests available
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-light-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="w-16 bg-[#f8f8f6] h-1.5 rounded-full overflow-hidden">
                           <div
-                            className="bg-accent h-full rounded-full"
+                            className="bg-[#006828] h-full rounded-full"
                             style={{
                               width: `${Math.round(
                                 (lab.testCount / lab.totalTests) * 100
@@ -1098,7 +1092,7 @@ export default async function ConditionPage({
                             }}
                           />
                         </div>
-                        <span className="text-[11px] font-bold text-accent">
+                        <span className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828]">
                           {Math.round(
                             (lab.testCount / lab.totalTests) * 100
                           )}
@@ -1119,19 +1113,18 @@ export default async function ConditionPage({
 
             {/* Cross-links to other conditions */}
             <section>
-              <div className="section-header mb-4">
-                <h2>Other Condition-Based Test Guides</h2>
-                <span className="arrows">&gt;&gt;&gt;</span>
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Condition-Based Test Guides</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {otherConditions.map((c) => (
                   <Link
                     key={c.slug}
                     href={`/labs/conditions/${c.slug}`}
-                    className="flex items-center gap-2 border border-light-200 hover:border-accent p-3 transition-colors group"
+                    className="flex items-center gap-2 border border-black/[0.06] hover:border-[#006828]/15 p-3 transition-colors group"
                   >
-                    <ArrowRight className="w-3.5 h-3.5 text-accent flex-shrink-0" />
-                    <span className="text-xs text-dark group-hover:text-accent transition-colors leading-tight">
+                    <ArrowRight className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
+                    <span className="text-xs text-[#1c1c1c] group-hover:text-[#006828] transition-colors leading-tight">
                       {c.h1.split(":")[0]}
                     </span>
                   </Link>
@@ -1140,11 +1133,11 @@ export default async function ConditionPage({
             </section>
 
             {/* Medical Disclaimer */}
-            <div className="border border-light-200 bg-light-50 p-4 text-xs text-muted leading-relaxed">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4 text-xs text-black/40 leading-relaxed">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-muted flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-3.5 h-3.5 text-black/40 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-dark">Medical Disclaimer:</strong>{" "}
+                  <strong className="text-[#1c1c1c]">Medical Disclaimer:</strong>{" "}
                   This page is for informational purposes only and does not
                   constitute medical advice. The tests listed are commonly
                   associated with this condition but may not be appropriate for
@@ -1162,44 +1155,44 @@ export default async function ConditionPage({
           {/* Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Quick Summary */}
-            <div className="border border-light-200 bg-light-50 p-4">
-              <p className="text-xs font-bold text-dark mb-3 uppercase tracking-wider">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3 uppercase tracking-wider">
                 Quick Summary
               </p>
               <div className="space-y-3">
                 <div>
-                  <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                     Tests Needed
                   </p>
-                  <p className="text-sm font-semibold text-dark mt-0.5">
+                  <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                     {resolvedTests.length} blood tests
                   </p>
                 </div>
                 {estimatedCost > 0 && (
                   <div>
-                    <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                    <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                       Est. Minimum Cost
                     </p>
-                    <p className="text-sm font-semibold text-accent mt-0.5">
+                    <p className="text-sm font-semibold text-[#006828] mt-0.5">
                       {formatPrice(estimatedCost)}
                     </p>
                   </div>
                 )}
                 <div>
-                  <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                     Fasting Required
                   </p>
-                  <p className="text-sm font-semibold text-dark mt-0.5">
+                  <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                     {resolvedTests.some(({ test }) => test.fastingRequired)
                       ? "Yes (for some tests)"
                       : "No"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                     Labs Available
                   </p>
-                  <p className="text-sm font-semibold text-dark mt-0.5">
+                  <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">
                     {labsOffering.length} labs
                   </p>
                 </div>
@@ -1207,8 +1200,8 @@ export default async function ConditionPage({
             </div>
 
             {/* Other Conditions */}
-            <div className="border border-light-200 p-4">
-              <div className="section-header mb-3">
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-3">
                 <h3 className="text-sm">Browse by Condition</h3>
                 <span className="arrows text-xs">&gt;&gt;&gt;</span>
               </div>
@@ -1217,10 +1210,10 @@ export default async function ConditionPage({
                   <Link
                     key={c.slug}
                     href={`/labs/conditions/${c.slug}`}
-                    className="flex items-start gap-2 group py-1.5 border-b border-light-100 last:border-b-0"
+                    className="flex items-start gap-2 group py-1.5 border-b border-black/[0.06] last:border-b-0"
                   >
-                    <ArrowRight className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-xs text-dark group-hover:text-accent transition-colors leading-tight">
+                    <ArrowRight className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-[#1c1c1c] group-hover:text-[#006828] transition-colors leading-tight">
                       {c.h1.split(":")[0]}
                     </span>
                   </Link>
@@ -1229,24 +1222,24 @@ export default async function ConditionPage({
             </div>
 
             {/* Compare Prices CTA */}
-            <div className="border border-light-200 bg-light-50 p-4">
-              <p className="text-xs font-bold text-dark mb-2">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
                 Compare Blood Test Prices
               </p>
-              <p className="text-[11px] text-muted mb-3 leading-relaxed">
+              <p className="text-[11px] text-black/40 mb-3 leading-relaxed">
                 Browse and compare prices for 30+ tests across 11 UAE labs.
               </p>
               <Link
                 href="/labs"
-                className="text-[11px] font-bold text-accent hover:text-accent-dark transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
               >
                 Browse all tests &rarr;
               </Link>
             </div>
 
             {/* Quick Links */}
-            <div className="border border-light-200 p-4">
-              <p className="text-xs font-bold text-dark mb-3">Quick Links</p>
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">Quick Links</p>
               <div className="space-y-1.5">
                 {[
                   {
@@ -1278,7 +1271,7 @@ export default async function ConditionPage({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="flex items-center gap-1.5 text-xs text-muted hover:text-accent transition-colors py-1"
+                    className="flex items-center gap-1.5 text-xs text-black/40 hover:text-[#006828] transition-colors py-1"
                   >
                     <ArrowRight className="w-3 h-3 flex-shrink-0" />
                     {link.label}

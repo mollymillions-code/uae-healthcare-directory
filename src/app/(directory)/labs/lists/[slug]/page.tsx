@@ -61,7 +61,7 @@ export function generateMetadata({
 // ─── Icon selector by list type ───────────────────────────────────────────────
 
 function ListTypeIcon({ listType }: { listType: LabList["listType"] }) {
-  const cls = "w-8 h-8 text-accent";
+  const cls = "w-8 h-8 text-[#006828]";
   switch (listType) {
     case "cheapest-labs":
     case "cheapest-test":
@@ -231,12 +231,11 @@ function WhyItMattersSection({ list }: { list: LabList }) {
 
   return (
     <section className="mt-12">
-      <div className="section-header">
-        <h2>{content.heading}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{content.heading}</h2>
       </div>
-      <div className="answer-block" data-answer-block="true">
-        <p className="text-sm text-muted leading-relaxed">{content.body}</p>
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{content.body}</p>
       </div>
     </section>
   );
@@ -475,14 +474,14 @@ function buildFaqs(
 // ─── Rank badge styles ────────────────────────────────────────────────────────
 
 function rankBadgeClass(rank: number): string {
-  if (rank === 1) return "bg-accent text-white";
-  if (rank <= 3) return "bg-dark text-white";
-  return "bg-light-100 text-dark";
+  if (rank === 1) return "bg-[#006828] text-white";
+  if (rank <= 3) return "bg-[#1c1c1c] text-white";
+  return "bg-[#f8f8f6] text-[#1c1c1c]";
 }
 
 function cardBorderClass(rank: number): string {
-  if (rank === 1) return "border-accent bg-accent-muted/10";
-  return "border-light-200";
+  if (rank === 1) return "border-[#006828] bg-[#006828]/[0.04]/10";
+  return "border-black/[0.06]";
 }
 
 // ─── Item card ────────────────────────────────────────────────────────────────
@@ -491,7 +490,7 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
   const isTest = listType === "cheapest-test";
 
   return (
-    <div className={`border ${cardBorderClass(item.rank)} p-4 hover:border-accent transition-colors`}>
+    <div className={`border ${cardBorderClass(item.rank)} p-4 hover:border-[#006828]/15 transition-colors`}>
       <div className="flex items-start gap-4">
         {/* Rank number */}
         <div
@@ -509,31 +508,31 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
           {/* Title row + price */}
           <div className="flex items-start justify-between gap-3 mb-1">
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-dark leading-snug">
+              <h3 className="text-base font-bold text-[#1c1c1c] leading-snug">
                 {item.name}
                 {item.rank === 1 && (
-                  <span className="ml-2 text-[9px] bg-accent text-white px-1.5 py-0.5 font-bold uppercase align-middle">
+                  <span className="ml-2 text-[9px] bg-[#006828] text-white px-1.5 py-0.5 font-bold uppercase align-middle">
                     Top Pick
                   </span>
                 )}
               </h3>
               {item.subtitle && (
-                <p className="text-xs text-muted mt-0.5">{item.subtitle}</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">{item.subtitle}</p>
               )}
             </div>
             {item.price != null && (
               <div className="flex-shrink-0 text-right">
-                <p className="text-base font-bold text-accent whitespace-nowrap">
+                <p className="text-base font-bold text-[#006828] whitespace-nowrap">
                   {formatPrice(item.price)}
                 </p>
                 {item.priceLabel && (
-                  <p className="text-[10px] text-muted">{item.priceLabel}</p>
+                  <p className="text-[10px] text-black/40">{item.priceLabel}</p>
                 )}
               </div>
             )}
             {item.priceLabel && item.price == null && (
               <div className="flex-shrink-0 text-right">
-                <p className="text-sm font-bold text-accent">{item.priceLabel}</p>
+                <p className="text-sm font-bold text-[#006828]">{item.priceLabel}</p>
               </div>
             )}
           </div>
@@ -544,7 +543,7 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
               {item.badges.map((badge) => (
                 <span
                   key={badge}
-                  className="text-[10px] bg-accent-muted text-accent-dark px-1.5 py-0.5 font-medium"
+                  className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5 font-medium"
                 >
                   {badge}
                 </span>
@@ -554,7 +553,7 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
 
           {/* Description */}
           {item.description && (
-            <p className="text-xs text-muted leading-relaxed mb-3">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed mb-3">
               {item.description}
             </p>
           )}
@@ -563,7 +562,7 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
           <div className="flex flex-wrap gap-4 mt-2">
             <Link
               href={item.linkHref}
-              className="flex items-center gap-1 text-[11px] font-bold text-accent hover:text-accent-dark transition-colors"
+              className="flex items-center gap-1 text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
             >
               {isTest ? "Compare Prices" : "View Lab"}
               <ArrowRight className="w-3 h-3" />
@@ -627,7 +626,7 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD structured data */}
       <JsonLd
         data={breadcrumbSchema([
@@ -655,49 +654,48 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
           <ListTypeIcon listType={list.listType} />
-          <h1 className="text-3xl font-bold text-dark">{list.h1}</h1>
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">{list.h1}</h1>
         </div>
 
         {/* Stats strip */}
         <div className="flex flex-wrap items-center gap-4 mb-5">
-          <div className="bg-light-50 px-3 py-2 flex items-center gap-2">
-            <Trophy className="w-3.5 h-3.5 text-accent" />
-            <span className="text-xs font-bold text-dark">{items.length} ranked</span>
+          <div className="bg-[#f8f8f6] px-3 py-2 flex items-center gap-2">
+            <Trophy className="w-3.5 h-3.5 text-[#006828]" />
+            <span className="text-xs font-bold text-[#1c1c1c]">{items.length} ranked</span>
           </div>
           {list.citySlug && (
-            <div className="bg-light-50 px-3 py-2 flex items-center gap-2">
-              <Home className="w-3.5 h-3.5 text-accent" />
-              <span className="text-xs font-bold text-dark">{cityName}</span>
+            <div className="bg-[#f8f8f6] px-3 py-2 flex items-center gap-2">
+              <Home className="w-3.5 h-3.5 text-[#006828]" />
+              <span className="text-xs font-bold text-[#1c1c1c]">{cityName}</span>
             </div>
           )}
           {items[0]?.price != null && (
-            <div className="bg-light-50 px-3 py-2 flex items-center gap-2">
-              <TrendingDown className="w-3.5 h-3.5 text-accent" />
-              <span className="text-xs font-bold text-dark">
+            <div className="bg-[#f8f8f6] px-3 py-2 flex items-center gap-2">
+              <TrendingDown className="w-3.5 h-3.5 text-[#006828]" />
+              <span className="text-xs font-bold text-[#1c1c1c]">
                 From {formatPrice(items[0].price)}
               </span>
             </div>
           )}
-          <div className="bg-light-50 px-3 py-2 flex items-center gap-2">
-            <CheckCircle className="w-3.5 h-3.5 text-accent" />
-            <span className="text-xs text-muted">Verified March 2026</span>
+          <div className="bg-[#f8f8f6] px-3 py-2 flex items-center gap-2">
+            <CheckCircle className="w-3.5 h-3.5 text-[#006828]" />
+            <span className="font-['Geist',sans-serif] text-xs text-black/40">Verified March 2026</span>
           </div>
         </div>
 
         {/* Answer block — AEO target */}
         {answerBlock && (
-          <div className="answer-block" data-answer-block="true">
-            <p className="text-muted leading-relaxed">{answerBlock}</p>
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerBlock}</p>
           </div>
         )}
       </div>
 
       {/* ─── The Ranking ──────────────────────────────────────────────────── */}
-      <div className="section-header">
-        <h2>{list.h1}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{list.h1}</h2>
       </div>
-      <p className="text-xs text-muted mb-5">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-5">
         {items.length} options ranked by{" "}
         {list.listType === "cheapest-labs" || list.listType === "cheapest-test"
           ? "price (lowest first)"
@@ -711,8 +709,8 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
 
       <div className="space-y-4 mb-12">
         {items.length === 0 ? (
-          <div className="border border-light-200 p-8 text-center">
-            <p className="text-muted text-sm">
+          <div className="border border-black/[0.06] p-8 text-center">
+            <p className="text-black/40 text-sm">
               No results found for this list. Data may be loading.
             </p>
           </div>
@@ -729,11 +727,10 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
       {/* ─── Related Lists ───────────────────────────────────────────────── */}
       {relatedLists.length > 0 && (
         <section className="mt-12">
-          <div className="section-header">
-            <h2>Related Rankings</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Rankings</h2>
           </div>
-          <p className="text-xs text-muted mb-4">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
             More curated lists to help you compare UAE diagnostic labs and test prices.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -741,18 +738,18 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
               <Link
                 key={related.slug}
                 href={`/labs/lists/${related.slug}`}
-                className="border border-light-200 p-4 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors leading-snug mb-1">
+                    <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors leading-snug mb-1">
                       {related.title}
                     </h3>
-                    <p className="text-[11px] text-muted line-clamp-2">
+                    <p className="text-[11px] text-black/40 line-clamp-2">
                       {related.metaDescription}
                     </p>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent flex-shrink-0 mt-0.5 transition-colors" />
+                  <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5 transition-colors" />
                 </div>
               </Link>
             ))}
@@ -764,7 +761,7 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
       <div className="mt-8 flex">
         <Link
           href="/labs/lists"
-          className="flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dark transition-colors"
+          className="flex items-center gap-2 text-sm font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
         >
           <Trophy className="w-4 h-4" />
           View all UAE Lab Rankings &amp; Lists
@@ -779,8 +776,8 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
       />
 
       {/* ─── Disclaimer ────────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative and based on publicly
           available pricing from lab websites, aggregator platforms, and walk-in price lists
           (2024–2026). Actual prices may vary by branch location, insurance coverage,

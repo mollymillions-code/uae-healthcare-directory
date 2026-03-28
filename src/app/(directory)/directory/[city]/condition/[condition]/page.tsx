@@ -111,7 +111,7 @@ export default async function ConditionPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
         { name: city.name, url: `${base}/directory/${city.slug}` },
@@ -131,15 +131,15 @@ export default async function ConditionPage({ params }: Props) {
         { label: condition.name },
       ]} />
 
-      <h1 className="text-3xl font-bold text-dark mb-2">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
         {condition.name} in {city.name} — Find Treatment
       </h1>
-      <p className="text-sm text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
         {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
       </p>
 
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} offering treatment for {condition.name.toLowerCase()}. {condition.description} Related specialties include {relatedCats.map((c) => c.name.toLowerCase()).join(", ")}. Data from official government registers, last verified March 2026.
         </p>
       </div>
@@ -147,13 +147,13 @@ export default async function ConditionPage({ params }: Props) {
       {/* Related specialty links */}
       {relatedCats.length > 0 && (
         <div className="mb-6">
-          <p className="text-sm font-medium text-dark mb-2">Related specialties:</p>
+          <p className="text-sm font-medium text-[#1c1c1c] mb-2">Related specialties:</p>
           <div className="flex flex-wrap gap-2">
             {relatedCats.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/directory/${city.slug}/${cat.slug}`}
-                className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted"
+                className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
               >
                 {cat.name}
               </Link>
@@ -184,8 +184,8 @@ export default async function ConditionPage({ params }: Props) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted mb-2">No providers for {condition.name.toLowerCase()} found in {city.name} yet.</p>
-          <Link href={`/directory/${city.slug}`} className="text-accent text-sm">
+          <p className="text-black/40 mb-2">No providers for {condition.name.toLowerCase()} found in {city.name} yet.</p>
+          <Link href={`/directory/${city.slug}`} className="text-[#006828] text-sm">
             View all healthcare providers in {city.name} &rarr;
           </Link>
         </div>

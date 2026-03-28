@@ -340,7 +340,7 @@ export default function CityComparisonPage({
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Schema.org */}
       <JsonLd
         data={breadcrumbSchema([
@@ -363,18 +363,18 @@ export default function CityComparisonPage({
       {/* H1 */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <BarChart3 className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <BarChart3 className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             {cityA.name} vs {cityB.name} — Medical Procedure Costs Compared
           </h1>
         </div>
 
         {/* Answer Block */}
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             {winnerCity ? (
               <>
-                <strong className="text-dark">{winnerCity.name} is cheaper overall</strong> for
+                <strong className="text-[#1c1c1c]">{winnerCity.name} is cheaper overall</strong> for
                 medical care compared to {loserCity!.name}.{" "}
                 Out of {totalProcedures} procedures compared, {cityA.name} is the more
                 affordable option for {totalA} procedures and {cityB.name} for {totalB}
@@ -387,7 +387,7 @@ export default function CityComparisonPage({
               </>
             ) : (
               <>
-                <strong className="text-dark">{cityA.name} and {cityB.name} are similarly priced</strong>{" "}
+                <strong className="text-[#1c1c1c]">{cityA.name} and {cityB.name} are similarly priced</strong>{" "}
                 for medical care overall. Out of {totalProcedures} procedures compared,{" "}
                 {cityA.name} wins on {totalA} and {cityB.name} on {totalB}
                 {totalTie > 0 ? ` (${totalTie} tied)` : ""}.{" "}
@@ -399,49 +399,48 @@ export default function CityComparisonPage({
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{totalProcedures}</p>
-            <p className="text-xs text-muted">Procedures compared</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{totalProcedures}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Procedures compared</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
+          <div className="bg-[#f8f8f6] p-4 text-center">
             <p className="text-2xl font-bold text-green-700">{totalA}</p>
-            <p className="text-xs text-muted">Cheaper in {cityA.name}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Cheaper in {cityA.name}</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
+          <div className="bg-[#f8f8f6] p-4 text-center">
             <p className="text-2xl font-bold text-green-700">{totalB}</p>
-            <p className="text-xs text-muted">Cheaper in {cityB.name}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Cheaper in {cityB.name}</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{avgDiffPercent}%</p>
-            <p className="text-xs text-muted">Avg. price difference</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{avgDiffPercent}%</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Avg. price difference</p>
           </div>
         </div>
       </div>
 
       {/* Why Prices Differ */}
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <div className="section-header">
-          <h2>Why Prices Differ</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Why Prices Differ</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-bold text-dark">{cityA.name}</h3>
-              <span className="text-[10px] text-muted font-mono">{getRegulatorShort(parsed.cityASlug)}</span>
+              <MapPin className="w-4 h-4 text-[#006828]" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{cityA.name}</h3>
+              <span className="text-[10px] text-black/40 font-['Geist',sans-serif]">{getRegulatorShort(parsed.cityASlug)}</span>
             </div>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
               {getCityPricingContext(parsed.cityASlug, cityA.name)}
             </p>
           </div>
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-bold text-dark">{cityB.name}</h3>
-              <span className="text-[10px] text-muted font-mono">{getRegulatorShort(parsed.cityBSlug)}</span>
+              <MapPin className="w-4 h-4 text-[#006828]" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{cityB.name}</h3>
+              <span className="text-[10px] text-black/40 font-['Geist',sans-serif]">{getRegulatorShort(parsed.cityBSlug)}</span>
             </div>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
               {getCityPricingContext(parsed.cityBSlug, cityB.name)}
             </p>
           </div>
@@ -449,9 +448,8 @@ export default function CityComparisonPage({
       </div>
 
       {/* Category Breakdown */}
-      <div className="section-header">
-        <h2>Category Breakdown — Which City Wins?</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Category Breakdown — Which City Wins?</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
         {categoryWinners.map((cw) => {
@@ -466,15 +464,15 @@ export default function CityComparisonPage({
           return (
             <div
               key={cw.categorySlug}
-              className="border border-light-200 p-4"
+              className="border border-black/[0.06] rounded-2xl p-5"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-sm font-bold text-dark">{cw.categoryName}</h3>
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{cw.categoryName}</h3>
                 <span className={`text-[10px] font-medium px-2 py-0.5 ${winnerColor}`}>
                   {winnerName}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-xs text-muted">
+              <div className="flex items-center gap-4 text-xs text-black/40">
                 <span>{cityA.name}: {cw.cityAWins} wins</span>
                 <span>{cityB.name}: {cw.cityBWins} wins</span>
                 {cw.ties > 0 && <span>Tied: {cw.ties}</span>}
@@ -485,8 +483,8 @@ export default function CityComparisonPage({
       </div>
 
       {/* Winner Summary */}
-      <div className="bg-light-50 border border-light-200 p-6 mb-10" data-answer-block="true">
-        <h2 className="text-lg font-bold text-dark mb-3">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10" data-answer-block="true">
+        <h2 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">
           {winnerCity ? (
             <>{winnerCity.name} is cheaper for {overallWinner === "A" ? totalA : totalB} of {totalProcedures} procedures</>
           ) : (
@@ -498,8 +496,8 @@ export default function CityComparisonPage({
             <>
               <div className="flex items-start gap-2">
                 <TrendingDown className="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-muted">
-                  <strong className="text-dark">{winnerCity.name}</strong> is the more
+                <p className="font-['Geist',sans-serif] text-sm text-black/40">
+                  <strong className="text-[#1c1c1c]">{winnerCity.name}</strong> is the more
                   affordable option for the majority of procedures, especially in{" "}
                   {categoryWinners
                     .filter((cw) => cw.winner === overallWinner)
@@ -510,8 +508,8 @@ export default function CityComparisonPage({
               </div>
               <div className="flex items-start gap-2">
                 <TrendingUp className="w-4 h-4 text-red-700 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-muted">
-                  <strong className="text-dark">{loserCity.name}</strong> may still be
+                <p className="font-['Geist',sans-serif] text-sm text-black/40">
+                  <strong className="text-[#1c1c1c]">{loserCity.name}</strong> may still be
                   cheaper for specific procedures —{" "}
                   {(() => {
                     const loserWins = comparisons
@@ -526,8 +524,8 @@ export default function CityComparisonPage({
             </>
           )}
           <div className="flex items-start gap-2">
-            <Minus className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
+            <Minus className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
               Prices vary by facility tier (government vs. private vs. premium),
               doctor experience, and clinical complexity. The figures below are typical
               mid-range estimates. Always get a direct quote before proceeding.
@@ -537,24 +535,23 @@ export default function CityComparisonPage({
       </div>
 
       {/* Procedure-by-Procedure Comparison Table */}
-      <div className="section-header">
-        <h2>Procedure-by-Procedure Comparison</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Procedure-by-Procedure Comparison</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Sorted by largest price difference. Click any procedure for full city-specific pricing.
       </p>
 
       {/* Desktop table */}
-      <div className="hidden md:block border border-light-200 mb-12 overflow-x-auto">
+      <div className="hidden md:block border border-black/[0.06] mb-12 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-light-50 border-b border-light-200">
-              <th className="text-left p-3 font-bold text-dark">Procedure</th>
-              <th className="text-right p-3 font-bold text-dark">{cityA.name}</th>
-              <th className="text-right p-3 font-bold text-dark">{cityB.name}</th>
-              <th className="text-right p-3 font-bold text-dark">Difference</th>
-              <th className="text-center p-3 font-bold text-dark">Cheaper</th>
+            <tr className="bg-[#f8f8f6] border-b border-black/[0.06]">
+              <th className="text-left p-3 font-bold text-[#1c1c1c]">Procedure</th>
+              <th className="text-right p-3 font-bold text-[#1c1c1c]">{cityA.name}</th>
+              <th className="text-right p-3 font-bold text-[#1c1c1c]">{cityB.name}</th>
+              <th className="text-right p-3 font-bold text-[#1c1c1c]">Difference</th>
+              <th className="text-center p-3 font-bold text-[#1c1c1c]">Cheaper</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-light-200">
@@ -566,16 +563,16 @@ export default function CityComparisonPage({
                 ? "text-green-700 font-bold"
                 : Math.abs(comp.diffPercent) >= 5
                 ? "text-green-700"
-                : "text-muted";
+                : "text-black/40";
               const cityAColor = comp.cheaperCity === "A" ? "text-green-700 font-bold" : "";
               const cityBColor = comp.cheaperCity === "B" ? "text-green-700 font-bold" : "";
 
               return (
-                <tr key={comp.slug} className="hover:bg-light-50 transition-colors">
+                <tr key={comp.slug} className="hover:bg-[#f8f8f6] transition-colors">
                   <td className="p-3">
                     <Link
                       href={`/pricing/${comp.slug}`}
-                      className="text-dark hover:text-accent transition-colors font-medium"
+                      className="text-[#1c1c1c] hover:text-[#006828] transition-colors font-medium"
                     >
                       {comp.name}
                     </Link>
@@ -596,7 +593,7 @@ export default function CityComparisonPage({
                   <td className="p-3 text-center">
                     <span className={
                       comp.cheaperCity === "tie"
-                        ? "text-[10px] text-muted px-2 py-0.5 bg-light-50"
+                        ? "text-[10px] text-black/40 px-2 py-0.5 bg-[#f8f8f6]"
                         : "text-[10px] text-green-700 px-2 py-0.5 bg-green-50 font-medium"
                     }>
                       {cheaperName}
@@ -617,17 +614,17 @@ export default function CityComparisonPage({
             comp.cheaperCity === "B" ? cityB.name : "Tied";
 
           return (
-            <div key={comp.slug} className="border border-light-200 p-3">
+            <div key={comp.slug} className="border border-black/[0.06] p-3">
               <div className="flex items-start justify-between mb-2">
                 <Link
                   href={`/pricing/${comp.slug}`}
-                  className="text-sm font-bold text-dark hover:text-accent transition-colors"
+                  className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                 >
                   {comp.name}
                 </Link>
                 <span className={
                   comp.cheaperCity === "tie"
-                    ? "text-[10px] text-muted px-2 py-0.5 bg-light-50 flex-shrink-0"
+                    ? "text-[10px] text-black/40 px-2 py-0.5 bg-[#f8f8f6] flex-shrink-0"
                     : "text-[10px] text-green-700 px-2 py-0.5 bg-green-50 font-medium flex-shrink-0"
                 }>
                   {cheaperName}
@@ -635,24 +632,24 @@ export default function CityComparisonPage({
               </div>
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div>
-                  <p className="text-muted">{cityA.name}</p>
-                  <p className={`font-bold ${comp.cheaperCity === "A" ? "text-green-700" : "text-dark"}`}>
+                  <p className="text-black/40">{cityA.name}</p>
+                  <p className={`font-bold ${comp.cheaperCity === "A" ? "text-green-700" : "text-[#1c1c1c]"}`}>
                     <Link href={`/pricing/${comp.slug}/${parsed.cityASlug}`} className="hover:underline">
                       {formatAed(comp.cityATypical)}
                     </Link>
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted">{cityB.name}</p>
-                  <p className={`font-bold ${comp.cheaperCity === "B" ? "text-green-700" : "text-dark"}`}>
+                  <p className="text-black/40">{cityB.name}</p>
+                  <p className={`font-bold ${comp.cheaperCity === "B" ? "text-green-700" : "text-[#1c1c1c]"}`}>
                     <Link href={`/pricing/${comp.slug}/${parsed.cityBSlug}`} className="hover:underline">
                       {formatAed(comp.cityBTypical)}
                     </Link>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-muted">Diff</p>
-                  <p className="font-bold text-accent">{Math.abs(comp.diffPercent)}%</p>
+                  <p className="text-black/40">Diff</p>
+                  <p className="font-bold text-[#006828]">{Math.abs(comp.diffPercent)}%</p>
                 </div>
               </div>
             </div>
@@ -663,9 +660,8 @@ export default function CityComparisonPage({
       {/* Biggest Savings */}
       {sortedComparisons.length >= 3 && (
         <>
-          <div className="section-header">
-            <h2>Biggest Savings Between {cityA.name} &amp; {cityB.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Biggest Savings Between {cityA.name} &amp; {cityB.name}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
             {sortedComparisons.slice(0, 3).map((comp) => {
@@ -676,21 +672,21 @@ export default function CityComparisonPage({
                 <Link
                   key={comp.slug}
                   href={`/pricing/${comp.slug}`}
-                  className="border border-light-200 p-4 hover:border-accent transition-colors group"
+                  className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
                 >
-                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors mb-1">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
                     {comp.name}
                   </h3>
-                  <p className="text-xs text-muted mb-3">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3">
                     Save {formatAed(savings)} ({Math.abs(comp.diffPercent)}%) by choosing{" "}
                     {cheaperCity.name}
                   </p>
                   <div className="flex items-center justify-between text-xs">
-                    <span className={comp.cheaperCity === "A" ? "text-green-700 font-bold" : "text-muted"}>
+                    <span className={comp.cheaperCity === "A" ? "text-green-700 font-bold" : "text-black/40"}>
                       {cityA.name}: {formatAed(comp.cityATypical)}
                     </span>
                     <ArrowRight className="w-3 h-3 text-light-300" />
-                    <span className={comp.cheaperCity === "B" ? "text-green-700 font-bold" : "text-muted"}>
+                    <span className={comp.cheaperCity === "B" ? "text-green-700 font-bold" : "text-black/40"}>
                       {cityB.name}: {formatAed(comp.cityBTypical)}
                     </span>
                   </div>
@@ -702,9 +698,8 @@ export default function CityComparisonPage({
       )}
 
       {/* Compare Other Cities */}
-      <div className="section-header">
-        <h2>Compare Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare Other Cities</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-12">
         {getAllCityPairs()
@@ -720,9 +715,9 @@ export default function CityComparisonPage({
               <Link
                 key={`${a}-${b}`}
                 href={`/pricing/compare/${canonicalSlug(a, b)}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {cA.name} vs {cB.name}
                 </p>
               </Link>
@@ -737,8 +732,8 @@ export default function CityComparisonPage({
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges based on the
           DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG parameters, and
           market-observed data as of March 2026. Actual costs vary by facility, doctor,

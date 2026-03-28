@@ -23,7 +23,7 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-export const revalidate = 3600; // 1-hour ISR — articles are refreshed by the content pipeline
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
@@ -52,9 +52,8 @@ export default async function JournalPage() {
   const latest = getLatestArticles(20);
   const events = getUpcomingEvents(5);
   const socialPosts = getLatestSocialPosts(4);
-  const tags = getAllTags().slice(0, 15); // Top 15 tags only
+  const tags = getAllTags().slice(0, 15);
 
-  // Articles not in featured, for the main feed
   const featuredSlugs = new Set(featured.map((a) => a.slug));
   const feedArticles = latest.filter((a) => !featuredSlugs.has(a.slug));
 
@@ -69,52 +68,49 @@ export default async function JournalPage() {
       {/* Breaking ticker */}
       <BreakingTicker articles={breaking} />
 
-      {/* Journal masthead — STAT News style */}
-      <div className="container-tc pt-10 pb-4">
+      {/* Journal masthead */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-4">
         <div className="text-center">
           <Link href="/intelligence">
-            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-dark tracking-tight">
-              Zavis Healthcare Industry Insights
+            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[32px] sm:text-[44px] lg:text-[52px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em]">
+              Healthcare Industry Insights
             </h1>
           </Link>
-          <p className="text-sm text-muted mt-2 tracking-wide uppercase font-sans">
+          <p className="font-['Geist',sans-serif] text-sm font-medium text-black/40 mt-2 tracking-wide uppercase">
             Industry news, analysis &amp; market data
           </p>
         </div>
       </div>
 
       {/* Category navigation */}
-      <div className="container-tc pb-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <CategoryNav />
       </div>
 
       {/* --- Empty state --- */}
       {feedArticles.length === 0 && !hero && (
-        <div className="container-tc py-16 text-center">
-          <p className="text-muted text-lg">No articles published yet. Check back soon.</p>
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <p className="font-['Geist',sans-serif] text-black/40 text-lg">No articles published yet. Check back soon.</p>
         </div>
       )}
 
       {/* --- Hero + Secondary --- */}
       {hero && (
-        <section className="container-tc pb-12">
-          <div className="border-b-2 border-dark" />
+        <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="border-b-2 border-[#1c1c1c]" />
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 pt-6">
-            {/* Hero article -- large */}
             <div className="lg:col-span-3">
               <FeaturedArticle article={hero} variant="hero" />
             </div>
 
-            {/* Secondary featured + mini feed */}
-            <div className="lg:col-span-2 lg:border-l lg:border-light-200 lg:pl-8">
+            <div className="lg:col-span-2 lg:border-l lg:border-black/[0.06] lg:pl-8">
               {secondary && (
                 <>
                   <FeaturedArticle article={secondary} variant="secondary" />
-                  <div className="border-b border-light-200 my-5" />
+                  <div className="border-b border-black/[0.06] my-5" />
                 </>
               )}
 
-              {/* Quick headlines */}
               <div className="space-y-4">
                 {feedArticles.slice(0, 4).map((article) => (
                   <ArticleCard
@@ -131,19 +127,19 @@ export default async function JournalPage() {
 
       {/* --- Main feed + Sidebar --- */}
       {(feedArticles.length > 0 || tags.length > 0) && (
-      <section className="container-tc pb-16">
-        <div className="border-b-2 border-dark" />
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="border-b-2 border-[#1c1c1c]" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 pt-6">
           {/* Main article feed */}
           <div className="lg:col-span-2">
-            <h2 className="label text-accent mb-6">Latest</h2>
+            <h2 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-6">Latest</h2>
             {feedArticles.length === 0 ? (
-              <p className="text-muted py-8">No articles yet.</p>
+              <p className="font-['Geist',sans-serif] text-black/40 py-8">No articles yet.</p>
             ) : (
             <div className="space-y-0">
               {feedArticles.slice(0, 12).map((article, i) => (
                 <div key={article.id}>
-                  {i > 0 && <div className="border-b border-light-200 my-5" />}
+                  {i > 0 && <div className="border-b border-black/[0.06] my-5" />}
                   <ArticleCard article={article} variant="horizontal" />
                 </div>
               ))}
@@ -151,10 +147,10 @@ export default async function JournalPage() {
             )}
 
             {feedArticles.length > 12 && (
-              <div className="border-b border-light-200 mt-6 pt-6 text-center">
+              <div className="border-b border-black/[0.06] mt-6 pt-6 text-center">
                 <Link
                   href="/intelligence/category/regulatory"
-                  className="label hover:text-accent transition-colors"
+                  className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40 hover:text-[#006828] transition-colors"
                 >
                   View all articles →
                 </Link>
@@ -166,16 +162,16 @@ export default async function JournalPage() {
           <aside className="space-y-8">
             {/* Section index */}
             <div>
-              <h3 className="label text-accent mb-4">Sections</h3>
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">Sections</h3>
               <div className="space-y-0">
                 {JOURNAL_CATEGORIES.map((cat, i) => (
                   <div key={cat.slug}>
-                    {i > 0 && <div className="border-b border-light-200" />}
+                    {i > 0 && <div className="border-b border-black/[0.06]" />}
                     <Link
                       href={`/intelligence/category/${cat.slug}`}
                       className="group flex items-baseline justify-between py-2.5"
                     >
-                      <span className="text-sm text-muted group-hover:text-accent transition-colors">
+                      <span className="font-['Geist',sans-serif] text-sm font-medium text-black/50 group-hover:text-[#006828] transition-colors">
                         {cat.name}
                       </span>
                     </Link>
@@ -186,20 +182,20 @@ export default async function JournalPage() {
 
             {/* Events */}
             <div>
-              <div className="border-b-2 border-dark mb-4" />
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
               <EventsSidebar events={events} />
             </div>
 
             {/* Social pulse */}
             <div>
-              <div className="border-b-2 border-dark mb-4" />
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
               <SocialFeed posts={socialPosts} />
             </div>
 
             {/* Tags */}
             <div>
-              <div className="border-b-2 border-dark mb-4" />
-              <h3 className="label text-accent mb-4">Topics</h3>
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">Topics</h3>
               <TagCloud tags={tags} limit={24} />
             </div>
           </aside>
@@ -208,11 +204,13 @@ export default async function JournalPage() {
       )}
 
       {/* --- AEO Answer Block --- */}
-      <section className="container-tc pb-16">
-        <div className="answer-block" data-answer-block="true">
-          <p className="font-sans text-muted leading-relaxed">
-            Zavis Healthcare Industry Insights is the definitive source for healthcare industry news in the United Arab Emirates, covering nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
-          </p>
+      <section className="bg-[#f8f8f6] py-12">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
+              Zavis Healthcare Industry Insights is the definitive source for healthcare industry news in the United Arab Emirates, covering nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
+            </p>
+          </div>
         </div>
       </section>
     </>

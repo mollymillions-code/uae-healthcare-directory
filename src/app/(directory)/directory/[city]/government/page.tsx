@@ -62,33 +62,33 @@ export default async function GovernmentPage({ params }: Props) {
 
   const renderRow = (provider: typeof govProviders[0], index: number, badge: string) => (
     <li key={provider.id} className="article-row">
-      <span className="text-2xl font-bold text-accent leading-none mt-0.5 w-8 shrink-0 text-center">{String(index + 1).padStart(2, "0")}</span>
+      <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">{String(index + 1).padStart(2, "0")}</span>
       <div className="flex-1 min-w-0"><div className="flex items-start justify-between gap-4 flex-wrap"><div className="flex-1 min-w-0">
-        <Link href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`} className="font-bold text-dark hover:text-accent transition-colors">{provider.name}</Link>
+        <Link href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`} className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors">{provider.name}</Link>
         <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-          {Number(provider.googleRating) > 0 && <span className="text-xs font-semibold text-accent">{provider.googleRating}/5</span>}
-          {provider.googleReviewCount > 0 && <span className="text-xs text-muted">{provider.googleReviewCount.toLocaleString()} reviews</span>}
-          {provider.facilityType && <span className="text-xs text-muted">{provider.facilityType}</span>}
-          {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="text-xs text-muted hover:text-accent transition-colors">{provider.phone}</a>}
+          {Number(provider.googleRating) > 0 && <span className="text-xs font-semibold text-[#006828]">{provider.googleRating}/5</span>}
+          {provider.googleReviewCount > 0 && <span className="font-['Geist',sans-serif] text-xs text-black/40">{provider.googleReviewCount.toLocaleString()} reviews</span>}
+          {provider.facilityType && <span className="font-['Geist',sans-serif] text-xs text-black/40">{provider.facilityType}</span>}
+          {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors">{provider.phone}</a>}
         </div>
-        {provider.address && <p className="text-xs text-muted mt-1 line-clamp-1">{provider.address}</p>}
-      </div><div className="shrink-0"><span className="badge">{badge}</span></div></div></div>
+        {provider.address && <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{provider.address}</p>}
+      </div><div className="shrink-0"><span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">{badge}</span></div></div></div>
     </li>
   );
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: "Government Facilities", url: `${base}/directory/${city.slug}/government` }])} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
         {ratedProviders.length >= 3 && <JsonLd data={itemListSchema(`Government Healthcare Facilities in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />}
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: "Government Facilities" }]} />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-dark mb-3">Government Healthcare Facilities in {city.name}, UAE</h1>
-          <p className="text-muted leading-relaxed mb-4">{city.name} has {count} government and public healthcare facilities operated by {govOperator}. These include government hospitals, primary healthcare centers, and specialized public health services. Healthcare in {city.name} is regulated by {regulator}.</p>
-          <div className="answer-block mb-6" data-answer-block="true">
-            <p className="text-muted leading-relaxed">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">Government Healthcare Facilities in {city.name}, UAE</h1>
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{city.name} has {count} government and public healthcare facilities operated by {govOperator}. These include government hospitals, primary healthcare centers, and specialized public health services. Healthcare in {city.name} is regulated by {regulator}.</p>
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
               According to the UAE Open Healthcare Directory, there are {count} government healthcare facilities in {city.name}.
               {hospitals.length > 0 && ` This includes ${hospitals.length} government hospital${hospitals.length === 1 ? "" : "s"}`}
               {primaryCare.length > 0 && ` and ${primaryCare.length} primary healthcare center${primaryCare.length === 1 ? "" : "s"}`}.
@@ -100,23 +100,20 @@ export default async function GovernmentPage({ params }: Props) {
         </div>
         {hospitals.length > 0 && (
           <section className="mb-10">
-            <div className="section-header"><h2>Government Hospitals in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div>
             <ol className="space-y-0">{[...hospitals].sort((a, b) => Number(b.googleRating) - Number(a.googleRating) || (b.googleReviewCount || 0) - (a.googleReviewCount || 0)).map((p, i) => renderRow(p, i, "Government"))}</ol>
           </section>
         )}
         {primaryCare.length > 0 && (
           <section className="mb-10">
-            <div className="section-header"><h2>Primary Healthcare Centers in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div>
             <ol className="space-y-0">{[...primaryCare].sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => renderRow(p, i, "Public"))}</ol>
           </section>
         )}
-        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); const others = sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id));
-          return others.length > 0 ? (<section className="mb-10"><div className="section-header"><h2>Other Government Health Services in {city.name}</h2><span className="arrows">&gt;&gt;&gt;</span></div><ol className="space-y-0">{others.map((p, i) => renderRow(p, i, "Government"))}</ol></section>) : null;
+        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); void sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id));
         })()}
         <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">All Providers</span><span className="text-xs text-muted">{city.name}</span></Link>
-          <Link href={`/directory/${city.slug}/walk-in`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">Walk-In Clinics</span><span className="text-xs text-muted">No appointment needed</span></Link>
-          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">By Insurance</span><span className="text-xs text-muted">Daman, Thiqa, AXA...</span></Link>
+          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">All Providers</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{city.name}</span></Link>
+          <Link href={`/directory/${city.slug}/walk-in`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">Walk-In Clinics</span><span className="font-['Geist',sans-serif] text-xs text-black/40">No appointment needed</span></Link>
+          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">By Insurance</span><span className="font-['Geist',sans-serif] text-xs text-black/40">Daman, Thiqa, AXA...</span></Link>
         </div></section>
         <FaqSection faqs={faqs} title={`Government Healthcare in ${city.name} — FAQ`} />
       </div>

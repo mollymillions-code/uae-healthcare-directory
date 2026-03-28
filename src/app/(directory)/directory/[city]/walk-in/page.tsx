@@ -76,17 +76,17 @@ export default async function WalkInClinicsPage({ params }: Props) {
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: "Walk-In Clinics", url: `${base}/directory/${city.slug}/walk-in` }])} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
         {ratedProviders.length >= 5 && <JsonLd data={itemListSchema(`Walk-In Clinics in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />}
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: "Walk-In Clinics" }]} />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-dark mb-3">Walk-In Clinics in {city.name}, UAE</h1>
-          <p className="text-muted leading-relaxed mb-4">{city.name} has {count}+ clinics and polyclinics that accept walk-in patients without appointments. Most general clinics in the UAE operate on a walk-in basis, with typical wait times of 15-45 minutes for GPs. Healthcare in {city.name} is regulated by {regulator}.</p>
-          <div className="answer-block mb-6" data-answer-block="true">
-            <p className="text-muted leading-relaxed">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">Walk-In Clinics in {city.name}, UAE</h1>
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{city.name} has {count}+ clinics and polyclinics that accept walk-in patients without appointments. Most general clinics in the UAE operate on a walk-in basis, with typical wait times of 15-45 minutes for GPs. Healthcare in {city.name} is regulated by {regulator}.</p>
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
               According to the UAE Open Healthcare Directory, there are {count}+ walk-in clinics in {city.name}. Most UAE clinics accept walk-in patients without appointments, though wait times vary from 15-45 minutes for GPs.
               {ratedProviders.length > 0 && ratedProviders[0] && (<> The highest-rated walk-in clinic is <strong>{ratedProviders[0].name}</strong> with a {ratedProviders[0].googleRating}-star Google rating{ratedProviders[0].googleReviewCount > 0 ? ` based on ${ratedProviders[0].googleReviewCount.toLocaleString()} patient reviews` : ""}.</>)}{" "}
               A standard GP walk-in consultation costs {gpFee}. All listings are sourced from official government registers, last verified March 2026.
@@ -95,39 +95,37 @@ export default async function WalkInClinicsPage({ params }: Props) {
         </div>
         {walkInCategories.length > 1 && (
           <section className="mb-10">
-            <div className="section-header"><h2>Walk-In by Specialty</h2><span className="arrows">&gt;&gt;&gt;</span></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {walkInCategories.map((cat) => { const cc = catCounts[walkInCategorySlugs.indexOf(cat.slug)] ?? 0; return (
-                <Link key={cat.slug} href={`/directory/${city.slug}/walk-in/${cat.slug}`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors">
-                  <span className="font-medium">Walk-In {cat.name}</span><span className="text-xs text-muted">{cc} {cc === 1 ? "provider" : "providers"}</span>
+                <Link key={cat.slug} href={`/directory/${city.slug}/walk-in/${cat.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors">
+                  <span className="font-['Geist',sans-serif] font-medium">Walk-In {cat.name}</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{cc} {cc === 1 ? "provider" : "providers"}</span>
                 </Link>); })}
             </div>
           </section>
         )}
         <section className="mb-10">
-          <div className="section-header"><h2>Walk-In Clinics in {city.name} — Sorted by Rating</h2><span className="arrows">&gt;&gt;&gt;</span></div>
           <ol className="space-y-0">
             {top20.map((p, i) => (
               <li key={p.id} className="article-row">
-                <span className="text-2xl font-bold text-accent leading-none mt-0.5 w-8 shrink-0 text-center">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">{String(i + 1).padStart(2, "0")}</span>
                 <div className="flex-1 min-w-0"><div className="flex items-start justify-between gap-4 flex-wrap"><div className="flex-1 min-w-0">
-                  <Link href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`} className="font-bold text-dark hover:text-accent transition-colors">{p.name}</Link>
+                  <Link href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`} className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors">{p.name}</Link>
                   <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                    {Number(p.googleRating) > 0 && <span className="text-xs font-semibold text-accent">{p.googleRating}/5</span>}
-                    {p.googleReviewCount > 0 && <span className="text-xs text-muted">{p.googleReviewCount.toLocaleString()} reviews</span>}
-                    {p.facilityType && <span className="text-xs text-muted">{p.facilityType}</span>}
-                    {p.phone && <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`} className="text-xs text-muted hover:text-accent transition-colors">{p.phone}</a>}
+                    {Number(p.googleRating) > 0 && <span className="text-xs font-semibold text-[#006828]">{p.googleRating}/5</span>}
+                    {p.googleReviewCount > 0 && <span className="font-['Geist',sans-serif] text-xs text-black/40">{p.googleReviewCount.toLocaleString()} reviews</span>}
+                    {p.facilityType && <span className="font-['Geist',sans-serif] text-xs text-black/40">{p.facilityType}</span>}
+                    {p.phone && <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`} className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors">{p.phone}</a>}
                   </div>
-                  {p.address && <p className="text-xs text-muted mt-1 line-clamp-1">{p.address}</p>}
-                </div><div className="shrink-0"><span className="badge">Walk-In</span></div></div></div>
+                  {p.address && <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{p.address}</p>}
+                </div><div className="shrink-0"><span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Walk-In</span></div></div></div>
               </li>))}
           </ol>
-          {count > 20 && <p className="text-sm text-muted mt-4">Showing top 20 of {count}+ walk-in clinics.{" "}<Link href={`/directory/${city.slug}/clinics`} className="text-accent hover:underline font-medium">Browse all clinics in {city.name} &rarr;</Link></p>}
+          {count > 20 && <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-4">Showing top 20 of {count}+ walk-in clinics.{" "}<Link href={`/directory/${city.slug}/clinics`} className="text-[#006828] hover:underline font-medium">Browse all clinics in {city.name} &rarr;</Link></p>}
         </section>
         <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">All Providers</span><span className="text-xs text-muted">{city.name}</span></Link>
-          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">By Insurance</span><span className="text-xs text-muted">Daman, AXA, Cigna...</span></Link>
-          <Link href={`/directory/${city.slug}/top`} className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"><span className="font-medium">Top Rated</span><span className="text-xs text-muted">By patient reviews</span></Link>
+          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">All Providers</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{city.name}</span></Link>
+          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">By Insurance</span><span className="font-['Geist',sans-serif] text-xs text-black/40">Daman, AXA, Cigna...</span></Link>
+          <Link href={`/directory/${city.slug}/top`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">Top Rated</span><span className="font-['Geist',sans-serif] text-xs text-black/40">By patient reviews</span></Link>
         </div></section>
         <FaqSection faqs={faqs} title={`Walk-In Clinics in ${city.name} — FAQ`} />
       </div>

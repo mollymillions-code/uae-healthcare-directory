@@ -799,7 +799,7 @@ export async function generateMetadata({
 // ─── Icon Helper ──────────────────────────────────────────────────────────────
 
 function QuickFactIcon({ name }: { name: string }) {
-  const props = { className: "w-4 h-4 text-accent flex-shrink-0" };
+  const props = { className: "w-4 h-4 text-[#006828] flex-shrink-0" };
   switch (name) {
     case "DollarSign": return <DollarSign {...props} />;
     case "Clock": return <Clock {...props} />;
@@ -877,7 +877,7 @@ export default async function LabGuidePage({
         }}
       />
 
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -890,29 +890,29 @@ export default async function LabGuidePage({
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-3">
-            <FlaskConical className="w-5 h-5 text-accent" />
-            <span className="text-xs font-bold text-accent uppercase tracking-wider">
+            <FlaskConical className="w-5 h-5 text-[#006828]" />
+            <span className="text-xs font-bold text-[#006828] uppercase tracking-wider">
               UAE Lab Test Guide
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-dark leading-tight mb-4">
+          <h1 className="text-2xl md:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight leading-tight mb-4">
             {guide.h1}
           </h1>
 
           {/* Answer Block */}
           <div
-            className="answer-block bg-light-50 border-l-4 border-accent p-4 md:p-5"
+            className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border-l-4 border-[#006828] p-4 md:p-5"
             data-answer-block="true"
           >
-            <p className="text-sm md:text-base text-dark leading-relaxed">
+            <p className="text-sm md:text-base text-[#1c1c1c] leading-relaxed">
               {guide.heroText}
             </p>
           </div>
         </header>
 
         {/* Quick Facts Box */}
-        <div className="quick-facts-box bg-light-50 border border-light-200 p-4 mb-8">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
+        <div className="quick-facts-box bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 mb-8">
+          <p className="text-xs font-bold text-black/40 uppercase tracking-wider mb-3">
             Quick Facts
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -920,10 +920,10 @@ export default async function LabGuidePage({
               <div key={fact.label} className="flex items-start gap-2">
                 <QuickFactIcon name={fact.icon} />
                 <div>
-                  <p className="text-[10px] text-muted uppercase tracking-wide font-bold">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wide font-bold">
                     {fact.label}
                   </p>
-                  <p className="text-xs font-semibold text-dark mt-0.5">{fact.value}</p>
+                  <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mt-0.5">{fact.value}</p>
                 </div>
               </div>
             ))}
@@ -935,14 +935,13 @@ export default async function LabGuidePage({
           <main className="lg:col-span-3 space-y-8">
             {/* Editorial Sections */}
             {guide.sections.map((section, i) => (
-              <section key={i} className="bg-white border border-light-200 p-5 md:p-6">
-                <div className="section-header mb-4">
-                  <h2>{section.heading}</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+              <section key={i} className="bg-white border border-black/[0.06] p-5 md:p-6">
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{section.heading}</h2>
                 </div>
                 <div className="space-y-3">
                   {section.content.split("\n\n").map((para, j) => (
-                    <p key={j} className="text-sm text-dark leading-relaxed">
+                    <p key={j} className="text-sm text-[#1c1c1c] leading-relaxed">
                       {para}
                     </p>
                   ))}
@@ -953,40 +952,39 @@ export default async function LabGuidePage({
             {/* Related Tests */}
             {relatedTests.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Relevant Tests in Our Directory</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Relevant Tests in Our Directory</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {relatedTests.map(({ test, range }) => (
                     <Link
                       key={test.slug}
                       href={`/labs/test/${test.slug}`}
-                      className="border border-light-200 hover:border-accent p-4 transition-colors group block"
+                      className="border border-black/[0.06] hover:border-[#006828]/15 p-4 transition-colors group block"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                             {test.shortName}
                           </p>
-                          <p className="text-[11px] text-muted mt-0.5 line-clamp-2">
+                          <p className="text-[11px] text-black/40 mt-0.5 line-clamp-2">
                             {test.description}
                           </p>
                         </div>
                         {range && (
                           <div className="text-right flex-shrink-0">
-                            <p className="text-xs font-bold text-accent">
+                            <p className="text-xs font-bold text-[#006828]">
                               {formatPrice(range.min)}
                             </p>
                             {range.max > range.min && (
-                              <p className="text-[10px] text-muted">
+                              <p className="text-[10px] text-black/40">
                                 – {formatPrice(range.max)}
                               </p>
                             )}
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 mt-2 text-[10px] text-muted">
+                      <div className="flex items-center gap-1 mt-2 text-[10px] text-black/40">
                         <span className="capitalize">{test.sampleType}</span>
                         <span>·</span>
                         <span>{test.fastingRequired ? "Fasting required" : "No fast needed"}</span>
@@ -1002,9 +1000,8 @@ export default async function LabGuidePage({
             {/* Packages */}
             {relatedPackages.length > 0 && (
               <section>
-                <div className="section-header mb-4">
-                  <h2>Recommended Packages</h2>
-                  <span className="arrows">&gt;&gt;&gt;</span>
+                <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Recommended Packages</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {relatedPackages.map((pkg) => (
@@ -1018,11 +1015,11 @@ export default async function LabGuidePage({
             <FaqSection title="Frequently Asked Questions" faqs={guide.faqs} />
 
             {/* Disclaimer */}
-            <div className="border border-light-200 bg-light-50 p-4 text-xs text-muted leading-relaxed">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4 text-xs text-black/40 leading-relaxed">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-muted flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-3.5 h-3.5 text-black/40 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-dark">Medical Disclaimer:</strong> This guide is for
+                  <strong className="text-[#1c1c1c]">Medical Disclaimer:</strong> This guide is for
                   informational purposes only and does not constitute medical advice. Test
                   recommendations, price ranges, and regulatory information are based on publicly
                   available UAE health authority data and lab pricing as of March 2026. Prices may
@@ -1037,8 +1034,8 @@ export default async function LabGuidePage({
           {/* Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Other Guides */}
-            <div className="border border-light-200 p-4">
-              <div className="section-header mb-3">
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-3">
                 <h3 className="text-sm">More Guides</h3>
                 <span className="arrows text-xs">&gt;&gt;&gt;</span>
               </div>
@@ -1047,10 +1044,10 @@ export default async function LabGuidePage({
                   <Link
                     key={g.slug}
                     href={`/labs/guides/${g.slug}`}
-                    className="flex items-start gap-2 group py-1.5 border-b border-light-100 last:border-b-0"
+                    className="flex items-start gap-2 group py-1.5 border-b border-black/[0.06] last:border-b-0"
                   >
-                    <ArrowRight className="w-3 h-3 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-xs text-dark group-hover:text-accent transition-colors leading-tight">
+                    <ArrowRight className="w-3 h-3 text-[#006828] flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-[#1c1c1c] group-hover:text-[#006828] transition-colors leading-tight">
                       {g.title}
                     </span>
                   </Link>
@@ -1058,31 +1055,31 @@ export default async function LabGuidePage({
               </div>
               <Link
                 href="/labs/guides"
-                className="text-[11px] font-bold text-accent hover:text-accent-dark mt-3 block transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark mt-3 block transition-colors"
               >
                 All lab guides →
               </Link>
             </div>
 
             {/* Browse All Labs */}
-            <div className="border border-light-200 bg-light-50 p-4">
-              <p className="text-xs font-bold text-dark mb-2">
+            <div className="border border-black/[0.06] bg-[#f8f8f6] p-4">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
                 Compare Blood Test Prices
               </p>
-              <p className="text-[11px] text-muted mb-3 leading-relaxed">
+              <p className="text-[11px] text-black/40 mb-3 leading-relaxed">
                 Browse and compare prices for 30+ tests across 11 UAE labs.
               </p>
               <Link
                 href="/labs"
-                className="text-[11px] font-bold text-accent hover:text-accent-dark transition-colors"
+                className="font-['Geist',sans-serif] text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
               >
                 Browse all tests →
               </Link>
             </div>
 
             {/* Quick Links */}
-            <div className="border border-light-200 p-4">
-              <p className="text-xs font-bold text-dark mb-3">Quick Links</p>
+            <div className="border border-black/[0.06] rounded-2xl p-5">
+              <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">Quick Links</p>
               <div className="space-y-1.5">
                 {[
                   { href: "/labs/category/blood-routine", label: "Routine Blood Tests" },
@@ -1096,7 +1093,7 @@ export default async function LabGuidePage({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="flex items-center gap-1.5 text-xs text-muted hover:text-accent transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-black/40 hover:text-[#006828] transition-colors"
                   >
                     <ChevronRight className="w-3 h-3" />
                     {link.label}

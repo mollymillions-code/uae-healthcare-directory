@@ -36,7 +36,7 @@ export function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps
       {currentPage > 1 && (
         <Link
           href={pageUrl(currentPage - 1)}
-          className="p-2 hover:bg-light-100 transition-colors"
+          className="p-2 hover:bg-[#f8f8f6] transition-colors"
           aria-label="Previous page"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -44,7 +44,7 @@ export function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps
       )}
       {pages.map((page, i) =>
         page === "..." ? (
-          <span key={`dots-${i}`} className="px-3 py-2 text-sm text-muted">
+          <span key={`dots-${i}`} className="px-3 py-2 text-sm text-black/40">
             ...
           </span>
         ) : (
@@ -53,8 +53,8 @@ export function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps
             href={pageUrl(page)}
             className={`px-3 py-2 text-sm font-medium transition-colors ${
               page === currentPage
-                ? "bg-accent text-white"
-                : "hover:bg-light-100 text-dark"
+                ? "bg-[#006828] text-white"
+                : "hover:bg-[#f8f8f6] text-[#1c1c1c]"
             }`}
           >
             {page}
@@ -64,7 +64,7 @@ export function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps
       {currentPage < totalPages && (
         <Link
           href={pageUrl(currentPage + 1)}
-          className="p-2 hover:bg-light-100 transition-colors"
+          className="p-2 hover:bg-[#f8f8f6] transition-colors"
           aria-label="Next page"
         >
           <ChevronRight className="h-4 w-4" />

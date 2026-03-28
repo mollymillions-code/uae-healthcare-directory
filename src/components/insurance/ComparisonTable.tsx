@@ -16,7 +16,7 @@ interface ComparisonTableProps {
 
 function CoverageCell({ covered }: { covered: boolean }) {
   return covered ? (
-    <Check className="w-4 h-4 text-accent mx-auto" />
+    <Check className="w-4 h-4 text-[#006828] mx-auto" />
   ) : (
     <X className="w-4 h-4 text-light-300 mx-auto" />
   );
@@ -55,15 +55,15 @@ export function ComparisonTable({ plans, onRemove }: ComparisonTableProps) {
     <div className="overflow-x-auto -mx-4 sm:mx-0">
       <table className="w-full min-w-[600px] text-sm">
         <thead>
-          <tr className="border-b-2 border-dark">
-            <th className="text-left py-3 px-3 font-bold text-dark w-40">Feature</th>
+          <tr className="border-b-2 border-[#1c1c1c]">
+            <th className="text-left py-3 px-3 font-bold text-[#1c1c1c] w-40">Feature</th>
             {plans.map((plan) => (
-              <th key={plan.id} className="text-center py-3 px-3 font-bold text-dark">
+              <th key={plan.id} className="text-center py-3 px-3 font-bold text-[#1c1c1c]">
                 <div className="text-xs">{plan.name}</div>
                 {onRemove && (
                   <button
                     onClick={() => onRemove(plan.id)}
-                    className="text-[10px] text-muted hover:text-accent mt-1"
+                    className="text-[10px] text-black/40 hover:text-[#006828] mt-1"
                   >
                     Remove
                   </button>
@@ -74,20 +74,20 @@ export function ComparisonTable({ plans, onRemove }: ComparisonTableProps) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={row.label} className={i % 2 === 0 ? "bg-light-50" : ""}>
-              <td className="py-2.5 px-3 text-xs font-medium text-dark">{row.label}</td>
+            <tr key={row.label} className={i % 2 === 0 ? "bg-[#f8f8f6]" : ""}>
+              <td className="py-2.5 px-3 text-xs font-medium text-[#1c1c1c]">{row.label}</td>
               {plans.map((plan) => (
-                <td key={plan.id} className="py-2.5 px-3 text-xs text-center text-dark">
+                <td key={plan.id} className="py-2.5 px-3 text-xs text-center text-[#1c1c1c]">
                   {row.getValue(plan)}
                 </td>
               ))}
             </tr>
           ))}
           {/* Exclusions row */}
-          <tr className="border-t border-light-200">
-            <td className="py-2.5 px-3 text-xs font-medium text-dark align-top">Key Exclusions</td>
+          <tr className="border-t border-black/[0.06]">
+            <td className="py-2.5 px-3 text-xs font-medium text-[#1c1c1c] align-top">Key Exclusions</td>
             {plans.map((plan) => (
-              <td key={plan.id} className="py-2.5 px-3 text-[11px] text-muted text-left">
+              <td key={plan.id} className="py-2.5 px-3 text-[11px] text-black/40 text-left">
                 <ul className="space-y-0.5">
                   {plan.exclusions.map((e) => (
                     <li key={e}>· {e}</li>

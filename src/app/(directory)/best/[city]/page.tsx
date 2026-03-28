@@ -145,7 +145,7 @@ export default async function BestInCityPage({ params }: Props) {
   const sortedCategories = [...categoryData].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
@@ -164,18 +164,18 @@ export default async function BestInCityPage({ params }: Props) {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           Best Healthcare in {city.name}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {totalCount.toLocaleString()} providers across {categoryData.length} categories
           {" "}&middot; {regulator} &middot; Updated March 2026
         </p>
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           The UAE Open Healthcare Directory lists {totalCount.toLocaleString()} healthcare
           providers in {city.name} across {categoryData.length} specialties. Below you will
           find the top-rated provider in each category, ranked by Google rating and review
@@ -188,13 +188,13 @@ export default async function BestInCityPage({ params }: Props) {
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={`/directory/${city.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           Full {city.name} directory
         </Link>
         <Link
           href="/best"
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All cities
         </Link>
@@ -202,32 +202,31 @@ export default async function BestInCityPage({ params }: Props) {
 
       {/* Category Grid — each card shows top provider */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Top-Rated by Category</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top-Rated by Category</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedCategories.map((cat) => (
             <Link
               key={cat.slug}
               href={`/best/${city.slug}/${cat.slug}`}
-              className="block border border-light-200 p-4 hover:border-accent transition-colors group"
+              className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {cat.name}
                 </h3>
-                <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
                   {cat.count}
                 </span>
               </div>
 
               {cat.topProvider ? (
-                <div className="border-t border-light-200 pt-3">
-                  <p className="text-[10px] text-muted uppercase tracking-wider mb-1">
+                <div className="border-t border-black/[0.06] pt-3">
+                  <p className="text-[10px] text-black/40 uppercase tracking-wider mb-1">
                     #1 Highest Rated
                   </p>
-                  <p className="text-xs font-bold text-dark truncate">
+                  <p className="text-xs font-bold text-[#1c1c1c] truncate">
                     {cat.topProvider.name}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
@@ -237,15 +236,15 @@ export default async function BestInCityPage({ params }: Props) {
                       </span>
                     )}
                     {cat.topProvider.googleReviewCount > 0 && (
-                      <span className="text-[11px] text-muted">
+                      <span className="text-[11px] text-black/40">
                         {cat.topProvider.googleReviewCount.toLocaleString()} reviews
                       </span>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="border-t border-light-200 pt-3">
-                  <p className="text-xs text-muted">{cat.count} providers listed</p>
+                <div className="border-t border-black/[0.06] pt-3">
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40">{cat.count} providers listed</p>
                 </div>
               )}
             </Link>
@@ -262,21 +261,20 @@ export default async function BestInCityPage({ params }: Props) {
       {/* Cross-links: other cities */}
       {otherCities.length > 0 && (
         <section className="mb-10 mt-10">
-          <div className="section-header">
-            <h2>Best Healthcare in Other Cities</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Best Healthcare in Other Cities</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/best/${c.slug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-accent font-bold mt-1">
+                <p className="text-xs text-[#006828] font-bold mt-1">
                   {c.totalProviders.toLocaleString()} providers
                 </p>
               </Link>
@@ -286,8 +284,8 @@ export default async function BestInCityPage({ params }: Props) {
       )}
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings
           and review counts. They do not constitute a medical recommendation. Provider data is
           sourced from official {regulator} registers and the UAE Open Healthcare Directory,

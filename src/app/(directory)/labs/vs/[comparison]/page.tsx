@@ -361,7 +361,7 @@ export default async function LabComparisonPage({
   // ─── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbs} />
       <JsonLd data={speakableSchema([".answer-block", ".comparison-summary"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -379,23 +379,23 @@ export default async function LabComparisonPage({
       {/* ── H1 ──────────────────────────────────────────────────────────── */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3 flex-wrap">
-          <ArrowLeftRight className="w-7 h-7 text-accent flex-shrink-0" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-dark leading-tight">
+          <ArrowLeftRight className="w-7 h-7 text-[#006828] flex-shrink-0" />
+          <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight leading-tight">
             {labA.name} vs {labB.name}
-            <span className="block sm:inline text-muted font-normal text-lg ml-0 sm:ml-2">
+            <span className="block sm:inline text-black/40 font-normal text-lg ml-0 sm:ml-2">
               — Complete Price Comparison
             </span>
           </h1>
         </div>
 
         {/* Answer block — speakable, LLM-citable */}
-        <div className="answer-block bg-light-50 border border-light-200 p-4 sm:p-5 mb-6">
-          <p className="text-sm sm:text-base text-dark leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 sm:p-5 mb-6">
+          <p className="text-sm sm:text-base text-[#1c1c1c] leading-relaxed">
             According to the UAE Open Healthcare Directory,{" "}
             <strong>{labA.name}</strong> averages{" "}
-            <span className="font-semibold text-dark">{formatPrice(avgA)}</span> per test
+            <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{formatPrice(avgA)}</span> per test
             while <strong>{labB.name}</strong> averages{" "}
-            <span className="font-semibold text-dark">{formatPrice(avgB)}</span> —{" "}
+            <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{formatPrice(avgB)}</span> —{" "}
             {overallDiff > 0 ? (
               <>
                 a <strong>{overallDiff}% difference</strong>.{" "}
@@ -422,20 +422,19 @@ export default async function LabComparisonPage({
 
       {/* ── Head-to-Head Stats ───────────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="section-header mb-4">
-          <h2>Head-to-Head Overview</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Head-to-Head Overview</h2>
         </div>
 
         <div className="comparison-summary overflow-x-auto">
-          <table className="w-full text-sm border border-light-200">
+          <table className="w-full text-sm border border-black/[0.06]">
             <thead>
-              <tr className="bg-light-100 border-b border-light-200">
-                <th className="text-left p-3 text-muted font-medium w-36 sm:w-48"></th>
-                <th className="p-3 text-center font-bold text-dark border-l border-light-200">
+              <tr className="bg-[#f8f8f6] border-b border-black/[0.06]">
+                <th className="text-left p-3 text-black/40 font-medium w-36 sm:w-48"></th>
+                <th className="p-3 text-center font-bold text-[#1c1c1c] border-l border-black/[0.06]">
                   {labA.name}
                 </th>
-                <th className="p-3 text-center font-bold text-dark border-l border-light-200">
+                <th className="p-3 text-center font-bold text-[#1c1c1c] border-l border-black/[0.06]">
                   {labB.name}
                 </th>
               </tr>
@@ -529,25 +528,25 @@ export default async function LabComparisonPage({
               ].map((row, i) => {
                 const winner = row.highlight(row.a, row.b);
                 return (
-                  <tr key={row.label} className={i % 2 === 0 ? "bg-white" : "bg-light-50"}>
-                    <td className="p-3 text-muted font-medium text-xs">{row.label}</td>
+                  <tr key={row.label} className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+                    <td className="p-3 text-black/40 font-medium text-xs">{row.label}</td>
                     <td
-                      className={`p-3 text-center text-xs border-l border-light-200 ${
-                        winner === "a" ? "text-accent font-bold" : "text-dark"
+                      className={`p-3 text-center text-xs border-l border-black/[0.06] ${
+                        winner === "a" ? "text-[#006828] font-bold" : "text-[#1c1c1c]"
                       }`}
                     >
                       {winner === "a" && (
-                        <Trophy className="w-3 h-3 inline mr-1 text-accent" />
+                        <Trophy className="w-3 h-3 inline mr-1 text-[#006828]" />
                       )}
                       {row.a}
                     </td>
                     <td
-                      className={`p-3 text-center text-xs border-l border-light-200 ${
-                        winner === "b" ? "text-accent font-bold" : "text-dark"
+                      className={`p-3 text-center text-xs border-l border-black/[0.06] ${
+                        winner === "b" ? "text-[#006828] font-bold" : "text-[#1c1c1c]"
                       }`}
                     >
                       {winner === "b" && (
-                        <Trophy className="w-3 h-3 inline mr-1 text-accent" />
+                        <Trophy className="w-3 h-3 inline mr-1 text-[#006828]" />
                       )}
                       {row.b}
                     </td>
@@ -561,27 +560,26 @@ export default async function LabComparisonPage({
 
       {/* ── Who Wins by Test ─────────────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="section-header mb-2">
-          <h2>Who Wins by Test?</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-2">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Who Wins by Test?</h2>
         </div>
-        <p className="text-xs text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           Cheaper price highlighted in green. Tests sorted by most popular first.
           Both labs must offer the test for it to appear here.
         </p>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border border-light-200">
+          <table className="w-full text-sm border border-black/[0.06]">
             <thead>
-              <tr className="bg-light-100 border-b border-light-200">
-                <th className="text-left p-3 text-muted font-medium">Test</th>
-                <th className="p-3 text-center font-bold text-dark border-l border-light-200">
+              <tr className="bg-[#f8f8f6] border-b border-black/[0.06]">
+                <th className="text-left p-3 text-black/40 font-medium">Test</th>
+                <th className="p-3 text-center font-bold text-[#1c1c1c] border-l border-black/[0.06]">
                   {labA.name}
                 </th>
-                <th className="p-3 text-center font-bold text-dark border-l border-light-200">
+                <th className="p-3 text-center font-bold text-[#1c1c1c] border-l border-black/[0.06]">
                   {labB.name}
                 </th>
-                <th className="p-3 text-center text-muted font-medium text-xs border-l border-light-200">
+                <th className="p-3 text-center text-black/40 font-medium text-xs border-l border-black/[0.06]">
                   Winner
                 </th>
               </tr>
@@ -595,42 +593,42 @@ export default async function LabComparisonPage({
                 return (
                   <tr
                     key={row.testSlug}
-                    className={i % 2 === 0 ? "bg-white" : "bg-light-50"}
+                    className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}
                   >
-                    <td className="p-3 text-dark text-xs font-medium">
+                    <td className="p-3 text-[#1c1c1c] text-xs font-medium">
                       {row.testName}
                     </td>
                     <td
-                      className={`p-3 text-center text-xs border-l border-light-200 ${
+                      className={`p-3 text-center text-xs border-l border-black/[0.06] ${
                         winnerSlug === slugA && !isTie
-                          ? "text-accent font-bold"
-                          : "text-dark"
+                          ? "text-[#006828] font-bold"
+                          : "text-[#1c1c1c]"
                       }`}
                     >
-                      {pa != null ? formatPrice(pa) : <span className="text-muted">—</span>}
+                      {pa != null ? formatPrice(pa) : <span className="text-black/40">—</span>}
                     </td>
                     <td
-                      className={`p-3 text-center text-xs border-l border-light-200 ${
+                      className={`p-3 text-center text-xs border-l border-black/[0.06] ${
                         winnerSlug === slugB && !isTie
-                          ? "text-accent font-bold"
-                          : "text-dark"
+                          ? "text-[#006828] font-bold"
+                          : "text-[#1c1c1c]"
                       }`}
                     >
-                      {pb != null ? formatPrice(pb) : <span className="text-muted">—</span>}
+                      {pb != null ? formatPrice(pb) : <span className="text-black/40">—</span>}
                     </td>
-                    <td className="p-3 text-center border-l border-light-200">
+                    <td className="p-3 text-center border-l border-black/[0.06]">
                       {isTie ? (
-                        <span className="text-xs text-muted">Tie</span>
+                        <span className="font-['Geist',sans-serif] text-xs text-black/40">Tie</span>
                       ) : winnerSlug === slugA ? (
-                        <span className="text-xs font-semibold text-accent">
+                        <span className="text-xs font-semibold text-[#006828]">
                           {labA.name.split(" ")[0]}
                         </span>
                       ) : winnerSlug === slugB ? (
-                        <span className="text-xs font-semibold text-accent">
+                        <span className="text-xs font-semibold text-[#006828]">
                           {labB.name.split(" ")[0]}
                         </span>
                       ) : (
-                        <span className="text-xs text-muted">—</span>
+                        <span className="font-['Geist',sans-serif] text-xs text-black/40">—</span>
                       )}
                     </td>
                   </tr>
@@ -638,38 +636,38 @@ export default async function LabComparisonPage({
               })}
             </tbody>
             <tfoot>
-              <tr className="bg-light-100 border-t border-light-200">
-                <td className="p-3 text-xs font-bold text-dark">
+              <tr className="bg-[#f8f8f6] border-t border-black/[0.06]">
+                <td className="p-3 text-xs font-bold text-[#1c1c1c]">
                   Score ({priceMatrix.length} tests)
                 </td>
-                <td className="p-3 text-center border-l border-light-200">
+                <td className="p-3 text-center border-l border-black/[0.06]">
                   <span
                     className={`text-xs font-bold ${
-                      aWins > bWins ? "text-accent" : "text-muted"
+                      aWins > bWins ? "text-[#006828]" : "text-black/40"
                     }`}
                   >
                     {aWins} wins
                   </span>
                 </td>
-                <td className="p-3 text-center border-l border-light-200">
+                <td className="p-3 text-center border-l border-black/[0.06]">
                   <span
                     className={`text-xs font-bold ${
-                      bWins > aWins ? "text-accent" : "text-muted"
+                      bWins > aWins ? "text-[#006828]" : "text-black/40"
                     }`}
                   >
                     {bWins} wins
                   </span>
                 </td>
-                <td className="p-3 text-center border-l border-light-200">
+                <td className="p-3 text-center border-l border-black/[0.06]">
                   {ties > 0 && (
-                    <span className="text-xs text-muted">{ties} tie{ties !== 1 ? "s" : ""}</span>
+                    <span className="font-['Geist',sans-serif] text-xs text-black/40">{ties} tie{ties !== 1 ? "s" : ""}</span>
                   )}
                 </td>
               </tr>
             </tfoot>
           </table>
         </div>
-        <p className="text-xs text-muted mt-2">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-2">
           <strong>{aWins > bWins ? labA.name : bWins > aWins ? labB.name : "Neither lab"}</strong>{" "}
           {aWins !== bWins
             ? `wins on ${Math.max(aWins, bWins)} out of ${priceMatrix.length} tests compared`
@@ -679,31 +677,30 @@ export default async function LabComparisonPage({
 
       {/* ── When to choose Lab A ─────────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="section-header mb-4">
-          <h2>When to Choose {labA.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">When to Choose {labA.name}</h2>
         </div>
 
-        <div className="bg-light-50 border border-light-200 p-5">
-          <p className="text-sm text-dark leading-relaxed mb-4">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <p className="text-sm text-[#1c1c1c] leading-relaxed mb-4">
             {labA.description}
           </p>
           <ul className="space-y-2">
             {labA.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2 text-sm text-dark">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li key={h} className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <CheckCircle2 className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 {h}
               </li>
             ))}
             {aWins > bWins && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <CheckCircle2 className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 Cheaper on {aWins} of {priceMatrix.length} shared tests compared to {labB.name}
               </li>
             )}
             {labA.homeCollection && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <Home className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <Home className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 Home collection{" "}
                 {labA.homeCollectionFee === 0
                   ? "(free)"
@@ -711,14 +708,14 @@ export default async function LabComparisonPage({
               </li>
             )}
             {labA.branchCount > 0 && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <MapPin className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <MapPin className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 {labA.branchCount} branch{labA.branchCount !== 1 ? "es" : ""} across{" "}
                 {labA.cities.join(", ")}
               </li>
             )}
-            <li className="flex items-start gap-2 text-sm text-dark">
-              <Clock className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+            <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+              <Clock className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
               Results typically in {labA.turnaroundHours} hours
             </li>
           </ul>
@@ -727,31 +724,30 @@ export default async function LabComparisonPage({
 
       {/* ── When to choose Lab B ─────────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="section-header mb-4">
-          <h2>When to Choose {labB.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">When to Choose {labB.name}</h2>
         </div>
 
-        <div className="bg-light-50 border border-light-200 p-5">
-          <p className="text-sm text-dark leading-relaxed mb-4">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <p className="text-sm text-[#1c1c1c] leading-relaxed mb-4">
             {labB.description}
           </p>
           <ul className="space-y-2">
             {labB.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2 text-sm text-dark">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li key={h} className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <CheckCircle2 className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 {h}
               </li>
             ))}
             {bWins > aWins && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <CheckCircle2 className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 Cheaper on {bWins} of {priceMatrix.length} shared tests compared to {labA.name}
               </li>
             )}
             {labB.homeCollection && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <Home className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <Home className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 Home collection{" "}
                 {labB.homeCollectionFee === 0
                   ? "(free)"
@@ -759,14 +755,14 @@ export default async function LabComparisonPage({
               </li>
             )}
             {labB.branchCount > 0 && (
-              <li className="flex items-start gap-2 text-sm text-dark">
-                <MapPin className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+                <MapPin className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
                 {labB.branchCount} branch{labB.branchCount !== 1 ? "es" : ""} across{" "}
                 {labB.cities.join(", ")}
               </li>
             )}
-            <li className="flex items-start gap-2 text-sm text-dark">
-              <Clock className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+            <li className="flex items-start gap-2 text-sm text-[#1c1c1c]">
+              <Clock className="w-4 h-4 text-[#006828] flex-shrink-0 mt-0.5" />
               Results typically in {labB.turnaroundHours} hours
             </li>
           </ul>
@@ -776,91 +772,90 @@ export default async function LabComparisonPage({
       {/* ── Health Packages Comparison ───────────────────────────────────── */}
       {(packagesA.length > 0 || packagesB.length > 0) && (
         <section className="mb-10">
-          <div className="section-header mb-4">
-            <h2>Health Packages Comparison</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Health Packages Comparison</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Lab A packages */}
             <div>
-              <h3 className="text-sm font-bold text-dark mb-3">{labA.name} Packages</h3>
+              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">{labA.name} Packages</h3>
               {packagesA.length > 0 ? (
                 <div className="space-y-3">
                   {packagesA.map((pkg) => (
                     <div
                       key={pkg.id}
-                      className="border border-light-200 p-4 bg-white"
+                      className="border border-black/[0.06] rounded-2xl p-5 bg-white"
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className="text-sm font-semibold text-dark">{pkg.name}</p>
+                        <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{pkg.name}</p>
                         <div className="text-right flex-shrink-0">
                           {pkg.discountedPrice ? (
                             <>
-                              <span className="text-xs line-through text-muted">
+                              <span className="text-xs line-through text-black/40">
                                 {formatPrice(pkg.price)}
                               </span>
-                              <span className="text-sm font-bold text-accent ml-1">
+                              <span className="text-sm font-bold text-[#006828] ml-1">
                                 {formatPrice(pkg.discountedPrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="text-sm font-bold text-accent">
+                            <span className="text-sm font-bold text-[#006828]">
                               {formatPrice(pkg.price)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <p className="text-xs text-muted mb-2">{pkg.targetAudience}</p>
-                      <p className="text-xs text-dark">
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-2">{pkg.targetAudience}</p>
+                      <p className="text-xs text-[#1c1c1c]">
                         {pkg.biomarkerCount} biomarkers — {pkg.includes.join(", ")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-muted italic">No packages listed for {labA.name}.</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/40 italic">No packages listed for {labA.name}.</p>
               )}
             </div>
 
             {/* Lab B packages */}
             <div>
-              <h3 className="text-sm font-bold text-dark mb-3">{labB.name} Packages</h3>
+              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">{labB.name} Packages</h3>
               {packagesB.length > 0 ? (
                 <div className="space-y-3">
                   {packagesB.map((pkg) => (
                     <div
                       key={pkg.id}
-                      className="border border-light-200 p-4 bg-white"
+                      className="border border-black/[0.06] rounded-2xl p-5 bg-white"
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className="text-sm font-semibold text-dark">{pkg.name}</p>
+                        <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{pkg.name}</p>
                         <div className="text-right flex-shrink-0">
                           {pkg.discountedPrice ? (
                             <>
-                              <span className="text-xs line-through text-muted">
+                              <span className="text-xs line-through text-black/40">
                                 {formatPrice(pkg.price)}
                               </span>
-                              <span className="text-sm font-bold text-accent ml-1">
+                              <span className="text-sm font-bold text-[#006828] ml-1">
                                 {formatPrice(pkg.discountedPrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="text-sm font-bold text-accent">
+                            <span className="text-sm font-bold text-[#006828]">
                               {formatPrice(pkg.price)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <p className="text-xs text-muted mb-2">{pkg.targetAudience}</p>
-                      <p className="text-xs text-dark">
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-2">{pkg.targetAudience}</p>
+                      <p className="text-xs text-[#1c1c1c]">
                         {pkg.biomarkerCount} biomarkers — {pkg.includes.join(", ")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-muted italic">No packages listed for {labB.name}.</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/40 italic">No packages listed for {labB.name}.</p>
               )}
             </div>
           </div>
@@ -870,82 +865,81 @@ export default async function LabComparisonPage({
       {/* ── Home Collection Comparison ───────────────────────────────────── */}
       {(labA.homeCollection || labB.homeCollection) && (
         <section className="mb-10">
-          <div className="section-header mb-4">
-            <h2>Home Collection Comparison</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Home Collection Comparison</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="border border-light-200 p-4 bg-light-50">
+            <div className="border border-black/[0.06] rounded-2xl p-5 bg-[#f8f8f6]">
               <div className="flex items-center gap-2 mb-3">
-                <Home className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-dark">{labA.name}</h3>
+                <Home className="w-4 h-4 text-[#006828]" />
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{labA.name}</h3>
               </div>
               {labA.homeCollection ? (
                 <>
-                  <p className="text-xs text-dark mb-1">
+                  <p className="text-xs text-[#1c1c1c] mb-1">
                     <strong>Fee:</strong>{" "}
                     {labA.homeCollectionFee === 0
                       ? "Free"
                       : `AED ${labA.homeCollectionFee}`}
                   </p>
-                  <p className="text-xs text-dark mb-1">
+                  <p className="text-xs text-[#1c1c1c] mb-1">
                     <strong>Coverage:</strong>{" "}
                     {labA.cities.join(", ")}
                   </p>
-                  <p className="text-xs text-dark">
+                  <p className="text-xs text-[#1c1c1c]">
                     <strong>Results:</strong> Within {labA.turnaroundHours} hours of sample
                     collection
                   </p>
                   <div className="mt-3 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-xs text-accent font-medium">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#006828]" />
+                    <span className="text-xs text-[#006828] font-medium">
                       Home collection available
                     </span>
                   </div>
                 </>
               ) : (
                 <div className="flex items-center gap-1.5 mt-2">
-                  <XCircle className="w-3.5 h-3.5 text-muted" />
-                  <span className="text-xs text-muted">
+                  <XCircle className="w-3.5 h-3.5 text-black/40" />
+                  <span className="font-['Geist',sans-serif] text-xs text-black/40">
                     Walk-in branches only — no home collection
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="border border-light-200 p-4 bg-light-50">
+            <div className="border border-black/[0.06] rounded-2xl p-5 bg-[#f8f8f6]">
               <div className="flex items-center gap-2 mb-3">
-                <Home className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-dark">{labB.name}</h3>
+                <Home className="w-4 h-4 text-[#006828]" />
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{labB.name}</h3>
               </div>
               {labB.homeCollection ? (
                 <>
-                  <p className="text-xs text-dark mb-1">
+                  <p className="text-xs text-[#1c1c1c] mb-1">
                     <strong>Fee:</strong>{" "}
                     {labB.homeCollectionFee === 0
                       ? "Free"
                       : `AED ${labB.homeCollectionFee}`}
                   </p>
-                  <p className="text-xs text-dark mb-1">
+                  <p className="text-xs text-[#1c1c1c] mb-1">
                     <strong>Coverage:</strong>{" "}
                     {labB.cities.join(", ")}
                   </p>
-                  <p className="text-xs text-dark">
+                  <p className="text-xs text-[#1c1c1c]">
                     <strong>Results:</strong> Within {labB.turnaroundHours} hours of sample
                     collection
                   </p>
                   <div className="mt-3 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-xs text-accent font-medium">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#006828]" />
+                    <span className="text-xs text-[#006828] font-medium">
                       Home collection available
                     </span>
                   </div>
                 </>
               ) : (
                 <div className="flex items-center gap-1.5 mt-2">
-                  <XCircle className="w-3.5 h-3.5 text-muted" />
-                  <span className="text-xs text-muted">
+                  <XCircle className="w-3.5 h-3.5 text-black/40" />
+                  <span className="font-['Geist',sans-serif] text-xs text-black/40">
                     Walk-in branches only — no home collection
                   </span>
                 </div>
@@ -958,31 +952,30 @@ export default async function LabComparisonPage({
       {/* ── Other Comparisons ────────────────────────────────────────────── */}
       {otherComparisons.length > 0 && (
         <section className="mb-10">
-          <div className="section-header mb-4">
-            <h2>Other Comparisons</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3 mb-4">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Comparisons</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {otherComparisons.map((c) => (
               <Link
                 key={c.slug}
                 href={`/labs/vs/${c.slug}`}
-                className="flex items-center justify-between gap-2 border border-light-200 bg-light-50 hover:border-accent hover:bg-white transition-colors p-3"
+                className="flex items-center justify-between gap-2 border border-black/[0.06] bg-[#f8f8f6] hover:border-[#006828]/15 hover:bg-white transition-colors p-3"
               >
                 <div className="flex items-center gap-2">
-                  <Star className="w-3.5 h-3.5 text-accent flex-shrink-0" />
-                  <span className="text-sm text-dark">
+                  <Star className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
+                  <span className="text-sm text-[#1c1c1c]">
                     {c.labA} vs {c.labB}
                   </span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 text-black/40 flex-shrink-0" />
               </Link>
             ))}
           </div>
           <div className="mt-3">
             <Link
               href="/labs/compare"
-              className="text-sm text-accent hover:underline"
+              className="text-sm text-[#006828] hover:underline"
             >
               Open the interactive comparison tool to compare any combination of labs →
             </Link>
@@ -999,8 +992,8 @@ export default async function LabComparisonPage({
       </div>
 
       {/* ── Disclaimer ───────────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative and sourced from publicly
           available lab price lists, aggregator platforms, and direct lab communications as of
           March 2026. Prices may vary by branch, insurance status, and current promotions.

@@ -27,7 +27,7 @@ export function CategoryCard({
   return (
     <Link
       href={href}
-      className="group relative flex items-end overflow-hidden border border-light-200 h-28 hover:border-accent transition-all duration-200"
+      className="group relative flex items-end overflow-hidden rounded-2xl border border-black/[0.06] h-28 hover:border-[#006828]/15 hover:shadow-card transition-all duration-300"
     >
       <Image
         src={getCategoryImagePath(slug)}
@@ -39,15 +39,15 @@ export function CategoryCard({
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
       <div className="relative z-10 flex items-end justify-between w-full p-3.5">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="h-8 w-8 bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+          <div className="h-8 w-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
             <IconComponent className="h-4 w-4 text-white" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-medium text-sm text-white truncate">
+            <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-white truncate tracking-tight">
               {name}
             </h3>
             {providerCount !== undefined && providerCount > 0 && (
-              <p className="text-xs text-white/70">{providerCount} {providerCount === 1 ? "provider" : "providers"}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-white/60">{providerCount} {providerCount === 1 ? "provider" : "providers"}</p>
             )}
           </div>
         </div>

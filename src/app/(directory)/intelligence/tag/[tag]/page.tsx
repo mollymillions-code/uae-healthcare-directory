@@ -39,10 +39,10 @@ export default async function TagPage({ params }: PageProps) {
   return (
     <>
       {/* Back link */}
-      <div className="container-tc pt-6">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
           href="/intelligence"
-          className="inline-flex items-center gap-1.5 label hover:text-accent transition-colors"
+          className="inline-flex items-center gap-1.5 label hover:text-[#006828] transition-colors"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to Intelligence
@@ -50,30 +50,30 @@ export default async function TagPage({ params }: PageProps) {
       </div>
 
       {/* Tag header */}
-      <div className="container-tc pt-8 pb-4">
-        <span className="label text-accent mb-2 block">Topic</span>
-        <h1 className="font-sans text-2xl font-bold text-dark">{tag}</h1>
-        <span className="label mt-3 block">{articles.length} articles</span>
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-2 block">Topic</span>
+        <h1 className="font-['Geist',sans-serif] text-2xl font-bold text-[#1c1c1c]">{tag}</h1>
+        <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold mt-3 block">{articles.length} articles</span>
       </div>
 
       {/* Category navigation */}
-      <div className="container-tc pb-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <CategoryNav />
       </div>
 
       {/* Articles + sidebar */}
-      <section className="container-tc pb-16">
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2">
             {articles.length === 0 ? (
-              <p className="font-sans text-muted py-12">
+              <p className="font-['Geist',sans-serif] text-black/40 py-12">
                 No articles with this tag yet.
               </p>
             ) : (
               <div className="space-y-0">
                 {articles.map((article, i) => (
                   <div key={article.id}>
-                    {i > 0 && <div className="border-b border-light-200 my-5" />}
+                    {i > 0 && <div className="border-b border-black/[0.06] my-5" />}
                     <ArticleCard article={article} variant="horizontal" />
                   </div>
                 ))}
@@ -84,8 +84,8 @@ export default async function TagPage({ params }: PageProps) {
           {/* Sidebar */}
           <aside className="space-y-8">
             <div>
-              <div className="border-b-2 border-dark mb-4" />
-              <h3 className="label text-accent mb-4">All Topics</h3>
+              <div className="border-b-2 border-[#1c1c1c] mb-4" />
+              <h3 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">All Topics</h3>
               <TagCloud tags={allTags} limit={30} activeTag={tag} />
             </div>
           </aside>

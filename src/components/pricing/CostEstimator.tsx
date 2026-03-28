@@ -75,25 +75,25 @@ export function CostEstimator({
   }, [plans]);
 
   return (
-    <div className="border border-light-200 bg-light-50">
+    <div className="border border-black/[0.06] bg-[#f8f8f6]">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-4 text-left"
       >
         <div className="flex items-center gap-2">
-          <Calculator className="w-5 h-5 text-accent" />
-          <h3 className="text-sm font-bold text-dark">
+          <Calculator className="w-5 h-5 text-[#006828]" />
+          <h3 className="text-sm font-bold text-[#1c1c1c]">
             Out-of-Pocket Cost Estimator
           </h3>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-black/40 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {isOpen && (
-        <div className="px-4 pb-4 border-t border-light-200 pt-4">
-          <p className="text-xs text-muted mb-4">
+        <div className="px-4 pb-4 border-t border-black/[0.06] pt-4">
+          <p className="text-xs text-black/40 mb-4">
             Select your insurance plan to estimate what you would pay out of pocket
             for a {procedureName.toLowerCase()}.
           </p>
@@ -102,7 +102,7 @@ export function CostEstimator({
           <div className="mb-4">
             <label
               htmlFor="plan-select"
-              className="block text-xs font-bold text-dark mb-1"
+              className="block text-xs font-bold text-[#1c1c1c] mb-1"
             >
               Your Insurance Plan
             </label>
@@ -110,7 +110,7 @@ export function CostEstimator({
               id="plan-select"
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="w-full border border-light-200 bg-white p-2 text-sm text-dark"
+              className="w-full border border-black/[0.06] bg-white p-2 text-sm text-[#1c1c1c]"
             >
               <option value="">Select a plan...</option>
               {grouped.map(([insurerName, insurerPlans]) => (
@@ -128,22 +128,22 @@ export function CostEstimator({
 
           {/* Estimate result */}
           {selectedPlanId === "no-insurance" && (
-            <div className="bg-white border border-light-200 p-4">
+            <div className="bg-white border border-black/[0.06] p-4">
               <div className="grid grid-cols-2 gap-4 mb-3">
                 <div>
-                  <p className="text-[11px] text-muted">Typical Cost</p>
-                  <p className="text-lg font-bold text-dark">
+                  <p className="text-[11px] text-black/40">Typical Cost</p>
+                  <p className="text-lg font-bold text-[#1c1c1c]">
                     AED {typicalCost.toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted">You Pay</p>
+                  <p className="text-[11px] text-black/40">You Pay</p>
                   <p className="text-lg font-bold text-red-600">
                     AED {typicalCost.toLocaleString()}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-black/40">
                 Without insurance, you pay the full amount. Consider getting a
                 UAE health insurance plan to reduce out-of-pocket costs.
               </p>
@@ -151,10 +151,10 @@ export function CostEstimator({
           )}
 
           {estimate && (
-            <div className="bg-white border border-light-200 p-4">
+            <div className="bg-white border border-black/[0.06] p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="badge text-[9px]">{estimate.plan.tier}</span>
-                <span className="text-xs font-bold text-dark">
+                <span className="text-xs font-bold text-[#1c1c1c]">
                   {estimate.plan.insurerName} — {estimate.plan.name}
                 </span>
               </div>
@@ -163,13 +163,13 @@ export function CostEstimator({
                 <div>
                   <div className="grid grid-cols-2 gap-4 mb-3">
                     <div>
-                      <p className="text-[11px] text-muted">Typical Cost</p>
-                      <p className="text-lg font-bold text-dark">
+                      <p className="text-[11px] text-black/40">Typical Cost</p>
+                      <p className="text-lg font-bold text-[#1c1c1c]">
                         AED {typicalCost.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-muted">You Pay</p>
+                      <p className="text-[11px] text-black/40">You Pay</p>
                       <p className="text-lg font-bold text-red-600">
                         AED {typicalCost.toLocaleString()}
                       </p>
@@ -187,20 +187,20 @@ export function CostEstimator({
                 <div>
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <div>
-                      <p className="text-[11px] text-muted">Typical Cost</p>
-                      <p className="text-base font-bold text-dark">
+                      <p className="text-[11px] text-black/40">Typical Cost</p>
+                      <p className="text-base font-bold text-[#1c1c1c]">
                         AED {typicalCost.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-muted">Insurance Pays</p>
+                      <p className="text-[11px] text-black/40">Insurance Pays</p>
                       <p className="text-base font-bold text-green-700">
                         AED {estimate.insurancePays.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[11px] text-muted">You Pay (est.)</p>
-                      <p className="text-base font-bold text-accent">
+                      <p className="text-[11px] text-black/40">You Pay (est.)</p>
+                      <p className="text-base font-bold text-[#006828]">
                         AED {estimate.estimatedCopay.toLocaleString()}
                       </p>
                     </div>
@@ -215,20 +215,20 @@ export function CostEstimator({
                       }}
                     />
                     <div
-                      className="bg-accent h-full"
+                      className="bg-[#006828] h-full"
                       style={{
                         width: `${((estimate.estimatedCopay / typicalCost) * 100).toFixed(0)}%`,
                       }}
                     />
                   </div>
 
-                  <div className="flex items-center gap-4 text-[10px] text-muted">
+                  <div className="flex items-center gap-4 text-[10px] text-black/40">
                     <span className="flex items-center gap-1">
                       <span className="w-2 h-2 bg-green-500 inline-block" />
                       Insurance ({100 - estimate.copayPercent}%)
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-accent inline-block" />
+                      <span className="w-2 h-2 bg-[#006828] inline-block" />
                       Co-pay ({estimate.copayPercent}%)
                     </span>
                   </div>
@@ -238,7 +238,7 @@ export function CostEstimator({
           )}
 
           {/* Disclaimer */}
-          <p className="text-[10px] text-muted mt-3 leading-relaxed">
+          <p className="text-[10px] text-black/40 mt-3 leading-relaxed">
             This is an indicative estimate only. Actual out-of-pocket costs depend on
             your specific plan terms, pre-authorisation status, provider network
             tier, and clinical complexity. Always confirm with your insurer before

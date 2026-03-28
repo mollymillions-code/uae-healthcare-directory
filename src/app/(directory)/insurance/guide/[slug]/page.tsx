@@ -204,7 +204,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 function FreelancerGuide() {
   return (
     <div className="prose-journal">
-      <h2>Who Needs Self-Sponsored Health Insurance?</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Who Needs Self-Sponsored Health Insurance?</h2>
       <p>
         If you hold a freelance permit, are self-sponsored on a family visa, or run a sole establishment in the UAE, you are responsible for arranging your own health insurance. Unlike employees whose employers must provide coverage, freelancers and self-sponsored residents must purchase and maintain a compliant plan independently. This applies whether you are in Dubai (DHA-regulated), Abu Dhabi (DOH-regulated), or the Northern Emirates (MOHAP-regulated).
       </p>
@@ -212,15 +212,15 @@ function FreelancerGuide() {
         Since 2014, Dubai has required every visa holder to have health insurance. Abu Dhabi has had a similar mandate since 2006. The Northern Emirates are progressively adopting mandatory requirements under MOHAP. Without valid insurance, you may face difficulties renewing your visa, Emirates ID, or trade licence.
       </p>
 
-      <h2>How to Get Health Insurance as a Freelancer</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How to Get Health Insurance as a Freelancer</h2>
       <p>
-        The process is straightforward. You can purchase a plan directly from major insurers like <Link href="/insurance/daman" className="text-accent hover:underline">Daman</Link>, <Link href="/insurance/axa" className="text-accent hover:underline">AXA</Link>, <Link href="/insurance/cigna" className="text-accent hover:underline">Cigna</Link>, <Link href="/insurance/metlife" className="text-accent hover:underline">MetLife</Link>, or <Link href="/insurance/orient" className="text-accent hover:underline">Orient Insurance</Link>, or through a licensed insurance broker. Many brokers offer online comparison tools where you can filter by budget, coverage needs, and preferred hospital network.
+        The process is straightforward. You can purchase a plan directly from major insurers like <Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link>, <Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA</Link>, <Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna</Link>, <Link href="/insurance/metlife" className="text-[#006828] hover:underline">MetLife</Link>, or <Link href="/insurance/orient" className="text-[#006828] hover:underline">Orient Insurance</Link>, or through a licensed insurance broker. Many brokers offer online comparison tools where you can filter by budget, coverage needs, and preferred hospital network.
       </p>
       <p>
         To apply, you will typically need your Emirates ID, passport copy, visa copy, and freelance permit or trade licence. The insurer will issue your policy within 1-3 working days. Digital insurance cards are widely accepted at hospitals and clinics across the UAE.
       </p>
 
-      <h2>Cheapest Compliant Plans for Freelancers</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Cheapest Compliant Plans for Freelancers</h2>
       <p>
         In Dubai, the cheapest DHA-compliant plans start from approximately AED 2,200-2,800 per year for a single adult. These basic plans meet the Essential Benefits Plan (EBP) requirements, covering inpatient hospitalisation, outpatient consultations, emergency care, and prescribed medications. They typically exclude dental, optical, and maternity coverage.
       </p>
@@ -228,7 +228,7 @@ function FreelancerGuide() {
         In Abu Dhabi, Daman Basic plans start from approximately AED 600-750 per year and meet DOH minimum requirements. These are the most affordable option for Abu Dhabi visa holders. For better coverage — including wider hospital networks, lower co-payments, and dental or maternity add-ons — expect premiums of AED 4,000-8,000 per year.
       </p>
 
-      <h2>DHA and DOH Requirements</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">DHA and DOH Requirements</h2>
       <p>
         In Dubai, the DHA Essential Benefits Plan (EBP) sets minimum standards that all health insurance plans must meet. This includes coverage for inpatient, outpatient, emergency, maternity (with waiting period), and prescribed medication. The annual premium cap for the most basic plan is set by DHA and reviewed periodically.
       </p>
@@ -236,7 +236,7 @@ function FreelancerGuide() {
         In Abu Dhabi, the DOH (formerly HAAD) mandates a basic benefit package through its partnership with Daman. The Abu Dhabi scheme covers both UAE nationals (through Thiqa) and expatriates (through Daman Basic and enhanced plans). Freelancers in Abu Dhabi should ensure their plan is DOH-registered, as non-compliant plans will not be accepted for visa processing.
       </p>
 
-      <h2>Tips for Freelancers</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tips for Freelancers</h2>
       <ul>
         <li>Always check that the plan is regulatory-compliant (DHA in Dubai, DOH in Abu Dhabi) before purchasing.</li>
         <li>Compare network sizes — a cheaper plan with a small network may leave you without coverage at your preferred hospital.</li>
@@ -246,7 +246,7 @@ function FreelancerGuide() {
       </ul>
 
       <p>
-        Use the <Link href="/insurance" className="text-accent hover:underline">Insurance Navigator</Link> to compare plans side by side and find the best option for your budget and needs.
+        Use the <Link href="/insurance" className="text-[#006828] hover:underline">Insurance Navigator</Link> to compare plans side by side and find the best option for your budget and needs.
       </p>
     </div>
   );
@@ -255,7 +255,7 @@ function FreelancerGuide() {
 function MaternityGuide() {
   return (
     <div className="prose-journal">
-      <h2>Maternity Coverage in UAE Health Insurance</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Maternity Coverage in UAE Health Insurance</h2>
       <p>
         Maternity benefits are included in most DHA and DOH compliant health insurance plans in the UAE, but almost always subject to a waiting period. Understanding these waiting periods, coverage limits, and exclusions is critical before you plan a pregnancy — ideally, you should have your insurance in place at least 12 months before your expected delivery date.
       </p>
@@ -263,7 +263,7 @@ function MaternityGuide() {
         The UAE is one of the most popular destinations for expatriate families, and its healthcare system offers world-class maternity and obstetrics facilities. Major hospital groups such as Mediclinic, NMC, Aster, and Danat Al Emarat operate dedicated maternity units in Dubai and Abu Dhabi.
       </p>
 
-      <h2>Waiting Periods by Insurer</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Waiting Periods by Insurer</h2>
       <p>
         Most UAE insurers impose a 12-month waiting period for maternity benefits on new policies. This means you must have held the policy for a full year before maternity-related costs (prenatal care, delivery, postnatal care) are covered. Some enhanced and premium plans reduce this to 6-9 months. Emergency complications during pregnancy are generally covered from day one regardless of the waiting period.
       </p>
@@ -279,7 +279,7 @@ function MaternityGuide() {
         <li><strong>MetLife</strong>: 12 months on individual plans; group schemes may negotiate lower periods.</li>
       </ul>
 
-      <h2>What Is Covered vs Excluded</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What Is Covered vs Excluded</h2>
       <p>
         Once the waiting period is satisfied, maternity coverage typically includes: antenatal consultations, routine blood tests and ultrasounds, delivery (normal or C-section when medically necessary), postnatal check-ups, and medically required hospitalisation. Most plans set a sub-limit for maternity — for example, AED 10,000-30,000 per pregnancy for basic plans, and AED 30,000-70,000 for enhanced plans.
       </p>
@@ -287,22 +287,22 @@ function MaternityGuide() {
         Common exclusions include: elective C-sections without medical indication (on some basic plans), fertility treatments and IVF, surrogacy-related costs, doula services, cord blood banking, and non-medically necessary extras such as private rooms (unless your plan tier includes this).
       </p>
 
-      <h2>C-Section Coverage</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">C-Section Coverage</h2>
       <p>
         Medically indicated C-sections are covered by all compliant plans once the maternity waiting period is satisfied. The cost of a C-section delivery in the UAE ranges from AED 15,000-45,000 depending on the hospital and city. Dubai hospitals tend to charge at the higher end of this range. If a C-section is elective (patient-requested without medical need), some basic plans may not cover it or may cover it at a reduced rate.
       </p>
 
-      <h2>Newborn Coverage</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Newborn Coverage</h2>
       <p>
         Newborns are typically covered under the mother&apos;s insurance policy for the first 30 days after birth. During this period, neonatal care, paediatric consultations, vaccinations, and any NICU admission are covered. After 30 days, the baby must be registered on a separate insurance policy or added to the family plan. Some premium plans extend automatic newborn coverage to 60 or 90 days — check your policy terms.
       </p>
 
-      <h2>Choosing the Best Maternity Plan</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Choosing the Best Maternity Plan</h2>
       <p>
-        If you are planning a pregnancy, consider these factors: (1) waiting period length, (2) maternity sub-limit amount, (3) which hospitals are in-network for maternity, (4) C-section coverage terms, (5) newborn coverage duration, and (6) whether postnatal physiotherapy or mental health support is included. Premium plans from insurers like <Link href="/insurance/bupa" className="text-accent hover:underline">Bupa</Link>, <Link href="/insurance/cigna" className="text-accent hover:underline">Cigna</Link>, and <Link href="/insurance/axa" className="text-accent hover:underline">AXA</Link> tend to offer the best maternity benefits.
+        If you are planning a pregnancy, consider these factors: (1) waiting period length, (2) maternity sub-limit amount, (3) which hospitals are in-network for maternity, (4) C-section coverage terms, (5) newborn coverage duration, and (6) whether postnatal physiotherapy or mental health support is included. Premium plans from insurers like <Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa</Link>, <Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna</Link>, and <Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA</Link> tend to offer the best maternity benefits.
       </p>
       <p>
-        Use the <Link href="/insurance" className="text-accent hover:underline">Insurance Navigator</Link> to filter plans by maternity coverage and compare sub-limits.
+        Use the <Link href="/insurance" className="text-[#006828] hover:underline">Insurance Navigator</Link> to filter plans by maternity coverage and compare sub-limits.
       </p>
     </div>
   );
@@ -311,12 +311,12 @@ function MaternityGuide() {
 function ClaimsGuide() {
   return (
     <div className="prose-journal">
-      <h2>Understanding Health Insurance Claims in the UAE</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Understanding Health Insurance Claims in the UAE</h2>
       <p>
         Filing a health insurance claim in the UAE is a standard process, but knowing the difference between direct billing and reimbursement — and having the right documents ready — can save you significant time and stress. This guide walks you through both methods, the required documentation, timelines, and what to do if your claim is rejected.
       </p>
 
-      <h2>Direct Billing vs Reimbursement</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Direct Billing vs Reimbursement</h2>
       <p>
         <strong>Direct billing</strong> is the most common method in the UAE. When you visit an in-network hospital or clinic, you present your insurance card at reception. The facility verifies your coverage in real time, you pay only the co-pay or deductible at the point of treatment, and the provider bills the insurer directly for the covered amount. This is seamless and requires no claim filing from your side.
       </p>
@@ -324,7 +324,7 @@ function ClaimsGuide() {
         <strong>Reimbursement</strong> applies when you visit an out-of-network provider, when direct billing fails due to a technical issue, or when you receive treatment abroad. You pay the full cost upfront, then submit a claim form with supporting documents to your insurer for reimbursement of the covered portion. Reimbursement rates for out-of-network visits are often lower (60-80% of the usual and customary rate) compared to in-network rates.
       </p>
 
-      <h2>Required Documents for a Claim</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Required Documents for a Claim</h2>
       <p>
         To file a reimbursement claim, prepare the following documents:
       </p>
@@ -337,7 +337,7 @@ function ClaimsGuide() {
         <li><strong>Emirates ID or passport copy</strong>: For identity verification.</li>
       </ul>
 
-      <h2>Timelines</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Timelines</h2>
       <p>
         Under UAE insurance regulations (DHA and DOH), insurers are required to acknowledge receipt of a claim within 5 working days and settle or deny the claim within 30 days of receiving complete documentation. In practice, straightforward claims with complete documentation are often processed in 7-15 working days. Complex claims involving pre-authorisation, high-value procedures, or investigation may take the full 30 days.
       </p>
@@ -345,7 +345,7 @@ function ClaimsGuide() {
         Reimbursement payments are typically made by bank transfer. Ensure your bank details are correctly recorded with your insurer to avoid delays.
       </p>
 
-      <h2>How to Dispute a Rejected Claim</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How to Dispute a Rejected Claim</h2>
       <p>
         If your claim is rejected, do not assume the decision is final. Common reasons for rejection include: incomplete documentation, treatment not covered under your plan, expired or lapsed policy, pre-existing condition waiting period not met, or failure to obtain pre-authorisation for procedures that require it.
       </p>
@@ -360,16 +360,16 @@ function ClaimsGuide() {
         <li><strong>Escalate to the regulator</strong> if the insurer does not resolve the dispute. In Dubai, file a complaint with DHA. In Abu Dhabi, contact DOH. In the Northern Emirates, contact MOHAP. Each authority has a dedicated complaints portal.</li>
       </ol>
 
-      <h2>Insurer Claims Contact Information</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurer Claims Contact Information</h2>
       <p>
         Most major insurers in the UAE offer multiple channels for claims submission and enquiries:
       </p>
       <ul>
-        <li><strong><Link href="/insurance/daman" className="text-accent hover:underline">Daman</Link></strong>: App, website portal, or call 800 4 DAMAN (800 4 32626)</li>
-        <li><strong><Link href="/insurance/axa" className="text-accent hover:underline">AXA</Link></strong>: MyAXA app, website portal, or email claims submission</li>
-        <li><strong><Link href="/insurance/cigna" className="text-accent hover:underline">Cigna</Link></strong>: myCigna app, website portal, or call their local UAE number</li>
-        <li><strong><Link href="/insurance/metlife" className="text-accent hover:underline">MetLife</Link></strong>: Website portal, email, or call centre</li>
-        <li><strong><Link href="/insurance/bupa" className="text-accent hover:underline">Bupa</Link></strong>: Bupa app, website, or dedicated claims email</li>
+        <li><strong><Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link></strong>: App, website portal, or call 800 4 DAMAN (800 4 32626)</li>
+        <li><strong><Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA</Link></strong>: MyAXA app, website portal, or email claims submission</li>
+        <li><strong><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna</Link></strong>: myCigna app, website portal, or call their local UAE number</li>
+        <li><strong><Link href="/insurance/metlife" className="text-[#006828] hover:underline">MetLife</Link></strong>: Website portal, email, or call centre</li>
+        <li><strong><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa</Link></strong>: Bupa app, website, or dedicated claims email</li>
       </ul>
       <p>
         Always keep copies of all submitted documents and note the claim reference number for follow-up.
@@ -381,7 +381,7 @@ function ClaimsGuide() {
 function DomesticWorkerGuide() {
   return (
     <div className="prose-journal">
-      <h2>Legal Requirements for Domestic Worker Insurance</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Legal Requirements for Domestic Worker Insurance</h2>
       <p>
         In the UAE, employers (sponsors) of domestic workers are legally obligated to provide health insurance coverage. This requirement applies to all domestic workers including housemaids, nannies, private drivers, cooks, and gardeners. The mandate is enforced in Dubai by the DHA and in Abu Dhabi by the DOH. Failure to provide coverage can result in visa rejection, fines, and labour complaints.
       </p>
@@ -389,7 +389,7 @@ function DomesticWorkerGuide() {
         The requirement became more strictly enforced following the UAE Domestic Workers Law (Federal Law No. 10 of 2017), which established a comprehensive framework of rights for domestic workers including the right to healthcare. Insurance is now a prerequisite for issuing and renewing domestic worker visas in Dubai and Abu Dhabi.
       </p>
 
-      <h2>Minimum Coverage Requirements</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Minimum Coverage Requirements</h2>
       <p>
         The minimum coverage for domestic workers mirrors the basic requirements for all visa holders. In Dubai, the plan must be DHA Essential Benefits Plan (EBP) compliant, covering inpatient hospitalisation, outpatient consultations, emergency care, prescribed medications, and basic diagnostics. In Abu Dhabi, the plan must meet DOH minimum standards as administered through Daman.
       </p>
@@ -405,15 +405,15 @@ function DomesticWorkerGuide() {
         <li>Maternity coverage (subject to 12-month waiting period)</li>
       </ul>
 
-      <h2>Cheapest Compliant Plans</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Cheapest Compliant Plans</h2>
       <p>
-        The most affordable plans for domestic workers in Dubai start from approximately AED 750-1,200 per year. In Abu Dhabi, <Link href="/insurance/daman" className="text-accent hover:underline">Daman</Link> offers specific domestic worker plans starting from approximately AED 600 per year. These plans meet minimum regulatory requirements but have limited networks and higher co-payments compared to enhanced plans.
+        The most affordable plans for domestic workers in Dubai start from approximately AED 750-1,200 per year. In Abu Dhabi, <Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link> offers specific domestic worker plans starting from approximately AED 600 per year. These plans meet minimum regulatory requirements but have limited networks and higher co-payments compared to enhanced plans.
       </p>
       <p>
-        Employers can purchase these plans online through insurer websites or through licensed brokers. Common providers offering domestic worker plans include Daman, <Link href="/insurance/orient" className="text-accent hover:underline">Orient Insurance</Link>, <Link href="/insurance/oman-insurance" className="text-accent hover:underline">Oman Insurance</Link>, and <Link href="/insurance/dubai-insurance-company" className="text-accent hover:underline">Dubai Insurance Company</Link>. Comparison portals can help identify the cheapest option with an adequate network in your area.
+        Employers can purchase these plans online through insurer websites or through licensed brokers. Common providers offering domestic worker plans include Daman, <Link href="/insurance/orient" className="text-[#006828] hover:underline">Orient Insurance</Link>, <Link href="/insurance/oman-insurance" className="text-[#006828] hover:underline">Oman Insurance</Link>, and <Link href="/insurance/dubai-insurance-company" className="text-[#006828] hover:underline">Dubai Insurance Company</Link>. Comparison portals can help identify the cheapest option with an adequate network in your area.
       </p>
 
-      <h2>Penalties for Non-Compliance</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Penalties for Non-Compliance</h2>
       <p>
         Employers who fail to insure their domestic workers face several consequences:
       </p>
@@ -424,7 +424,7 @@ function DomesticWorkerGuide() {
         <li><strong>Personal liability</strong>: Without insurance, the employer is personally liable for all medical costs incurred by the domestic worker. A single hospital admission can cost AED 10,000-50,000 or more.</li>
       </ul>
 
-      <h2>Practical Tips for Employers</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Practical Tips for Employers</h2>
       <ul>
         <li>Purchase insurance before applying for or renewing the domestic worker&apos;s visa — it is a prerequisite.</li>
         <li>Give your domestic worker a copy of their insurance card and explain how to use it at hospitals and clinics.</li>
@@ -439,7 +439,7 @@ function DomesticWorkerGuide() {
 function SwitchingGuide() {
   return (
     <div className="prose-journal">
-      <h2>When Can You Switch Health Insurance in the UAE?</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">When Can You Switch Health Insurance in the UAE?</h2>
       <p>
         The standard time to switch health insurance providers in the UAE is at your policy renewal date, which is typically annual. For employer-sponsored plans, the renewal date is set by your employer&apos;s HR department — usually aligned with the company&apos;s fiscal year or the employee&apos;s visa renewal. For individual (self-purchased) plans, the renewal date is 12 months from the policy start date.
       </p>
@@ -447,7 +447,7 @@ function SwitchingGuide() {
         Mid-year switching is possible but uncommon. If you change employers, your new employer will provide new insurance, and your old policy is typically cancelled. If you move from employer-sponsored to self-sponsored (e.g., becoming a freelancer), you must purchase your own plan before the employer plan lapses to maintain continuous coverage.
       </p>
 
-      <h2>Pre-Existing Conditions and Continuity of Coverage</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Pre-Existing Conditions and Continuity of Coverage</h2>
       <p>
         This is the most critical concern when switching. Under DHA and DOH regulations, if you maintain continuous health insurance coverage in the UAE (no gap between your old and new policy), the new insurer <strong>must</strong> cover pre-existing conditions that were covered under your previous plan. This is known as the continuity of coverage rule and protects residents from losing coverage for ongoing conditions when they switch providers.
       </p>
@@ -460,7 +460,7 @@ function SwitchingGuide() {
         <li>Provide this letter to your new insurer during the application process.</li>
       </ul>
 
-      <h2>Continuous Coverage Rules</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Continuous Coverage Rules</h2>
       <p>
         The DHA and DOH require insurers to honour the following when coverage is continuous:
       </p>
@@ -474,12 +474,12 @@ function SwitchingGuide() {
         These protections apply as long as the switch is between two DHA-compliant plans (in Dubai) or two DOH-compliant plans (in Abu Dhabi). Switching from a non-compliant or international-only plan may not carry the same protections.
       </p>
 
-      <h2>Employer-Sponsored vs Self-Purchased Plans</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Employer-Sponsored vs Self-Purchased Plans</h2>
       <p>
         If your employer sponsors your insurance, the decision to switch providers rests with your employer. You can request a different plan or insurer, but the employer is not obligated to comply as long as the current plan meets regulatory minimum standards. If you want additional coverage beyond what your employer provides, you can purchase a supplementary individual plan.
       </p>
       <p>
-        For self-purchased plans, you have full control. At renewal, compare plans using the <Link href="/insurance" className="text-accent hover:underline">Insurance Navigator</Link> to evaluate premiums, network sizes, and coverage features. Key factors to compare include:
+        For self-purchased plans, you have full control. At renewal, compare plans using the <Link href="/insurance" className="text-[#006828] hover:underline">Insurance Navigator</Link> to evaluate premiums, network sizes, and coverage features. Key factors to compare include:
       </p>
       <ul>
         <li><strong>Network</strong>: Does the new plan include your preferred hospitals and clinics?</li>
@@ -489,9 +489,9 @@ function SwitchingGuide() {
         <li><strong>Annual limit</strong>: What is the maximum the insurer will pay per year?</li>
       </ul>
 
-      <h2>Step-by-Step Switching Process</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Step-by-Step Switching Process</h2>
       <ol>
-        <li><strong>2-4 weeks before renewal</strong>: Compare plans using the <Link href="/insurance" className="text-accent hover:underline">Insurance Navigator</Link> or a licensed broker.</li>
+        <li><strong>2-4 weeks before renewal</strong>: Compare plans using the <Link href="/insurance" className="text-[#006828] hover:underline">Insurance Navigator</Link> or a licensed broker.</li>
         <li><strong>Request a continuity certificate</strong> from your current insurer.</li>
         <li><strong>Apply for the new plan</strong> with your chosen insurer, providing the continuity certificate and any required medical declarations.</li>
         <li><strong>Confirm the start date</strong> aligns with your current policy end date (no gap).</li>
@@ -568,7 +568,7 @@ export default function InsuranceGuidePage({ params }: { params: { slug: string 
       {/* JSON-LD: SpeakableSpecification */}
       <JsonLd data={speakableSchema([".answer-block"])} />
 
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb items={[
           { label: "UAE", href: "/" },
           { label: "Insurance", href: "/insurance" },
@@ -577,14 +577,14 @@ export default function InsuranceGuidePage({ params }: { params: { slug: string 
         ]} />
 
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold text-dark mb-4">{guide.title}</h1>
-          <p className="text-xs text-muted mb-6">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-4">{guide.title}</h1>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-6">
             Published {guide.datePublished} · Updated {guide.dateModified}
           </p>
 
           {/* Answer block */}
-          <div className="answer-block mb-8" data-answer-block="true">
-            <p className="text-muted leading-relaxed text-lg">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed text-lg">
               {guide.metaDescription}
             </p>
           </div>
@@ -593,21 +593,21 @@ export default function InsuranceGuidePage({ params }: { params: { slug: string 
           <GuideContent />
 
           {/* Last updated note */}
-          <p className="text-xs text-muted mt-8">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-8">
             Last updated March 2026. This guide is for informational purposes and does not constitute insurance advice. Always confirm details with your insurer and the relevant health authority.
           </p>
 
           {/* Navigation */}
-          <div className="mt-6 pt-6 border-t border-light-200 flex flex-wrap gap-4">
+          <div className="mt-6 pt-6 border-t border-black/[0.06] flex flex-wrap gap-4">
             <Link
               href="/insurance/guide"
-              className="text-sm font-medium text-accent hover:underline"
+              className="text-sm font-medium text-[#006828] hover:underline"
             >
               &larr; All Insurance Guides
             </Link>
             <Link
               href="/insurance"
-              className="text-sm font-medium text-accent hover:underline"
+              className="text-sm font-medium text-[#006828] hover:underline"
             >
               Insurance Navigator &rarr;
             </Link>

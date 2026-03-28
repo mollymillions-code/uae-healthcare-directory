@@ -17,14 +17,14 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
       <article className="group">
         <Link href={`/intelligence/${article.slug}`} className="block">
           <div className="flex items-start gap-3">
-            <span className="category-ribbon shrink-0 pt-0.5">
+            <span className="inline-block font-['Geist',sans-serif] text-[11px] font-medium uppercase tracking-wider text-[#006828] shrink-0 pt-0.5">
               {category?.icon}
             </span>
             <div className="min-w-0">
-              <h3 className="headline-serif-md group-hover:text-accent transition-colors line-clamp-2">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[15px] text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors line-clamp-2">
                 {article.title}
               </h3>
-              <span className="byline mt-1 block">{formatDate(article.publishedAt)}</span>
+              <span className="font-['Geist',sans-serif] text-xs text-black/30 mt-1 block">{formatDate(article.publishedAt)}</span>
             </div>
           </div>
         </Link>
@@ -39,25 +39,25 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
           <div className="flex gap-5">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="category-ribbon">{category?.name}</span>
+                <span className="font-['Geist',sans-serif] text-[11px] font-medium uppercase tracking-wider text-[#006828]">{category?.name}</span>
                 {article.isBreaking && (
-                  <span className="text-[11px] font-bold uppercase text-red-600">Breaking</span>
+                  <span className="font-['Geist',sans-serif] text-[11px] font-medium uppercase text-red-600">Breaking</span>
                 )}
               </div>
-              <h3 className="headline-serif-lg group-hover:text-accent transition-colors mb-2">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-lg text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-2">
                 {article.title}
               </h3>
-              <p className="text-sm text-muted leading-relaxed line-clamp-2">
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed line-clamp-2">
                 {article.excerpt}
               </p>
-              <div className="byline mt-3">
+              <div className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">
                 <span>{formatDate(article.publishedAt)}</span>
                 {" · "}
                 <span>{article.readTimeMinutes} min read</span>
               </div>
             </div>
             {article.imageUrl && (
-              <div className="relative w-[160px] h-[100px] shrink-0 overflow-hidden bg-light-100">
+              <div className="relative w-[160px] h-[100px] shrink-0 overflow-hidden rounded-xl bg-[#f8f8f6]">
                 <Image
                   src={article.imageUrl}
                   alt={article.title}
@@ -78,7 +78,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
     <article className="group">
       <Link href={`/intelligence/${article.slug}`} className="block">
         {article.imageUrl && (
-          <div className="relative w-full aspect-[16/9] mb-4 overflow-hidden bg-light-100">
+          <div className="relative w-full aspect-[16/9] mb-4 overflow-hidden rounded-2xl bg-[#f8f8f6]">
             <Image
               src={article.imageUrl}
               alt={article.title}
@@ -88,15 +88,15 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
             />
           </div>
         )}
-        <span className="category-ribbon mb-2 block">{category?.name}</span>
-        <h3 className="headline-serif-lg group-hover:text-accent transition-colors mb-2">
+        <span className="font-['Geist',sans-serif] text-[11px] font-medium uppercase tracking-wider text-[#006828] mb-2 block">{category?.name}</span>
+        <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-lg text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-2">
           {article.title}
         </h3>
-        <p className="text-sm text-muted leading-relaxed line-clamp-3 mb-3">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed line-clamp-3 mb-3">
           {article.excerpt}
         </p>
-        <div className="byline">
-          <span className="author">{article.author.name}</span>
+        <div className="font-['Geist',sans-serif] text-xs text-black/30">
+          <span className="font-medium text-[#006828]">{article.author.name}</span>
           {" · "}
           <span>{formatDate(article.publishedAt)}</span>
           {" · "}

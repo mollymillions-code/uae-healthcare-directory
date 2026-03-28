@@ -155,7 +155,7 @@ export default function PackagesPage() {
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
       <JsonLd data={speakableSchema([".answer-block", "h1"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -172,23 +172,23 @@ export default function PackagesPage() {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Package className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <Package className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Health Check Packages in the UAE — Compare {allPackages.length} Packages from{" "}
             {formatPrice(cheapestPrice)}
           </h1>
         </div>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Health check packages bundle multiple lab tests at a discounted rate
             compared to ordering them individually. In the UAE, packages range from
             a{" "}
-            <strong className="text-dark">
+            <strong className="text-[#1c1c1c]">
               {formatPrice(cheapestPrice)} budget panel
             </strong>{" "}
             covering 5 core tests, to a{" "}
-            <strong className="text-dark">
+            <strong className="text-[#1c1c1c]">
               {formatPrice(Math.max(...allPackages.map((p) => p.price)))} executive
               screen
             </strong>{" "}
@@ -208,21 +208,20 @@ export default function PackagesPage() {
             { value: mostBiomarkers.toString(), label: "Most biomarkers" },
             { value: labsWithPackages.toString(), label: "Labs offering packages" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center border border-light-200">
-              <p className="text-xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted mt-1">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center border border-black/[0.06]">
+              <p className="text-xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Budget Packages */}
-      <div className="section-header">
-        <h2>Budget Packages — Under {formatPrice(BUDGET_MAX)}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Budget Packages — Under {formatPrice(BUDGET_MAX)}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Budget packages cover the five core tests every adult should check
           annually: CBC (blood count), lipid profile (cholesterol), fasting glucose
           (diabetes screening), liver function, and kidney function. At AED 99-199,
@@ -238,16 +237,15 @@ export default function PackagesPage() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted mb-12">No packages in this tier currently tracked.</p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-12">No packages in this tier currently tracked.</p>
       )}
 
       {/* Standard Packages */}
-      <div className="section-header">
-        <h2>Standard Wellness Packages — {formatPrice(STANDARD_MIN)} to {formatPrice(STANDARD_MAX)}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Standard Wellness Packages — {formatPrice(STANDARD_MIN)} to {formatPrice(STANDARD_MAX)}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Standard wellness packages add vitamins (D, B12), thyroid (TSH or full
           panel), iron studies, HbA1c (3-month diabetes average), and urinalysis
           to the core tests. This is the recommended tier for most UAE residents
@@ -263,16 +261,15 @@ export default function PackagesPage() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted mb-12">No packages in this tier currently tracked.</p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-12">No packages in this tier currently tracked.</p>
       )}
 
       {/* Premium Packages */}
-      <div className="section-header">
-        <h2>Premium &amp; Executive Packages — {formatPrice(PREMIUM_MIN)}+</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Premium &amp; Executive Packages — {formatPrice(PREMIUM_MIN)}+</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Premium and executive packages extend the standard wellness screen with
           advanced cardiac risk markers (high-sensitivity CRP, troponin, BNP),
           cancer screening biomarkers (PSA for men, CA-125 for women, CEA), hormone
@@ -291,16 +288,15 @@ export default function PackagesPage() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted mb-12">No packages in this tier currently tracked.</p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-12">No packages in this tier currently tracked.</p>
       )}
 
       {/* Women's Health Packages */}
-      <div className="section-header">
-        <h2>Women&apos;s Health Packages</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Women&apos;s Health Packages</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           Women&apos;s health packages include gender-specific additions beyond the
           standard wellness screen: reproductive hormones (FSH, LH, estradiol,
           prolactin), ovarian reserve (AMH), folate (critical for pregnancy
@@ -317,12 +313,12 @@ export default function PackagesPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-light-50 border border-light-200 p-5 mb-12">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-12">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="w-4 h-4 text-accent" />
-            <p className="text-sm font-bold text-dark">Women&apos;s Health Screening</p>
+            <Users className="w-4 h-4 text-[#006828]" />
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">Women&apos;s Health Screening</p>
           </div>
-          <p className="text-xs text-muted leading-relaxed">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
             Several labs offer women&apos;s health packages that include fertility
             hormones and reproductive markers alongside the standard wellness panel.
             Medsol&apos;s Women&apos;s Health Panel (AED 399, 82 biomarkers) covers FSH,
@@ -330,19 +326,18 @@ export default function PackagesPage() {
             Browse individual lab profiles to see their current women&apos;s health
             offerings.
           </p>
-          <Link href="/labs" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-accent hover:text-accent-dark transition-colors">
+          <Link href="/labs" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors">
             Browse all labs <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       )}
 
       {/* Package vs Individual — savings analysis */}
-      <div className="section-header">
-        <h2>Package vs Individual Tests — Which Saves More?</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Package vs Individual Tests — Which Saves More?</h2>
       </div>
-      <div className="answer-block mb-6" data-answer-block="true">
-        <p className="text-sm text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
           Packages consistently save 30–50% compared to ordering the same tests
           individually at the same lab. The saving compounds as package complexity
           increases. Here is a concrete example using Al Borg Diagnostics&apos;
@@ -351,21 +346,21 @@ export default function PackagesPage() {
       </div>
 
       {comprehensiveExample && (
-        <div className="border border-light-200 mb-6 overflow-x-auto">
-          <div className="p-4 bg-light-50 border-b border-light-200">
-            <p className="text-sm font-bold text-dark">
+        <div className="border border-black/[0.06] mb-6 overflow-x-auto">
+          <div className="p-4 bg-[#f8f8f6] border-b border-black/[0.06]">
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
               Al Borg Diagnostics — Comprehensive Wellness (AED 499 package vs individual)
             </p>
-            <p className="text-xs text-muted mt-1">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
               {comprehensiveExample.biomarkerCount} biomarkers across{" "}
               {comprehensiveExample.testSlugs.length} test panels
             </p>
           </div>
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-light-50">
-                <th className="text-left p-3 font-bold text-dark border-b border-light-200">Test</th>
-                <th className="text-right p-3 font-bold text-dark border-b border-light-200">Individual price (AED)</th>
+              <tr className="bg-[#f8f8f6]">
+                <th className="text-left p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">Test</th>
+                <th className="text-right p-3 font-bold text-[#1c1c1c] border-b border-black/[0.06]">Individual price (AED)</th>
               </tr>
             </thead>
             <tbody>
@@ -382,46 +377,46 @@ export default function PackagesPage() {
                 { name: "Iron Studies", price: 180 },
                 { name: "Urinalysis", price: 40 },
               ].map((row, i) => (
-                <tr key={row.name} className={i % 2 === 0 ? "bg-white" : "bg-light-50"}>
-                  <td className="p-3 border-b border-light-200 text-dark">{row.name}</td>
-                  <td className="p-3 border-b border-light-200 text-right text-dark font-medium">
+                <tr key={row.name} className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}>
+                  <td className="p-3 border-b border-black/[0.06] text-[#1c1c1c]">{row.name}</td>
+                  <td className="p-3 border-b border-black/[0.06] text-right text-[#1c1c1c] font-medium">
                     {row.price}
                   </td>
                 </tr>
               ))}
-              <tr className="bg-light-50 font-bold">
-                <td className="p-3 border-b border-light-200 text-dark">
+              <tr className="bg-[#f8f8f6] font-bold">
+                <td className="p-3 border-b border-black/[0.06] text-[#1c1c1c]">
                   Total if ordered individually
                 </td>
-                <td className="p-3 border-b border-light-200 text-right text-dark">825</td>
+                <td className="p-3 border-b border-black/[0.06] text-right text-[#1c1c1c]">825</td>
               </tr>
-              <tr className="bg-accent-muted">
-                <td className="p-3 text-dark font-bold">
+              <tr className="bg-[#006828]/[0.04]">
+                <td className="p-3 text-[#1c1c1c] font-bold">
                   Comprehensive Wellness Package price
                 </td>
-                <td className="p-3 text-right font-bold text-accent text-base">499</td>
+                <td className="p-3 text-right font-bold text-[#006828] text-base">499</td>
               </tr>
             </tbody>
           </table>
-          <div className="p-4 bg-light-50 border-t border-light-200 flex items-center gap-3">
-            <TrendingDown className="w-5 h-5 text-accent flex-shrink-0" />
-            <p className="text-sm font-bold text-dark">
+          <div className="p-4 bg-[#f8f8f6] border-t border-black/[0.06] flex items-center gap-3">
+            <TrendingDown className="w-5 h-5 text-[#006828] flex-shrink-0" />
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
               Package saves AED 326 — a{" "}
-              <span className="text-accent">39% saving</span> vs ordering
+              <span className="text-[#006828]">39% saving</span> vs ordering
               individually at the same lab.
             </p>
           </div>
         </div>
       )}
 
-      <div className="bg-light-50 border border-light-200 p-5 mb-12">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 mb-12">
         <div className="flex items-start gap-3">
-          <Wallet className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <Wallet className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-dark mb-2">
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
               When individual tests beat packages
             </p>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
               Packages are best value when you need most of the included tests.
               If you only need one or two tests (e.g., a repeat Vitamin D check
               three months into supplementation, or a single HbA1c for diabetes
@@ -435,12 +430,11 @@ export default function PackagesPage() {
       </div>
 
       {/* Compare by Lab */}
-      <div className="section-header">
-        <h2>Compare Packages by Lab</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare Packages by Lab</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted mb-4">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           Each lab positions its packages differently. Medsol targets
           budget-conscious patients. Thumbay offers a strong mid-range value.
           Al Borg provides the widest range from basic to executive. Unilabs
@@ -450,27 +444,27 @@ export default function PackagesPage() {
       </div>
       <div className="space-y-6 mb-12">
         {packagesByLab.map(({ lab, packages }) => (
-          <div key={lab.slug} className="border border-light-200">
+          <div key={lab.slug} className="border border-black/[0.06]">
             {/* Lab header */}
-            <div className="p-4 bg-light-50 border-b border-light-200 flex items-center justify-between">
+            <div className="p-4 bg-[#f8f8f6] border-b border-black/[0.06] flex items-center justify-between">
               <div>
                 <Link
                   href={`/labs/${lab.slug}`}
-                  className="font-bold text-dark hover:text-accent transition-colors text-sm"
+                  className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors text-sm"
                 >
                   {lab.name}
                 </Link>
-                <p className="text-[11px] text-muted mt-0.5">{lab.description.slice(0, 100)}…</p>
+                <p className="text-[11px] text-black/40 mt-0.5">{lab.description.slice(0, 100)}…</p>
               </div>
               <div className="flex items-center gap-3 flex-shrink-0">
                 {lab.homeCollection && (
-                  <span className="text-[10px] bg-accent-muted text-accent-dark px-2 py-0.5 font-bold">
+                  <span className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-2 py-0.5 font-bold">
                     Home collection{lab.homeCollectionFee === 0 ? " (free)" : ` (AED ${lab.homeCollectionFee})`}
                   </span>
                 )}
                 <Link
                   href={`/labs/${lab.slug}`}
-                  className="flex items-center gap-1 text-xs font-bold text-accent hover:text-accent-dark transition-colors"
+                  className="flex items-center gap-1 text-xs font-bold text-[#006828] hover:text-[#006828]-dark transition-colors"
                 >
                   View lab <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
@@ -482,42 +476,42 @@ export default function PackagesPage() {
               {packages.map((pkg, i) => (
                 <div
                   key={pkg.id}
-                  className={`p-4 ${i < packages.length - 1 ? "border-b sm:border-b-0 sm:border-r border-light-200" : ""}`}
+                  className={`p-4 ${i < packages.length - 1 ? "border-b sm:border-b-0 sm:border-r border-black/[0.06]" : ""}`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <p className="text-xs font-bold text-dark">{pkg.name}</p>
-                      <p className="text-[10px] text-muted mt-0.5">{pkg.targetAudience}</p>
+                      <p className="text-xs font-bold text-[#1c1c1c]">{pkg.name}</p>
+                      <p className="text-[10px] text-black/40 mt-0.5">{pkg.targetAudience}</p>
                     </div>
                     {pkg.price < BUDGET_MAX && (
-                      <span className="text-[9px] bg-accent-muted text-accent-dark px-1.5 py-0.5 font-bold flex-shrink-0">
+                      <span className="text-[9px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5 font-bold flex-shrink-0">
                         Budget
                       </span>
                     )}
                     {pkg.price >= PREMIUM_MIN && (
-                      <span className="text-[9px] bg-light-100 text-dark px-1.5 py-0.5 font-bold border border-light-200 flex-shrink-0">
+                      <span className="text-[9px] bg-[#f8f8f6] text-[#1c1c1c] px-1.5 py-0.5 font-bold border border-black/[0.06] flex-shrink-0">
                         Premium
                       </span>
                     )}
                   </div>
-                  <p className="text-lg font-bold text-dark">{formatPrice(pkg.price)}</p>
-                  <p className="text-[11px] text-muted mb-2">{pkg.biomarkerCount} biomarkers</p>
+                  <p className="text-lg font-bold text-[#1c1c1c]">{formatPrice(pkg.price)}</p>
+                  <p className="text-[11px] text-black/40 mb-2">{pkg.biomarkerCount} biomarkers</p>
                   <div className="space-y-1">
                     {pkg.includes.slice(0, 3).map((item) => (
-                      <div key={item} className="flex items-center gap-1.5 text-[11px] text-dark">
-                        <CheckCircle className="w-3 h-3 text-accent flex-shrink-0" />
+                      <div key={item} className="flex items-center gap-1.5 text-[11px] text-[#1c1c1c]">
+                        <CheckCircle className="w-3 h-3 text-[#006828] flex-shrink-0" />
                         {item}
                       </div>
                     ))}
                     {pkg.includes.length > 3 && (
-                      <p className="text-[10px] text-muted">
+                      <p className="text-[10px] text-black/40">
                         +{pkg.includes.length - 3} more tests included
                       </p>
                     )}
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1">
                     {pkg.suitableFor.map((s) => (
-                      <span key={s} className="text-[10px] bg-accent-muted text-accent-dark px-1.5 py-0.5">
+                      <span key={s} className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5">
                         {s === "all" ? "Men & Women" : s === "male" ? "Men" : "Women"}
                       </span>
                     ))}
@@ -530,12 +524,11 @@ export default function PackagesPage() {
       </div>
 
       {/* Choosing guide */}
-      <div className="section-header">
-        <h2>Which Package Should You Choose?</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Which Package Should You Choose?</h2>
       </div>
-      <div className="answer-block mb-6" data-answer-block="true">
-        <p className="text-sm text-muted leading-relaxed mb-2">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-2">
           The right package depends on your age, health history, and budget. This
           quick guide matches common profiles to appropriate tiers:
         </p>
@@ -585,13 +578,13 @@ export default function PackagesPage() {
               "Full wellness panel with DHA-licensed nurse visiting your location. Home collection included in the price. Results digitally within 24 hours. Book via app.",
           },
         ].map(({ icon: Icon, profile, recommendation, details }) => (
-          <div key={profile} className="border border-light-200 p-4 hover:border-accent transition-colors">
+          <div key={profile} className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors">
             <div className="flex items-start gap-3 mb-3">
-              <Icon className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-              <p className="text-xs font-bold text-muted uppercase tracking-wide">{profile}</p>
+              <Icon className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+              <p className="text-xs font-bold text-black/40 uppercase tracking-wide">{profile}</p>
             </div>
-            <p className="text-sm font-bold text-dark mb-2">{recommendation}</p>
-            <p className="text-xs text-muted leading-relaxed">{details}</p>
+            <p className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{recommendation}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{details}</p>
           </div>
         ))}
       </div>
@@ -624,22 +617,22 @@ export default function PackagesPage() {
           <Link
             key={href}
             href={href}
-            className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center justify-between gap-3"
+            className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group flex items-center justify-between gap-3"
           >
             <div>
-              <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {label}
               </p>
-              <p className="text-xs text-muted mt-0.5">{sublabel}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">{sublabel}</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0" />
+            <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] transition-colors flex-shrink-0" />
           </Link>
         ))}
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Package prices are based on publicly available
           pricing from lab websites and aggregator platforms (2024–2025). Actual prices
           may vary by branch location, insurance coverage, promotions, and seasonal

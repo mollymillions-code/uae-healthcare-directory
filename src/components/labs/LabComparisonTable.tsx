@@ -12,7 +12,7 @@ export function LabComparisonTable({ comparison }: LabComparisonTableProps) {
 
   if (priceMatrix.length === 0) {
     return (
-      <p className="text-sm text-muted text-center py-6">
+      <p className="text-sm text-black/40 text-center py-6">
         No common tests found between these labs to compare.
       </p>
     );
@@ -31,11 +31,11 @@ export function LabComparisonTable({ comparison }: LabComparisonTableProps) {
       {/* Summary */}
       <div className="flex flex-wrap gap-3 mb-4">
         {labs.map((lab) => (
-          <div key={lab.slug} className="bg-light-50 px-3 py-2 border border-light-200">
-            <Link href={`/labs/${lab.slug}`} className="text-xs font-bold text-dark hover:text-accent">
+          <div key={lab.slug} className="bg-[#f8f8f6] px-3 py-2 border border-black/[0.06]">
+            <Link href={`/labs/${lab.slug}`} className="text-xs font-bold text-[#1c1c1c] hover:text-[#006828]">
               {lab.name}
             </Link>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               Cheapest in {cheapestCounts.get(lab.slug) || 0} of {priceMatrix.length} tests
             </p>
           </div>
@@ -46,11 +46,11 @@ export function LabComparisonTable({ comparison }: LabComparisonTableProps) {
       <div className="overflow-x-auto -mx-4 sm:mx-0">
         <table className="w-full min-w-[500px] text-sm">
           <thead>
-            <tr className="border-b-2 border-dark">
-              <th className="text-left py-3 px-3 font-bold text-dark w-44">Test</th>
+            <tr className="border-b-2 border-[#1c1c1c]">
+              <th className="text-left py-3 px-3 font-bold text-[#1c1c1c] w-44">Test</th>
               {labs.map((lab) => (
-                <th key={lab.slug} className="text-center py-3 px-3 font-bold text-dark">
-                  <Link href={`/labs/${lab.slug}`} className="hover:text-accent transition-colors text-xs">
+                <th key={lab.slug} className="text-center py-3 px-3 font-bold text-[#1c1c1c]">
+                  <Link href={`/labs/${lab.slug}`} className="hover:text-[#006828] transition-colors text-xs">
                     {lab.name}
                   </Link>
                 </th>
@@ -59,11 +59,11 @@ export function LabComparisonTable({ comparison }: LabComparisonTableProps) {
           </thead>
           <tbody>
             {priceMatrix.map((row, i) => (
-              <tr key={row.testSlug} className={i % 2 === 0 ? "bg-light-50" : ""}>
+              <tr key={row.testSlug} className={i % 2 === 0 ? "bg-[#f8f8f6]" : ""}>
                 <td className="py-2.5 px-3">
                   <Link
                     href={`/labs/test/${row.testSlug}`}
-                    className="text-xs font-medium text-dark hover:text-accent transition-colors"
+                    className="text-xs font-medium text-[#1c1c1c] hover:text-[#006828] transition-colors"
                   >
                     {row.testName}
                   </Link>
@@ -73,8 +73,8 @@ export function LabComparisonTable({ comparison }: LabComparisonTableProps) {
                     key={p.labSlug}
                     className={`py-2.5 px-3 text-center text-xs font-bold ${
                       p.labSlug === row.cheapestLabSlug
-                        ? "text-accent bg-accent-muted/30"
-                        : "text-dark"
+                        ? "text-[#006828] bg-[#006828]/[0.04]/30"
+                        : "text-[#1c1c1c]"
                     }`}
                   >
                     {p.price !== null ? formatPrice(p.price) : "—"}

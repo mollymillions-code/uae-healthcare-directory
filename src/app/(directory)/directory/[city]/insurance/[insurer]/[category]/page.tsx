@@ -175,7 +175,7 @@ export default async function InsuranceCategoryPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
@@ -207,36 +207,36 @@ export default async function InsuranceCategoryPage({ params }: Props) {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4 mb-2">
-          <h1 className="text-3xl font-bold text-dark">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             {category.name} Accepting {insurer.name} in {city.name}
           </h1>
-          <span className="badge text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
+          <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
         </div>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated March 2026
         </p>
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">{answerParagraph}</p>
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerParagraph}</p>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="border border-light-200 p-4 text-center">
-          <p className="text-2xl font-bold text-accent">{count}</p>
-          <p className="text-xs text-muted mt-1">Total Providers</p>
+        <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+          <p className="text-2xl font-bold text-[#006828]">{count}</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Total Providers</p>
         </div>
-        <div className="border border-light-200 p-4 text-center">
-          <p className="text-2xl font-bold text-accent">{avgRating || "—"}</p>
-          <p className="text-xs text-muted mt-1">Average Rating</p>
+        <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+          <p className="text-2xl font-bold text-[#006828]">{avgRating || "—"}</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Average Rating</p>
         </div>
-        <div className="border border-light-200 p-4 text-center">
-          <p className="text-sm font-bold text-accent truncate px-1">
+        <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+          <p className="text-sm font-bold text-[#006828] truncate px-1">
             {highestRated ? highestRated.name : "—"}
           </p>
-          <p className="text-xs text-muted mt-1">Highest Rated</p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Highest Rated</p>
         </div>
       </div>
 
@@ -244,25 +244,25 @@ export default async function InsuranceCategoryPage({ params }: Props) {
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={`/directory/${city.slug}/${category.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All {category.name} in {city.name}
         </Link>
         <Link
           href={`/directory/${city.slug}/insurance/${insurer.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All {insurer.name} providers in {city.name}
         </Link>
         <Link
           href={`/insurance/${insurer.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           {insurer.name} plans &amp; coverage
         </Link>
         <Link
           href="/insurance/compare"
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           Compare insurers
         </Link>
@@ -271,21 +271,20 @@ export default async function InsuranceCategoryPage({ params }: Props) {
       {/* Other categories accepting this insurer */}
       {otherCategories.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Other Categories Accepting {insurer.name} in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Categories Accepting {insurer.name} in {city.name}</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {otherCategories.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-light-200 px-3 py-2 hover:border-accent group transition-colors"
+                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-[#006828]/15 group transition-colors"
               >
-                <span className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {cat.name}
                 </span>
-                <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
                   {cat.insurerCount}
                 </span>
               </Link>
@@ -296,9 +295,8 @@ export default async function InsuranceCategoryPage({ params }: Props) {
 
       {/* Provider list */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>{category.name} Accepting {insurer.name} in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{category.name} Accepting {insurer.name} in {city.name}</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -322,9 +320,9 @@ export default async function InsuranceCategoryPage({ params }: Props) {
         </div>
         {providers.length > 40 && (
           <div className="mt-4 text-center">
-            <p className="text-xs text-muted">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">
               Showing 40 of {count.toLocaleString()} providers. Use the{" "}
-              <Link href={`/search?city=${city.slug}&q=${encodeURIComponent(insurer.name + " " + category.name)}`} className="text-accent font-bold">
+              <Link href={`/search?city=${city.slug}&q=${encodeURIComponent(insurer.name + " " + category.name)}`} className="text-[#006828] font-bold">
                 search tool
               </Link>{" "}
               to browse all.
@@ -337,8 +335,8 @@ export default async function InsuranceCategoryPage({ params }: Props) {
       <FaqSection faqs={faqs} title={`${category.name} Accepting ${insurer.name} in ${city.name} — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4 mt-8">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4 mt-8">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Provider network data is sourced from official {regulator} registers and the UAE Open Healthcare Directory, last verified March 2026.
           Insurance acceptance can change — always confirm with the provider&apos;s insurance desk before your visit.
           For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker.

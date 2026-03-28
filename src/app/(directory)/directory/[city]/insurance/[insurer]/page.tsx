@@ -201,7 +201,7 @@ export default async function InsuranceProviderPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
@@ -226,38 +226,38 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4 mb-2">
-          <h1 className="text-3xl font-bold text-dark">
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             {insurer.name} Insurance — Healthcare Providers in {city.name}
           </h1>
-          <span className="badge text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
+          <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
         </div>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated March 2026
         </p>
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">{answerParagraph}</p>
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerParagraph}</p>
       </div>
 
       {/* Quick nav links */}
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={`/directory/${city.slug}/insurance`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All insurance in {city.name}
         </Link>
         <Link
           href={`/insurance/${insurer.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           {insurer.name} plans &amp; coverage
         </Link>
         <Link
           href="/insurance/compare"
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           Compare insurers
         </Link>
@@ -266,27 +266,26 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Category Breakdown */}
       {catBreakdown.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Providers by Category</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Providers by Category</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {catBreakdown.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-light-200 px-3 py-2 hover:border-accent group transition-colors"
+                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-[#006828]/15 group transition-colors"
               >
-                <span className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {cat.name}
                 </span>
-                <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
                   {cat.insurerCount}
                 </span>
               </Link>
             ))}
           </div>
-          <p className="text-xs text-muted mt-3">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-3">
             Showing {catBreakdown.length} {catBreakdown.length === 1 ? "category" : "categories"} with {insurer.name}-accepting providers in {city.name}.
             Click a category to browse all {city.name} providers in that specialty.
           </p>
@@ -296,32 +295,31 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Top-rated section */}
       {topRated.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Top-Rated {insurer.name} Providers in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top-Rated {insurer.name} Providers in {city.name}</h2>
           </div>
           <div className="space-y-0">
             {topRated.map((p, idx) => (
-              <div key={p.id} className="flex items-center gap-3 py-3 border-b border-light-200 last:border-b-0">
-                <span className="text-xs font-bold text-muted w-5 flex-shrink-0">#{idx + 1}</span>
+              <div key={p.id} className="flex items-center gap-3 py-3 border-b border-black/[0.06] last:border-b-0">
+                <span className="text-xs font-bold text-black/40 w-5 flex-shrink-0">#{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                    className="text-sm font-bold text-dark hover:text-accent transition-colors block truncate"
+                    className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors block truncate"
                   >
                     {p.name}
                   </Link>
-                  <p className="text-xs text-muted truncate">{p.address}</p>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">{p.address}</p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5">
                     {p.googleRating} ★
                   </span>
                   {p.googleReviewCount > 0 && (
-                    <span className="text-xs text-muted">({p.googleReviewCount.toLocaleString()})</span>
+                    <span className="font-['Geist',sans-serif] text-xs text-black/40">({p.googleReviewCount.toLocaleString()})</span>
                   )}
                 </div>
-                <span className="badge text-[9px] flex-shrink-0">{p.categorySlug.replace(/-/g, " ")}</span>
+                <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{p.categorySlug.replace(/-/g, " ")}</span>
               </div>
             ))}
           </div>
@@ -330,9 +328,8 @@ export default async function InsuranceProviderPage({ params }: Props) {
 
       {/* All providers grid */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>All {insurer.name} Providers in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {insurer.name} Providers in {city.name}</h2>
         </div>
 
         {providers.length > 0 ? (
@@ -358,9 +355,9 @@ export default async function InsuranceProviderPage({ params }: Props) {
             </div>
             {providers.length > 60 && (
               <div className="mt-4 text-center">
-                <p className="text-xs text-muted">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">
                   Showing 60 of {count.toLocaleString()} providers. Use the{" "}
-                  <Link href={`/search?city=${city.slug}&q=${encodeURIComponent(insurer.name)}`} className="text-accent font-bold">
+                  <Link href={`/search?city=${city.slug}&q=${encodeURIComponent(insurer.name)}`} className="text-[#006828] font-bold">
                     search tool
                   </Link>{" "}
                   to browse all {insurer.name} providers in {city.name}.
@@ -370,9 +367,9 @@ export default async function InsuranceProviderPage({ params }: Props) {
           </>
 
         ) : (
-          <div className="text-center py-12 border border-light-200">
-            <p className="text-muted mb-2">No providers accepting {insurer.name} found in {city.name} yet.</p>
-            <Link href={`/directory/${city.slug}`} className="text-accent text-sm font-bold">
+          <div className="text-center py-12 border border-black/[0.06]">
+            <p className="text-black/40 mb-2">No providers accepting {insurer.name} found in {city.name} yet.</p>
+            <Link href={`/directory/${city.slug}`} className="text-[#006828] text-sm font-bold">
               View all healthcare providers in {city.name} &rarr;
             </Link>
           </div>
@@ -385,19 +382,18 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Cross-link: other cities */}
       {otherCities.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>{insurer.name} in Other Emirates</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{insurer.name} in Other Emirates</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/directory/${c.slug}/insurance/${insurer.slug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">{c.name}</p>
-                <p className="text-xs text-accent font-bold mt-1">{c.count} {c.count === 1 ? "provider" : "providers"}</p>
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">{c.name}</p>
+                <p className="text-xs text-[#006828] font-bold mt-1">{c.count} {c.count === 1 ? "provider" : "providers"}</p>
               </Link>
             ))}
           </div>
@@ -407,23 +403,22 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Related insurers */}
       {relatedInsurers.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Other Insurance Plans in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Insurance Plans in {city.name}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedInsurers.map((ins) => (
               <Link
                 key={ins.slug}
                 href={`/directory/${city.slug}/insurance/${ins.slug}`}
-                className="block border border-light-200 p-4 hover:border-accent transition-colors"
+                className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
-                  <span className="badge text-[9px]">{ins.type}</span>
+                  <h3 className="font-bold text-[#1c1c1c] text-sm">{ins.name}</h3>
+                  <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{ins.type}</span>
                 </div>
-                <p className="text-xs text-muted line-clamp-2 mb-2">{ins.description}</p>
-                <p className="text-xs font-bold text-accent">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-2 mb-2">{ins.description}</p>
+                <p className="text-xs font-bold text-[#006828]">
                   {ins.count} {ins.count === 1 ? "provider" : "providers"} in {city.name}
                 </p>
               </Link>
@@ -433,7 +428,7 @@ export default async function InsuranceProviderPage({ params }: Props) {
       )}
 
       {/* Compare CTA */}
-      <div className="bg-dark text-white p-6 flex items-center justify-between mb-8">
+      <div className="bg-[#1c1c1c] text-white p-6 flex items-center justify-between mb-8">
         <div>
           <p className="font-bold text-sm">Compare {insurer.name} with other insurers</p>
           <p className="text-xs text-white/70 mt-1">
@@ -442,15 +437,15 @@ export default async function InsuranceProviderPage({ params }: Props) {
         </div>
         <Link
           href="/insurance/compare"
-          className="bg-accent text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
+          className="bg-[#006828] text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
         >
           Compare plans
         </Link>
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Provider network data is sourced from official {regulator} registers and the UAE Open Healthcare Directory, last verified March 2026.
           Insurance acceptance can change — always confirm with the provider&apos;s insurance desk before your visit.
           For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker.

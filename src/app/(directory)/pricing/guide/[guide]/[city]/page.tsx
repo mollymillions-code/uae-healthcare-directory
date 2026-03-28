@@ -403,7 +403,7 @@ export default async function CityGuidePage({ params }: PageProps) {
       : 0;
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -439,11 +439,11 @@ export default async function CityGuidePage({ params }: PageProps) {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Icon className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">{pageTitle}</h1>
+          <Icon className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">{pageTitle}</h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{answerText}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerText}</p>
         </div>
 
         {/* Quick stats */}
@@ -468,25 +468,24 @@ export default async function CityGuidePage({ params }: PageProps) {
               label: "Tips for you",
             },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* City-specific Procedure Prices */}
-      <div className="section-header">
-        <h2>Procedure Prices in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Procedure Prices in {city.name}</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Prices for {city.name} facilities. Click any procedure for full details and
         insurance calculator.
       </p>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
-        <div className="hidden sm:grid grid-cols-12 gap-2 p-3 bg-light-50 text-[10px] font-bold text-muted uppercase tracking-wider">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
+        <div className="hidden sm:grid grid-cols-12 gap-2 p-3 bg-[#f8f8f6] text-[10px] font-bold text-black/40 uppercase tracking-wider">
           <div className="col-span-4">Procedure</div>
           <div className="col-span-2 text-right">Min</div>
           <div className="col-span-2 text-right">Typical</div>
@@ -519,23 +518,23 @@ export default async function CityGuidePage({ params }: PageProps) {
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}/${citySlug}`}
-              className="grid grid-cols-12 gap-2 p-3 hover:bg-light-50 transition-colors group items-center"
+              className="grid grid-cols-12 gap-2 p-3 hover:bg-[#f8f8f6] transition-colors group items-center"
             >
               <div className="col-span-12 sm:col-span-4">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {proc.name}
                 </h3>
-                <p className="text-[10px] text-muted sm:hidden">
+                <p className="text-[10px] text-black/40 sm:hidden">
                   {formatAed(cp.min)} – {formatAed(cp.max)}
                 </p>
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm text-muted">
+              <div className="hidden sm:block col-span-2 text-right text-sm text-black/40">
                 {formatAed(cp.min)}
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm font-bold text-dark">
+              <div className="hidden sm:block col-span-2 text-right font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                 {formatAed(cp.typical)}
               </div>
-              <div className="hidden sm:block col-span-2 text-right text-sm text-muted">
+              <div className="hidden sm:block col-span-2 text-right text-sm text-black/40">
                 {formatAed(cp.max)}
               </div>
               <div className="hidden sm:flex col-span-2 justify-end">
@@ -551,26 +550,25 @@ export default async function CityGuidePage({ params }: PageProps) {
       </div>
 
       {/* Compare with Other Cities */}
-      <div className="section-header">
-        <h2>Compare with Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare with Other Cities</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         How {city.name} compares to other UAE cities for the same procedures.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {/* Current city first */}
-        <div className="border-2 border-accent p-3">
+        <div className="border-2 border-[#006828] p-3">
           <div className="flex items-center gap-1.5 mb-1">
-            <MapPin className="w-3.5 h-3.5 text-accent" />
-            <span className="text-xs font-bold text-accent">
+            <MapPin className="w-3.5 h-3.5 text-[#006828]" />
+            <span className="text-xs font-bold text-[#006828]">
               {city.name}
             </span>
           </div>
-          <p className="text-lg font-bold text-dark">
+          <p className="text-lg font-bold text-[#1c1c1c]">
             {formatAed(currentCityAvg)}
           </p>
-          <p className="text-[9px] text-muted">avg. typical (current)</p>
+          <p className="text-[9px] text-black/40">avg. typical (current)</p>
         </div>
         {otherCityAverages.slice(0, 7).map(({ city: otherCity, avg }) => {
           const diff = currentCityAvg > 0
@@ -580,18 +578,18 @@ export default async function CityGuidePage({ params }: PageProps) {
             <Link
               key={otherCity.slug}
               href={`/pricing/guide/${guide.slug}/${otherCity.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-center gap-1.5 mb-1">
-                <MapPin className="w-3.5 h-3.5 text-muted group-hover:text-accent" />
-                <span className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                <MapPin className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828]" />
+                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {otherCity.name}
                 </span>
               </div>
-              <p className="text-lg font-bold text-dark">
+              <p className="text-lg font-bold text-[#1c1c1c]">
                 {formatAed(avg)}
               </p>
-              <p className="text-[9px] text-muted">
+              <p className="text-[9px] text-black/40">
                 {diff > 0 ? `+${diff}%` : `${diff}%`} vs {city.name}
               </p>
             </Link>
@@ -600,58 +598,56 @@ export default async function CityGuidePage({ params }: PageProps) {
       </div>
 
       {/* Tips */}
-      <div className="section-header">
-        <h2>Tips for {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tips for {city.name}</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
         <div className="space-y-4">
           {allTips.map((tip, i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-accent text-white flex items-center justify-center text-xs font-bold">
+              <div className="flex-shrink-0 w-6 h-6 bg-[#006828] text-white flex items-center justify-center text-xs font-bold">
                 {i + 1}
               </div>
-              <p className="text-sm text-muted leading-relaxed">{tip}</p>
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">{tip}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Provider Recommendations */}
-      <div className="section-header">
-        <h2>Find Providers in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Find Providers in {city.name}</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <p className="text-sm text-muted mb-4">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           Browse the UAE Open Healthcare Directory to find licensed healthcare
           providers in {city.name} that match your needs and budget.
         </p>
         <div className="flex flex-wrap gap-2">
           <Link
             href={`/directory/${citySlug}/clinics`}
-            className="text-xs text-accent border border-accent px-3 py-1.5 hover:bg-accent hover:text-white transition-colors inline-flex items-center gap-1.5"
+            className="text-xs text-[#006828] border border-[#006828] px-3 py-1.5 hover:bg-[#006828] hover:text-white transition-colors inline-flex items-center gap-1.5"
           >
             Clinics in {city.name}
             <ExternalLink className="w-3 h-3" />
           </Link>
           <Link
             href={`/directory/${citySlug}/hospitals`}
-            className="text-xs text-accent border border-accent px-3 py-1.5 hover:bg-accent hover:text-white transition-colors inline-flex items-center gap-1.5"
+            className="text-xs text-[#006828] border border-[#006828] px-3 py-1.5 hover:bg-[#006828] hover:text-white transition-colors inline-flex items-center gap-1.5"
           >
             Hospitals in {city.name}
             <ExternalLink className="w-3 h-3" />
           </Link>
           <Link
             href={`/directory/${citySlug}/dental`}
-            className="text-xs text-accent border border-accent px-3 py-1.5 hover:bg-accent hover:text-white transition-colors inline-flex items-center gap-1.5"
+            className="text-xs text-[#006828] border border-[#006828] px-3 py-1.5 hover:bg-[#006828] hover:text-white transition-colors inline-flex items-center gap-1.5"
           >
             Dental in {city.name}
             <ExternalLink className="w-3 h-3" />
           </Link>
           <Link
             href={`/directory/${citySlug}/labs-diagnostics`}
-            className="text-xs text-accent border border-accent px-3 py-1.5 hover:bg-accent hover:text-white transition-colors inline-flex items-center gap-1.5"
+            className="text-xs text-[#006828] border border-[#006828] px-3 py-1.5 hover:bg-[#006828] hover:text-white transition-colors inline-flex items-center gap-1.5"
           >
             Labs in {city.name}
             <ExternalLink className="w-3 h-3" />
@@ -660,16 +656,15 @@ export default async function CityGuidePage({ params }: PageProps) {
       </div>
 
       {/* Insurance Section */}
-      <div className="section-header">
-        <h2>Insurance in {city.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance in {city.name}</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <div className="answer-block space-y-3" data-answer-block="true">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 space-y-3" data-answer-block="true">
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">
+            <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">
                 Regulated by {getRegulator(citySlug)}:
               </strong>{" "}
               {citySlug === "dubai"
@@ -680,9 +675,9 @@ export default async function CityGuidePage({ params }: PageProps) {
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong className="text-dark">Coverage for this guide:</strong>{" "}
+            <Lightbulb className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
+              <strong className="text-[#1c1c1c]">Coverage for this guide:</strong>{" "}
               Of the {procsWithCityPricing.length} procedures priced in{" "}
               {city.name},{" "}
               {
@@ -711,29 +706,27 @@ export default async function CityGuidePage({ params }: PageProps) {
       </div>
 
       {/* Other Cities for This Guide */}
-      <div className="section-header">
-        <h2>This Guide in Other Cities</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">This Guide in Other Cities</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {CITIES.filter((c) => c.slug !== citySlug).map((c) => (
           <Link
             key={c.slug}
             href={`/pricing/guide/${guide.slug}/${c.slug}`}
-            className="border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+            className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
           >
-            <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+            <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
               {c.name}
             </h3>
-            <p className="text-[10px] text-muted">View prices</p>
+            <p className="text-[10px] text-black/40">View prices</p>
           </Link>
         ))}
       </div>
 
       {/* Other Guides */}
-      <div className="section-header">
-        <h2>Other Pricing Guides</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Pricing Guides</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
         {PRICING_GUIDES.filter((g) => g.slug !== guide.slug).map((g) => {
@@ -742,18 +735,18 @@ export default async function CityGuidePage({ params }: PageProps) {
             <Link
               key={g.slug}
               href={`/pricing/guide/${g.slug}/${citySlug}`}
-              className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center gap-3"
+              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group flex items-center gap-3"
             >
-              <OtherIcon className="w-5 h-5 text-accent flex-shrink-0" />
+              <OtherIcon className="w-5 h-5 text-[#006828] flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors truncate">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
                   {g.name.replace("in UAE", "").replace("in the UAE", "").trim()} in {city.name}
                 </h3>
-                <p className="text-[10px] text-muted truncate">
+                <p className="text-[10px] text-black/40 truncate">
                   {g.featuredProcedures.length} procedures
                 </p>
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0" />
+              <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0" />
             </Link>
           );
         })}
@@ -763,8 +756,8 @@ export default async function CityGuidePage({ params }: PageProps) {
       <FaqSection faqs={faqs} title={`${pageTitle} — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges
           for {city.name} based on the DOH Mandatory Tariff (Shafafiya) methodology,
           DHA DRG parameters, and market-observed data as of March 2026. Actual

@@ -201,7 +201,7 @@ export default async function ProcedureCityPage({ params }: Props) {
 
   return (
     <>
-      <div className="container-tc py-8">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd
           data={breadcrumbSchema([
             { name: "UAE", url: base },
@@ -231,19 +231,19 @@ export default async function ProcedureCityPage({ params }: Props) {
         />
 
         {/* Header */}
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           {proc.name} Cost in {city.name}
         </h1>
 
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           {providerCount} providers &middot; {proc.duration} &middot;{" "}
           {getCoverageLabel(proc.insuranceCoverage)} by insurance &middot;
           Last updated March 2026
         </p>
 
         {/* Answer block for AEO */}
-        <div className="answer-block mb-8" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, a{" "}
             {proc.name.toLowerCase()} in {city.name} costs {formatAed(pricing.min)}{" "}
             to {formatAed(pricing.max)}, with a typical price of{" "}
@@ -265,59 +265,58 @@ export default async function ProcedureCityPage({ params }: Props) {
 
         {/* Price highlight card */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-light-50 border border-light-200 p-5 text-center">
-            <p className="text-xs text-muted uppercase tracking-wider mb-1">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 text-center">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 uppercase tracking-wider mb-1">
               From
             </p>
-            <p className="text-2xl font-bold text-dark">
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
               {formatAed(pricing.min)}
             </p>
-            <p className="text-xs text-muted">Lowest price</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Lowest price</p>
           </div>
-          <div className="bg-accent-muted border border-accent p-5 text-center">
-            <p className="text-xs text-accent uppercase tracking-wider mb-1">
+          <div className="bg-[#006828]/[0.04] border border-[#006828] p-5 text-center">
+            <p className="text-xs text-[#006828] uppercase tracking-wider mb-1">
               Typical
             </p>
-            <p className="text-2xl font-bold text-dark">
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
               {formatAed(pricing.typical)}
             </p>
-            <p className="text-xs text-muted">Most common price</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Most common price</p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-5 text-center">
-            <p className="text-xs text-muted uppercase tracking-wider mb-1">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 text-center">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 uppercase tracking-wider mb-1">
               Up to
             </p>
-            <p className="text-2xl font-bold text-dark">
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
               {formatAed(pricing.max)}
             </p>
-            <p className="text-xs text-muted">Premium facilities</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Premium facilities</p>
           </div>
         </div>
 
         {/* Procedure details */}
         <section className="mb-10">
-          <div className="section-header">
-            <h2>About {proc.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">About {proc.name}</h2>
           </div>
-          <p className="text-sm text-muted leading-relaxed mb-4">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
             {proc.description}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-light-50 border border-light-200 p-3">
-              <Clock className="h-4 w-4 text-accent mb-1" />
-              <p className="text-xs font-bold text-dark">Duration</p>
-              <p className="text-xs text-muted">{proc.duration}</p>
+            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
+              <Clock className="h-4 w-4 text-[#006828] mb-1" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Duration</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{proc.duration}</p>
             </div>
-            <div className="bg-light-50 border border-light-200 p-3">
-              <Activity className="h-4 w-4 text-accent mb-1" />
-              <p className="text-xs font-bold text-dark">Recovery</p>
-              <p className="text-xs text-muted">{proc.recoveryTime}</p>
+            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
+              <Activity className="h-4 w-4 text-[#006828] mb-1" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Recovery</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{proc.recoveryTime}</p>
             </div>
-            <div className="bg-light-50 border border-light-200 p-3">
-              <Shield className="h-4 w-4 text-accent mb-1" />
-              <p className="text-xs font-bold text-dark">Insurance</p>
-              <p className="text-xs text-muted">
+            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
+              <Shield className="h-4 w-4 text-[#006828] mb-1" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Insurance</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">
                 <span
                   className={`inline-block px-1.5 py-0.5 text-[9px] font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}
                 >
@@ -325,25 +324,24 @@ export default async function ProcedureCityPage({ params }: Props) {
                 </span>
               </p>
             </div>
-            <div className="bg-light-50 border border-light-200 p-3">
-              <MapPin className="h-4 w-4 text-accent mb-1" />
-              <p className="text-xs font-bold text-dark">Setting</p>
-              <p className="text-xs text-muted capitalize">{proc.setting}</p>
+            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
+              <MapPin className="h-4 w-4 text-[#006828] mb-1" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Setting</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 capitalize">{proc.setting}</p>
             </div>
           </div>
         </section>
 
         {/* What to expect */}
         <section className="mb-10">
-          <div className="section-header">
-            <h2>What to Expect</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What to Expect</h2>
           </div>
-          <p className="text-sm text-muted leading-relaxed">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
             {proc.whatToExpect}
           </p>
           {proc.anaesthesia !== "none" && (
-            <p className="text-sm text-muted mt-2">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-2">
               <strong>Anaesthesia:</strong>{" "}
               {proc.anaesthesia.charAt(0).toUpperCase() +
                 proc.anaesthesia.slice(1)}{" "}
@@ -353,16 +351,15 @@ export default async function ProcedureCityPage({ params }: Props) {
         </section>
       </div>
 
-      {/* City comparison table — bg-light-50 section */}
-      <section className="bg-light-50 py-10">
-        <div className="container-tc">
-          <div className="section-header">
-            <h2>
+      {/* City comparison table — bg-[#f8f8f6] section */}
+      <section className="bg-[#f8f8f6] py-10">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
               {proc.name} Cost Comparison — All UAE Cities
             </h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
           </div>
-          <p className="text-sm text-muted mb-4">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
             Compare {proc.name.toLowerCase()} prices across all UAE emirates.{" "}
             {city.name} is highlighted below.
           </p>
@@ -370,20 +367,20 @@ export default async function ProcedureCityPage({ params }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b-2 border-light-200">
-                  <th className="text-left py-3 pr-4 font-bold text-dark">
+                <tr className="border-b-2 border-black/[0.06]">
+                  <th className="text-left py-3 pr-4 font-bold text-[#1c1c1c]">
                     City
                   </th>
-                  <th className="text-right py-3 px-4 font-bold text-dark">
+                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
                     From
                   </th>
-                  <th className="text-right py-3 px-4 font-bold text-dark">
+                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
                     Typical
                   </th>
-                  <th className="text-right py-3 px-4 font-bold text-dark">
+                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
                     Up to
                   </th>
-                  <th className="text-right py-3 pl-4 font-bold text-dark">
+                  <th className="text-right py-3 pl-4 font-bold text-[#1c1c1c]">
                     Details
                   </th>
                 </tr>
@@ -392,34 +389,34 @@ export default async function ProcedureCityPage({ params }: Props) {
                 {cityComparisons.map((comp) => (
                   <tr
                     key={comp.slug}
-                    className={`border-b border-light-200 ${comp.isCurrent ? "bg-accent-muted font-bold" : ""}`}
+                    className={`border-b border-black/[0.06] ${comp.isCurrent ? "bg-[#006828]/[0.04] font-bold" : ""}`}
                   >
-                    <td className="py-3 pr-4 text-dark">
+                    <td className="py-3 pr-4 text-[#1c1c1c]">
                       {comp.name}
                       {comp.isCurrent && (
-                        <span className="text-[9px] text-accent ml-1">
+                        <span className="text-[9px] text-[#006828] ml-1">
                           (current)
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-muted">
+                    <td className="py-3 px-4 text-right text-black/40">
                       {formatAed(comp.min)}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-dark">
+                    <td className="py-3 px-4 text-right font-bold text-[#1c1c1c]">
                       {formatAed(comp.typical)}
                     </td>
-                    <td className="py-3 px-4 text-right text-muted">
+                    <td className="py-3 px-4 text-right text-black/40">
                       {formatAed(comp.max)}
                     </td>
                     <td className="py-3 pl-4 text-right">
                       {comp.isCurrent ? (
-                        <span className="text-xs text-muted">
+                        <span className="font-['Geist',sans-serif] text-xs text-black/40">
                           Viewing
                         </span>
                       ) : (
                         <Link
                           href={`/directory/${comp.slug}/procedures/${proc.slug}`}
-                          className="text-xs text-accent hover:underline"
+                          className="text-xs text-[#006828] hover:underline"
                         >
                           View
                         </Link>
@@ -434,13 +431,12 @@ export default async function ProcedureCityPage({ params }: Props) {
       </section>
 
       {/* Insurance coverage section */}
-      <div className="container-tc py-10">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Insurance Coverage</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
           </div>
-          <div className="bg-light-50 border border-light-200 p-5">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
             <div className="flex items-center gap-3 mb-3">
               <span
                 className={`px-2 py-1 text-xs font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}
@@ -448,7 +444,7 @@ export default async function ProcedureCityPage({ params }: Props) {
                 {getCoverageLabel(proc.insuranceCoverage)}
               </span>
               {proc.setting !== "outpatient" && (
-                <span className="text-xs text-muted">
+                <span className="font-['Geist',sans-serif] text-xs text-black/40">
                   {proc.setting === "inpatient"
                     ? "Inpatient — typically 0% co-pay"
                     : proc.setting === "day-case"
@@ -457,7 +453,7 @@ export default async function ProcedureCityPage({ params }: Props) {
                 </span>
               )}
             </div>
-            <p className="text-sm text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
               {proc.insuranceNotes}
             </p>
           </div>
@@ -466,17 +462,16 @@ export default async function ProcedureCityPage({ params }: Props) {
         {/* Related providers */}
         {providers.length > 0 && (
           <section className="mb-10">
-            <div className="section-header">
-              <h2>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
                 {proc.categorySlug
                   .split("-")
                   .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
                   .join(" ")}{" "}
                 Providers in {city.name}
               </h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
             </div>
-            <p className="text-sm text-muted mb-4">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
               {providerCount} providers offer{" "}
               {proc.categorySlug.replace(/-/g, " ")} services in {city.name}.
               These clinics and hospitals may perform{" "}
@@ -507,7 +502,7 @@ export default async function ProcedureCityPage({ params }: Props) {
             {providerCount > 6 && (
               <Link
                 href={`/directory/${city.slug}/${proc.categorySlug}`}
-                className="inline-flex items-center gap-1 text-sm font-bold text-accent hover:underline"
+                className="inline-flex items-center gap-1 text-sm font-bold text-[#006828] hover:underline"
               >
                 View all {providerCount}{" "}
                 {proc.categorySlug.replace(/-/g, " ")} providers in{" "}
@@ -521,9 +516,8 @@ export default async function ProcedureCityPage({ params }: Props) {
         {/* Related procedures */}
         {relatedProcs.length > 0 && (
           <section className="mb-10">
-            <div className="section-header">
-              <h2>Related Procedures</h2>
-              <span className="arrows">&gt;&gt;&gt;</span>
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Procedures</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {relatedProcs.map((rp) => {
@@ -533,15 +527,15 @@ export default async function ProcedureCityPage({ params }: Props) {
                   <Link
                     key={rp.slug}
                     href={`/directory/${city.slug}/procedures/${rp.slug}`}
-                    className="flex items-center justify-between border border-light-200 px-4 py-3 hover:border-accent transition-colors"
+                    className="flex items-center justify-between border border-black/[0.06] px-4 py-3 hover:border-[#006828]/15 transition-colors"
                   >
                     <div>
-                      <span className="text-sm font-medium text-dark">
+                      <span className="text-sm font-medium text-[#1c1c1c]">
                         {rp.name}
                       </span>
-                      <p className="text-xs text-muted">{rp.duration}</p>
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40">{rp.duration}</p>
                     </div>
-                    <span className="text-sm font-bold text-accent whitespace-nowrap">
+                    <span className="text-sm font-bold text-[#006828] whitespace-nowrap">
                       {formatAed(rpPricing.typical)}
                     </span>
                   </Link>
@@ -555,19 +549,19 @@ export default async function ProcedureCityPage({ params }: Props) {
         <div className="flex flex-wrap gap-3 mb-6">
           <Link
             href={`/pricing/${proc.slug}/${city.slug}`}
-            className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted"
+            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
           >
             Detailed pricing breakdown &rarr;
           </Link>
           <Link
             href={`/pricing/${proc.slug}`}
-            className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted"
+            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
           >
             UAE-wide {proc.name} pricing &rarr;
           </Link>
           <Link
             href={`/directory/${city.slug}/procedures`}
-            className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted"
+            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
           >
             All procedures in {city.name} &rarr;
           </Link>

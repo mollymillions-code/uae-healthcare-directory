@@ -119,7 +119,7 @@ export default async function EmergencyAreaPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -133,8 +133,8 @@ export default async function EmergencyAreaPage({ params }: Props) {
       ]} />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">Emergency Healthcare in {area.name}, {city.name}, UAE</h1>
-        <p className="text-sm text-muted mb-4">{count} emergency & urgent care facilities · Last updated March 2026</p>
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">Emergency Healthcare in {area.name}, {city.name}, UAE</h1>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">{count} emergency & urgent care facilities · Last updated March 2026</p>
 
         <div className="bg-red-50 border border-red-200 p-4 mb-6">
           <p className="text-sm font-bold text-red-800 mb-1">Life-threatening emergency? Call now:</p>
@@ -144,8 +144,8 @@ export default async function EmergencyAreaPage({ params }: Props) {
           <p className="text-xs text-red-700 mt-1">Dubai Health Authority hotline: <a href="tel:800342" className="hover:underline">800-342</a></p>
         </div>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are {count} healthcare facilities in and around {area.name}, {city.name} offering emergency or urgent care services. These include hospital emergency departments and dedicated urgent care centers. For life-threatening emergencies, call 998 (Ambulance) or 999 (Police/Fire). Emergency departments provide immediate triage for critical cases. Non-critical emergency visits are typically attended to within 30 to 120 minutes.
             {sorted[0] && Number(sorted[0].googleRating) > 0 && (
               <> The highest-rated facility is <strong>{sorted[0].name}</strong> with a {sorted[0].googleRating}-star Google rating based on {sorted[0].googleReviewCount.toLocaleString()} patient reviews.</>
@@ -156,9 +156,8 @@ export default async function EmergencyAreaPage({ params }: Props) {
       </div>
 
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Emergency & Urgent Care Facilities near {area.name}, {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Emergency & Urgent Care Facilities near {area.name}, {city.name}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
@@ -168,9 +167,9 @@ export default async function EmergencyAreaPage({ params }: Props) {
       </section>
 
       <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">See all emergency facilities in {city.name}?{" "}<Link href={`/directory/${city.slug}/emergency`} className="text-accent hover:underline font-medium">Emergency healthcare in {city.name} &rarr;</Link></p>
-        <p className="text-sm text-muted">Need 24-hour non-emergency care?{" "}<Link href={`/directory/${city.slug}/${area.slug}/24-hour`} className="text-accent hover:underline font-medium">24-hour healthcare in {area.name} &rarr;</Link></p>
-        <p className="text-sm text-muted">Browse all providers?{" "}<Link href={`/directory/${city.slug}/${area.slug}`} className="text-accent hover:underline font-medium">All healthcare providers in {area.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">See all emergency facilities in {city.name}?{" "}<Link href={`/directory/${city.slug}/emergency`} className="text-[#006828] hover:underline font-medium">Emergency healthcare in {city.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">Need 24-hour non-emergency care?{" "}<Link href={`/directory/${city.slug}/${area.slug}/24-hour`} className="text-[#006828] hover:underline font-medium">24-hour healthcare in {area.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">Browse all providers?{" "}<Link href={`/directory/${city.slug}/${area.slug}`} className="text-[#006828] hover:underline font-medium">All healthcare providers in {area.name} &rarr;</Link></p>
       </section>
 
       <FaqSection faqs={faqs} title={`Emergency Healthcare in ${area.name}, ${city.name} — FAQ`} />

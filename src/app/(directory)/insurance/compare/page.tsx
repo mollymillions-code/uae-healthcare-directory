@@ -50,7 +50,7 @@ export default function ComparePage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -69,10 +69,10 @@ export default function ComparePage() {
         ]}
       />
 
-      <h1 className="text-3xl font-bold text-dark mb-2">Compare Health Insurance Plans</h1>
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">Compare Health Insurance Plans</h1>
 
-      <div className="answer-block mb-6" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           Select up to 4 plans from {INSURER_PROFILES.length} UAE insurers to compare side-by-side.
           The comparison covers annual premiums, coverage limits, co-pay percentages, dental and
           optical sub-limits, maternity and pre-existing condition waiting periods, room types,
@@ -88,8 +88,8 @@ export default function ComparePage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Plan details and premiums are indicative, based on publicly
           available UAE insurance market data. Obtain personalised quotes from insurers or authorised
           brokers. Provider network data from the UAE Open Healthcare Directory, last verified March 2026.

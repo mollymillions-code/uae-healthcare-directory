@@ -161,7 +161,7 @@ export default async function TwentyFourHoursPage({ params }: Props) {
     : null;
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbs} />
       {itemList && <JsonLd data={itemList} />}
@@ -177,17 +177,17 @@ export default async function TwentyFourHoursPage({ params }: Props) {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           24 Hour Clinics, Hospitals &amp; Pharmacies in {city.name}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {total} verified 24-hour {total === 1 ? "provider" : "providers"} &middot; {regulatorShort} licensed &middot; Last updated March 2026
         </p>
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, {city.name} has{" "}
           <strong>{total} healthcare {total === 1 ? "facility" : "facilities"}</strong>{" "}
           that {total === 1 ? "operates" : "operate"} 24 hours a day, 7 days a week.
@@ -207,27 +207,26 @@ export default async function TwentyFourHoursPage({ params }: Props) {
       {/* Category Breakdown */}
       {catBreakdown.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>24-Hour Providers by Category</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">24-Hour Providers by Category</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {catBreakdown.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-light-200 px-3 py-2 hover:border-accent group transition-colors"
+                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-[#006828]/15 group transition-colors"
               >
-                <span className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
+                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
                   {cat.name}
                 </span>
-                <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
                   {cat.count24}
                 </span>
               </Link>
             ))}
           </div>
-          <p className="text-xs text-muted mt-3">
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-3">
             Showing {catBreakdown.length} {catBreakdown.length === 1 ? "category" : "categories"} with
             24-hour providers in {city.name}. Click a category to browse all providers in that specialty.
           </p>
@@ -236,9 +235,8 @@ export default async function TwentyFourHoursPage({ params }: Props) {
 
       {/* Provider List */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>All 24-Hour Healthcare Providers in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All 24-Hour Healthcare Providers in {city.name}</h2>
         </div>
 
         {displayProviders.length > 0 ? (
@@ -264,11 +262,11 @@ export default async function TwentyFourHoursPage({ params }: Props) {
             </div>
             {total > 50 && (
               <div className="mt-4 text-center">
-                <p className="text-xs text-muted">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">
                   Showing 50 of {total.toLocaleString()} 24-hour providers. Use the{" "}
                   <Link
                     href={`/search?city=${city.slug}&q=24+hours`}
-                    className="text-accent font-bold"
+                    className="text-[#006828] font-bold"
                   >
                     search tool
                   </Link>{" "}
@@ -278,13 +276,13 @@ export default async function TwentyFourHoursPage({ params }: Props) {
             )}
           </>
         ) : (
-          <div className="text-center py-12 border border-light-200">
-            <p className="text-muted mb-2">
+          <div className="text-center py-12 border border-black/[0.06]">
+            <p className="text-black/40 mb-2">
               No confirmed 24-hour providers found in {city.name} yet.
             </p>
             <Link
               href={`/directory/${city.slug}`}
-              className="text-accent text-sm font-bold"
+              className="text-[#006828] text-sm font-bold"
             >
               View all healthcare providers in {city.name} &rarr;
             </Link>
@@ -294,12 +292,11 @@ export default async function TwentyFourHoursPage({ params }: Props) {
 
       {/* Emergency Info Section */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Emergency Information — {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Emergency Information — {city.name}</h2>
         </div>
-        <div className="answer-block" data-answer-block="true">
-          <div className="space-y-3 text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <div className="space-y-3 text-black/40 leading-relaxed">
             <p>
               <strong>UAE Emergency Numbers:</strong>
             </p>
@@ -336,38 +333,37 @@ export default async function TwentyFourHoursPage({ params }: Props) {
 
       {/* Cross-links */}
       <section className="mt-10 mb-10">
-        <div className="section-header">
-          <h2>Related Pages</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Pages</h2>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           <Link
             href={`/directory/${city.slug}`}
-            className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
           >
             All healthcare in {city.name}
           </Link>
           <Link
             href={`/directory/${city.slug}/emergency-care`}
-            className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
           >
             Emergency care in {city.name}
           </Link>
           <Link
             href={`/directory/${city.slug}/hospitals`}
-            className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
           >
             Hospitals in {city.name}
           </Link>
           <Link
             href={`/directory/${city.slug}/pharmacy`}
-            className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
           >
             Pharmacies in {city.name}
           </Link>
           <Link
             href={`/directory/${city.slug}/insurance`}
-            className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
           >
             Insurance in {city.name}
           </Link>
@@ -375,8 +371,8 @@ export default async function TwentyFourHoursPage({ params }: Props) {
       </section>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Operating hours are sourced from official{" "}
           {regulatorShort} registers and provider-submitted data, last verified
           March 2026. Hours may vary on public holidays. Always confirm directly

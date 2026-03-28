@@ -9,18 +9,18 @@ interface ReviewCardProps {
 
 export function ReviewCard({ authorName, rating, text, relativeTime }: ReviewCardProps) {
   return (
-    <div className="border border-light-200 p-4">
+    <div className="border border-black/[0.06] p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-accent-muted flex items-center justify-center">
-            <span className="text-sm font-semibold text-accent">
+          <div className="h-8 w-8 bg-[#006828]/[0.04] flex items-center justify-center">
+            <span className="text-sm font-semibold text-[#006828]">
               {authorName.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="text-sm font-medium text-dark">{authorName}</p>
+            <p className="text-sm font-medium text-[#1c1c1c]">{authorName}</p>
             {relativeTime && (
-              <p className="text-xs text-muted">{relativeTime}</p>
+              <p className="text-xs text-black/40">{relativeTime}</p>
             )}
           </div>
         </div>
@@ -36,7 +36,7 @@ export function ReviewCard({ authorName, rating, text, relativeTime }: ReviewCar
         </div>
       </div>
       {text && (
-        <p className="text-sm text-muted leading-relaxed line-clamp-4">
+        <p className="text-sm text-black/40 leading-relaxed line-clamp-4">
           {text}
         </p>
       )}

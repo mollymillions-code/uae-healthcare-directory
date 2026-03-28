@@ -147,7 +147,7 @@ export default async function AreaWalkInPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -161,15 +161,15 @@ export default async function AreaWalkInPage({ params }: Props) {
       ]} />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           Walk-In Clinics in {area.name}, {city.name}, UAE
         </h1>
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           {count} verified walk-in facilities · GP wait: 15-45 min · Last updated March 2026
         </p>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are {count}{" "}
             walk-in clinics and polyclinics in {area.name}, {city.name}, UAE.
             These facilities accept patients without prior appointments. GP
@@ -188,11 +188,11 @@ export default async function AreaWalkInPage({ params }: Props) {
 
       {categoryLinks.length > 0 && (
         <div className="mb-6">
-          <p className="text-sm font-medium text-dark mb-2">Filter by specialty:</p>
+          <p className="text-sm font-medium text-[#1c1c1c] mb-2">Filter by specialty:</p>
           <div className="flex flex-wrap gap-2">
             {categoryLinks.map((cat) => (
               <Link key={cat.slug} href={`/directory/${city.slug}/${area.slug}/walk-in/${cat.slug}`}
-                className="badge-outline px-3 py-1.5 text-sm hover:bg-accent-muted">
+                className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]">
                 {cat.name} ({categoryCounts.get(cat.slug)})
               </Link>
             ))}
@@ -200,20 +200,19 @@ export default async function AreaWalkInPage({ params }: Props) {
         </div>
       )}
 
-      <div className="border border-light-200 bg-light-50 p-5 mb-8">
-        <h2 className="font-semibold text-dark mb-3">Typical Wait Times in {area.name}</h2>
+      <div className="border border-black/[0.06] bg-[#f8f8f6] p-5 mb-8">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-3">Typical Wait Times in {area.name}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div><p className="font-medium text-dark">GP Walk-In</p><p className="text-muted">15-45 minutes</p></div>
-          <div><p className="font-medium text-dark">Specialist Appointment</p><p className="text-muted">1-7 days</p></div>
-          <div><p className="font-medium text-dark">Lab Results (basic)</p><p className="text-muted">Same day</p></div>
-          <div><p className="font-medium text-dark">Emergency Triage</p><p className="text-muted">Immediate (critical) / 30-120 min (non-critical)</p></div>
+          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">GP Walk-In</p><p className="text-black/40">15-45 minutes</p></div>
+          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Specialist Appointment</p><p className="text-black/40">1-7 days</p></div>
+          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Lab Results (basic)</p><p className="text-black/40">Same day</p></div>
+          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Emergency Triage</p><p className="text-black/40">Immediate (critical) / 30-120 min (non-critical)</p></div>
         </div>
       </div>
 
       <section className="mb-10">
-        <div className="section-header">
-          <h2>All Walk-In Clinics in {area.name}, {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All Walk-In Clinics in {area.name}, {city.name}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
@@ -228,21 +227,21 @@ export default async function AreaWalkInPage({ params }: Props) {
       </section>
 
       <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           See all walk-in clinics in {city.name}?{" "}
-          <Link href={`/directory/${city.slug}/walk-in`} className="text-accent hover:underline font-medium">
+          <Link href={`/directory/${city.slug}/walk-in`} className="text-[#006828] hover:underline font-medium">
             Walk-in clinics across {city.name} &rarr;
           </Link>
         </p>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Browse all healthcare in {area.name}?{" "}
-          <Link href={`/directory/${city.slug}/${area.slug}`} className="text-accent hover:underline font-medium">
+          <Link href={`/directory/${city.slug}/${area.slug}`} className="text-[#006828] hover:underline font-medium">
             All providers in {area.name} &rarr;
           </Link>
         </p>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Need 24-hour care?{" "}
-          <Link href={`/directory/${city.slug}/24-hour`} className="text-accent hover:underline font-medium">
+          <Link href={`/directory/${city.slug}/24-hour`} className="text-[#006828] hover:underline font-medium">
             24-hour healthcare in {city.name} &rarr;
           </Link>
         </p>

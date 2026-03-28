@@ -37,7 +37,7 @@ export function NewsletterSignup() {
         Daily intelligence for UAE healthcare professionals. Regulatory updates, market data, and industry analysis — delivered to your inbox.
       </p>
       {status === "success" ? (
-        <p className="text-sm text-accent font-medium py-2">
+        <p className="text-sm text-[#006828] font-medium py-2">
           Subscribed. Check your inbox.
         </p>
       ) : (
@@ -48,12 +48,12 @@ export function NewsletterSignup() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@hospital.ae"
             required
-            className="flex-1 bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-accent focus:outline-none transition-colors"
+            className="flex-1 bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#006828] focus:outline-none transition-colors"
           />
           <button
             type="submit"
             disabled={status === "loading"}
-            className="bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent-dark transition-colors shrink-0 disabled:opacity-50"
+            className="bg-[#006828] text-white px-4 py-2 text-sm font-medium hover:bg-[#004d1c] transition-colors shrink-0 disabled:opacity-50"
           >
             {status === "loading" ? "..." : "Subscribe to Daily Briefing"}
           </button>

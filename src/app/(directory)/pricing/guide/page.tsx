@@ -79,7 +79,7 @@ export default function PricingGuideHubPage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -125,13 +125,13 @@ export default function PricingGuideHubPage() {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <BookOpen className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <BookOpen className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             UAE Medical Pricing Guides
           </h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Healthcare costs in the UAE depend on who you are, where you go, and
             what insurance you have. These guides are tailored to specific
             situations — whether you are a tourist needing emergency care, an
@@ -150,18 +150,17 @@ export default function PricingGuideHubPage() {
             { value: CITIES.length.toString(), label: "UAE cities" },
             { value: "55", label: "Total guide pages" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Guide Cards */}
-      <div className="section-header">
-        <h2>Choose Your Guide</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Choose Your Guide</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
         {PRICING_GUIDES.map((guide) => {
@@ -170,28 +169,28 @@ export default function PricingGuideHubPage() {
             <Link
               key={guide.slug}
               href={`/pricing/guide/${guide.slug}`}
-              className="border border-light-200 p-5 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-start gap-3 mb-3">
-                <Icon className="w-6 h-6 text-accent flex-shrink-0 mt-0.5" />
+                <Icon className="w-6 h-6 text-[#006828] flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors mb-1">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
                     {guide.name}
                   </h3>
-                  <p className="text-[11px] text-muted line-clamp-2">
+                  <p className="text-[11px] text-black/40 line-clamp-2">
                     {guide.audience.slice(0, 120)}...
                   </p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent flex-shrink-0 mt-0.5" />
+                <ArrowRight className="w-4 h-4 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
               </div>
-              <div className="flex items-center gap-2 text-[10px] text-muted">
-                <span className="bg-light-50 px-2 py-0.5">
+              <div className="flex items-center gap-2 text-[10px] text-black/40">
+                <span className="bg-[#f8f8f6] px-2 py-0.5">
                   {guide.featuredProcedures.length} procedures
                 </span>
-                <span className="bg-light-50 px-2 py-0.5">
+                <span className="bg-[#f8f8f6] px-2 py-0.5">
                   {CITIES.length} cities
                 </span>
-                <span className="bg-light-50 px-2 py-0.5">
+                <span className="bg-[#f8f8f6] px-2 py-0.5">
                   {guide.tips.length} tips
                 </span>
               </div>
@@ -201,24 +200,23 @@ export default function PricingGuideHubPage() {
       </div>
 
       {/* City-specific guides */}
-      <div className="section-header">
-        <h2>Guides by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Guides by City</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Each guide is also available for specific UAE cities with localised
         pricing, provider recommendations, and city-specific tips.
       </p>
-      <div className="border border-light-200 divide-y divide-light-200 mb-12">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-12">
         {CITIES.map((city) => (
           <div key={city.slug} className="p-3">
-            <h3 className="text-sm font-bold text-dark mb-2">{city.name}</h3>
+            <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{city.name}</h3>
             <div className="flex flex-wrap gap-2">
               {PRICING_GUIDES.map((guide) => (
                 <Link
                   key={`${city.slug}-${guide.slug}`}
                   href={`/pricing/guide/${guide.slug}/${city.slug}`}
-                  className="text-[11px] text-muted hover:text-accent transition-colors border border-light-200 px-2 py-1"
+                  className="text-[11px] text-black/40 hover:text-[#006828] transition-colors border border-black/[0.06] px-2 py-1"
                 >
                   {guide.name.replace("in UAE", "").replace("in the UAE", "").trim()}
                 </Link>
@@ -235,8 +233,8 @@ export default function PricingGuideHubPage() {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges
           based on the DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG
           parameters, and market-observed data as of March 2026. Actual costs

@@ -134,7 +134,7 @@ export default async function JourneyDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -158,43 +158,43 @@ export default async function JourneyDetailPage({ params }: Props) {
 
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {journey.name} — Total Estimated Cost in the UAE
         </h1>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">{answerBlock}</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerBlock}</p>
         </div>
 
         {/* Cost summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">Required Steps</p>
-            <p className="text-lg font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">Required Steps</p>
+            <p className="text-lg font-bold text-[#006828]">
               {formatAed(cost.requiredTypical)}
             </p>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-black/40">
               {formatAed(cost.requiredMin)} – {formatAed(cost.requiredMax)}
             </p>
           </div>
           {cost.optionalTypical > 0 && (
-            <div className="bg-light-50 p-4 text-center">
-              <p className="text-[11px] text-muted mb-1">+ Optional Add-ons</p>
-              <p className="text-lg font-bold text-dark">
+            <div className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-[11px] text-black/40 mb-1">+ Optional Add-ons</p>
+              <p className="text-lg font-bold text-[#1c1c1c]">
                 {formatAed(cost.optionalTypical)}
               </p>
-              <p className="text-[10px] text-muted">
+              <p className="text-[10px] text-black/40">
                 {formatAed(cost.optionalMin)} – {formatAed(cost.optionalMax)}
               </p>
             </div>
           )}
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">Duration</p>
-            <p className="text-lg font-bold text-dark">{journey.totalDuration}</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">Duration</p>
+            <p className="text-lg font-bold text-[#1c1c1c]">{journey.totalDuration}</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-[11px] text-muted mb-1">Cheapest City</p>
-            <p className="text-lg font-bold text-dark">{cheapestCity.cityName}</p>
-            <p className="text-[10px] text-muted">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-[11px] text-black/40 mb-1">Cheapest City</p>
+            <p className="text-lg font-bold text-[#1c1c1c]">{cheapestCity.cityName}</p>
+            <p className="text-[10px] text-black/40">
               {formatAed(cheapestCity.requiredTypical)}
             </p>
           </div>
@@ -202,50 +202,49 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* Step-by-step Breakdown */}
-      <div className="section-header">
-        <h2>Step-by-Step Cost Breakdown</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Step-by-Step Cost Breakdown</h2>
       </div>
-      <div className="border border-light-200 mb-8 overflow-x-auto">
+      <div className="border border-black/[0.06] mb-8 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-light-50 text-left">
-              <th className="p-3 font-bold text-dark">Step</th>
-              <th className="p-3 font-bold text-dark text-center">Qty</th>
-              <th className="p-3 font-bold text-dark text-right">Unit Cost</th>
-              <th className="p-3 font-bold text-dark text-right">Subtotal</th>
-              <th className="p-3 font-bold text-dark text-center">Required</th>
+            <tr className="bg-[#f8f8f6] text-left">
+              <th className="p-3 font-bold text-[#1c1c1c]">Step</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-center">Qty</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-right">Unit Cost</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-right">Subtotal</th>
+              <th className="p-3 font-bold text-[#1c1c1c] text-center">Required</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-light-200">
             {cost.steps.map((step, i) => (
               <tr
                 key={`${step.procedureSlug}-${i}`}
-                className={step.isOptional ? "bg-light-50/50" : ""}
+                className={step.isOptional ? "bg-[#f8f8f6]/50" : ""}
               >
                 <td className="p-3">
                   <Link
                     href={`/pricing/${step.procedureSlug}`}
-                    className="text-accent hover:underline font-medium"
+                    className="text-[#006828] hover:underline font-medium"
                   >
                     {step.procedureName}
                   </Link>
                   {step.note && (
-                    <span className="text-[11px] text-muted block">
+                    <span className="text-[11px] text-black/40 block">
                       {step.note}
                     </span>
                   )}
                 </td>
                 <td className="p-3 text-center">{step.quantity}</td>
-                <td className="p-3 text-right text-muted">
+                <td className="p-3 text-right text-black/40">
                   {formatAed(step.unitMin)} – {formatAed(step.unitMax)}
                 </td>
-                <td className="p-3 text-right font-bold text-dark">
+                <td className="p-3 text-right font-bold text-[#1c1c1c]">
                   {formatAed(step.subtotalMin)} – {formatAed(step.subtotalMax)}
                 </td>
                 <td className="p-3 text-center">
                   {step.isOptional ? (
-                    <span className="text-[10px] text-muted bg-light-50 px-2 py-0.5">
+                    <span className="text-[10px] text-black/40 bg-[#f8f8f6] px-2 py-0.5">
                       Optional
                     </span>
                   ) : (
@@ -256,21 +255,21 @@ export default async function JourneyDetailPage({ params }: Props) {
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-light-50 font-bold">
-              <td className="p-3 text-dark" colSpan={3}>
+            <tr className="bg-[#f8f8f6] font-bold">
+              <td className="p-3 text-[#1c1c1c]" colSpan={3}>
                 Total (Required Steps)
               </td>
-              <td className="p-3 text-right text-accent">
+              <td className="p-3 text-right text-[#006828]">
                 {formatAed(cost.requiredMin)} – {formatAed(cost.requiredMax)}
               </td>
               <td />
             </tr>
             {cost.optionalTypical > 0 && (
-              <tr className="bg-light-50/50">
-                <td className="p-3 text-muted" colSpan={3}>
+              <tr className="bg-[#f8f8f6]/50">
+                <td className="p-3 text-black/40" colSpan={3}>
                   + Optional Add-ons
                 </td>
-                <td className="p-3 text-right text-muted">
+                <td className="p-3 text-right text-black/40">
                   {formatAed(cost.optionalMin)} – {formatAed(cost.optionalMax)}
                 </td>
                 <td />
@@ -281,11 +280,10 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* City Comparison */}
-      <div className="section-header">
-        <h2>Cost by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Cost by City</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Compare the total {journey.name.toLowerCase()} cost across all UAE cities.
         Prices show required steps only (typical estimate).
       </p>
@@ -302,21 +300,21 @@ export default async function JourneyDetailPage({ params }: Props) {
             <Link
               key={city.citySlug}
               href={`/pricing/journey/${journey.slug}/${city.citySlug}`}
-              className="border border-light-200 p-4 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-accent" />
-                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                  <MapPin className="w-3.5 h-3.5 text-[#006828]" />
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                     {city.cityName}
                   </h3>
                 </div>
-                <ArrowRight className="w-3 h-3 text-muted group-hover:text-accent" />
+                <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-[#006828]" />
               </div>
-              <p className="text-lg font-bold text-dark mb-1">
+              <p className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">
                 {formatAed(city.requiredTypical)}
               </p>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-black/40">
                 {formatAed(city.requiredMin)} – {formatAed(city.requiredMax)}
               </p>
               {i === 0 ? (
@@ -324,7 +322,7 @@ export default async function JourneyDetailPage({ params }: Props) {
                   Cheapest
                 </span>
               ) : pctMore > 0 ? (
-                <span className="text-[10px] text-muted mt-2 inline-block">
+                <span className="text-[10px] text-black/40 mt-2 inline-block">
                   {pctMore}% more than {cheapestCity.cityName}
                 </span>
               ) : null}
@@ -334,15 +332,14 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* Insurance Coverage */}
-      <div className="section-header">
-        <h2>Insurance Coverage</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
       </div>
-      <p className="text-xs text-muted mb-4">
+      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
         Step-by-step insurance coverage summary for {journey.name.toLowerCase()}.
         Coverage depends on your specific plan and insurer.
       </p>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
         {insuranceSummary.map((item, i) => {
           const coverageColor =
             item.coverage === "typically-covered"
@@ -365,8 +362,8 @@ export default async function JourneyDetailPage({ params }: Props) {
           return (
             <div key={`${item.name}-${i}`} className="p-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-dark">{item.name}</p>
-                <p className="text-[11px] text-muted line-clamp-1">
+                <p className="text-sm font-medium text-[#1c1c1c]">{item.name}</p>
+                <p className="text-[11px] text-black/40 line-clamp-1">
                   {item.notes.slice(0, 100)}
                   {item.notes.length > 100 ? "..." : ""}
                 </p>
@@ -382,43 +379,42 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* What to Expect / Timeline */}
-      <div className="section-header">
-        <h2>What to Expect</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What to Expect</h2>
       </div>
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
         <div className="flex items-center gap-2 mb-3">
-          <Clock className="w-5 h-5 text-accent" />
-          <p className="text-sm font-bold text-dark">
+          <Clock className="w-5 h-5 text-[#006828]" />
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
             Timeline: {journey.totalDuration}
           </p>
         </div>
-        <p className="text-sm text-muted leading-relaxed">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
           {journey.whatToExpect}
         </p>
 
         <div className="mt-6 space-y-3">
           {cost.steps.map((step, i) => (
             <div key={`timeline-${step.procedureSlug}-${i}`} className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center mt-0.5">
-                <span className="text-[10px] font-bold text-accent">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#006828]/10 flex items-center justify-center mt-0.5">
+                <span className="text-[10px] font-bold text-[#006828]">
                   {i + 1}
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-dark">
+                <p className="text-sm font-medium text-[#1c1c1c]">
                   {step.procedureName}
                   {step.quantity > 1 && (
-                    <span className="text-muted"> x{step.quantity}</span>
+                    <span className="text-black/40"> x{step.quantity}</span>
                   )}
                   {step.isOptional && (
-                    <span className="text-[10px] text-muted bg-light-50 px-1.5 py-0.5 ml-2">
+                    <span className="text-[10px] text-black/40 bg-[#f8f8f6] px-1.5 py-0.5 ml-2">
                       optional
                     </span>
                   )}
                 </p>
                 {step.note && (
-                  <p className="text-[11px] text-muted">{step.note}</p>
+                  <p className="text-[11px] text-black/40">{step.note}</p>
                 )}
               </div>
             </div>
@@ -427,21 +423,20 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* Browse by City */}
-      <div className="section-header">
-        <h2>Browse by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by City</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {CITIES.map((city) => (
           <Link
             key={city.slug}
             href={`/pricing/journey/${journey.slug}/${city.slug}`}
-            className="border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+            className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
           >
-            <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+            <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
               {city.name}
             </h3>
-            <p className="text-[11px] text-muted">
+            <p className="text-[11px] text-black/40">
               {journey.name} cost
             </p>
           </Link>
@@ -449,9 +444,8 @@ export default async function JourneyDetailPage({ params }: Props) {
       </div>
 
       {/* Related Journeys */}
-      <div className="section-header">
-        <h2>Other Care Journeys</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Care Journeys</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
         {CARE_JOURNEYS.filter((j) => j.slug !== journey.slug)
@@ -462,12 +456,12 @@ export default async function JourneyDetailPage({ params }: Props) {
               <Link
                 key={j.slug}
                 href={`/pricing/journey/${j.slug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors mb-1">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
                   {j.name}
                 </h3>
-                <p className="text-xs text-muted">
+                <p className="font-['Geist',sans-serif] text-xs text-black/40">
                   {formatAed(jCost.requiredMin)} – {formatAed(jCost.requiredMax)}
                 </p>
               </Link>
@@ -482,8 +476,8 @@ export default async function JourneyDetailPage({ params }: Props) {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All prices shown are indicative ranges
           based on the DOH Mandatory Tariff (Shafafiya) methodology and
           market-observed data as of March 2026. Actual costs vary by facility,

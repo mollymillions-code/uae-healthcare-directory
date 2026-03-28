@@ -66,7 +66,7 @@ export default function GuideHubPage() {
   const base = getBaseUrl();
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", url: base },
@@ -81,12 +81,12 @@ export default function GuideHubPage() {
         ]}
       />
 
-      <h1 className="text-3xl font-bold text-dark mb-6">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-6">
         UAE Healthcare Guide
       </h1>
 
-      <div className="answer-block mb-10" data-answer-block="true">
-        <p className="text-muted leading-relaxed text-lg">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-10" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed text-lg">
           A comprehensive guide to navigating healthcare in the United Arab
           Emirates. Learn how the regulatory system works, understand your
           insurance options, find the right doctor, and know what to do in an
@@ -95,9 +95,8 @@ export default function GuideHubPage() {
         </p>
       </div>
 
-      <div className="section-header">
-        <h2>All Guides</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All Guides</h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -105,12 +104,12 @@ export default function GuideHubPage() {
           <Link
             key={guide.slug}
             href={`/directory/guide/${guide.slug}`}
-            className="border border-light-200 p-5 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] p-5 hover:border-[#006828]/15 transition-colors group"
           >
-            <h3 className="text-lg font-bold text-dark group-hover:text-accent transition-colors mb-2">
+            <h3 className="text-lg font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors mb-2">
               {guide.title}
             </h3>
-            <p className="text-sm text-muted">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40">
               {guide.description}
             </p>
           </Link>

@@ -139,7 +139,7 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -165,15 +165,15 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
       />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           Government {cat.name} in {city.name}, UAE
         </h1>
-        <p className="text-sm text-muted mb-4">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
           {count} government & public {catLower} · Last updated March 2026
         </p>
 
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are {count}{" "}
             government and public {catLower} in {city.name}. These facilities
             are operated by {operator} and offer services that are often free
@@ -195,11 +195,10 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
 
       {/* Provider grid */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
             Government {cat.name} in {city.name}
           </h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
@@ -224,20 +223,20 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
 
       {/* Cross-links */}
       <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           See all government facilities?{" "}
           <Link
             href={`/directory/${city.slug}/government`}
-            className="text-accent hover:underline font-medium"
+            className="text-[#006828] hover:underline font-medium"
           >
             All government healthcare in {city.name} &rarr;
           </Link>
         </p>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Looking for private options?{" "}
           <Link
             href={`/directory/${city.slug}/${cat.slug}`}
-            className="text-accent hover:underline font-medium"
+            className="text-[#006828] hover:underline font-medium"
           >
             Browse all {catLower} in {city.name} &rarr;
           </Link>

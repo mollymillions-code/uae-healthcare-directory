@@ -37,7 +37,7 @@ export default function ConditionIndexPage({ params }: Props) {
   const base = getBaseUrl();
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema([
         { name: "UAE", url: base },
         { name: city.name, url: `${base}/directory/${city.slug}` },
@@ -51,19 +51,18 @@ export default function ConditionIndexPage({ params }: Props) {
         { label: "Conditions" },
       ]} />
 
-      <h1 className="text-3xl font-bold text-dark mb-2">
+      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
         Common Health Conditions & Treatments in {city.name}
       </h1>
 
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
           According to the UAE Open Healthcare Directory, {city.name} has verified healthcare providers offering treatment for {conditions.length}+ common health conditions. From dental implants and LASIK surgery to fertility treatments and mental health care, find the right specialist for your needs. All providers are sourced from official government registers, last verified March 2026.
         </p>
       </div>
 
-      <div className="section-header">
-        <h2>Health Conditions</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Health Conditions</h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -71,10 +70,10 @@ export default function ConditionIndexPage({ params }: Props) {
           <Link
             key={cond.slug}
             href={`/directory/${city.slug}/condition/${cond.slug}`}
-            className="block border border-light-200 p-4 hover:border-accent transition-colors"
+            className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors"
           >
-            <h3 className="font-bold text-dark text-sm mb-1">{cond.name}</h3>
-            <p className="text-xs text-muted line-clamp-2">{cond.description}</p>
+            <h3 className="font-bold text-[#1c1c1c] text-sm mb-1">{cond.name}</h3>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-2">{cond.description}</p>
           </Link>
         ))}
       </div>

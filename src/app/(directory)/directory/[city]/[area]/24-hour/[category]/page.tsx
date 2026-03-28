@@ -125,7 +125,7 @@ export default async function TwentyFourHourAreaCategoryPage({ params }: Props) 
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -140,10 +140,10 @@ export default async function TwentyFourHourAreaCategoryPage({ params }: Props) 
       ]} />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">24-Hour {cat.name} in {area.name}, {city.name}, UAE</h1>
-        <p className="text-sm text-muted mb-4">{count} verified facilities open 24/7 · Last updated March 2026</p>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">24-Hour {cat.name} in {area.name}, {city.name}, UAE</h1>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">{count} verified facilities open 24/7 · Last updated March 2026</p>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, there are {count} {catLower} in {area.name}, {city.name} that operate 24 hours a day, 7 days a week.
             {sorted[0] && Number(sorted[0].googleRating) > 0 && (
               <> The highest-rated is <strong>{sorted[0].name}</strong> with a {sorted[0].googleRating}-star Google rating based on {sorted[0].googleReviewCount.toLocaleString()} patient reviews.</>
@@ -154,9 +154,8 @@ export default async function TwentyFourHourAreaCategoryPage({ params }: Props) 
       </div>
 
       <section className="mb-10">
-        <div className="section-header">
-          <h2>24-Hour {cat.name} in {area.name}, {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">24-Hour {cat.name} in {area.name}, {city.name}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
@@ -166,9 +165,9 @@ export default async function TwentyFourHourAreaCategoryPage({ params }: Props) 
       </section>
 
       <section className="mb-10 space-y-2">
-        <p className="text-sm text-muted">See all 24-hour facilities in {area.name}?{" "}<Link href={`/directory/${city.slug}/${area.slug}/24-hour`} className="text-accent hover:underline font-medium">All 24-hour healthcare in {area.name} &rarr;</Link></p>
-        <p className="text-sm text-muted">See all 24-hour {catLower} in {city.name}?{" "}<Link href={`/directory/${city.slug}/24-hour/${cat.slug}`} className="text-accent hover:underline font-medium">24-hour {catLower} in {city.name} &rarr;</Link></p>
-        <p className="text-sm text-muted">Looking for daytime options?{" "}<Link href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="text-accent hover:underline font-medium">Browse all {catLower} in {area.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">See all 24-hour facilities in {area.name}?{" "}<Link href={`/directory/${city.slug}/${area.slug}/24-hour`} className="text-[#006828] hover:underline font-medium">All 24-hour healthcare in {area.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">See all 24-hour {catLower} in {city.name}?{" "}<Link href={`/directory/${city.slug}/24-hour/${cat.slug}`} className="text-[#006828] hover:underline font-medium">24-hour {catLower} in {city.name} &rarr;</Link></p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">Looking for daytime options?{" "}<Link href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="text-[#006828] hover:underline font-medium">Browse all {catLower} in {area.name} &rarr;</Link></p>
       </section>
 
       <FaqSection faqs={faqs} title={`24-Hour ${cat.name} in ${area.name}, ${city.name} — FAQ`} />

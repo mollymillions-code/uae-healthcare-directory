@@ -121,7 +121,7 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -144,14 +144,14 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <GitCompareArrows className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <GitCompareArrows className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             Healthcare in {cityA.name} vs {cityB.name}: Provider Comparison
           </h1>
         </div>
 
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, {cityA.name} has{" "}
             {statsA.totalProviders.toLocaleString()} licensed healthcare
             providers while {cityB.name} has{" "}
@@ -170,84 +170,83 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
 
       {/* Comparison Table */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Side-by-Side Comparison</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Side-by-Side Comparison</h2>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full border border-light-200 text-sm">
+          <table className="w-full border border-black/[0.06] text-sm">
             <thead>
-              <tr className="bg-dark text-white">
+              <tr className="bg-[#1c1c1c] text-white">
                 <th className="text-left py-3 px-4 font-bold">Metric</th>
                 <th className="text-left py-3 px-4 font-bold">{cityA.name}</th>
                 <th className="text-left py-3 px-4 font-bold">{cityB.name}</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Total Providers</td>
-                <td className="py-3 px-4 font-mono">{statsA.totalProviders.toLocaleString()}</td>
-                <td className="py-3 px-4 font-mono">{statsB.totalProviders.toLocaleString()}</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Total Providers</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.totalProviders.toLocaleString()}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.totalProviders.toLocaleString()}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Average Rating</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Average Rating</td>
                 <td className="py-3 px-4">
                   {statsA.avgRating > 0 ? (
                     <span className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-accent fill-accent" />
+                      <Star className="w-4 h-4 text-[#006828] fill-accent" />
                       {statsA.avgRating.toFixed(1)}
-                      <span className="text-muted text-xs">({statsA.ratedProviderCount} rated)</span>
+                      <span className="text-black/40 text-xs">({statsA.ratedProviderCount} rated)</span>
                     </span>
                   ) : "N/A"}
                 </td>
                 <td className="py-3 px-4">
                   {statsB.avgRating > 0 ? (
                     <span className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-accent fill-accent" />
+                      <Star className="w-4 h-4 text-[#006828] fill-accent" />
                       {statsB.avgRating.toFixed(1)}
-                      <span className="text-muted text-xs">({statsB.ratedProviderCount} rated)</span>
+                      <span className="text-black/40 text-xs">({statsB.ratedProviderCount} rated)</span>
                     </span>
                   ) : "N/A"}
                 </td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Hospitals</td>
-                <td className="py-3 px-4 font-mono">{statsA.hospitalCount}</td>
-                <td className="py-3 px-4 font-mono">{statsB.hospitalCount}</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Hospitals</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.hospitalCount}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.hospitalCount}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Clinics</td>
-                <td className="py-3 px-4 font-mono">{statsA.clinicCount}</td>
-                <td className="py-3 px-4 font-mono">{statsB.clinicCount}</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Clinics</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.clinicCount}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.clinicCount}</td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Dental Clinics</td>
-                <td className="py-3 px-4 font-mono">{statsA.dentalCount}</td>
-                <td className="py-3 px-4 font-mono">{statsB.dentalCount}</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Dental Clinics</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.dentalCount}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.dentalCount}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Pharmacies</td>
-                <td className="py-3 px-4 font-mono">{statsA.pharmacyCount}</td>
-                <td className="py-3 px-4 font-mono">{statsB.pharmacyCount}</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Pharmacies</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.pharmacyCount}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.pharmacyCount}</td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">GP Consultation</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">GP Consultation</td>
                 <td className="py-3 px-4">{statsA.gpFeeRange}</td>
                 <td className="py-3 px-4">{statsB.gpFeeRange}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Specialist Consultation</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Specialist Consultation</td>
                 <td className="py-3 px-4">{statsA.specialistFeeRange}</td>
                 <td className="py-3 px-4">{statsB.specialistFeeRange}</td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Emergency Visit</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Emergency Visit</td>
                 <td className="py-3 px-4">{statsA.emergencyFeeRange}</td>
                 <td className="py-3 px-4">{statsB.emergencyFeeRange}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Regulator</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Regulator</td>
                 <td className="py-3 px-4 text-xs">{statsA.regulator}</td>
                 <td className="py-3 px-4 text-xs">{statsB.regulator}</td>
               </tr>
@@ -258,9 +257,8 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
 
       {/* Top Providers */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Top-Rated Providers</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top-Rated Providers</h2>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
@@ -268,32 +266,32 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
             { city: cityB, stats: statsB },
           ].map(({ city, stats }) => (
             <div key={city.slug}>
-              <h3 className="text-sm font-bold text-dark uppercase tracking-wider mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-accent" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight uppercase tracking-wider mb-3 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#006828]" />
                 {city.name}
               </h3>
               {stats.topProviders.length > 0 ? (
                 <div className="space-y-0">
                   {stats.topProviders.map((p, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 px-2 border-b border-light-200">
+                    <div key={i} className="flex items-center justify-between py-2 px-2 border-b border-black/[0.06]">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-accent/40 font-mono w-5">{i + 1}</span>
-                        <span className="text-sm font-medium text-dark">{p.name}</span>
+                        <span className="text-xs font-bold text-[#006828]/40 font-['Geist',sans-serif] w-5">{i + 1}</span>
+                        <span className="text-sm font-medium text-[#1c1c1c]">{p.name}</span>
                       </div>
                       {Number(p.rating) > 0 && (
                         <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 text-accent fill-accent" />
-                          <span className="text-xs font-bold text-accent">{p.rating}</span>
-                          <span className="text-[10px] text-muted">({p.reviewCount.toLocaleString()})</span>
+                          <Star className="w-3 h-3 text-[#006828] fill-accent" />
+                          <span className="text-xs font-bold text-[#006828]">{p.rating}</span>
+                          <span className="text-[10px] text-black/40">({p.reviewCount.toLocaleString()})</span>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">No rated providers yet.</p>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40">No rated providers yet.</p>
               )}
-              <Link href={`/directory/${city.slug}`} className="text-xs font-medium text-accent hover:underline mt-2 inline-block">
+              <Link href={`/directory/${city.slug}`} className="text-xs font-medium text-[#006828] hover:underline mt-2 inline-block">
                 Browse all {city.name} providers &rarr;
               </Link>
             </div>
@@ -303,27 +301,25 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
 
       {/* Insurance */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Insurance Coverage</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-light-50 border border-light-200 p-5">
-            <h3 className="text-sm font-bold text-dark mb-2">{cityA.name}</h3>
-            <p className="text-xs text-muted leading-relaxed">{statsA.insuranceNote}</p>
+          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+            <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{cityA.name}</h3>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{statsA.insuranceNote}</p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-5">
-            <h3 className="text-sm font-bold text-dark mb-2">{cityB.name}</h3>
-            <p className="text-xs text-muted leading-relaxed">{statsB.insuranceNote}</p>
+          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+            <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">{cityB.name}</h3>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">{statsB.insuranceNote}</p>
           </div>
         </div>
       </div>
 
       {/* Related comparisons */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>More City Comparisons</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More City Comparisons</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {[cityA.slug, cityB.slug].flatMap((currentSlug) => {
@@ -334,7 +330,7 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
                 const pair = currentSlug < other ? `${currentSlug}-vs-${other}` : `${other}-vs-${currentSlug}`;
                 const otherName = other === "abu-dhabi" ? "Abu Dhabi" : other === "ras-al-khaimah" ? "Ras Al Khaimah" : other === "al-ain" ? "Al Ain" : other.charAt(0).toUpperCase() + other.slice(1);
                 return (
-                  <Link key={`${currentSlug}-${pair}`} href={`/directory/compare/${pair}`} className="text-xs border border-light-200 px-3 py-1.5 hover:border-accent hover:text-accent transition-colors">
+                  <Link key={`${currentSlug}-${pair}`} href={`/directory/compare/${pair}`} className="text-xs border border-black/[0.06] px-3 py-1.5 hover:border-[#006828]/15 hover:text-[#006828] transition-colors">
                     {name} vs {otherName}
                   </Link>
                 );
@@ -347,8 +343,8 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
         <FaqSection faqs={faqs} title={`${cityA.name} vs ${cityB.name} Healthcare FAQ`} />
       </div>
 
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Provider counts and ratings are based on data from official UAE health authority registers (DHA, DOH, MOHAP) and Google Maps, last verified March 2026. Consultation fees are indicative ranges and may vary by provider, insurance status, and visit complexity. This comparison is for informational purposes only and does not constitute medical advice.
         </p>
       </div>
@@ -393,7 +389,7 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -416,14 +412,14 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <GitCompareArrows className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <GitCompareArrows className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             {categoryA.name} vs {categoryB.name} in {cityName}: Comparison
           </h1>
         </div>
 
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             According to the UAE Open Healthcare Directory, {cityName} has{" "}
             {statsA.totalProviders.toLocaleString()} {categoryA.name.toLowerCase()} and{" "}
             {statsB.totalProviders.toLocaleString()} {categoryB.name.toLowerCase()}.{" "}
@@ -438,56 +434,55 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
       </div>
 
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Side-by-Side Comparison</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Side-by-Side Comparison</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border border-light-200 text-sm">
+          <table className="w-full border border-black/[0.06] text-sm">
             <thead>
-              <tr className="bg-dark text-white">
+              <tr className="bg-[#1c1c1c] text-white">
                 <th className="text-left py-3 px-4 font-bold">Metric</th>
                 <th className="text-left py-3 px-4 font-bold"><Building2 className="inline w-4 h-4 mr-1" />{categoryA.name}</th>
                 <th className="text-left py-3 px-4 font-bold"><Stethoscope className="inline w-4 h-4 mr-1" />{categoryB.name}</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Total Providers in {cityName}</td>
-                <td className="py-3 px-4 font-mono">{statsA.totalProviders.toLocaleString()}</td>
-                <td className="py-3 px-4 font-mono">{statsB.totalProviders.toLocaleString()}</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Total Providers in {cityName}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsA.totalProviders.toLocaleString()}</td>
+                <td className="py-3 px-4 font-['Geist',sans-serif]">{statsB.totalProviders.toLocaleString()}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Average Rating</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Average Rating</td>
                 <td className="py-3 px-4">
                   {statsA.avgRating > 0 ? (
                     <span className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-accent fill-accent" />{statsA.avgRating.toFixed(1)}
-                      <span className="text-muted text-xs">({statsA.ratedProviderCount} rated)</span>
+                      <Star className="w-4 h-4 text-[#006828] fill-accent" />{statsA.avgRating.toFixed(1)}
+                      <span className="text-black/40 text-xs">({statsA.ratedProviderCount} rated)</span>
                     </span>
                   ) : "N/A"}
                 </td>
                 <td className="py-3 px-4">
                   {statsB.avgRating > 0 ? (
                     <span className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-accent fill-accent" />{statsB.avgRating.toFixed(1)}
-                      <span className="text-muted text-xs">({statsB.ratedProviderCount} rated)</span>
+                      <Star className="w-4 h-4 text-[#006828] fill-accent" />{statsB.avgRating.toFixed(1)}
+                      <span className="text-black/40 text-xs">({statsB.ratedProviderCount} rated)</span>
                     </span>
                   ) : "N/A"}
                 </td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Consultation Cost</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Consultation Cost</td>
                 <td className="py-3 px-4">{statsA.priceRange}</td>
                 <td className="py-3 px-4">{statsB.priceRange}</td>
               </tr>
-              <tr className="border-b border-light-200 bg-light-50">
-                <td className="py-3 px-4 font-medium text-dark">Best For</td>
+              <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Best For</td>
                 <td className="py-3 px-4 text-xs">Emergencies, inpatient surgery, complex diagnostics, multi-specialty care</td>
                 <td className="py-3 px-4 text-xs">Routine GP visits, specialist outpatient consultations, minor procedures, vaccinations</td>
               </tr>
-              <tr className="border-b border-light-200">
-                <td className="py-3 px-4 font-medium text-dark">Typical Wait Time</td>
+              <tr className="border-b border-black/[0.06]">
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">Typical Wait Time</td>
                 <td className="py-3 px-4 text-xs">ER: immediate triage; outpatient: 1-7 days</td>
                 <td className="py-3 px-4 text-xs">Walk-in: 15-45 min; specialist: 1-3 days</td>
               </tr>
@@ -498,9 +493,8 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
 
       {/* Top Providers per Category */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>Top-Rated Providers</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top-Rated Providers</h2>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
@@ -508,32 +502,32 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
             { cat: categoryB, stats: statsB, Icon: Stethoscope },
           ].map(({ cat, stats, Icon }) => (
             <div key={cat.slug}>
-              <h3 className="text-sm font-bold text-dark uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Icon className="w-4 h-4 text-accent" />
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Icon className="w-4 h-4 text-[#006828]" />
                 {cat.name} in {cityName}
               </h3>
               {stats.topProviders.length > 0 ? (
                 <div className="space-y-0">
                   {stats.topProviders.map((p, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 px-2 border-b border-light-200">
+                    <div key={i} className="flex items-center justify-between py-2 px-2 border-b border-black/[0.06]">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-accent/40 font-mono w-5">{i + 1}</span>
-                        <span className="text-sm font-medium text-dark">{p.name}</span>
+                        <span className="text-xs font-bold text-[#006828]/40 font-['Geist',sans-serif] w-5">{i + 1}</span>
+                        <span className="text-sm font-medium text-[#1c1c1c]">{p.name}</span>
                       </div>
                       {Number(p.rating) > 0 && (
                         <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 text-accent fill-accent" />
-                          <span className="text-xs font-bold text-accent">{p.rating}</span>
-                          <span className="text-[10px] text-muted">({p.reviewCount.toLocaleString()})</span>
+                          <Star className="w-3 h-3 text-[#006828] fill-accent" />
+                          <span className="text-xs font-bold text-[#006828]">{p.rating}</span>
+                          <span className="text-[10px] text-black/40">({p.reviewCount.toLocaleString()})</span>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">No rated providers yet.</p>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40">No rated providers yet.</p>
               )}
-              <Link href={`/directory/${citySlug}/${cat.slug}`} className="text-xs font-medium text-accent hover:underline mt-2 inline-block">
+              <Link href={`/directory/${citySlug}/${cat.slug}`} className="text-xs font-medium text-[#006828] hover:underline mt-2 inline-block">
                 Browse all {cat.name.toLowerCase()} in {cityName} &rarr;
               </Link>
             </div>
@@ -543,9 +537,8 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
 
       {/* More comparisons */}
       <div className="mb-10">
-        <div className="section-header">
-          <h2>More Comparisons</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More Comparisons</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {["dubai", "abu-dhabi", "sharjah", "ajman", "ras-al-khaimah", "al-ain"]
@@ -553,7 +546,7 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
             .map((s) => {
               const name = s === "abu-dhabi" ? "Abu Dhabi" : s === "ras-al-khaimah" ? "Ras Al Khaimah" : s === "al-ain" ? "Al Ain" : s.charAt(0).toUpperCase() + s.slice(1);
               return (
-                <Link key={s} href={`/directory/compare/hospitals-vs-clinics-${s}`} className="text-xs border border-light-200 px-3 py-1.5 hover:border-accent hover:text-accent transition-colors">
+                <Link key={s} href={`/directory/compare/hospitals-vs-clinics-${s}`} className="text-xs border border-black/[0.06] px-3 py-1.5 hover:border-[#006828]/15 hover:text-[#006828] transition-colors">
                   Hospitals vs Clinics in {name}
                 </Link>
               );
@@ -565,8 +558,8 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
         <FaqSection faqs={faqs} title={`${categoryA.name} vs ${categoryB.name} in ${cityName} FAQ`} />
       </div>
 
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Provider counts, ratings, and cost estimates are based on data from official UAE health authority registers (DHA, DOH, MOHAP) and Google Maps, last verified March 2026. Consultation fees are indicative ranges. This comparison is for informational purposes only and does not constitute medical advice.
         </p>
       </div>

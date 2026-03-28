@@ -9,9 +9,9 @@ import {
 
 const TIER_COLORS: Record<InsurancePlan["tier"], string> = {
   basic: "bg-dark-500 text-white",
-  enhanced: "bg-accent text-white",
+  enhanced: "bg-[#006828] text-white",
   premium: "bg-dark text-white",
-  vip: "bg-accent-dark text-white",
+  vip: "bg-[#004d1c] text-white",
 };
 
 interface PlanCardProps {
@@ -43,27 +43,27 @@ export function PlanCard({
   ];
 
   return (
-    <div className="border border-light-200 hover:border-accent transition-colors relative">
+    <div className="border border-black/[0.06] hover:border-[#006828]/15 transition-colors relative">
       {/* Header */}
-      <div className="p-4 border-b border-light-200">
+      <div className="p-4 border-b border-black/[0.06]">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-muted uppercase tracking-wide font-bold mb-1">
+            <p className="text-[11px] text-black/40 uppercase tracking-wide font-bold mb-1">
               {insurerName}
             </p>
-            <h3 className="font-bold text-dark text-sm leading-tight">{plan.name}</h3>
+            <h3 className="font-bold text-[#1c1c1c] text-sm leading-tight">{plan.name}</h3>
           </div>
           <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 flex-shrink-0 ${TIER_COLORS[plan.tier]}`}>
             {getTierLabel(plan.tier)}
           </span>
         </div>
-        <p className="text-xs text-muted line-clamp-2">{plan.targetAudience}</p>
+        <p className="text-xs text-black/40 line-clamp-2">{plan.targetAudience}</p>
       </div>
 
       {/* Pricing */}
-      <div className="px-4 py-3 bg-light-50">
-        <p className="text-lg font-bold text-dark">{formatPremium(plan.premiumRange)}</p>
-        <p className="text-[11px] text-muted">
+      <div className="px-4 py-3 bg-[#f8f8f6]">
+        <p className="text-lg font-bold text-[#1c1c1c]">{formatPremium(plan.premiumRange)}</p>
+        <p className="text-[11px] text-black/40">
           Annual limit: {formatLimit(plan.annualLimit)} · {plan.roomType} room · {plan.copayOutpatient}% co-pay
         </p>
       </div>
@@ -73,14 +73,14 @@ export function PlanCard({
         {coverageItems.map(({ label, covered }) => (
           <div key={label} className="flex items-center gap-2 text-xs">
             {covered ? (
-              <Check className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+              <Check className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
             ) : (
               <X className="w-3.5 h-3.5 text-light-300 flex-shrink-0" />
             )}
-            <span className={covered ? "text-dark" : "text-muted line-through"}>
+            <span className={covered ? "text-[#1c1c1c]" : "text-black/40 line-through"}>
               {label}
               {label === "Dental" && covered && plan.dentalLimit > 0 && (
-                <span className="text-muted"> (AED {plan.dentalLimit.toLocaleString()})</span>
+                <span className="text-black/40"> (AED {plan.dentalLimit.toLocaleString()})</span>
               )}
             </span>
           </div>
@@ -92,7 +92,7 @@ export function PlanCard({
         <div className="px-4 pb-3">
           <div className="flex flex-wrap gap-1">
             {plan.highlights.slice(0, 3).map((h) => (
-              <span key={h} className="text-[10px] bg-accent-muted text-accent-dark px-1.5 py-0.5 font-medium">
+              <span key={h} className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5 font-medium">
                 {h}
               </span>
             ))}
@@ -101,15 +101,15 @@ export function PlanCard({
       )}
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-light-200 flex items-center justify-between gap-2">
+      <div className="px-4 py-3 border-t border-black/[0.06] flex items-center justify-between gap-2">
         {networkSize !== undefined && (
-          <p className="text-[11px] text-muted">
-            <span className="font-bold text-accent">{networkSize.toLocaleString()}</span> providers
+          <p className="text-[11px] text-black/40">
+            <span className="font-bold text-[#006828]">{networkSize.toLocaleString()}</span> providers
           </p>
         )}
         <Link
           href={`/insurance/${insurerSlug}`}
-          className="text-[11px] font-bold text-accent hover:text-accent-dark transition-colors ml-auto"
+          className="text-[11px] font-bold text-[#006828] hover:text-[#006828]-dark transition-colors ml-auto"
         >
           View details →
         </Link>
@@ -124,7 +124,7 @@ export function PlanCard({
             onChange={() => onToggleCompare(plan.id)}
             className="w-4 h-4 accent-[#00c853]"
           />
-          <span className="text-[10px] text-muted font-medium">Compare</span>
+          <span className="text-[10px] text-black/40 font-medium">Compare</span>
         </label>
       )}
     </div>

@@ -69,7 +69,7 @@ export default function JourneyHubPage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -91,13 +91,13 @@ export default function JourneyHubPage() {
       {/* Hero */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <Route className="w-8 h-8 text-accent" />
-          <h1 className="text-3xl font-bold text-dark">
+          <Route className="w-8 h-8 text-[#006828]" />
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
             UAE Medical Treatment Cost Bundles
           </h1>
         </div>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             How much does it really cost to treat a condition in the UAE? These {CARE_JOURNEYS.length} care
             journey bundles combine all consultations, tests, and procedures into a total
             estimated cost. Compare prices across Dubai, Abu Dhabi, Sharjah, and all
@@ -114,44 +114,43 @@ export default function JourneyHubPage() {
             { value: "136", label: "Total pages" },
             { value: "2026", label: "Data year" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center">
-              <p className="text-2xl font-bold text-accent">{value}</p>
-              <p className="text-xs text-muted">{label}</p>
+            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
+              <p className="text-2xl font-bold text-[#006828]">{value}</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Journey Cards */}
-      <div className="section-header">
-        <h2>All Care Journeys</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All Care Journeys</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
         {journeysWithCosts.map(({ journey, cost }) => (
           <Link
             key={journey.slug}
             href={`/pricing/journey/${journey.slug}`}
-            className="border border-light-200 p-4 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
           >
             <div className="flex items-start justify-between mb-2">
-              <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                 {journey.name}
               </h3>
-              <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0 mt-0.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
             </div>
-            <p className="text-xs text-muted mb-3 line-clamp-2">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3 line-clamp-2">
               {journey.description.slice(0, 120)}...
             </p>
             <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center gap-1">
-                <DollarSign className="w-3 h-3 text-accent" />
-                <span className="text-sm font-bold text-dark">
+                <DollarSign className="w-3 h-3 text-[#006828]" />
+                <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                   {formatAed(cost.requiredMin)} – {formatAed(cost.requiredMax)}
                 </span>
               </div>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-muted">
+            <div className="flex items-center justify-between text-[11px] text-black/40">
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {journey.totalDuration}
@@ -167,12 +166,12 @@ export default function JourneyHubPage() {
       </div>
 
       {/* How It Works */}
-      <div className="bg-light-50 border border-light-200 p-6 mb-10">
-        <h2 className="text-lg font-bold text-dark mb-4">
+      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <h2 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">
           How Care Journey Cost Bundles Work
         </h2>
-        <div className="answer-block space-y-3" data-answer-block="true">
-          <p className="text-sm text-muted">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 space-y-3" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40">
             Each care journey bundles the individual procedures needed to treat a condition
             from start to finish. Prices are calculated by summing the cost of each step
             (procedure cost x quantity) using our DOH-tariff-based pricing data. Required
@@ -180,7 +179,7 @@ export default function JourneyHubPage() {
             C-section for pregnancy, or ACL surgery for a knee injury) show potential
             additional costs depending on your clinical situation.
           </p>
-          <p className="text-sm text-muted">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40">
             Costs vary by city — Dubai is typically the most expensive, while Sharjah and
             northern emirates offer lower rates. Each journey page includes a city-by-city
             comparison so you can see exactly where to find the best value.
@@ -195,8 +194,8 @@ export default function JourneyHubPage() {
       />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> All cost bundles are indicative estimates
           based on the DOH Mandatory Tariff (Shafafiya) methodology and
           market-observed data as of March 2026. Actual total costs depend on the

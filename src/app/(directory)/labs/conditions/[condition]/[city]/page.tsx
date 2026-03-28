@@ -590,7 +590,7 @@ export default function ConditionCityPage({
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD: BreadcrumbList */}
       <JsonLd
         data={breadcrumbSchema([
@@ -628,25 +628,25 @@ export default function ConditionCityPage({
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <MapPin className="w-4 h-4 text-accent" />
-          <span className="text-[11px] bg-accent-muted text-accent-dark px-2 py-0.5 font-bold uppercase">
+          <MapPin className="w-4 h-4 text-[#006828]" />
+          <span className="text-[11px] bg-[#006828]/[0.04] text-[#006828]-dark px-2 py-0.5 font-bold uppercase">
             {city.name}
           </span>
-          <span className="text-[11px] bg-light-100 text-dark px-2 py-0.5 font-bold uppercase">
+          <span className="text-[11px] bg-[#f8f8f6] text-[#1c1c1c] px-2 py-0.5 font-bold uppercase">
             {regulatorShort}-licensed
           </span>
         </div>
 
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {condition.name} Tests in {city.name} — Compare Labs &amp; Prices
         </h1>
 
         {/* Answer block */}
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed mb-3">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-3">
             {condition.description}
           </p>
-          <p className="text-muted leading-relaxed">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             In {city.name},{" "}
             <strong>
               {conditionLabs.length} {regulatorShort}-licensed lab
@@ -675,47 +675,47 @@ export default function ConditionCityPage({
             listed are licensed and verified.
           </p>
           {cityContext && (
-            <p className="text-muted leading-relaxed mt-3">{cityContext}</p>
+            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mt-3">{cityContext}</p>
           )}
         </div>
 
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 mb-6">
-          <div className="bg-light-50 p-3">
-            <p className="text-lg font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-3">
+            <p className="text-lg font-bold text-[#006828]">
               {conditionLabs.length}
             </p>
-            <p className="text-[11px] text-muted">
+            <p className="text-[11px] text-black/40">
               Labs in {city.name}
             </p>
           </div>
-          <div className="bg-light-50 p-3">
-            <p className="text-lg font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-3">
+            <p className="text-lg font-bold text-[#006828]">
               {testsWithPrices.length}
             </p>
-            <p className="text-[11px] text-muted">Tests with prices</p>
+            <p className="text-[11px] text-black/40">Tests with prices</p>
           </div>
           {estimate && (
-            <div className="bg-light-50 p-3">
+            <div className="bg-[#f8f8f6] p-3">
               <div className="flex items-center gap-1">
-                <Calculator className="w-3.5 h-3.5 text-accent" />
-                <p className="text-lg font-bold text-accent">
+                <Calculator className="w-3.5 h-3.5 text-[#006828]" />
+                <p className="text-lg font-bold text-[#006828]">
                   {formatPrice(estimate.total)}
                 </p>
               </div>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-black/40">
                 Est. cheapest total
               </p>
             </div>
           )}
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] p-3">
             <div className="flex items-center gap-1">
-              <Home className="w-3.5 h-3.5 text-accent" />
-              <p className="text-lg font-bold text-accent">
+              <Home className="w-3.5 h-3.5 text-[#006828]" />
+              <p className="text-lg font-bold text-[#006828]">
                 {homeCollectionLabs.length}
               </p>
             </div>
-            <p className="text-[11px] text-muted">Home collection</p>
+            <p className="text-[11px] text-black/40">Home collection</p>
           </div>
         </div>
       </div>
@@ -723,37 +723,36 @@ export default function ConditionCityPage({
       {/* Tests Available in {City} */}
       {testsWithPrices.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Tests Available in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tests Available in {city.name}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {testsWithPrices.map(({ test, range }) => (
               <Link
                 key={test.slug}
                 href={`/labs/test/${test.slug}`}
-                className="p-4 border border-light-200 bg-light-50 hover:border-accent transition-colors group"
+                className="p-4 border border-black/[0.06] bg-[#f8f8f6] hover:border-[#006828]/15 transition-colors group"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                     {test.shortName}
                   </h3>
-                  <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0 mt-0.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
                 </div>
-                <p className="text-[11px] text-muted line-clamp-2 mb-3">
+                <p className="text-[11px] text-black/40 line-clamp-2 mb-3">
                   {test.name}
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-bold text-accent">
+                  <span className="text-sm font-bold text-[#006828]">
                     {formatPrice(range.min)}
                   </span>
                   {range.max > range.min && (
-                    <span className="text-[11px] text-muted">
+                    <span className="text-[11px] text-black/40">
                       – {formatPrice(range.max)}
                     </span>
                   )}
                 </div>
-                <p className="text-[10px] text-muted mt-1">
+                <p className="text-[10px] text-black/40 mt-1">
                   {range.labCount} lab{range.labCount !== 1 ? "s" : ""} in{" "}
                   {city.name}
                 </p>
@@ -766,12 +765,11 @@ export default function ConditionCityPage({
       {/* Estimated Cost in {City} */}
       {estimate && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Estimated Cost in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Estimated Cost in {city.name}</h2>
           </div>
-          <div className="bg-light-50 border border-light-200 p-6">
-            <p className="text-muted text-sm leading-relaxed mb-4">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6">
+            <p className="text-black/40 text-sm leading-relaxed mb-4">
               The table below shows the cheapest available price for each{" "}
               {condition.name.toLowerCase()} test in {city.name}. The total
               represents the minimum you would pay by selecting the cheapest lab
@@ -780,14 +778,14 @@ export default function ConditionCityPage({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-light-200">
-                    <th className="text-left py-2 pr-4 text-xs font-bold text-dark uppercase">
+                  <tr className="border-b border-black/[0.06]">
+                    <th className="text-left py-2 pr-4 text-xs font-bold text-[#1c1c1c] uppercase">
                       Test
                     </th>
-                    <th className="text-right py-2 px-4 text-xs font-bold text-dark uppercase">
+                    <th className="text-right py-2 px-4 text-xs font-bold text-[#1c1c1c] uppercase">
                       From
                     </th>
-                    <th className="text-right py-2 pl-4 text-xs font-bold text-dark uppercase">
+                    <th className="text-right py-2 pl-4 text-xs font-bold text-[#1c1c1c] uppercase">
                       Labs
                     </th>
                   </tr>
@@ -800,26 +798,26 @@ export default function ConditionCityPage({
                     return (
                       <tr
                         key={slug}
-                        className="border-b border-light-100 last:border-b-0"
+                        className="border-b border-black/[0.06] last:border-b-0"
                       >
                         <td className="py-2 pr-4">
                           <Link
                             href={`/labs/test/${slug}`}
-                            className="text-dark hover:text-accent transition-colors font-medium"
+                            className="text-[#1c1c1c] hover:text-[#006828] transition-colors font-medium"
                           >
                             {test.shortName}
                           </Link>
                         </td>
                         <td className="py-2 px-4 text-right">
                           {range ? (
-                            <span className="font-bold text-accent">
+                            <span className="font-bold text-[#006828]">
                               {formatPrice(range.min)}
                             </span>
                           ) : (
-                            <span className="text-muted text-xs">N/A</span>
+                            <span className="text-black/40 text-xs">N/A</span>
                           )}
                         </td>
-                        <td className="py-2 pl-4 text-right text-muted text-xs">
+                        <td className="py-2 pl-4 text-right text-black/40 text-xs">
                           {range ? range.labCount : 0}
                         </td>
                       </tr>
@@ -827,21 +825,21 @@ export default function ConditionCityPage({
                   })}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 border-light-300">
-                    <td className="py-3 pr-4 font-bold text-dark">
+                  <tr className="border-t-2 border-black/[0.06]">
+                    <td className="py-3 pr-4 font-bold text-[#1c1c1c]">
                       Estimated Total
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-accent text-base">
+                    <td className="py-3 px-4 text-right font-bold text-[#006828] text-base">
                       {formatPrice(estimate.total)}
                     </td>
-                    <td className="py-3 pl-4 text-right text-[11px] text-muted">
+                    <td className="py-3 pl-4 text-right text-[11px] text-black/40">
                       {estimate.testCount} tests
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-            <p className="text-[11px] text-muted mt-4">
+            <p className="text-[11px] text-black/40 mt-4">
               Prices shown are the cheapest available in {city.name} per test.
               Actual costs may vary if you choose a single lab for all tests or
               if prices have changed. Some labs offer bundled condition-specific
@@ -854,25 +852,24 @@ export default function ConditionCityPage({
       {/* Labs in {City} Offering These Tests */}
       {conditionLabs.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
               Labs in {city.name} Offering {condition.name} Tests
             </h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
           </div>
           <div className="space-y-4">
             {conditionLabs.map(
               ({ lab, matchingTestCount, matchingTests, totalPrice }) => (
                 <div
                   key={lab.slug}
-                  className="border border-light-200 bg-light-50 p-4 hover:border-accent transition-colors"
+                  className="border border-black/[0.06] bg-[#f8f8f6] p-4 hover:border-[#006828]/15 transition-colors"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Link
                           href={`/labs/${lab.slug}`}
-                          className="text-sm font-bold text-dark hover:text-accent transition-colors"
+                          className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                         >
                           {lab.name}
                         </Link>
@@ -882,7 +879,7 @@ export default function ConditionCityPage({
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-muted mb-2">
+                      <p className="text-[11px] text-black/40 mb-2">
                         {lab.type === "chain"
                           ? "Lab chain"
                           : lab.type === "hospital"
@@ -899,7 +896,7 @@ export default function ConditionCityPage({
                           return (
                             <span
                               key={testSlug}
-                              className="text-[10px] bg-accent-muted text-accent-dark px-1.5 py-0.5 font-medium"
+                              className="text-[10px] bg-[#006828]/[0.04] text-[#006828]-dark px-1.5 py-0.5 font-medium"
                             >
                               {test?.shortName || testSlug}
                             </span>
@@ -908,17 +905,17 @@ export default function ConditionCityPage({
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-xs text-muted">
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40">
                         {matchingTestCount} of {condition.testSlugs.length} tests
                       </p>
-                      <p className="text-sm font-bold text-accent">
+                      <p className="text-sm font-bold text-[#006828]">
                         {formatPrice(totalPrice)}
                       </p>
-                      <p className="text-[10px] text-muted">
+                      <p className="text-[10px] text-black/40">
                         combined price
                       </p>
                       {lab.homeCollection && (
-                        <p className="text-[10px] text-muted mt-1">
+                        <p className="text-[10px] text-black/40 mt-1">
                           Home fee:{" "}
                           {lab.homeCollectionFee === 0
                             ? "Free"
@@ -936,14 +933,13 @@ export default function ConditionCityPage({
 
       {/* Home Collection Available? */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Home Collection in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Home Collection in {city.name}</h2>
         </div>
-        <div className="bg-light-50 border border-light-200 p-6">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6">
           {homeCollectionLabs.length > 0 ? (
             <>
-              <p className="text-sm text-muted leading-relaxed mb-4">
+              <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
                 <strong>{homeCollectionLabs.length}</strong> lab
                 {homeCollectionLabs.length !== 1 ? "s" : ""} in {city.name}{" "}
                 offer home sample collection for{" "}
@@ -955,16 +951,16 @@ export default function ConditionCityPage({
                 {homeCollectionLabs.map(({ lab, matchingTestCount }) => (
                   <div
                     key={lab.slug}
-                    className="flex items-center justify-between p-3 border border-light-200 bg-white"
+                    className="flex items-center justify-between p-3 border border-black/[0.06] bg-white"
                   >
                     <div>
                       <Link
                         href={`/labs/${lab.slug}`}
-                        className="text-xs font-bold text-dark hover:text-accent transition-colors"
+                        className="text-xs font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                       >
                         {lab.name}
                       </Link>
-                      <p className="text-[10px] text-muted">
+                      <p className="text-[10px] text-black/40">
                         {matchingTestCount} condition tests available
                       </p>
                     </div>
@@ -983,7 +979,7 @@ export default function ConditionCityPage({
               </div>
             </>
           ) : (
-            <p className="text-sm text-muted leading-relaxed">
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
               Home sample collection for {condition.name.toLowerCase()} tests
               may be limited in {city.name}. Contact individual labs to check
               availability, or consider visiting a walk-in lab for sample
@@ -1001,11 +997,10 @@ export default function ConditionCityPage({
 
       {/* Cross-links: same condition in other cities */}
       <section className="mt-10 mb-8">
-        <div className="section-header">
-          <h2>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
             {condition.name} Tests in Other Cities
           </h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {otherCities.map((c) => {
@@ -1014,15 +1009,15 @@ export default function ConditionCityPage({
               <Link
                 key={c.slug}
                 href={`/labs/conditions/${condition.slug}/${c.slug}`}
-                className="p-3 border border-light-200 hover:border-accent transition-colors group"
+                className="p-3 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
               >
                 <div className="flex items-center gap-1.5 mb-1">
-                  <MapPin className="w-3 h-3 text-accent" />
-                  <p className="text-xs font-bold text-dark group-hover:text-accent">
+                  <MapPin className="w-3 h-3 text-[#006828]" />
+                  <p className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828]">
                     {c.name}
                   </p>
                 </div>
-                <p className="text-[10px] text-muted">
+                <p className="text-[10px] text-black/40">
                   {otherLabs.length} lab{otherLabs.length !== 1 ? "s" : ""}{" "}
                   available
                 </p>
@@ -1034,21 +1029,20 @@ export default function ConditionCityPage({
 
       {/* Cross-links: other conditions in this city */}
       <section className="mb-8">
-        <div className="section-header">
-          <h2>Other Conditions in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Conditions in {city.name}</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {otherConditions.map((c) => (
             <Link
               key={c.slug}
               href={`/labs/conditions/${c.slug}/${city.slug}`}
-              className="p-3 border border-light-200 hover:border-accent transition-colors group"
+              className="p-3 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
             >
-              <p className="text-xs font-bold text-dark group-hover:text-accent">
+              <p className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828]">
                 {c.name}
               </p>
-              <p className="text-[10px] text-muted">
+              <p className="text-[10px] text-black/40">
                 {c.testSlugs.length} tests
               </p>
             </Link>
@@ -1057,8 +1051,8 @@ export default function ConditionCityPage({
       </section>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for{" "}
           {condition.name.toLowerCase()} tests in {city.name} are indicative
           and based on publicly available data from lab websites and

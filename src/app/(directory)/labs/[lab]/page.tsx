@@ -104,7 +104,7 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -154,25 +154,25 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
 
       {/* Hero */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-3">{lab.name}</h1>
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed mb-4">{lab.description}</p>
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">{lab.name}</h1>
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{lab.description}</p>
         </div>
 
         {/* Key info grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {cheapest && (
-            <div className="bg-light-50 p-3">
-              <p className="text-lg font-bold text-accent">From AED {cheapest}</p>
-              <p className="text-[11px] text-muted">{prices.length} tests listed</p>
+            <div className="bg-[#f8f8f6] p-3">
+              <p className="text-lg font-bold text-[#006828]">From AED {cheapest}</p>
+              <p className="text-[11px] text-black/40">{prices.length} tests listed</p>
             </div>
           )}
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] p-3">
             <div className="flex items-center gap-1.5 mb-1">
-              <Home className="w-4 h-4 text-accent" />
-              <p className="text-xs font-bold text-dark">Home Collection</p>
+              <Home className="w-4 h-4 text-[#006828]" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Home Collection</p>
             </div>
-            <p className="text-[11px] text-muted">
+            <p className="text-[11px] text-black/40">
               {lab.homeCollection
                 ? lab.homeCollectionFee === 0
                   ? "Free"
@@ -180,24 +180,24 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
                 : "Not available"}
             </p>
           </div>
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] p-3">
             <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-4 h-4 text-accent" />
-              <p className="text-xs font-bold text-dark">Results</p>
+              <Clock className="w-4 h-4 text-[#006828]" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Results</p>
             </div>
-            <p className="text-[11px] text-muted">{lab.turnaroundHours}h turnaround</p>
+            <p className="text-[11px] text-black/40">{lab.turnaroundHours}h turnaround</p>
           </div>
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] p-3">
             <div className="flex items-center gap-1.5 mb-1">
-              <Award className="w-4 h-4 text-accent" />
-              <p className="text-xs font-bold text-dark">Accreditations</p>
+              <Award className="w-4 h-4 text-[#006828]" />
+              <p className="text-xs font-bold text-[#1c1c1c]">Accreditations</p>
             </div>
-            <p className="text-[11px] text-muted">{lab.accreditations.join(", ") || "DHA Licensed"}</p>
+            <p className="text-[11px] text-black/40">{lab.accreditations.join(", ") || "DHA Licensed"}</p>
           </div>
         </div>
 
         {/* Details row */}
-        <div className="flex flex-wrap gap-4 text-xs text-muted">
+        <div className="flex flex-wrap gap-4 text-xs text-black/40">
           {lab.branchCount > 0 && (
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" />
@@ -216,14 +216,13 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
       {/* Highlights */}
       {lab.highlights.length > 0 && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Key Highlights</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Key Highlights</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {lab.highlights.map((h) => (
-              <div key={h} className="flex items-center gap-2 text-sm text-dark p-2 bg-light-50">
-                <ArrowRight className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+              <div key={h} className="flex items-center gap-2 text-sm text-[#1c1c1c] p-2 bg-[#f8f8f6]">
+                <ArrowRight className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
                 {h}
               </div>
             ))}
@@ -234,9 +233,8 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
       {/* Health Packages */}
       {packages.length > 0 && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Health Check Packages</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Health Check Packages</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {packages.map((pkg) => (
@@ -247,12 +245,11 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
       )}
 
       {/* Test Prices by Category */}
-      <div className="section-header">
-        <h2>Test Prices at {lab.name}</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Test Prices at {lab.name}</h2>
       </div>
-      <div className="answer-block mb-4" data-answer-block="true">
-        <p className="text-xs text-muted">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-xs text-black/40">
           {lab.name} offers {prices.length} lab tests across {pricesByCategory.size} categories.
           Prices are for walk-in patients without insurance. Click any test to compare
           prices across all UAE labs.
@@ -261,36 +258,36 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
 
       {Array.from(pricesByCategory.entries()).map(([category, catPrices]) => (
         <div key={category} className="mb-6">
-          <h3 className="text-sm font-bold text-dark mb-2 capitalize">
+          <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 capitalize">
             {category.replace(/-/g, " ")}
           </h3>
           <div className="overflow-x-auto -mx-4 sm:mx-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-light-200">
-                  <th className="text-left py-2 px-3 text-xs font-bold text-dark">Test</th>
-                  <th className="text-right py-2 px-3 text-xs font-bold text-dark">Price</th>
-                  <th className="text-right py-2 px-3 text-xs font-bold text-dark" />
+                <tr className="border-b border-black/[0.06]">
+                  <th className="text-left py-2 px-3 text-xs font-bold text-[#1c1c1c]">Test</th>
+                  <th className="text-right py-2 px-3 text-xs font-bold text-[#1c1c1c]">Price</th>
+                  <th className="text-right py-2 px-3 text-xs font-bold text-[#1c1c1c]" />
                 </tr>
               </thead>
               <tbody>
                 {catPrices.map((p, i) => (
-                  <tr key={p.testSlug} className={i % 2 === 0 ? "bg-light-50" : ""}>
+                  <tr key={p.testSlug} className={i % 2 === 0 ? "bg-[#f8f8f6]" : ""}>
                     <td className="py-2 px-3">
                       <Link
                         href={`/labs/test/${p.testSlug}`}
-                        className="text-xs font-medium text-dark hover:text-accent transition-colors"
+                        className="text-xs font-medium text-[#1c1c1c] hover:text-[#006828] transition-colors"
                       >
                         {p.testName}
                       </Link>
                     </td>
-                    <td className="py-2 px-3 text-right text-xs font-bold text-dark">
+                    <td className="py-2 px-3 text-right text-xs font-bold text-[#1c1c1c]">
                       {formatPrice(p.price)}
                     </td>
                     <td className="py-2 px-3 text-right">
                       <Link
                         href={`/labs/test/${p.testSlug}`}
-                        className="text-[11px] text-accent hover:text-accent-dark font-bold"
+                        className="text-[11px] text-[#006828] hover:text-[#006828]-dark font-bold"
                       >
                         Compare →
                       </Link>
@@ -309,8 +306,8 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown for {lab.name} are indicative and based
           on publicly available data. Actual prices may vary by branch, insurance, and
           current promotions. Contact {lab.name} directly to confirm pricing before your

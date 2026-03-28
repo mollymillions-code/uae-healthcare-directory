@@ -275,7 +275,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
   const answerText = `According to the UAE Open Healthcare Directory, ${city.name} has ${totalCount} ${catLower}. The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${topProvider.googleReviewCount?.toLocaleString()} reviews.${mostReviewed && mostReviewed.id !== topProvider.id ? ` The most-reviewed is ${mostReviewed.name} with ${mostReviewed.googleReviewCount?.toLocaleString()} patient reviews.` : ""} ${city.name} healthcare is regulated by the ${regulator}. All listings are sourced from official government registers and verified against ${regulatorShort} data, last updated March 2026.`;
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbs} />
       <JsonLd data={itemList} />
@@ -292,10 +292,10 @@ export default async function BestCategoryInCityPage({ params }: Props) {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-dark mb-2">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
           Best {category.name} in {city.name}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="font-['Geist',sans-serif] text-sm text-black/40">
           Top {Math.min(ranked.length, 15)} highest-rated out of {totalCount} providers
           {" "}&middot; Ranked by Google rating &middot; {regulator}
           {" "}&middot; Updated March 2026
@@ -303,27 +303,27 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       </div>
 
       {/* Answer Block */}
-      <div className="answer-block mb-8" data-answer-block="true">
-        <p className="text-muted leading-relaxed">{answerText}</p>
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerText}</p>
       </div>
 
       {/* Quick nav links */}
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={`/directory/${city.slug}/${category.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All {catLower} in {city.name}
         </Link>
         <Link
           href={`/best/${city.slug}`}
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All categories in {city.name}
         </Link>
         <Link
           href="/best"
-          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
+          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
         >
           All cities
         </Link>
@@ -331,18 +331,17 @@ export default async function BestCategoryInCityPage({ params }: Props) {
 
       {/* Ranked Provider List */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Top {Math.min(ranked.length, 15)} {category.name} in {city.name}</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(ranked.length, 15)} {category.name} in {city.name}</h2>
         </div>
         <div className="space-y-0">
           {top15.map((p, idx) => (
             <div
               key={p.id}
-              className="flex items-start gap-3 py-4 border-b border-light-200 last:border-b-0"
+              className="flex items-start gap-3 py-4 border-b border-black/[0.06] last:border-b-0"
             >
               {/* Rank */}
-              <span className="text-lg font-bold text-accent w-8 flex-shrink-0 text-center mt-0.5">
+              <span className="text-lg font-bold text-[#006828] w-8 flex-shrink-0 text-center mt-0.5">
                 #{idx + 1}
               </span>
 
@@ -351,15 +350,15 @@ export default async function BestCategoryInCityPage({ params }: Props) {
                 <div className="flex items-center gap-2 mb-1">
                   <Link
                     href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                    className="text-sm font-bold text-dark hover:text-accent transition-colors"
+                    className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                   >
                     {p.name}
                   </Link>
                   {p.isVerified && (
-                    <span className="badge text-[9px]">Verified</span>
+                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Verified</span>
                   )}
                 </div>
-                <p className="text-xs text-muted mb-1.5">{p.address}</p>
+                <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1.5">{p.address}</p>
 
                 {/* Insurance badges */}
                 {p.insurance.length > 0 && (
@@ -367,13 +366,13 @@ export default async function BestCategoryInCityPage({ params }: Props) {
                     {p.insurance.slice(0, 4).map((ins) => (
                       <span
                         key={ins}
-                        className="text-[10px] border border-light-200 px-1.5 py-0.5 text-muted"
+                        className="text-[10px] border border-black/[0.06] px-1.5 py-0.5 text-black/40"
                       >
                         {ins}
                       </span>
                     ))}
                     {p.insurance.length > 4 && (
-                      <span className="text-[10px] text-muted">
+                      <span className="text-[10px] text-black/40">
                         +{p.insurance.length - 4} more
                       </span>
                     )}
@@ -383,7 +382,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
                 {/* View profile link */}
                 <Link
                   href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                  className="text-xs text-accent font-bold hover:underline"
+                  className="text-xs text-[#006828] font-bold hover:underline"
                 >
                   View full profile &rarr;
                 </Link>
@@ -395,7 +394,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
                   {p.googleRating} ★
                 </span>
                 {p.googleReviewCount > 0 && (
-                  <span className="text-[11px] text-muted">
+                  <span className="text-[11px] text-black/40">
                     {p.googleReviewCount.toLocaleString()} reviews
                   </span>
                 )}
@@ -407,7 +406,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
           <div className="mt-4 text-center">
             <Link
               href={`/directory/${city.slug}/${category.slug}`}
-              className="text-xs text-accent font-bold hover:underline"
+              className="text-xs text-[#006828] font-bold hover:underline"
             >
               View all {totalCount} {catLower} in {city.name} &rarr;
             </Link>
@@ -417,23 +416,22 @@ export default async function BestCategoryInCityPage({ params }: Props) {
 
       {/* Why These Rankings */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>Why These Rankings</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Why These Rankings</h2>
         </div>
-        <div className="bg-light-50 border border-light-200 p-5">
-          <p className="text-sm text-muted leading-relaxed mb-3">
+        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             Providers are ranked by <strong>Google rating</strong> (highest first), with{" "}
             <strong>review count</strong> used as a tiebreaker when ratings are equal. Only
             providers with a rating above 0 are included. A higher review count generally
             indicates more patient feedback and greater confidence in the rating.
           </p>
-          <p className="text-sm text-muted leading-relaxed mb-3">
+          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             All provider data is sourced from official <strong>{regulator}</strong> licensed
             facilities registers and cross-referenced with the UAE Open Healthcare Directory.
             Rankings are updated regularly.
           </p>
-          <p className="text-[11px] text-muted">
+          <p className="text-[11px] text-black/40">
             <strong>Note:</strong> These rankings reflect publicly available Google ratings and
             do not constitute a medical recommendation. Always verify credentials, check
             insurance coverage, and consult with your healthcare provider before making
@@ -444,38 +442,37 @@ export default async function BestCategoryInCityPage({ params }: Props) {
 
       {/* Category Stats */}
       <section className="mb-10">
-        <div className="section-header">
-          <h2>{category.name} in {city.name} — Quick Stats</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{category.name} in {city.name} — Quick Stats</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="border border-light-200 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{totalCount}</p>
-            <p className="text-xs text-muted mt-1">Total Providers</p>
+          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{totalCount}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Total Providers</p>
           </div>
-          <div className="border border-light-200 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{average}</p>
-            <p className="text-xs text-muted mt-1">Avg. Rating</p>
+          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{average}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Avg. Rating</p>
           </div>
-          <div className="border border-light-200 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{ranked.length}</p>
-            <p className="text-xs text-muted mt-1">Rated Providers</p>
+          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{ranked.length}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Rated Providers</p>
           </div>
-          <div className="border border-light-200 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{commonInsurers.length > 0 ? commonInsurers.length + "+" : "—"}</p>
-            <p className="text-xs text-muted mt-1">Insurers Accepted</p>
+          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{commonInsurers.length > 0 ? commonInsurers.length + "+" : "—"}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Insurers Accepted</p>
           </div>
         </div>
 
         {/* Most common insurers */}
         {commonInsurers.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs font-bold text-dark mb-2">Most Commonly Accepted Insurance</p>
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Most Commonly Accepted Insurance</p>
             <div className="flex flex-wrap gap-2">
               {commonInsurers.map((ins) => (
                 <span
                   key={ins}
-                  className="text-xs border border-light-200 px-2 py-1 text-muted"
+                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
                 >
                   {ins}
                 </span>
@@ -487,12 +484,12 @@ export default async function BestCategoryInCityPage({ params }: Props) {
         {/* Top neighborhoods */}
         {topNeighborhoods.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs font-bold text-dark mb-2">Top Neighborhoods</p>
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Top Neighborhoods</p>
             <div className="flex flex-wrap gap-2">
               {topNeighborhoods.map((area) => (
                 <span
                   key={area.slug}
-                  className="text-xs border border-light-200 px-2 py-1 text-muted"
+                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
                 >
                   {titleCase(area.slug.replace(/-/g, " "))} ({area.count})
                 </span>
@@ -511,21 +508,20 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       {/* Cross-links: same category in other cities */}
       {otherCities.length > 0 && (
         <section className="mb-10 mt-10">
-          <div className="section-header">
-            <h2>Best {category.name} in Other Cities</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Best {category.name} in Other Cities</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/best/${c.slug}/${category.slug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-accent font-bold mt-1">
+                <p className="text-xs text-[#006828] font-bold mt-1">
                   {c.count} {c.count === 1 ? "provider" : "providers"}
                 </p>
               </Link>
@@ -537,21 +533,20 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       {/* Cross-links: other categories in same city */}
       {otherCategories.length > 0 && (
         <section className="mb-10">
-          <div className="section-header">
-            <h2>Other Top-Rated Categories in {city.name}</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Top-Rated Categories in {city.name}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {otherCategories.map((c) => (
               <Link
                 key={c.slug}
                 href={`/best/${city.slug}/${c.slug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
               >
-                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-accent font-bold mt-1">
+                <p className="text-xs text-[#006828] font-bold mt-1">
                   {c.count} {c.count === 1 ? "provider" : "providers"}
                 </p>
               </Link>
@@ -561,7 +556,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       )}
 
       {/* Full directory CTA */}
-      <div className="bg-dark text-white p-6 flex items-center justify-between mb-8">
+      <div className="bg-[#1c1c1c] text-white p-6 flex items-center justify-between mb-8">
         <div>
           <p className="font-bold text-sm">Browse all {catLower} in {city.name}</p>
           <p className="text-xs text-white/70 mt-1">
@@ -570,15 +565,15 @@ export default async function BestCategoryInCityPage({ params }: Props) {
         </div>
         <Link
           href={`/directory/${city.slug}/${category.slug}`}
-          className="bg-accent text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
+          className="bg-[#006828] text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
         >
           View all {totalCount}
         </Link>
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings
           and review counts. They do not constitute a medical recommendation. Provider data is
           sourced from official {regulator} registers and the UAE Open Healthcare Directory,

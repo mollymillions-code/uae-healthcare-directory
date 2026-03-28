@@ -238,7 +238,7 @@ export default function TestDetailPage({ params }: { params: { test: string } })
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -281,15 +281,15 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       {/* Hero */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-[11px] bg-accent-muted text-accent-dark px-2 py-0.5 font-bold uppercase">
+          <span className="text-[11px] bg-[#006828]/[0.04] text-[#006828]-dark px-2 py-0.5 font-bold uppercase">
             {getTestCategoryLabel(test.category)}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-dark mb-3">
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {test.name} — Price Comparison in the UAE
         </h1>
-        <div className="answer-block" data-answer-block="true">
-          <p className="text-muted leading-relaxed mb-4">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
             {test.description}
             {range && (
               <>
@@ -305,38 +305,38 @@ export default function TestDetailPage({ params }: { params: { test: string } })
         </div>
 
         {/* Test details */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {range && (
-            <div className="bg-light-50 p-3">
-              <p className="text-lg font-bold text-accent">{formatPrice(range.min)}</p>
-              <p className="text-[11px] text-muted">Cheapest price</p>
+            <div className="bg-[#f8f8f6] rounded-xl border border-black/[0.06] p-4">
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-lg font-semibold text-[#006828]">{formatPrice(range.min)}</p>
+              <p className="font-['Geist',sans-serif] text-[11px] text-black/40">Cheapest price</p>
             </div>
           )}
           {range && range.savings > 0 && (
-            <div className="bg-light-50 p-3">
-              <p className="text-lg font-bold text-accent">{formatPrice(range.savings)}</p>
-              <p className="text-[11px] text-muted">Max savings ({range.savingsPercent}%)</p>
+            <div className="bg-[#f8f8f6] rounded-xl border border-black/[0.06] p-4">
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-lg font-semibold text-[#006828]">{formatPrice(range.savings)}</p>
+              <p className="font-['Geist',sans-serif] text-[11px] text-black/40">Max savings ({range.savingsPercent}%)</p>
             </div>
           )}
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] rounded-xl border border-black/[0.06] p-4">
             <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-4 h-4 text-accent" />
-              <p className="text-xs font-bold text-dark">Turnaround</p>
+              <Clock className="w-4 h-4 text-[#006828]" />
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c]">Turnaround</p>
             </div>
-            <p className="text-[11px] text-muted">{test.turnaroundHours} hours</p>
+            <p className="font-['Geist',sans-serif] text-[11px] text-black/40">{test.turnaroundHours} hours</p>
           </div>
-          <div className="bg-light-50 p-3">
+          <div className="bg-[#f8f8f6] rounded-xl border border-black/[0.06] p-4">
             <div className="flex items-center gap-1.5 mb-1">
-              <Droplets className="w-4 h-4 text-accent" />
-              <p className="text-xs font-bold text-dark">Sample</p>
+              <Droplets className="w-4 h-4 text-[#006828]" />
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c]">Sample</p>
             </div>
-            <p className="text-[11px] text-muted">{sampleTypeLabel[test.sampleType]}</p>
+            <p className="font-['Geist',sans-serif] text-[11px] text-black/40">{sampleTypeLabel[test.sampleType]}</p>
           </div>
         </div>
 
         {/* Fasting notice */}
         {test.fastingRequired && (
-          <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 mb-6">
+          <div className="flex items-center gap-2 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-6">
             <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
             <p className="text-xs text-amber-800">
               <strong>Fasting required:</strong> Do not eat or drink (except water) for 8-12
@@ -348,13 +348,12 @@ export default function TestDetailPage({ params }: { params: { test: string } })
 
       {/* Common reasons */}
       <div className="mb-8">
-        <div className="section-header">
-          <h2>Common Reasons to Order</h2>
-          <span className="arrows">&gt;&gt;&gt;</span>
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Common Reasons to Order</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {test.commonReasons.map((reason) => (
-            <span key={reason} className="text-xs bg-light-50 border border-light-200 px-3 py-1.5 text-dark">
+            <span key={reason} className="text-xs bg-[#f8f8f6] border border-black/[0.06] px-3 py-1.5 text-[#1c1c1c]">
               {reason}
             </span>
           ))}
@@ -364,16 +363,15 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       {/* Understanding Your Results — medical education */}
       {medContent && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Understanding Your {test.shortName} Results</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Understanding Your {test.shortName} Results</h2>
           </div>
-          <div className="answer-block" data-answer-block="true">
-            <div className="flex items-start gap-3 bg-light-50 border border-light-200 p-4 mb-4">
-              <BookOpen className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+            <div className="flex items-start gap-3 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 mb-4">
+              <BookOpen className="w-5 h-5 text-[#006828] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs font-bold text-dark mb-1">What This Test Measures</p>
-                <p className="text-sm text-muted leading-relaxed">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">What This Test Measures</p>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
                   {medContent.whatItMeasures}
                 </p>
               </div>
@@ -385,21 +383,20 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       {/* Who Should Get This Test */}
       {medContent && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Who Should Get This Test</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Who Should Get This Test</h2>
           </div>
-          <div className="answer-block" data-answer-block="true">
-            <div className="flex items-start gap-3 bg-light-50 border border-light-200 p-4 mb-4">
-              <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
+            <div className="flex items-start gap-3 bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5 mb-4">
+              <Users className="w-5 h-5 text-[#006828] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs font-bold text-dark mb-1">Recommended For</p>
-                <p className="text-sm text-muted leading-relaxed mb-3">
+                <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">Recommended For</p>
+                <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
                   {medContent.whoShouldGetTested}
                 </p>
-                <div className="border-t border-light-200 pt-3">
-                  <p className="text-xs font-bold text-dark mb-1">In the UAE Context</p>
-                  <p className="text-sm text-muted leading-relaxed">
+                <div className="border-t border-black/[0.06] pt-3">
+                  <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1">In the UAE Context</p>
+                  <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
                     {medContent.uaeContext}
                   </p>
                 </div>
@@ -412,12 +409,11 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       {/* Price comparison */}
       {comparison && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Price Comparison — {test.shortName} Across UAE Labs</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Price Comparison — {test.shortName} Across UAE Labs</h2>
           </div>
-          <div className="answer-block mb-4" data-answer-block="true">
-            <p className="text-xs text-muted">
+          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">
               Comparing {test.shortName} prices across {comparison.prices.length} laboratories in the UAE.
               {comparison.prices[0] && (
                 <> The cheapest option is <strong>{comparison.prices[0].labName}</strong> at{" "}
@@ -433,21 +429,20 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       {/* Related tests */}
       {relatedTests.length > 0 && (
         <div className="mb-8">
-          <div className="section-header">
-            <h2>Related {getTestCategoryLabel(test.category)} Tests</h2>
-            <span className="arrows">&gt;&gt;&gt;</span>
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related {getTestCategoryLabel(test.category)} Tests</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {relatedTests.map((t) => (
               <Link
                 key={t.slug}
                 href={`/labs/test/${t.slug}`}
-                className="p-3 border border-light-200 hover:border-accent transition-colors group"
+                className="p-3 border border-black/[0.06] hover:border-[#006828]/15 transition-colors group"
               >
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
                   {t.shortName}
                 </h3>
-                <p className="text-[11px] text-muted line-clamp-2 mt-1">{t.name}</p>
+                <p className="text-[11px] text-black/40 line-clamp-2 mt-1">{t.name}</p>
               </Link>
             ))}
           </div>
@@ -460,8 +455,8 @@ export default function TestDetailPage({ params }: { params: { test: string } })
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices for {test.name} are indicative and based on
           publicly available data from UAE diagnostic laboratories. Actual prices may vary
           by branch, insurance coverage, and current promotions. The medical information

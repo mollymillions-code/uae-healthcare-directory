@@ -11,7 +11,7 @@ export function SocialFeed({ posts }: SocialFeedProps) {
 
   return (
     <aside>
-      <h3 className="font-mono text-[10px] uppercase tracking-[0.15em] text-accent mb-4">
+      <h3 className="font-['Geist',sans-serif] text-[10px] uppercase tracking-[0.15em] text-[#006828] mb-4">
         Social Pulse
       </h3>
       <div className="space-y-0">
@@ -23,30 +23,30 @@ export function SocialFeed({ posts }: SocialFeedProps) {
 
           return (
             <div key={post.id}>
-              {i > 0 && <div className="border-b border-light-200 my-3" />}
+              {i > 0 && <div className="border-b border-black/[0.06] my-3" />}
               <Wrapper {...wrapperProps}>
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`font-mono text-[10px] font-bold uppercase ${platformColor(post.platform)}`}
+                      className={`font-['Geist',sans-serif] text-[10px] font-bold uppercase ${platformColor(post.platform)}`}
                     >
                       {platformIcon(post.platform)}
                     </span>
-                    <span className={`text-xs font-medium text-dark ${post.url ? "group-hover:text-accent transition-colors" : ""}`}>
+                    <span className={`text-xs font-medium text-[#1c1c1c] ${post.url ? "group-hover:text-[#006828] transition-colors" : ""}`}>
                       {post.author}
                     </span>
                     {post.url && (
-                      <ExternalLink className="h-2.5 w-2.5 text-muted group-hover:text-accent transition-colors" />
+                      <ExternalLink className="h-2.5 w-2.5 text-black/40 group-hover:text-[#006828] transition-colors" />
                     )}
                   </div>
-                  <span className="text-[10px] text-muted">{timeAgo(post.publishedAt)}</span>
+                  <span className="text-[10px] text-black/40">{timeAgo(post.publishedAt)}</span>
                 </div>
-                <p className="text-xs text-muted leading-relaxed line-clamp-3">
+                <p className="text-xs text-black/40 leading-relaxed line-clamp-3">
                   {post.content}
                 </p>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[10px] text-muted">{post.engagement.likes.toLocaleString()} likes</span>
-                  <span className="text-[10px] text-muted">{post.engagement.comments} comments</span>
+                  <span className="text-[10px] text-black/40">{post.engagement.likes.toLocaleString()} likes</span>
+                  <span className="text-[10px] text-black/40">{post.engagement.comments} comments</span>
                 </div>
               </Wrapper>
             </div>

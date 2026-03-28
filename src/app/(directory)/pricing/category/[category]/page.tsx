@@ -85,7 +85,7 @@ export default async function CategoryPricingPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -106,11 +106,11 @@ export default async function CategoryPricingPage({ params }: Props) {
 
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-dark mb-3">
+        <h1 className="text-2xl sm:font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
           {cat.name} Costs in the UAE
         </h1>
-        <div className="answer-block mb-6" data-answer-block="true">
-          <p className="text-muted leading-relaxed">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             Compare prices for {procs.length} {cat.name.toLowerCase()} across Dubai,
             Abu Dhabi, Sharjah, and all UAE emirates. {cat.description}. Pricing based on
             DOH Mandatory Tariff methodology and market-observed data.
@@ -118,27 +118,26 @@ export default async function CategoryPricingPage({ params }: Props) {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">{procs.length}</p>
-            <p className="text-xs text-muted">Procedures</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">{procs.length}</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Procedures</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">8</p>
-            <p className="text-xs text-muted">Cities compared</p>
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">8</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Cities compared</p>
           </div>
-          <div className="bg-light-50 p-4 text-center">
-            <p className="text-2xl font-bold text-accent">
+          <div className="bg-[#f8f8f6] p-4 text-center">
+            <p className="text-2xl font-bold text-[#006828]">
               {procs.filter((p) => p.insuranceCoverage === "typically-covered").length}/{procs.length}
             </p>
-            <p className="text-xs text-muted">Insured</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/40">Insured</p>
           </div>
         </div>
       </div>
 
       {/* All procedures in this category */}
-      <div className="section-header">
-        <h2>{cat.name} — All Procedures</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name} — All Procedures</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
         {procs.map((proc) => {
@@ -157,26 +156,26 @@ export default async function CategoryPricingPage({ params }: Props) {
             <Link
               key={proc.slug}
               href={`/pricing/${proc.slug}`}
-              className="border border-light-200 p-4 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-sm font-bold text-dark group-hover:text-accent">
+                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828]">
                   {proc.name}
                 </h3>
-                <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-accent flex-shrink-0 mt-0.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
               </div>
-              <p className="text-xs text-muted mb-3 line-clamp-2">
+              <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3 line-clamp-2">
                 {proc.description.slice(0, 100)}...
               </p>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-dark">
+                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
                   {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
                 </p>
                 <span className={`text-[10px] font-medium px-2 py-0.5 ${coverageColor}`}>
                   {coverageLabel}
                 </span>
               </div>
-              <div className="mt-2 flex gap-1 text-[10px] text-muted">
+              <div className="mt-2 flex gap-1 text-[10px] text-black/40">
                 <span>{proc.duration}</span>
                 <span>·</span>
                 <span className="capitalize">{proc.setting}</span>
@@ -189,12 +188,11 @@ export default async function CategoryPricingPage({ params }: Props) {
       </div>
 
       {/* City comparison for this category */}
-      <div className="section-header">
-        <h2>{cat.name} Prices by City</h2>
-        <span className="arrows">&gt;&gt;&gt;</span>
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name} Prices by City</h2>
       </div>
-      <div className="border border-light-200 divide-y divide-light-200 mb-10">
-        <div className="hidden sm:grid grid-cols-3 gap-4 p-3 bg-light-50 text-[11px] font-bold text-muted uppercase tracking-wider">
+      <div className="border border-black/[0.06] divide-y divide-light-200 mb-10">
+        <div className="hidden sm:grid grid-cols-3 gap-4 p-3 bg-[#f8f8f6] text-[11px] font-bold text-black/40 uppercase tracking-wider">
           <div>City</div>
           <div className="text-right">Avg. Typical Cost</div>
           <div className="text-right">Procedures</div>
@@ -203,20 +201,20 @@ export default async function CategoryPricingPage({ params }: Props) {
           <Link
             key={c.slug}
             href={`/pricing/category/${catSlug}/${c.slug}`}
-            className="grid grid-cols-3 gap-4 p-3 hover:bg-light-50 transition-colors group"
+            className="grid grid-cols-3 gap-4 p-3 hover:bg-[#f8f8f6] transition-colors group"
           >
             <div className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-muted" />
-              <span className="text-sm font-bold text-dark group-hover:text-accent">
+              <MapPin className="w-3.5 h-3.5 text-black/40" />
+              <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828]">
                 {c.name}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-sm font-bold text-dark">{formatAed(c.avg)}</span>
+              <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">{formatAed(c.avg)}</span>
             </div>
             <div className="text-right flex items-center justify-end gap-1">
-              <span className="text-xs text-muted">{c.count} priced</span>
-              <ArrowRight className="w-3 h-3 text-muted group-hover:text-accent" />
+              <span className="font-['Geist',sans-serif] text-xs text-black/40">{c.count} priced</span>
+              <ArrowRight className="w-3 h-3 text-black/40 group-hover:text-[#006828]" />
             </div>
           </Link>
         ))}
@@ -226,8 +224,8 @@ export default async function CategoryPricingPage({ params }: Props) {
       <FaqSection faqs={faqs} title={`${cat.name} in the UAE — FAQ`} />
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
-        <p className="text-[11px] text-muted leading-relaxed">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
+        <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Prices shown are indicative ranges based on the DOH
           Mandatory Tariff (Shafafiya), DHA DRG parameters, and market-observed data as of
           March 2026. Actual costs vary by facility, doctor, and insurance plan.
