@@ -66,22 +66,24 @@ jobs:
             git pull origin live
             npm install
 
-            # 3. Build into .next-new so PM2 keeps serving old .next the entire time
-            echo "[build] Starting build into .next-new..."
-            rm -rf .next-new
-            if NEXT_DIST_DIR=.next-new npm run build; then
-              echo "[build] SUCCESS — new BUILD_ID: $(cat .next-new/BUILD_ID)"
+            # 3. Build directly into .next (backup saved above as fallback)
+            echo "[build] Starting build..."
+            if npm run build; then
+              echo "[build] SUCCESS — BUILD_ID: $(cat .next/BUILD_ID)"
             else
-              echo "[build] FAILED — .next untouched, site still serving old build"
-              rm -rf .next-new
+              echo "[build] FAILED — restoring backup .next"
+              rm -rf .next
+              if [ -d $BACKUP_DIR/.next ]; then
+                cp -a $BACKUP_DIR/.next .next
+                echo "[build] Restored BUILD_ID: $(cat .next/BUILD_ID)"
+              else
+                echo "[build] NO BACKUP AVAILABLE — site may be broken"
+              fi
+              pm2 restart zavis-landing
               exit 1
             fi
 
-            # 4. Atomic swap: replace .next with the completed new build, restart PM2
-            echo "[swap] Swapping .next-new → .next..."
-            rm -rf .next
-            mv .next-new .next
-            echo "[swap] Done — BUILD_ID: $(cat .next/BUILD_ID)"
+            # 4. Restart PM2 to serve the new build
             pm2 restart zavis-landing
 
             # 6. Health check — if app doesn't respond, rollback
