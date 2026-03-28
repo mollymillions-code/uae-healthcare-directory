@@ -209,8 +209,14 @@ function loadFallback(): void {
   if (FALLBACK_ALL_PROVIDERS !== null) return; // already loaded
 
   try {
+    // Use fs.readFileSync instead of require() so webpack doesn't try to bundle the file at build time
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const scraped = require("./providers-scraped.json") as Record<string, unknown>[];
+    const fs = require("fs") as typeof import("fs");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require("path") as typeof import("path");
+    const jsonPath = path.join(process.cwd(), "src/lib/providers-scraped.json");
+    const raw = fs.readFileSync(jsonPath, "utf-8");
+    const scraped = JSON.parse(raw) as Record<string, unknown>[];
     FALLBACK_ALL_PROVIDERS = scraped.map((p: Record<string, unknown>) => ({
       ...(p as unknown as LocalProvider),
       googleRating: (p.googleRating as string) || "0",
