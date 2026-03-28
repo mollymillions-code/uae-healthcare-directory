@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 30m
+          command_timeout: 40m
           script: |
             set -e
             DEPLOY_DIR=/home/ubuntu/zavis-landing
@@ -70,9 +70,7 @@ jobs:
             git pull origin live
             npm install
 
-            # 3. Clear stale Webpack cache before building to avoid incremental-build
-            #    "Cannot find module" errors caused by invalidated but unwritten chunks
-            rm -rf .next/cache/webpack 2>/dev/null || true
+            # 3. Build (incremental, uses .next/cache for speed)
             echo "[build] Starting build..."
             if npm run build; then
               echo "[build] SUCCESS — BUILD_ID: $(cat .next/BUILD_ID)"
