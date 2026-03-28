@@ -202,44 +202,99 @@ Return the improved version as JSON with the same fields (slug, title, excerpt, 
   };
 }
 
-// ─── Gemini Image Generator ─────────────────────────────────────────────────────
+// ─── Imagen 4.0 Image Generator ─────────────────────────────────────────────────
 
-async function generateImage(title: string): Promise<string | null> {
+async function generateImage(title: string, category: string): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
+  // Map category to visual scene for better context
+  const sceneHint: Record<string, string> = {
+    regulatory: "a formal government hearing room or courtroom with legal documents",
+    financial: "a modern trading floor, financial data screens, or corporate boardroom",
+    technology: "a doctor using a tablet with health data, or a modern lab with screens",
+    "new-openings": "a bright new hospital lobby with glass walls and sunlight",
+    "market-intelligence": "a data analyst studying charts on screens, business setting",
+    workforce: "a diverse group of healthcare workers in a hospital corridor",
+    events: "a large healthcare conference with stage and audience",
+    "thought-leadership": "a senior executive at a podium or in a corner office",
+    "social-pulse": "a smartphone showing social media, minimalist desk setting",
+  };
+  const scene = sceneHint[category] || "a modern UAE hospital with clean architecture";
+
+  const prompt = `Professional editorial photograph for a healthcare news article titled "${title}". The image should depict: ${scene}. Style: photojournalistic, cinematic lighting, shallow depth of field. UAE/Middle East context. NO text, NO watermarks, NO logos. 16:9 landscape.`;
+
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are a photo editor. Generate ONE unique photorealistic image for this healthcare article. Depict the SPECIFIC subject, NOT a generic skyline.
-
-ARTICLE: "${title}"
-
-1. IPO/stock: stock exchange floor. Insurance: billing desk. Nursing: nurses. Drug law: pharmacy. Acquisition: boardroom. Funding: startup office. Tourism: airport/luxury hospital. Mental health: counseling room.
-2. Vary composition: close-up, wide, overhead, portrait.
-3. Vary color: warm for human stories, cool for tech, dark for financial, bright for openings.
-
-NO text/words/numbers/watermarks/logos. 16:9 landscape. Photorealistic. Visually unique.` }] }],
-          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+          instances: [{ prompt }],
+          parameters: { sampleCount: 1, aspectRatio: "16:9" },
         }),
         signal: AbortSignal.timeout(30000),
       }
     );
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.log(`[Imagen] API returned ${response.status}`);
+      return null;
+    }
+
     const data = await response.json();
-    for (const part of data.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-      }
+    const prediction = data.predictions?.[0];
+    if (prediction?.bytesBase64Encoded) {
+      return `data:image/png;base64,${prediction.bytesBase64Encoded}`;
     }
     return null;
-  } catch {
+  } catch (err) {
+    console.log(`[Imagen] Error: ${String(err).slice(0, 100)}`);
     return null;
+  }
+}
+
+// ─── R2 Upload ──────────────────────────────────────────────────────────────────
+
+async function uploadToR2(dataUri: string, slug: string): Promise<string | null> {
+  const endpoint = process.env.R2_ENDPOINT;
+  const accessKey = process.env.R2_ACCESS_KEY_ID;
+  const secretKey = process.env.R2_SECRET_ACCESS_KEY;
+  const bucket = process.env.R2_BUCKET;
+  const publicUrl = process.env.R2_PUBLIC_URL || R2_PUBLIC;
+
+  if (!endpoint || !accessKey || !secretKey || !bucket) {
+    console.log("[R2] Missing R2 credentials — skipping upload");
+    return null;
+  }
+
+  try {
+    // Convert data URI to buffer
+    const base64Data = dataUri.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    const key = `intelligence/${slug}.png`;
+
+    // Use AWS SDK-compatible S3 PUT
+    const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
+    const s3 = new S3Client({
+      region: "auto",
+      endpoint,
+      credentials: { accessKeyId: accessKey, secretAccessKey: secretKey },
+    });
+
+    await s3.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: buffer,
+      ContentType: "image/png",
+    }));
+
+    return `${publicUrl}/${key}`;
+  } catch (err) {
+    console.log(`[R2] Upload failed: ${String(err).slice(0, 100)}`);
+    // Fall back to data URI if R2 upload fails
+    return dataUri;
   }
 }
 
@@ -365,11 +420,16 @@ async function main() {
       }
     }
 
-    // Try 2: Generate via Gemini
+    // Try 2: Generate via Imagen 4.0
     if (!imageUrl) {
-      imageUrl = await generateImage(article.title);
-      if (imageUrl) {
-        console.log(`  [gemini] ${article.slug.slice(0, 40)}`);
+      const genImage = await generateImage(article.title, article.category);
+      if (genImage) {
+        // Upload to R2 instead of storing base64 in DB
+        const r2Url = await uploadToR2(genImage, article.slug);
+        if (r2Url) {
+          imageUrl = r2Url;
+          console.log(`  [imagen] ${article.slug.slice(0, 40)}`);
+        }
       }
       await new Promise((r) => setTimeout(r, 2000));
     }
