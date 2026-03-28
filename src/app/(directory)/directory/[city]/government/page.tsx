@@ -108,7 +108,7 @@ export default async function GovernmentPage({ params }: Props) {
             <ol className="space-y-0">{[...primaryCare].sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => renderRow(p, i, "Public"))}</ol>
           </section>
         )}
-        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); void sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id));
+        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id)); return null;
         })()}
         <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">All Providers</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{city.name}</span></Link>
