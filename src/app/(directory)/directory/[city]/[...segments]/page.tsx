@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 // StarRating available if needed
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
@@ -51,7 +53,6 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
-  searchParams: { page?: string };
 }
 
 /**
@@ -227,14 +228,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CatchAllPage({ params, searchParams }: Props) {
+export default async function CatchAllPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
 
-  const page = Number(searchParams.page) || 1;
   const base = getBaseUrl();
 
   const DAY_NAMES: Record<string, string> = {
@@ -245,7 +245,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
     const { category } = resolved;
-    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page: 1, limit: 20, sort: "rating" });
     const areas = getAreasByCity(city.slug);
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, null, total);
@@ -290,15 +290,20 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
           </div>
         )}
 
-        {providers.length > 0 ? (
+        <Suspense fallback={
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
           </div>
-        ) : (
-          <div className="text-center py-12"><p className="text-muted">No {category.name.toLowerCase()} found in {city.name} yet.</p></div>
-        )}
-
-        <Pagination currentPage={page} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}`} />
+        }>
+          <ProviderListPaginated
+            initialProviders={providers}
+            initialTotalPages={totalPages}
+            citySlug={city.slug}
+            categorySlug={category.slug}
+            baseUrl={`/directory/${city.slug}/${category.slug}`}
+            emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
+          />
+        </Suspense>
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${city.name} — FAQ`} />
       </div>
     );
@@ -825,7 +830,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
   // --- Subcategory page ---
   if (resolved.type === "city-category-subcategory") {
     const { category, subcategory } = resolved;
-    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page: 1, limit: 20, sort: "rating" });
 
     return (
       <div className="container-tc py-8">
@@ -837,7 +842,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
             {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
           </div>
         ) : (<div className="text-center py-12"><p className="text-muted">No providers found yet.</p></div>)}
-        <Pagination currentPage={page} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
+        <Pagination currentPage={1} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
       </div>
     );
   }

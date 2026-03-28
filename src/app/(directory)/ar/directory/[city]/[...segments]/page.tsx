@@ -1,12 +1,13 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 import { StarRating } from "@/components/shared/StarRating";
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
-import { Pagination } from "@/components/shared/Pagination";
 import {
   getCityBySlug, getCategoryBySlug, getCategories,
   getAreaBySlug, getAreasByCity,
@@ -29,7 +30,6 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
-  searchParams: { page?: string };
 }
 
 /**
@@ -142,14 +142,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
+export default async function ArabicCatchAllPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
 
-  const page = Number(searchParams.page) || 1;
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
 
@@ -157,7 +156,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
   if (resolved.type === "city-category") {
     const { category } = resolved;
     const catNameAr = getArabicCategoryName(category.slug);
-    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page, limit: 20, sort: "rating" });
+    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page: 1, limit: 20, sort: "rating" });
     const areas = getAreasByCity(city.slug);
     const regulator = getArabicRegulator(city.slug);
 
@@ -206,7 +205,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
           </div>
         )}
 
-        {providers.length > 0 ? (
+        <Suspense fallback={
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {providers.map((p) => (
               <ProviderCard
@@ -227,13 +226,17 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
               />
             ))}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted">{ar.noProvidersFound} {catNameAr} في {cityNameAr}.</p>
-          </div>
-        )}
-
-        <Pagination currentPage={page} totalPages={totalPages} baseUrl={`/ar/directory/${city.slug}/${category.slug}`} />
+        }>
+          <ProviderListPaginated
+            initialProviders={providers}
+            initialTotalPages={totalPages}
+            citySlug={city.slug}
+            categorySlug={category.slug}
+            baseUrl={`/ar/directory/${city.slug}/${category.slug}`}
+            emptyMessage={`${ar.noProvidersFound} ${catNameAr} في ${cityNameAr}.`}
+            basePath="/ar/directory"
+          />
+        </Suspense>
 
         <div className="text-center pt-4">
           <Link href={`/directory/${city.slug}/${category.slug}`} className="text-accent text-sm hover:underline">

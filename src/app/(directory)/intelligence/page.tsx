@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FeaturedArticle } from "@/components/intelligence/FeaturedArticle";
@@ -24,9 +23,7 @@ import { speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
-// force-dynamic: Vercel Hobby has 19MB ISR limit — even 20 articles exceed it with RSC payload.
-// CDN edge caching via Cache-Control headers in vercel.json handles SEO crawl speed.
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // 1-hour ISR — articles are refreshed by the content pipeline
 
 export const metadata: Metadata = {
   title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
@@ -48,7 +45,6 @@ export const metadata: Metadata = {
 };
 
 export default async function JournalPage() {
-  noStore(); // Prevent static pre-rendering — avoids Vercel's 19MB fallback limit
   await loadDbArticles();
 
   const featured = getFeaturedArticles(2);
