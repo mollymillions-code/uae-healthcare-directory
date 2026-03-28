@@ -12,7 +12,7 @@ export const sampleReports: ReportData = {
         'Operational automation reducing costs by up to 30%',
         'Case studies from leading Dubai hotels and resorts'
       ],
-      thumbnail: '/images/Hospitality in Dubai.png',
+      thumbnail: '/images/Hospitality in Dubai.webp',
       category: 'Hospitality',
       publishedAt: '2025-10-01',
       readTime: '35 min read',
@@ -43,7 +43,7 @@ export const sampleReports: ReportData = {
         'Predictive analytics for preventive care',
         'Regulatory framework and implementation guidelines'
       ],
-      thumbnail: '/images/AI in UAE Healthcare.png',
+      thumbnail: '/images/AI in UAE Healthcare.webp',
       category: 'Healthcare',
       publishedAt: '2025-09-25',
       readTime: '40 min read',
@@ -74,7 +74,7 @@ export const sampleReports: ReportData = {
         'Open banking and API integration opportunities',
         'Cybersecurity and fraud prevention strategies'
       ],
-      thumbnail: '/images/Fintech and Banking in UAE.png',
+      thumbnail: '/images/Fintech and Banking in UAE.webp',
       category: 'Fintech',
       publishedAt: '2025-09-20',
       readTime: '50 min read',
@@ -105,7 +105,7 @@ export const sampleReports: ReportData = {
         'Computer vision for checkout-free shopping',
         'Chatbots and virtual shopping assistants'
       ],
-      thumbnail: '/images/Future of Retail AI.png',
+      thumbnail: '/images/Future of Retail AI.webp',
       category: 'Retail',
       publishedAt: '2025-09-15',
       readTime: '45 min read',
@@ -136,7 +136,7 @@ export const sampleReports: ReportData = {
         'Technology integration for better outcomes',
         'Revenue optimization and pricing strategies'
       ],
-      thumbnail: '/images/Clinics and Aestehtics.png',
+      thumbnail: '/images/Clinics and Aestehtics.webp',
       category: 'Healthcare',
       publishedAt: '2025-09-10',
       readTime: '30 min read',
@@ -167,7 +167,7 @@ export const sampleReports: ReportData = {
         'Virtual tours and digital property marketing',
         'Blockchain for transparent property transactions'
       ],
-      thumbnail: '/images/Real Estate & ProTech.png',
+      thumbnail: '/images/Real Estate & ProTech.webp',
       category: 'Real Estate',
       publishedAt: '2025-09-05',
       readTime: '55 min read',
@@ -198,7 +198,7 @@ export const sampleReports: ReportData = {
         'Digital investments projected to hit $5.7B by 2026',
         'Sector-specific ROI and practical implementation roadmaps'
       ],
-      thumbnail: '/images/Qatar Business Report.png',
+      thumbnail: '/images/Qatar Business Report.webp',
       category: 'Business',
       publishedAt: '2025-01-15',
       readTime: '45 min read',
