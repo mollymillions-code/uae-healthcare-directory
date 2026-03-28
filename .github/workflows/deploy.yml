@@ -4,6 +4,10 @@ on:
   push:
     branches: [live]
 
+concurrency:
+  group: deploy-live
+  cancel-in-progress: false
+
 jobs:
   lint:
     name: Lint & Type Check
@@ -66,7 +70,9 @@ jobs:
             git pull origin live
             npm install
 
-            # 3. Build directly into .next (backup saved above as fallback)
+            # 3. Clear stale Webpack cache before building to avoid incremental-build
+            #    "Cannot find module" errors caused by invalidated but unwritten chunks
+            rm -rf .next/cache/webpack 2>/dev/null || true
             echo "[build] Starting build..."
             if npm run build; then
               echo "[build] SUCCESS — BUILD_ID: $(cat .next/BUILD_ID)"
