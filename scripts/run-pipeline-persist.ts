@@ -52,10 +52,17 @@ const CATEGORY_FALLBACK: Record<string, string> = {
 
 // ─── Claude CLI Runner ──────────────────────────────────────────────────────────
 
+import { writeFileSync, unlinkSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
+
 function callClaude(prompt: string, timeoutMs = 5 * 60 * 1000): string {
+  // Write prompt to temp file to avoid shell argument length limits
+  const tmpFile = join(tmpdir(), `claude-prompt-${Date.now()}.txt`);
   try {
+    writeFileSync(tmpFile, prompt, "utf-8");
     const result = execSync(
-      `claude --print -p ${JSON.stringify(prompt)}`,
+      `cat "${tmpFile}" | claude --print -p -`,
       {
         timeout: timeoutMs,
         maxBuffer: 10 * 1024 * 1024,
@@ -66,8 +73,12 @@ function callClaude(prompt: string, timeoutMs = 5 * 60 * 1000): string {
     return result.trim();
   } catch (err) {
     const error = err as { stderr?: string; message?: string };
-    console.error(`[Claude CLI] Error: ${error.stderr || error.message}`);
+    const errMsg = error.stderr || error.message || "";
+    // Only log first 200 chars to keep logs readable
+    console.error(`[Claude CLI] Error: ${errMsg.slice(0, 200)}`);
     return "";
+  } finally {
+    try { unlinkSync(tmpFile); } catch { /* ignore */ }
   }
 }
 
