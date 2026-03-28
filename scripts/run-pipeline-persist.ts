@@ -67,14 +67,18 @@ function callClaude(prompt: string, timeoutMs = 5 * 60 * 1000): string {
         timeout: timeoutMs,
         maxBuffer: 10 * 1024 * 1024,
         encoding: "utf-8",
-        env: { ...process.env, PATH: process.env.PATH },
+        env: {
+          ...process.env,
+          PATH: process.env.PATH,
+          // Pass OAuth token so Claude CLI can authenticate on headless EC2
+          CLAUDE_CODE_OAUTH_TOKEN: process.env.CLAUDE_CODE_OAUTH_TOKEN || "",
+        },
       }
     );
     return result.trim();
   } catch (err) {
     const error = err as { stderr?: string; message?: string };
     const errMsg = error.stderr || error.message || "";
-    // Only log first 200 chars to keep logs readable
     console.error(`[Claude CLI] Error: ${errMsg.slice(0, 200)}`);
     return "";
   } finally {
