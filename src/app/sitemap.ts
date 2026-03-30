@@ -50,15 +50,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Homepage
   entries.push({ url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 });
 
-  // Directory: city pages + city×category + city×area structural pages
+  // Directory: city pages + city×category + city×area structural pages (with hreflang)
   for (const city of cities) {
-    entries.push({ url: `${baseUrl}/directory/${city.slug}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 });
+    entries.push({
+      url: `${baseUrl}/directory/${city.slug}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9,
+      alternates: { languages: { en: `${baseUrl}/directory/${city.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}` } },
+    });
     for (const cat of categories) {
-      entries.push({ url: `${baseUrl}/directory/${city.slug}/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 });
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8,
+        alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/${cat.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}` } },
+      });
     }
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 });
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/${area.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7,
+        alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/${area.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/${area.slug}` } },
+      });
       for (const cat of categories) {
         entries.push({ url: `${baseUrl}/directory/${city.slug}/${area.slug}/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 });
       }
@@ -205,16 +214,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   );
 
-  // Arabic mirrors — structural pages only
+  // Arabic mirrors — structural pages with hreflang pointing back to English
   entries.push({ url: `${baseUrl}/ar`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 });
   for (const city of cities) {
-    entries.push({ url: `${baseUrl}/ar/directory/${city.slug}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 });
+    entries.push({
+      url: `${baseUrl}/ar/directory/${city.slug}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8,
+      alternates: { languages: { en: `${baseUrl}/directory/${city.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}` } },
+    });
     for (const cat of categories) {
-      entries.push({ url: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 });
+      entries.push({
+        url: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7,
+        alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/${cat.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}` } },
+      });
     }
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      entries.push({ url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 });
+      entries.push({
+        url: `${baseUrl}/ar/directory/${city.slug}/${area.slug}`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6,
+        alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/${area.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/${area.slug}` } },
+      });
     }
   }
 

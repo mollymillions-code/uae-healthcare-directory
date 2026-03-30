@@ -15,6 +15,13 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Strip trailing slashes (Google treats /dubai/ and /dubai as separate URLs)
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.slice(0, -1);
+    return NextResponse.redirect(url, 301);
+  }
+
   // ── Legacy redirects ──────────────────────────────────────────────
   // /uae → /directory
   if (pathname === "/uae" || pathname.startsWith("/uae/")) {

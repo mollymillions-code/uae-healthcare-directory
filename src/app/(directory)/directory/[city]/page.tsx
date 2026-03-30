@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: {
         'en-AE': `${getBaseUrl()}/directory/${city.slug}`,
         'ar-AE': `${getBaseUrl()}/ar/directory/${city.slug}`,
+        'x-default': `${getBaseUrl()}/directory/${city.slug}`,
       },
     },
     openGraph: {

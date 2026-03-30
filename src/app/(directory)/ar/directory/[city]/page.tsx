@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: {
         "en-AE": `${base}/directory/${city.slug}`,
         "ar-AE": `${base}/ar/directory/${city.slug}`,
+        "x-default": `${base}/directory/${city.slug}`,
       },
     },
   };

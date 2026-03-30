@@ -132,6 +132,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             'en-AE': `${base}/directory/${city.slug}/${resolved.category.slug}`,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+            'x-default': `${base}/directory/${city.slug}/${resolved.category.slug}`,
           },
         },
         openGraph: {
@@ -155,6 +156,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             'en-AE': `${base}/directory/${city.slug}/${resolved.area.slug}`,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+            'x-default': `${base}/directory/${city.slug}/${resolved.area.slug}`,
           },
         },
       };
@@ -169,6 +171,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             'en-AE': `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+            'x-default': `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           },
         },
       };
@@ -200,6 +203,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             'en-AE': listingCanonical,
             'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`,
+            'x-default': listingCanonical,
           },
         },
         openGraph: {
@@ -675,7 +679,14 @@ export default async function CatchAllPage({ params }: Props) {
             {/* About */}
             <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="about">
               <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">About {provider.name}</h2>
-              <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
+              {provider.description ? (
+                <>
+                  <div className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed whitespace-pre-line">{provider.description}</div>
+                  <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed mt-3">{generateProviderParagraph(provider, city, category, area)}</p>
+                </>
+              ) : (
+                <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
+              )}
               <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {provider.lastVerified}.</p>
             </div>
 

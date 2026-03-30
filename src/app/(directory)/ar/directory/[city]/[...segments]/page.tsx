@@ -95,6 +95,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             "en-AE": `${base}/directory/${city.slug}/${resolved.category.slug}`,
             "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+            "x-default": `${base}/directory/${city.slug}/${resolved.category.slug}`,
           },
         },
       };
@@ -110,6 +111,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             "en-AE": `${base}/directory/${city.slug}/${resolved.area.slug}`,
             "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+            "x-default": `${base}/directory/${city.slug}/${resolved.area.slug}`,
           },
         },
       };
@@ -126,15 +128,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           languages: {
             "en-AE": `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
             "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+            "x-default": `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           },
         },
       };
     }
     case "listing": {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
+      const enListingUrl = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
+      const arListingUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       return {
         title: `${resolved.provider.name} | ${catNameAr} في ${cityNameAr}`,
         description: `${resolved.provider.shortDescription} التقييم: ${resolved.provider.googleRating}/5. آخر تحقق ${resolved.provider.lastVerified}.`,
+        alternates: {
+          canonical: arListingUrl,
+          languages: {
+            "en-AE": enListingUrl,
+            "ar-AE": arListingUrl,
+            "x-default": enListingUrl,
+          },
+        },
       };
     }
     default:
@@ -449,7 +462,11 @@ export default async function ArabicCatchAllPage({ params }: Props) {
             {/* About */}
             <div className="border border-light-200 p-6 mb-6" data-section="about">
               <h2 className="font-semibold text-dark mb-3">{ar.aboutProvider} {provider.name}</h2>
-              <p className="text-muted leading-relaxed">{provider.descriptionAr || provider.description}</p>
+              {(provider.descriptionAr || provider.description) ? (
+                <div className="text-muted leading-relaxed whitespace-pre-line">{provider.descriptionAr || provider.description}</div>
+              ) : (
+                <p className="text-muted leading-relaxed">{provider.name} — {category ? getArabicCategoryName(category.slug) : ''} في {cityNameAr}.</p>
+              )}
               <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {provider.lastVerified}.</p>
             </div>
 
