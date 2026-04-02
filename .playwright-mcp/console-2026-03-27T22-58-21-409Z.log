@@ -1,0 +1,105 @@
+[    2821ms] [WARNING] jQuery Flot not loaded properly @ https://www.bing.com/webmasters/about?siteUrl=https://www.zavis.ai/&from=sitemaps:98
+[    3109ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://www.bing.com/webmasters/about?siteUrl=https://www.zavis.ai/&from=sitemaps:0
+[    4698ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+GlobalNavButton, ChevronDown, ChevronUp, Edit, Add, Cancel, More, Settings, Mail, Filter (+ 1791 more) @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[   34632ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.sZwd7c B6Vhqe>
+Ancestor with aria-hidden: <div.Ih3FE> @ https://accounts.google.com/v3/signin/accountchooser?client_id=204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com&code_challenge=t7zI_rnyTs0xVZ3U_G4wAz3ChMQkyan2Wdw6mShqdq0&code_challenge_method=S256&redirect_uri=https%3A%2F%2Fwww.bing.com%2Ftoolbox%2Fsignin-google&response_type=code&scope=openid+profile+email&state=CfDJ8HQG8SCDjlRMtOVJIqWVcSO822F6pe4_9z9tHASJ3IQHNSnzqK0z4V-Lu_zomOup72H31f9X1XzYr4uxGREilK5NFSVnywPGBE53jvxJyeSXhTgcxXs7ED0ADfae5ncf8zQNahSRUKHlm4bMDXVUor4WGnd2U8NJvmt7nJHovT1HALmr-UmZmpVlTIHzPWAzAnuB_Spfh-DXNWK0l5ax4c5_8iwEHR_cZlyLCWLj6kB8hxkpt2B5RZIHhWh-X40iV1sx-KyhAUtimXJz1YueMumoyIQrQoaLB1sROqbfNa59bsTFBwdOWiXYzaUfAbB6sIaIZnEt_2KBCcR_SPfurzvvCudL3NPsI_6S1S63IrS0nq1xGAmDkPhEUktwyn7HsJToST8FAT0OfD53A_2yC3WEKw4ip75RVqmfI6MHLo_Q&dsh=S2048205908%3A1774652331174818&o2v=2&service=lso&flowName=GeneralOAuthFlow&opparams=%253F&continue=https%3A%2F%2Faccounts.google.com%2Fsignin%2Foauth%2Fconsent%3Fauthuser%3Dunknown%26part%3DAJi8hAPmL2acjn6JCZG0vmht79Z22w_ipDvyrvbcgHOWTbxvXUIF52-c0s8wE2OQ5hzZJxojAI6MeESsFcPEFvS18rbeJGd2oHjYM-ga2uN8LbaN3vrub1x6KE8akKs_GCPK5VpYk9QYSweOY-flia3kkEt5XMmX_A5PqJvqFirb8i2iPrMn30YLlGK34j1LogoXXj7xWtcYoL5-2aIyonycv1ONL2viu-Z8V-sc9QrbLGpWREmJS4d7MkiIlM5Su3_ZGnSy4xmWERWrI5OFqKokSd494Mv61Exa1KRL36G52ycnpUuXubihOsHLJzIkAPPC7HEK5K0XGI2Q6LJIuLjJmOa4tiXlCH32GwBzUXuZ6KOHcWcZxsX78n8CckmuxxfSC5H97MEbE2B9mvANQ3JXWcRvMAhZqwvx1-aOaanMuXH0KK1oKkP3_Etasxq4uFb1smriKIwri618zrb6dfadqiJ9sQKXEg%26flowName%3DGeneralOAuthFlow%26as%3DS2048205908%253A1774652331174818%26client_id%3D204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com%26requestPath%3D%252Fsignin%252Foauth%252Fconsent%23&app_domain=https%3A%2F%2Fwww.bing.com:0
+[   41433ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.sZwd7c B6Vhqe>
+Ancestor with aria-hidden: <div.Ih3FE> @ https://accounts.google.com/signin/oauth/id?authuser=0&part=AJi8hAPdyXPuST9iJwZWssPkshZVF0Mv9Jg7xpxLdTyhVW3ZgiBr2YOm8gWr6Exz3csYTIOtM49b-TUrdziQ98dkY3NafLWq_wwTyIg3z0hVF3JfIN2Hp2nD6BgyHYJdL2CZRUQiyQsvqvnvvFf4UPDeWnTfjgR2TncY0b46jksDF8ptHD4P5c4LnlfQd8m7dv72RtkOftoq-PdwgilrwDx1k5h0vI9k4Af8sJzoCzSemkoXt55wB_8VWP-uazqYxfNYanckm9WEV6oDJFVJYUzYP37Sg0iyE5lDjzqMd-xcm0l_hTjFUdL_MM4Y5T9eVp7a9mtXk8WwJeKg1AMgTbc6D3_kGm8Ya-zAMyp-CoXAcRC63-CMgNye1r6if0E1OgY2ayKA7jpqgK4zMBMuEys0JsZz_mxB0mYvJYTnbpdYpvB3qq85YQB7xFEeI_RKEp5Xb_wTQNiJ6B6Evpm68jGtVmyLoylAeFOkIfRAMsARFULfhO5wPUoRtuCSRt2dGO0Ykj54sKkUxMvfNDK98yz8IPGZYqfA1gXd-5q6i015hiBOnd6dtEmc2JYk-FSkfM-kMAr8URLzwEnkOgldeeQnWdZdWI-OwtJJ_WCUaGIDfN95TK3JhvgD4Hz02qwFVtd0Z1_Ib9Z8jhnQ2ecQXN7g64Fqa48APVjI0qsyGpZ6KHSmYrx7_CpPPoWry_rJz8Il24H9GisZ9vZRViFUDzOeObsMlruRrM0sgcDAL_VDrq91GFAGulhwwSl0nBYXGPadGa2UwfYKWcoIy3Sp90-QSj5A14z08h-sUdXmt8HatoFwu-vjKLs3CPtVpJdCpzaS6gvjZV6Ih5-ma8Va4Z22us1FiI7-NA&flowName=GeneralOAuthFlow&as=S2048205908%3A1774652331174818&client_id=204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com&rapt=AEjHL4O3R7d3vcCQx0r_oipZm4hodrYYJLswDmqraO6Tdy7YPS3YWT590mOThUT-kgccPhpmankIbVLYnv04wy-2A66eATRZu6y4a6QkakgdZJYTc6WmVCg#:0
+[   45207ms] [WARNING] jQuery Flot not loaded properly @ https://www.bing.com/webmasters?tid=244ee5ff-0a92-473c-8788-50627bbb6fd6:96
+[   45238ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://www.bing.com/webmasters?tid=244ee5ff-0a92-473c-8788-50627bbb6fd6:0
+[   45443ms] [ERROR] A bad HTTP response code (404) was received when fetching the script. @ :0
+[   46171ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   46171ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   46171ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   46172ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   46172ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   46324ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   47094ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+GlobalNavButton, ChevronDown, ChevronUp, Edit, Add, Cancel, More, Settings, Mail, Filter (+ 3594 more) @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[   47845ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   49670ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+Copilot, Copilot, Copilot, Copilot, Copilot, Copilot @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[   55337ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   56406ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+Copilot, Copilot @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[   65017ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.sZwd7c B6Vhqe>
+Ancestor with aria-hidden: <div.Ih3FE> @ https://accounts.google.com/v3/signin/accountchooser?access_type=offline&client_id=204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com&prompt=consent&redirect_uri=https%3A%2F%2Fwww.bing.com%2Fwebmasters&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fwebmasters.readonly+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&state=10DE7AC6AC&dsh=S-166570074%3A1774652361422787&o2v=2&service=lso&flowName=GeneralOAuthFlow&opparams=%253F&continue=https%3A%2F%2Faccounts.google.com%2Fsignin%2Foauth%2Fconsent%3Fauthuser%3Dunknown%26part%3DAJi8hAOfZfXenO3b-45uSXzXYGlXVe760weJxlFIOeLQ_Tc6AfD7S-5RjgoJXnH5EM0T8gaz4SubpOX9I5826LmOmtE0_geyxwRZqF52Pg_sQU6yVBZ92jKbphTlKqQTEQ0gyU6PBf-Vsrh5t2dD5bK7fSOo7yB1wP-hUslaN9PluXrKk1xjOzhR1H8U9JqJLhR63ak6GmHYMO6msZpe5jpofCcvQM9oLDU17bhxa_lpMpKIXhoivAICcIN682FmnQYhlzLqXgkpfrr5hhPReJwWN1MLC3FjYHahHCgxao-BvKGNqJzs86OXbB3yOU2ndEWsMkXY6wCYjAsEGXUk-GfD5Rq5JLHrbTyTsjKfY6Xyxvl2FTiONJaMjHIpeEiPq4j1Do9H_K7gkfVwtA2BYc5dfcS-lY0QOCvMLaTHtHjLNzAbErDtbspESqXlSgXBGOqeD7JVkpoDfSoZ20MLsCLgK8CRtPORwg%26flowName%3DGeneralOAuthFlow%26as%3DS-166570074%253A1774652361422787%26client_id%3D204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com%26requestPath%3D%252Fsignin%252Foauth%252Fconsent%23&app_domain=https%3A%2F%2Fwww.bing.com:0
+[   71566ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.sZwd7c B6Vhqe>
+Ancestor with aria-hidden: <div.Ih3FE> @ https://accounts.google.com/signin/oauth/id?authuser=0&part=AJi8hAOSoApKiQEOyVGUX4at4DBloLNfyqBWnzKDxX1jV18Y5pPz6gRjLpNZ6bAvEDjqfXtMrLYDoaUsHfC4VZp_OT_MLyIWDF6KwUOnjELixTYKn7v3XQy5tBluJS7x8ce9q8Hp7SfP2ArUDzv6NAzGyzzDYI4h9mvDxqsfNhaqUAH1ujh9a-5LKerKjuouQcTSo1ziggnxgEXMYvqhnLIfk9IGkuvi930Y5cmpIXdQy067ouGUWeFOBstSRq9Nuwfh0B3H1mfjUj_etOovdhNoauDvKE7OdrK5-7yU1v9sYguopjDE0agiptjnt82vtISUQnGCdeOLPtFlyF_oItZ5qmBx9-JgC53fL9_2DpanY3604HOntbEkLO8laLgTKH9WuiPRR6kUvtiKRMvJpw1y7Fq0nn0Hf_TLxn6VQQZ2jAwIc4ZRTHNrp5-Do_aMihMElHg6dXp6p7sfkJ_w-ltXDBPW8SBKdhhfxmXdeQ7NXcl09zyZosvO2v8P8gT1pYsgzJvsPBYIGTOYeMFeL9HEis1pKrblVBa2GTKGpLGxDSfk4AaPnV4JxXsqCglr5p9sKt868FIChHrNkFHGi_Yx6418JJET96LcVkiluNFANvfak4aPFT64NM3nqPCQpwNEqFj23UrPLo40X1akmLh6pGdgUUmRbOZOJzrQUtfci3D87pmJuKId1vrvj0GBNaPIQzQcfKhwm2aq4PA8MI70iSLjqrAByBlGL8P4o8hKSw0-Xbe44jnL87hXvPvDDbd0nOwofVNwC41HqyA4O_1jSZhaovsJGaUSIpiloKyQWAXmBsOaNKjFqfJT1ZObY-k38kbWrYLT30GsmLf91-AGrIimwdyNqg&flowName=GeneralOAuthFlow&as=S-166570074%3A1774652361422787&client_id=204805645237-3agm710v0a89699a0g2ecmsn01g4satj.apps.googleusercontent.com&rapt=AEjHL4NqpkD6kwLWaqKgr8c-iKUtrE7iAyg3bxlts079-kkybTDFJ_oqMQqopTMA7XOV4KLwOZ4t-mESc36QxClplthJNvJYIYRVM9stSEgG1FJ-k9aQgCo#:0
+[   78550ms] [WARNING] jQuery Flot not loaded properly @ https://www.bing.com/webmasters?state=10DE7AC6AC&iss=https://accounts.google.com&code=4/0Aci98E_G_8PSOHdufjWP89q_ZHBt3vF8nIeGcKfVvP4JPTEIDKGFtuvTzvmTJ3-xpsXzPg&scope=email%20https://www.googleapis.com/auth/webmasters.readonly%20https://www.googleapis.com/auth/userinfo.email%20openid&authuser=0&prompt=consent:96
+[   78581ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://www.bing.com/webmasters?state=10DE7AC6AC&iss=https://accounts.google.com&code=4/0Aci98E_G_8PSOHdufjWP89q_ZHBt3vF8nIeGcKfVvP4JPTEIDKGFtuvTzvmTJ3-xpsXzPg&scope=email%20https://www.googleapis.com/auth/webmasters.readonly%20https://www.googleapis.com/auth/userinfo.email%20openid&authuser=0&prompt=consent:0
+[   78723ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   78799ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   78984ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   78985ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   79018ms] [ERROR] A bad HTTP response code (404) was received when fetching the script. @ :0
+[   79090ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   79104ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   79129ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   80530ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+GlobalNavButton, ChevronDown, ChevronUp, Edit, Add, Cancel, More, Settings, Mail, Filter (+ 3600 more) @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[   80662ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   88705ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   99103ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[   99433ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  100935ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+Copilot, Copilot, Copilot, Copilot, Copilot @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[  101974ms] [ERROR] TypeError: Cannot read properties of null (reading 'removeEventListener')
+    at o.useEffect.s.current.s.current.scrollTop (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:560098)
+    at el (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983639)
+    at nl (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983835)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5003224)
+    at lc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4996342)
+    at Uo (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4937630)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5004091)
+    at https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5000608
+    at x (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055070)
+    at MessagePort.O (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055602) @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[  101997ms] TypeError: Cannot read properties of null (reading 'removeEventListener')
+    at o.useEffect.s.current.s.current.scrollTop (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:560098)
+    at el (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983639)
+    at nl (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983835)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5003224)
+    at lc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4996342)
+    at Uo (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4937630)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5004091)
+    at https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5000608
+    at x (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055070)
+    at MessagePort.O (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055602)
+[  101980ms] [ERROR] TypeError: Cannot read properties of null (reading 'removeEventListener')
+    at o.useEffect.s.current.s.current.scrollTop (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:560098)
+    at el (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983639)
+    at nl (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983835)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5003224)
+    at https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5000608
+    at x (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055070)
+    at MessagePort.O (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055602) @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1
+[  102000ms] TypeError: Cannot read properties of null (reading 'removeEventListener')
+    at o.useEffect.s.current.s.current.scrollTop (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:560098)
+    at el (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983639)
+    at nl (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:4983835)
+    at xc (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5003224)
+    at https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5000608
+    at x (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055070)
+    at MessagePort.O (https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:5055602)
+[  102155ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102156ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102320ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.bing.com/webmasters/api/reports/seo/topInsights?siteUrl=https%3A%2F%2Fzavis.ai%2F:0
+[  102322ms] TypeError: Cannot read properties of undefined (reading 'RuleDetails')
+    at https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:2:923005
+[  102364ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.bing.com/webmasters/api/searchperf/traffic/datestats:0
+[  102426ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102494ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102498ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102530ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102538ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102548ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102692ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  102926ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://dc.services.visualstudio.com/v2/track:0
+[  103943ms] [WARNING] Some icons were re-registered. Applications should only call registerIcons for any given icon once. Redefining what an icon is may have unintended consequences. Duplicates include: 
+Copilot, Copilot @ https://www.bing.com/webmasters/dist/bundle.min.js?v=Qx9L4m2P8:1

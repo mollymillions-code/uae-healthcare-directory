@@ -1,0 +1,6 @@
+[   27556ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.U26fgb O0WRkf zZhnYe e3Duub C0oVfc zaJEjb M9Bg4d>
+Ancestor with aria-hidden: <c-wiz.zQTmif SSPGKf eejsDc> @ https://search.google.com/search-console/sitemaps?resource_id=sc-domain%3Azavis.ai:0
+[   66388ms] [WARNING] Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <div.U26fgb JRtysb WzwrXb rMDdyb#ow14>
+Ancestor with aria-hidden: <c-wiz.zQTmif SSPGKf eejsDc> @ https://search.google.com/search-console/sitemaps/info-drilldown?resource_id=sc-domain:zavis.ai&sitemap=https:%2F%2Fzavis.ai%2Fsitemap.xml:0

@@ -29,6 +29,7 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    if: github.repository == 'zavis-support/zavis-landing'
     steps:
       - name: Write SSH key
         run: |

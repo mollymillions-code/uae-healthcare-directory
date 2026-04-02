@@ -91,31 +91,7 @@ interface Props {
   params: { city: string; category: string };
 }
 
-// ─── generateStaticParams ───────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const cities = getCities();
-  const categories = getCategories();
-  const params: { city: string; category: string }[] = [];
-
-  for (const city of cities) {
-    for (const cat of categories) {
-      // Only generate where providers exist with ratings > 0
-      const { providers } = await getProviders({
-        citySlug: city.slug,
-        categorySlug: cat.slug,
-        sort: "rating",
-        limit: 1,
-      });
-      const hasRated = providers.some((p) => Number(p.googleRating) > 0);
-      if (hasRated) {
-        params.push({ city: city.slug, category: cat.slug });
-      }
-    }
-  }
-
-  return params;
-}
+export const dynamicParams = true;
 
 // ─── generateMetadata ───────────────────────────────────────────────────────────
 
