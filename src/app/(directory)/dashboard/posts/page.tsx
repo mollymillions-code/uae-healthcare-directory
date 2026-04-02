@@ -1,23 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import type { LinkedInPost } from '@/types/dashboard'
 
 export default function PostsPage() {
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<LinkedInPost[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('')
 
-  const fetchPosts = () => {
+  const fetchPosts = useCallback(() => {
     const url = filter ? `/api/research/posts?status=${filter}` : '/api/research/posts'
     fetch(url)
       .then(r => r.json())
       .then(data => setPosts(data.posts || []))
       .finally(() => setLoading(false))
-  }
+  }, [filter])
 
-  useEffect(() => { fetchPosts() }, [filter])
+  useEffect(() => { fetchPosts() }, [fetchPosts])
 
   const handleAction = async (postId: string, action: string) => {
     await fetch('/api/research/posts', {

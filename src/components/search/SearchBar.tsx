@@ -30,15 +30,16 @@ export function SearchBar({ defaultCity, defaultCategory, defaultQuery, compact 
 
   if (compact) {
     return (
-      <form onSubmit={handleSearch} className="flex gap-2 items-center">
+      <form onSubmit={handleSearch} className="flex gap-2 items-center" role="search">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search providers..."
           className="input-tc flex-1"
+          aria-label="Search healthcare providers"
         />
-        <button type="submit" className="btn-accent px-4 py-3">
+        <button type="submit" className="btn-accent px-4 py-3" aria-label="Search">
           <Search className="h-4 w-4" />
         </button>
       </form>

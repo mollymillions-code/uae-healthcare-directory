@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
-import gsap from "gsap";
 import { ImageWithFallback } from "@/components/landing/ImageWithFallback";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/landing/AnimatedSection";
 import { Timeline } from "@/components/landing/Timeline";
@@ -16,24 +15,49 @@ export function HomePageClient() {
   const [activeTab, setActiveTab] = useState(0);
   const marqueeRef = useRef<HTMLDivElement>(null);
   const marqueeContainerRef = useRef<HTMLDivElement>(null);
-  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const tweenRef = useRef<{ kill: () => void; pause: () => void; play: () => void } | null>(null);
+
+  const clientLogos = useMemo(
+    () =>
+      [
+        { src: "/assets/clients/dental-nation-logo.webp", name: "Dental Nation" },
+        { src: "/assets/clients/kent-healthcare.webp", name: "Kent Healthcare" },
+        { src: "/assets/clients/flowspace-logo.webp", name: "Flow Space" },
+        { src: "/assets/clients/gs-poly-clinic-logo.webp", name: "GS Poly Clinic" },
+        { src: "/assets/clients/my-london-skin-clinic-logo.webp", name: "My London Skin Clinic" },
+        { src: "/assets/clients/modern-aesthetics-logo.webp", name: "Modern Aesthetics" },
+      ].flatMap((logo, i) => [
+        { ...logo, key: `0-${i}` },
+        { ...logo, key: `1-${i}` },
+      ]),
+    []
+  );
+
+  const integrationLogos = useMemo(
+    () => [...channelPartners.slice(0, 5), ...emrPartners.slice(0, 3)],
+    []
+  );
 
   useEffect(() => {
     if (!marqueeRef.current) return;
-
-    tweenRef.current = gsap.to(marqueeRef.current, {
-      xPercent: -50,
-      duration: 40,
-      ease: "none",
-      repeat: -1,
-    });
 
     const container = marqueeContainerRef.current;
     const handleMouseEnter = () => tweenRef.current?.pause();
     const handleMouseLeave = () => tweenRef.current?.play();
 
-    container?.addEventListener("mouseenter", handleMouseEnter);
-    container?.addEventListener("mouseleave", handleMouseLeave);
+    (async () => {
+      const { default: gsap } = await import("gsap");
+
+      tweenRef.current = gsap.to(marqueeRef.current, {
+        xPercent: -50,
+        duration: 40,
+        ease: "none",
+        repeat: -1,
+      });
+
+      container?.addEventListener("mouseenter", handleMouseEnter);
+      container?.addEventListener("mouseleave", handleMouseLeave);
+    })();
 
     return () => {
       tweenRef.current?.kill();
@@ -119,24 +143,15 @@ export function HomePageClient() {
                 ref={marqueeRef}
                 className="flex items-center gap-14 sm:gap-20 w-max"
               >
-                {[...Array(2)].flatMap((_, setIdx) =>
-                  [
-                    { src: "/assets/clients/dental-nation-logo.webp", name: "Dental Nation" },
-                    { src: "/assets/clients/kent-healthcare.webp", name: "Kent Healthcare" },
-                    { src: "/assets/clients/flowspace-logo.webp", name: "Flow Space" },
-                    { src: "/assets/clients/gs-poly-clinic-logo.webp", name: "GS Poly Clinic" },
-                    { src: "/assets/clients/my-london-skin-clinic-logo.webp", name: "My London Skin Clinic" },
-                    { src: "/assets/clients/modern-aesthetics-logo.webp", name: "Modern Aesthetics" },
-                  ].map((logo, i) => (
+                {clientLogos.map((logo) => (
                     <img
-                      key={`${setIdx}-${i}`}
+                      key={logo.key}
                       src={logo.src}
                       alt={logo.name}
                       className="h-9 sm:h-12 w-auto object-contain opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500 flex-shrink-0"
                       draggable={false}
                     />
-                  ))
-                )}
+                  ))}
               </div>
             </div>
           </div>
@@ -147,7 +162,7 @@ export function HomePageClient() {
       <section className="px-4 sm:px-6 lg:px-8 pb-12">
         <div className="max-w-[1200px] mx-auto">
           <LogoBar
-            logos={[...channelPartners.slice(0, 5), ...emrPartners.slice(0, 3)]}
+            logos={integrationLogos}
             title="Trusted integrations"
             iconSize="h-10 w-28"
           />

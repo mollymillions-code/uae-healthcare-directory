@@ -37,32 +37,33 @@ export default async function BestIndexPage() {
   const cities = getCities();
   const categories = getCategories();
 
-  // Build city cards with counts and top provider
+  // Build city cards with counts, top provider, and per-category counts in parallel
   const cityDataRaw = await Promise.all(cities
     .map(async (city) => {
-      const count = await getProviderCountByCity(city.slug);
-      const topProviders = await getTopRatedProviders(city.slug, 1);
+      const [count, topProviders, catCounts] = await Promise.all([
+        getProviderCountByCity(city.slug),
+        getTopRatedProviders(city.slug, 1),
+        Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))),
+      ]);
       const topProvider = topProviders[0];
-      // Count how many categories have providers
-      const catCounts = await Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug)));
       const catCount = catCounts.filter((c) => c > 0).length;
-      return { ...city, count, topProvider, catCount };
+      return { ...city, count, topProvider, catCount, catCounts };
     }));
   const cityData = cityDataRaw
     .filter((c) => c.count > 0)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  // Build popular category combos (top categories across all cities)
+  // Build popular category combos from already-fetched catCounts (no extra queries)
   const popularCombos: { citySlug: string; cityName: string; catSlug: string; catName: string; count: number }[] = [];
-  for (const city of cities) {
-    for (const cat of categories) {
-      const count = await getProviderCountByCategoryAndCity(cat.slug, city.slug);
+  for (const row of cityDataRaw) {
+    for (let i = 0; i < categories.length; i++) {
+      const count = row.catCounts[i];
       if (count >= 5) {
         popularCombos.push({
-          citySlug: city.slug,
-          cityName: city.name,
-          catSlug: cat.slug,
-          catName: cat.name,
+          citySlug: row.slug,
+          cityName: row.name,
+          catSlug: categories[i].slug,
+          catName: categories[i].name,
           count,
         });
       }

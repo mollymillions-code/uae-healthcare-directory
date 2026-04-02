@@ -51,6 +51,7 @@ let _countFn: typeof import("drizzle-orm")["count"] | null = null;
 let _gt: typeof import("drizzle-orm")["gt"] | null = null;
 let _ilike: typeof import("drizzle-orm")["ilike"] | null = null;
 let _or: typeof import("drizzle-orm")["or"] | null = null;
+let _sql: typeof import("drizzle-orm")["sql"] | null = null;
 
 let _dbModulesLoaded = false;
 
@@ -70,6 +71,7 @@ async function ensureDbModules() {
   _gt = ormMod.gt;
   _ilike = ormMod.ilike;
   _or = ormMod.or;
+  _sql = ormMod.sql;
   _dbModulesLoaded = true;
 }
 
@@ -136,19 +138,39 @@ export interface LocalProvider {
   googlePhotoUrl?: string;
 }
 
-// ─── Query Cache (5-min TTL) ────────────────────────────────────────────────────
+// ─── Query Cache (5-min TTL, bounded LRU, max 500 entries) ─────────────────────
+// Uses a Map which maintains insertion order. On get-hit we delete+re-insert to
+// move the entry to the end (most-recently-used). On set we evict the oldest
+// entry (first key) when the map exceeds MAX_CACHE_SIZE.
 
 const queryCache = new Map<string, { data: unknown; ts: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 500;
 
 function getCached<T>(key: string): T | undefined {
   const entry = queryCache.get(key);
-  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data as T;
-  return undefined;
+  if (!entry) return undefined;
+  if (Date.now() - entry.ts >= CACHE_TTL) {
+    queryCache.delete(key);
+    return undefined;
+  }
+  // Move to end (most-recently-used)
+  queryCache.delete(key);
+  queryCache.set(key, entry);
+  return entry.data as T;
 }
 
 function setCache(key: string, data: unknown): void {
+  // If key already exists, delete first so re-insert moves it to end
+  if (queryCache.has(key)) {
+    queryCache.delete(key);
+  }
   queryCache.set(key, { data, ts: Date.now() });
+  // Evict oldest entry if over limit
+  if (queryCache.size > MAX_CACHE_SIZE) {
+    const oldest = queryCache.keys().next().value;
+    if (oldest !== undefined) queryCache.delete(oldest);
+  }
 }
 
 // ─── DB Row → LocalProvider mapper ──────────────────────────────────────────────
@@ -846,12 +868,23 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
     );
   }
 
-  // Load all providers for the city (or all), then filter in JS
-  // JSONB containment queries are complex; JS filter is simpler and the per-city dataset is small
-  const allProviders = await dbSelectProviders(citySlug ? { citySlug } : undefined);
-  return allProviders.filter((p) =>
-    p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
+  // Use SQL-level JSONB filtering to avoid loading all providers into JS
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (citySlug) conditions.push(_eq!(t.citySlug, citySlug));
+
+  // Build ILIKE conditions for each match term against JSONB array elements
+  const likePatterns = matchTerms.map((term) => `%${term}%`);
+  const orClauses = likePatterns.map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`).join(" OR ");
+  conditions.push(
+    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`
   );
+
+  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
+  const rows = await _db!.select().from(t).where(where);
+  return rows.map(rowToProvider);
 }
 
 export async function getProviderCountByInsurance(insurerSlug: string, citySlug: string): Promise<number> {
@@ -870,8 +903,22 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const providers = await getProvidersByInsurance(insurerSlug, citySlug);
-  const count = providers.length;
+  await ensureDbModules();
+  const t = _providersTable!;
+  const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+  if (!insurer) { setCache(cacheKey, 0); return 0; }
+
+  const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+  const likePatterns = matchTerms.map((term) => `%${term}%`);
+  const orClauses = likePatterns.map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`).join(" OR ");
+
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`,
+  ];
+
+  const result = await _db!.select({ count: _countFn!() }).from(t).where(_and!(...conditions));
+  const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
 }
@@ -892,11 +939,22 @@ export async function getProvidersByLanguage(languageSlug: string, citySlug?: st
     );
   }
 
-  // Load all providers for the city, then filter in JS (same pattern as insurance)
-  const allProviders = await dbSelectProviders(citySlug ? { citySlug } : undefined);
-  return allProviders.filter((p) =>
-    p.languages.some((lang) => lang.toLowerCase() === matchName)
+  // Use SQL-level JSONB filtering to avoid loading all providers into JS
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (citySlug) conditions.push(_eq!(t.citySlug, citySlug));
+
+  // Case-insensitive exact match against JSONB array elements
+  const escapedName = matchName.replace(/'/g, "''");
+  conditions.push(
+    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.languages}) elem WHERE lower(elem) = '${_sql!.raw(escapedName)}')`
   );
+
+  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
+  const rows = await _db!.select().from(t).where(where);
+  return rows.map(rowToProvider);
 }
 
 export async function getProviderCountByLanguage(languageSlug: string, citySlug: string): Promise<number> {
@@ -915,8 +973,19 @@ export async function getProviderCountByLanguage(languageSlug: string, citySlug:
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const providers = await getProvidersByLanguage(languageSlug, citySlug);
-  const count = providers.length;
+  await ensureDbModules();
+  const t = _providersTable!;
+  const language = LANGUAGES.find((l) => l.slug === languageSlug);
+  if (!language) { setCache(cacheKey, 0); return 0; }
+
+  const escapedName = language.name.toLowerCase().replace(/'/g, "''");
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.languages}) elem WHERE lower(elem) = '${_sql!.raw(escapedName)}')`,
+  ];
+
+  const result = await _db!.select({ count: _countFn!() }).from(t).where(_and!(...conditions));
+  const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
 }

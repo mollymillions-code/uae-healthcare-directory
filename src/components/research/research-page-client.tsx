@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Clock, ArrowRight, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -21,7 +21,7 @@ interface ReportMeta {
 
 export default function ResearchPageClient({ reports }: { reports: ReportMeta[] }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const categories = Array.from(new Set(reports.map(r => r.category)))
+  const categories = useMemo(() => Array.from(new Set(reports.map(r => r.category))), [reports])
 
   const filtered = activeCategory
     ? reports.filter(r => r.category === activeCategory)

@@ -198,6 +198,13 @@ export const providers = pgTable(
       table.citySlug,
       table.areaSlug
     ),
+    cityStatusIdx: index("idx_providers_city_status").on(
+      table.cityId,
+      table.status
+    ),
+    verifiedIdx: index("idx_providers_verified").on(table.isVerified),
+    claimedIdx: index("idx_providers_claimed").on(table.isClaimed),
+    featuredIdx: index("idx_providers_featured").on(table.isFeatured),
   })
 );
 
@@ -260,7 +267,7 @@ export const claimRequests = pgTable(
     id: text("id").primaryKey(),
     providerId: text("provider_id")
       .notNull()
-      .references(() => providers.id),
+      .references(() => providers.id, { onDelete: "cascade" }),
 
     contactName: text("contact_name").notNull(),
     contactEmail: text("contact_email").notNull(),
@@ -342,11 +349,15 @@ export const journalSubscribers = pgTable(
 
 // ─── FAQs ──────────────────────────────────────────────────────────────────────
 
+// entityId is polymorphic — references cities, categories, or providers depending
+// on entityType ("city" | "category" | "provider"). A foreign key constraint is
+// intentionally omitted because no single FK can cover all three target tables.
+// Referential integrity is enforced at the application layer in seed.ts and data.ts.
 export const faqs = pgTable(
   "faqs",
   {
     id: text("id").primaryKey(),
-    entityType: text("entity_type").notNull(),
+    entityType: text("entity_type").notNull(), // "city" | "category" | "provider"
     entityId: text("entity_id").notNull(),
     question: text("question").notNull(),
     answer: text("answer").notNull(),

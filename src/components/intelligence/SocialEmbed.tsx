@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface SocialEmbedProps {
   html: string;
@@ -15,6 +16,9 @@ interface SocialEmbedProps {
  * - Instagram: embedded post via instagram.com/embed.js
  *
  * Also handles pre-existing iframe embeds in the HTML body.
+ *
+ * All HTML is sanitized via DOMPurify before rendering to prevent XSS
+ * from AI-generated or external article content.
  */
 export function ArticleBody({ html }: SocialEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,8 +45,8 @@ export function ArticleBody({ html }: SocialEmbedProps) {
     }
   }, [html]);
 
-  // Process HTML to convert raw URLs into embeds
-  const processedHtml = processEmbeds(html);
+  // Process HTML to convert raw URLs into embeds, then sanitize
+  const processedHtml = sanitizeHtml(processEmbeds(html));
 
   return (
     <div

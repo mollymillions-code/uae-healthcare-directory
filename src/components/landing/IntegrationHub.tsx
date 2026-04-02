@@ -2,10 +2,6 @@
 "use client";
 
 import { type FC, useState, useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface HubPartner {
   icon: FC<{ className?: string }>;
@@ -40,84 +36,92 @@ export function IntegrationHub({ partners, className = "" }: IntegrationHubProps
     const container = containerRef.current;
     if (!container) return;
 
-    // Wait one frame for SVG to render with correct size
-    const rafId = requestAnimationFrame(() => {
-      const lines = container.querySelectorAll<SVGLineElement>("[data-hub-line]");
-      const centerCircle = container.querySelector<SVGCircleElement>("[data-hub-center]");
-      const centerText = container.querySelector<SVGTextElement>("[data-hub-center-text]");
-      const partnerGroups = container.querySelectorAll<SVGGElement>("[data-hub-partner]");
+    let rafId: number;
 
-      const tweens: gsap.core.Tween[] = [];
-      let tl: gsap.core.Timeline | null = null;
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
 
-      // Animate dashed line strokeDashoffset continuously
-      if (lines.length) {
-        lines.forEach((line) => {
-          const tween = gsap.to(line, {
-            strokeDashoffset: -20,
-            repeat: -1,
-            ease: "none",
-            duration: 1.5,
+      // Wait one frame for SVG to render with correct size
+      rafId = requestAnimationFrame(() => {
+        const lines = container.querySelectorAll<SVGLineElement>("[data-hub-line]");
+        const centerCircle = container.querySelector<SVGCircleElement>("[data-hub-center]");
+        const centerText = container.querySelector<SVGTextElement>("[data-hub-center-text]");
+        const partnerGroups = container.querySelectorAll<SVGGElement>("[data-hub-partner]");
+
+        const tweens: gsap.core.Tween[] = [];
+        let tl: gsap.core.Timeline | null = null;
+
+        // Animate dashed line strokeDashoffset continuously
+        if (lines.length) {
+          lines.forEach((line) => {
+            const tween = gsap.to(line, {
+              strokeDashoffset: -20,
+              repeat: -1,
+              ease: "none",
+              duration: 1.5,
+            });
+            tweens.push(tween);
           });
-          tweens.push(tween);
-        });
-      }
-
-      // Scroll-triggered entrance timeline
-      if (centerCircle && partnerGroups.length) {
-        // Set initial states
-        gsap.set(centerCircle, { transformOrigin: "center center", scale: 0 });
-        if (centerText) {
-          gsap.set(centerText, { opacity: 0 });
         }
-        gsap.set(partnerGroups, { transformOrigin: "center center", opacity: 0, scale: 0 });
-        gsap.set(lines, { opacity: 0 });
 
-        tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: container,
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        });
+        // Scroll-triggered entrance timeline
+        if (centerCircle && partnerGroups.length) {
+          // Set initial states
+          gsap.set(centerCircle, { transformOrigin: "center center", scale: 0 });
+          if (centerText) {
+            gsap.set(centerText, { opacity: 0 });
+          }
+          gsap.set(partnerGroups, { transformOrigin: "center center", opacity: 0, scale: 0 });
+          gsap.set(lines, { opacity: 0 });
 
-        // Step 1: Scale in center circle
-        tl.to(centerCircle, {
-          scale: 1,
-          duration: 0.5,
-          ease: "back.out(1.4)",
-        });
+          tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: container,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+          });
 
-        // Step 2: Fade in center text
-        if (centerText) {
-          tl.to(centerText, {
+          // Step 1: Scale in center circle
+          tl.to(centerCircle, {
+            scale: 1,
+            duration: 0.5,
+            ease: "back.out(1.4)",
+          });
+
+          // Step 2: Fade in center text
+          if (centerText) {
+            tl.to(centerText, {
+              opacity: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            }, "-=0.2");
+          }
+
+          // Step 3: Fade in connection lines
+          tl.to(lines, {
             opacity: 1,
             duration: 0.3,
+            stagger: 0.04,
             ease: "power2.out",
-          }, "-=0.2");
+          }, "-=0.1");
+
+          // Step 4: Stagger partner nodes in
+          tl.to(partnerGroups, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: "back.out(1.2)",
+          }, "-=0.15");
         }
 
-        // Step 3: Fade in connection lines
-        tl.to(lines, {
-          opacity: 1,
-          duration: 0.3,
-          stagger: 0.04,
-          ease: "power2.out",
-        }, "-=0.1");
-
-        // Step 4: Stagger partner nodes in
-        tl.to(partnerGroups, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: "back.out(1.2)",
-        }, "-=0.15");
-      }
-
-      // Store cleanup refs on the container element
-      (container as any).__gsapCleanup = { tweens, tl };
-    });
+        // Store cleanup refs on the container element
+        (container as any).__gsapCleanup = { tweens, tl };
+      });
+    })();
 
     return () => {
       cancelAnimationFrame(rafId);

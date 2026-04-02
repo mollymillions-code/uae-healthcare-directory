@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ImageWithFallback } from "@/components/landing/ImageWithFallback";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/landing/AnimatedSection";
 import { LogoBar } from "@/components/landing/LogoBar";
@@ -66,20 +67,20 @@ export function SpecialtyPageClient({ specialty }: SpecialtyPageClientProps) {
             </ShimmerLink>
           </AnimatedSection>
 
-          {/* Hero Image */}
-          <AnimatedSection delay={0.4}>
-            <div className="relative max-w-[1000px] mx-auto">
-              <div className="absolute -inset-2 bg-gradient-to-b from-black/10 to-transparent rounded-[36px] blur-lg" />
-              <div className="relative rounded-2xl lg:rounded-[32px] overflow-hidden ring-1 ring-black/10 shadow-xl">
-                <ImageWithFallback
-                  src={data.heroImage}
-                  alt={`${data.name} healthcare practice using AI patient engagement platform`}
-                  className="w-full h-auto object-cover aspect-[16/9]"
-                  loading="eager"
-                />
-              </div>
+          {/* Hero Image — outside AnimatedSection to avoid GSAP opacity:0 delaying LCP */}
+          <div className="relative max-w-[1000px] mx-auto">
+            <div className="absolute -inset-2 bg-gradient-to-b from-black/10 to-transparent rounded-[36px] blur-lg" />
+            <div className="relative rounded-2xl lg:rounded-[32px] overflow-hidden ring-1 ring-black/10 shadow-xl aspect-[16/9]">
+              <Image
+                src={data.heroImage}
+                alt={`${data.name} healthcare practice using AI patient engagement platform`}
+                fill
+                priority
+                sizes="(max-width: 1000px) 100vw, 1000px"
+                className="object-cover"
+              />
             </div>
-          </AnimatedSection>
+          </div>
         </div>
       </section>
 

@@ -10,10 +10,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const PROJECT_ROOT = join(__dirname, '..', '..', '..');
 
 export const CONFIG = {
-  // ── Postiz Integration IDs ──────────────────────────────────────
+  // ── Postiz Integration IDs (non-secret, env overrides supported) ─
   integrations: {
-    HIDAYAT_LINKEDIN: 'cmmxtchdd0001u36fkx2nb7h2',
-    ZAVIS_FACEBOOK: 'cmmk8a7k80001oi77q7624t0t',
+    HIDAYAT_LINKEDIN: process.env.POSTIZ_HIDAYAT_LINKEDIN_ID || 'cmmxtchdd0001u36fkx2nb7h2',
+    ZAVIS_FACEBOOK: process.env.POSTIZ_ZAVIS_FACEBOOK_ID || 'cmmk8a7k80001oi77q7624t0t',
   },
 
   // ── Posting schedule (UAE time = UTC+4) ─────────────────────────

@@ -1,10 +1,6 @@
 "use client";
 
 import { type FC, useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface ChannelIconGridProps {
   channels: { icon: FC<{ className?: string }>; name: string; color: string }[];
@@ -22,57 +18,64 @@ export function ChannelIconGrid({ channels, className = "" }: ChannelIconGridPro
     const items = itemRefs.current.filter(Boolean) as HTMLDivElement[];
     if (!items.length) return;
 
-    // Scroll-triggered stagger entrance
-    gsap.set(items, { opacity: 0, y: 24, scale: 0.9 });
-
-    const entranceTween = gsap.to(items, {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 0.6,
-      stagger: 0.07,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: container,
-        start: "top 88%",
-        toggleActions: "play none none none",
-      },
-    });
-
-    // GSAP hover handlers for each icon
+    let entranceTween: gsap.core.Tween | undefined;
     const enterHandlers: (() => void)[] = [];
     const leaveHandlers: (() => void)[] = [];
 
-    items.forEach((el, i) => {
-      const onEnter = () => {
-        gsap.to(el, {
-          scale: 1.06,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      };
-      const onLeave = () => {
-        gsap.to(el, {
-          scale: 1,
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      };
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
 
-      el.addEventListener("mouseenter", onEnter);
-      el.addEventListener("mouseleave", onLeave);
-      enterHandlers[i] = onEnter;
-      leaveHandlers[i] = onLeave;
-    });
+      // Scroll-triggered stagger entrance
+      gsap.set(items, { opacity: 0, y: 24, scale: 0.9 });
+
+      entranceTween = gsap.to(items, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.07,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: container,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      // GSAP hover handlers for each icon
+      items.forEach((el, i) => {
+        const onEnter = () => {
+          gsap.to(el, {
+            scale: 1.06,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        };
+        const onLeave = () => {
+          gsap.to(el, {
+            scale: 1,
+            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        };
+
+        el.addEventListener("mouseenter", onEnter);
+        el.addEventListener("mouseleave", onLeave);
+        enterHandlers[i] = onEnter;
+        leaveHandlers[i] = onLeave;
+      });
+    })();
 
     return () => {
-      entranceTween.scrollTrigger?.kill();
-      entranceTween.kill();
+      entranceTween?.scrollTrigger?.kill();
+      entranceTween?.kill();
       items.forEach((el, i) => {
-        el.removeEventListener("mouseenter", enterHandlers[i]);
-        el.removeEventListener("mouseleave", leaveHandlers[i]);
+        if (enterHandlers[i]) el.removeEventListener("mouseenter", enterHandlers[i]);
+        if (leaveHandlers[i]) el.removeEventListener("mouseleave", leaveHandlers[i]);
       });
     };
   }, [channels]);

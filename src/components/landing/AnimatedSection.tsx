@@ -1,10 +1,6 @@
 "use client";
 
 import { useRef, useEffect, type ReactNode } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
@@ -30,34 +26,42 @@ export function AnimatedSection({
     const el = ref.current;
     if (prefersReducedMotion() || !el) return;
 
-    const directionMap = {
-      up: { y: 48, x: 0 },
-      left: { y: 0, x: -48 },
-      right: { y: 0, x: 48 },
-      none: { y: 0, x: 0 },
-    };
+    let tween: gsap.core.Tween | undefined;
 
-    const offset = directionMap[direction];
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
 
-    gsap.set(el, { opacity: 0, ...offset });
+      const directionMap = {
+        up: { y: 48, x: 0 },
+        left: { y: 0, x: -48 },
+        right: { y: 0, x: 48 },
+        none: { y: 0, x: 0 },
+      };
 
-    const tween = gsap.to(el, {
-      opacity: 1,
-      y: 0,
-      x: 0,
-      duration: 0.9,
-      delay,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: el,
-        start: "top 88%",
-        toggleActions: "play none none none",
-      },
-    });
+      const offset = directionMap[direction];
+
+      gsap.set(el, { opacity: 0, ...offset });
+
+      tween = gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        x: 0,
+        duration: 0.9,
+        delay,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      });
+    })();
 
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      tween?.scrollTrigger?.kill();
+      tween?.kill();
     };
   }, [delay, direction]);
 
@@ -81,27 +85,35 @@ export function StaggerContainer({
     const container = ref.current;
     if (prefersReducedMotion() || !container) return;
 
-    const items = container.querySelectorAll("[data-stagger-item]");
-    if (!items.length) return;
+    let tween: gsap.core.Tween | undefined;
 
-    gsap.set(items, { opacity: 0, y: 28 });
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
 
-    const tween = gsap.to(items, {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      stagger: 0.06,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: container,
-        start: "top 88%",
-        toggleActions: "play none none none",
-      },
-    });
+      const items = container.querySelectorAll("[data-stagger-item]");
+      if (!items.length) return;
+
+      gsap.set(items, { opacity: 0, y: 28 });
+
+      tween = gsap.to(items, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.06,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: container,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      });
+    })();
 
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      tween?.scrollTrigger?.kill();
+      tween?.kill();
     };
   }, []);
 

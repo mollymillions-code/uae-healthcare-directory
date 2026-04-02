@@ -105,10 +105,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Google Sheets API error:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to add data to Google Sheets',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to process request. Please try again later.' },
       { status: 500 }
     )
   }

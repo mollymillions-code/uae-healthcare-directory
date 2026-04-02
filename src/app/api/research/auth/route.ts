@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const DASHBOARD_KEY = process.env.DASHBOARD_KEY || 'zavis_research_2026'
+const DASHBOARD_KEY = process.env.DASHBOARD_KEY || ''
 
 export async function POST(request: NextRequest) {
+  if (!DASHBOARD_KEY) {
+    return NextResponse.json({ error: 'Dashboard auth not configured' }, { status: 503 })
+  }
+
   const body = await request.json()
 
   if (body.password === DASHBOARD_KEY) {

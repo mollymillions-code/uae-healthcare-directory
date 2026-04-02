@@ -1,35 +1,38 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-
-interface Comment {
-  id: string
-  stage: string
-  author: string
-  content: string
-  resolved: boolean
-  created_at: string
-}
+import type {
+  PipelineRunDetail,
+  PipelineComment,
+  LinkedInPost,
+  EmailBlast,
+  PerformanceScore,
+  HeadlineStat,
+} from '@/types/dashboard'
 
 export default function PipelineDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const [run, setRun] = useState<any>(null)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [posts, setPosts] = useState<any[]>([])
-  const [emails, setEmails] = useState<any[]>([])
-  const [score, setScore] = useState<any>(null)
+  const [run, setRun] = useState<PipelineRunDetail | null>(null)
+  const [comments, setComments] = useState<PipelineComment[]>([])
+  const [posts, setPosts] = useState<LinkedInPost[]>([])
+  const [emails, setEmails] = useState<EmailBlast[]>([])
+  const [score, setScore] = useState<PerformanceScore | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<'overview' | 'report' | 'research' | 'distribution'>('overview')
   const [newComment, setNewComment] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
+    setError(null)
     fetch(`/api/research/pipeline/runs/${params.id}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to fetch run (${r.status})`)
+        return r.json()
+      })
       .then(data => {
         setRun(data.run)
         setComments(data.comments || [])
@@ -37,10 +40,11 @@ export default function PipelineDetailPage() {
         setEmails(data.emails || [])
         setScore(data.score)
       })
+      .catch(err => setError(err instanceof Error ? err.message : 'Something went wrong'))
       .finally(() => setLoading(false))
-  }
+  }, [params.id])
 
-  useEffect(() => { fetchData() }, [params.id])
+  useEffect(() => { fetchData() }, [fetchData])
 
   // Render report HTML in iframe when on report tab
   useEffect(() => {
@@ -56,46 +60,76 @@ export default function PipelineDetailPage() {
 
   const handleAction = async (action: string) => {
     setActionLoading(true)
-    await fetch(`/api/research/pipeline/runs/${params.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
-    })
-    fetchData()
-    setActionLoading(false)
+    try {
+      const r = await fetch(`/api/research/pipeline/runs/${params.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      })
+      if (!r.ok) throw new Error(`Action failed (${r.status})`)
+      fetchData()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const handleComment = async () => {
     if (!newComment.trim()) return
-    await fetch(`/api/research/pipeline/runs/${params.id}/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stage: run?.status || 'review', content: newComment }),
-    })
-    setNewComment('')
-    fetchData()
+    try {
+      const r = await fetch(`/api/research/pipeline/runs/${params.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: run?.status || 'review', content: newComment }),
+      })
+      if (!r.ok) throw new Error(`Failed to add comment (${r.status})`)
+      setNewComment('')
+      fetchData()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    }
   }
 
   const handlePostAction = async (postId: string, action: string) => {
-    await fetch('/api/research/posts', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: postId, action }),
-    })
-    fetchData()
+    try {
+      const r = await fetch('/api/research/posts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: postId, action }),
+      })
+      if (!r.ok) throw new Error(`Post action failed (${r.status})`)
+      fetchData()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    }
   }
 
   const handleEmailAction = async (emailId: string, action: string) => {
-    await fetch('/api/research/emails', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: emailId, action }),
-    })
-    fetchData()
+    try {
+      const r = await fetch('/api/research/emails', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: emailId, action }),
+      })
+      if (!r.ok) throw new Error(`Email action failed (${r.status})`)
+      fetchData()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    }
   }
 
   if (loading) {
     return <div style={{ padding: 40, textAlign: 'center', color: '#5e5e72' }}>Loading...</div>
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 40, textAlign: 'center' }}>
+        <p style={{ color: '#e63946', fontSize: 14, marginBottom: 12 }}>{error}</p>
+        <button onClick={fetchData} style={{ ...btnStyle, background: '#006828' }}>Retry</button>
+      </div>
+    )
   }
 
   if (!run) {
@@ -195,7 +229,7 @@ export default function PipelineDetailPage() {
                 <h3 style={sectionTitle}>Synthesis</h3>
                 {run.synthesis.headline_stats && (
                   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
-                    {run.synthesis.headline_stats.map((s: any, i: number) => (
+                    {run.synthesis.headline_stats.map((s: HeadlineStat, i: number) => (
                       <div key={i} style={{
                         background: 'rgba(0,104,40,0.1)', borderRadius: 8, padding: '8px 16px',
                       }}>

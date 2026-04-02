@@ -9,15 +9,19 @@ import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCategoryBySlug, getCategories,
+  getCityBySlug, getCategories,
   getAreaBySlug, getAreasByCity,
-  getProviderBySlug, getProviders, getTopRatedProviders,
+  getProviders, getTopRatedProviders,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema,
   itemListSchema, speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import {
+  getCategoryImageUrl, hasValidHours, formatVerifiedDateAr,
+  resolveSegments,
+} from "@/lib/directory-utils";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
@@ -30,47 +34,6 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
-}
-
-/**
- * Resolve URL segments (same logic as English version).
- */
-async function resolveSegments(citySlug: string, segments: string[]) {
-  const [seg1, seg2, seg3] = segments;
-
-  if (segments.length === 1) {
-    const category = getCategoryBySlug(seg1);
-    if (category) return { type: "city-category" as const, category };
-    const area = getAreaBySlug(citySlug, seg1);
-    if (area) return { type: "city-area" as const, area };
-    return null;
-  }
-
-  if (segments.length === 2) {
-    const cat1 = getCategoryBySlug(seg1);
-    if (cat1) {
-      const provider = await getProviderBySlug(seg2);
-      if (provider) return { type: "listing" as const, category: cat1, provider };
-      return null;
-    }
-    const area = getAreaBySlug(citySlug, seg1);
-    if (area) {
-      const cat2 = getCategoryBySlug(seg2);
-      if (cat2) return { type: "area-category" as const, area, category: cat2 };
-      return null;
-    }
-    return null;
-  }
-
-  if (segments.length === 3) {
-    const area = getAreaBySlug(citySlug, seg1);
-    const cat = getCategoryBySlug(seg2);
-    const provider = await getProviderBySlug(seg3);
-    if (area && cat && provider) return { type: "listing" as const, area, category: cat, provider };
-    return null;
-  }
-
-  return null;
 }
 
 // No generateStaticParams — pages render on-demand via ISR.
@@ -98,6 +61,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             "x-default": `${base}/directory/${city.slug}/${resolved.category.slug}`,
           },
         },
+        openGraph: {
+          title: `${catNameAr} في ${cityNameAr}`,
+          description: `${total} ${catNameAr} في ${cityNameAr}. تصفح القوائم المعتمدة.`,
+          type: 'website',
+          locale: 'ar_AE',
+          siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
+          url: `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${catNameAr} في ${cityNameAr}` }],
+        },
       };
     }
     case "city-area": {
@@ -113,6 +85,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
             "x-default": `${base}/directory/${city.slug}/${resolved.area.slug}`,
           },
+        },
+        openGraph: {
+          title: `الرعاية الصحية في ${areaNameAr}، ${cityNameAr}`,
+          description: `${total} مقدم رعاية صحية في ${areaNameAr}، ${cityNameAr}. تصفح القوائم المعتمدة.`,
+          type: 'website',
+          locale: 'ar_AE',
+          siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
+          url: `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
+          images: [{ url: `${base}/images/categories/clinics.webp`, width: 1200, height: 630, alt: `الرعاية الصحية في ${areaNameAr}، ${cityNameAr}` }],
         },
       };
     }
@@ -131,6 +112,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             "x-default": `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           },
         },
+        openGraph: {
+          title: `${catNameAr} في ${areaNameAr}، ${cityNameAr}`,
+          description: `${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr}. تصفح القوائم المعتمدة.`,
+          type: 'website',
+          locale: 'ar_AE',
+          siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
+          url: `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${catNameAr} في ${areaNameAr}، ${cityNameAr}` }],
+        },
       };
     }
     case "listing": {
@@ -139,7 +129,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const arListingUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       return {
         title: `${resolved.provider.name} | ${catNameAr} في ${cityNameAr}`,
-        description: `${resolved.provider.shortDescription} التقييم: ${resolved.provider.googleRating}/5. آخر تحقق ${resolved.provider.lastVerified}.`,
+        description: `${resolved.provider.shortDescription} التقييم: ${resolved.provider.googleRating}/5. آخر تحقق ${formatVerifiedDateAr(resolved.provider.lastVerified)}.`,
         alternates: {
           canonical: arListingUrl,
           languages: {
@@ -147,6 +137,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             "ar-AE": arListingUrl,
             "x-default": enListingUrl,
           },
+        },
+        openGraph: {
+          title: `${resolved.provider.name} | ${catNameAr} في ${cityNameAr}`,
+          description: resolved.provider.shortDescription || '',
+          type: 'website',
+          locale: 'ar_AE',
+          siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
+          url: arListingUrl,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.provider.name} — ${catNameAr} في ${cityNameAr}` }],
         },
       };
     }
@@ -251,6 +250,31 @@ export default async function ArabicCatchAllPage({ params }: Props) {
           />
         </Suspense>
 
+        {/* Cross-link: Other specialties in this city */}
+        {(() => {
+          const allCategories = getCategories();
+          const siblings = allCategories.filter((c) => c.slug !== category.slug).slice(0, 8);
+          if (siblings.length === 0) return null;
+          return (
+            <section className="mt-10 mb-4">
+              <div className="flex items-center gap-3 mb-4 border-b-2 border-dark pb-3">
+                <h2 className="text-xl font-bold text-dark">تخصصات أخرى في {cityNameAr}</h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                {siblings.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/ar/directory/${city.slug}/${c.slug}`}
+                    className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+                  >
+                    {getArabicCategoryName(c.slug)}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
+
         <div className="text-center pt-4">
           <Link href={`/directory/${city.slug}/${category.slug}`} className="text-accent text-sm hover:underline">
             View in English / عرض بالإنجليزية
@@ -342,6 +366,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
     const catNameAr = getArabicCategoryName(category.slug);
     const areaNameAr = area.nameAr || area.name;
     const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
+    if (total === 0) notFound();
     const regulator = getArabicRegulator(city.slug);
 
     return (
@@ -416,7 +441,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
     const areaNameAr = area?.nameAr || area?.name || "";
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
-    const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${provider.operatingHours?.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${provider.lastVerified}.`;
+    const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`;
 
     return (
       <div className="container-tc py-8">
@@ -467,7 +492,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               ) : (
                 <p className="text-muted leading-relaxed">{provider.name} — {category ? getArabicCategoryName(category.slug) : ''} في {cityNameAr}.</p>
               )}
-              <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {provider.lastVerified}.</p>
+              <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {formatVerifiedDateAr(provider.lastVerified)}.</p>
             </div>
 
             {/* Services */}
@@ -544,7 +569,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
             <div className="flex items-center gap-2 text-xs text-muted mb-6">
               <Calendar className="h-3.5 w-3.5" />
-              <span>آخر تحقق: {provider.lastVerified} · البيانات من سجل هيئة الصحة الإماراتية الرسمي</span>
+              <span>آخر تحقق: {formatVerifiedDateAr(provider.lastVerified)} · البيانات من سجل هيئة الصحة الإماراتية الرسمي</span>
             </div>
           </div>
 

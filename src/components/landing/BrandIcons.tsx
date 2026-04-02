@@ -33,31 +33,31 @@ function BrandCircle({
 // ─── Messaging & Social Channels (official SVGs from Figma) ─────
 
 export const WhatsAppIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/whatsapp.svg" alt="WhatsApp" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/whatsapp.svg" alt="WhatsApp" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const InstagramIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/instagram.svg" alt="Instagram" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/instagram.svg" alt="Instagram" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const FacebookIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/facebook.svg" alt="Facebook" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/facebook.svg" alt="Facebook" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const LinkedInIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/linkedin.svg" alt="LinkedIn" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/linkedin.svg" alt="LinkedIn" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const SnapchatIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/snapchat.svg" alt="Snapchat" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/snapchat.svg" alt="Snapchat" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const TikTokIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/tiktok.svg" alt="TikTok" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/tiktok.svg" alt="TikTok" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const TelegramIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/telegram.svg" alt="Telegram" className={`${className} rounded-full`} draggable={false} />
+  <img src="/assets/logos/telegram.svg" alt="Telegram" className={`${className} rounded-full`} draggable={false} loading="lazy" />
 );
 
 export const SMSIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
@@ -85,33 +85,33 @@ export const WebChatIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" 
 // ─── EMR / Healthcare Partners ──────────────────────────────────
 
 export const PractoIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/emr-logos/Practo Logo.webp" alt="Practo EMR" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/emr-logos/Practo Logo.webp" alt="Practo EMR" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 export const MeDASIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/emr-logos/Medas Logo.webp" alt="Medas EMR" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/emr-logos/Medas Logo.webp" alt="Medas EMR" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 export const UniteIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/emr-logos/unite-logo 1.webp" alt="Unite EMR" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/emr-logos/unite-logo 1.webp" alt="Unite EMR" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 export const HelixIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/emr-logos/Helix EMR Logo.svg" alt="Helix EMR" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/emr-logos/Helix EMR Logo.svg" alt="Helix EMR" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 // ─── Telephony Partners (react-icons Simple Icons) ──────────────
 
 export const TwilioIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/twilio-logo.svg" alt="Twilio" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/twilio-logo.svg" alt="Twilio" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 export const AvayaIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/avaya-logo.svg" alt="Avaya" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/avaya-logo.svg" alt="Avaya" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 export const ThreeCXIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/3cx Logo.webp" alt="3CX" className={className} style={{ objectFit: "contain" }} draggable={false} />
+  <img src="/assets/logos/3cx Logo.webp" alt="3CX" className={className} style={{ objectFit: "contain" }} draggable={false} loading="lazy" />
 );
 
 // ─── Ad Platforms (react-icons Simple Icons) ────────────────────
@@ -172,11 +172,11 @@ export const ZapierIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }
 // ─── BNPL Payment Partners (SVG wordmarks) ─────────────────────
 
 export const TabbyIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/tabby.svg" alt="Tabby" className={className} draggable={false} />
+  <img src="/assets/logos/tabby.svg" alt="Tabby" className={className} draggable={false} loading="lazy" />
 );
 
 export const TamaraIcon: FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <img src="/assets/logos/tamara.svg" alt="Tamara" className={className} draggable={false} />
+  <img src="/assets/logos/tamara.svg" alt="Tamara" className={className} draggable={false} loading="lazy" />
 );
 
 // ─── Status & Action Icons ──────────────────────────────────────

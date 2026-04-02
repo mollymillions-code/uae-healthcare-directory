@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/research/db'
+import { isDashboardAuthenticated, isApiAuthenticated } from '@/lib/research/auth'
 
 // GET /api/posts — list LinkedIn posts
 export async function GET(request: NextRequest) {
@@ -8,20 +9,44 @@ export async function GET(request: NextRequest) {
   const status = searchParams.get('status')
 
   const rows = status
-    ? await sql`SELECT * FROM linkedin_posts WHERE status = ${status} ORDER BY updated_at DESC`
-    : await sql`SELECT * FROM linkedin_posts ORDER BY updated_at DESC LIMIT 50`
+    ? await sql`SELECT id, run_id, account, content, first_comment, hashtags, status, scheduled_for, posted_at, created_at, updated_at FROM linkedin_posts WHERE status = ${status} ORDER BY updated_at DESC`
+    : await sql`SELECT id, run_id, account, content, first_comment, hashtags, status, scheduled_for, posted_at, created_at, updated_at FROM linkedin_posts ORDER BY updated_at DESC LIMIT 50`
 
   return NextResponse.json({ posts: rows })
 }
 
 // POST /api/posts — create a LinkedIn post draft
 export async function POST(request: NextRequest) {
+  if (!isDashboardAuthenticated(request) && !isApiAuthenticated(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const sql = getDb()
   const body = await request.json()
   const { runId, account, content, firstComment, hashtags = [], assets = [] } = body
 
   if (!account || !content) {
     return NextResponse.json({ error: 'account and content are required' }, { status: 400 })
+  }
+
+  if (typeof account !== 'string' || typeof content !== 'string') {
+    return NextResponse.json({ error: 'account and content must be strings' }, { status: 400 })
+  }
+
+  if (account.length > 100) {
+    return NextResponse.json({ error: 'account must be under 100 characters' }, { status: 400 })
+  }
+
+  if (content.length > 10000) {
+    return NextResponse.json({ error: 'content must be under 10,000 characters' }, { status: 400 })
+  }
+
+  if (firstComment && typeof firstComment === 'string' && firstComment.length > 5000) {
+    return NextResponse.json({ error: 'firstComment must be under 5,000 characters' }, { status: 400 })
+  }
+
+  if (!Array.isArray(hashtags) || hashtags.length > 30) {
+    return NextResponse.json({ error: 'hashtags must be an array of up to 30 items' }, { status: 400 })
   }
 
   const rows = await sql`
@@ -35,6 +60,10 @@ export async function POST(request: NextRequest) {
 
 // PATCH /api/posts — bulk action (approve, etc.)
 export async function PATCH(request: NextRequest) {
+  if (!isDashboardAuthenticated(request) && !isApiAuthenticated(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const sql = getDb()
   const body = await request.json()
   const { id, action, content, scheduledFor, postizPostId } = body

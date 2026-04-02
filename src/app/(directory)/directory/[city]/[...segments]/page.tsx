@@ -12,9 +12,9 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCategoryBySlug, getCategories,
-  getAreaBySlug, getAreasByCity, getSubcategoriesByCategory,
-  getProviderBySlug, getProviders, getTopRatedProviders,
+  getCityBySlug, getCategories,
+  getAreaBySlug, getAreasByCity,
+  getProviders, getTopRatedProviders,
   getInsuranceProviders,
 } from "@/lib/data";
 import {
@@ -23,25 +23,11 @@ import {
   generateProviderParagraph,
 } from "@/lib/seo";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
+import {
+  getCategoryImageUrl, hasValidHours, formatVerifiedDate,
+  resolveSegments, DAY_NAMES_EN,
+} from "@/lib/directory-utils";
 import Image from "next/image";
-
-function getCategoryImageUrl(categorySlug: string, base: string): string {
-  const CATEGORY_IMAGE_MAP: Record<string, string> = {
-    "hospitals": "hospitals", "clinics": "clinics", "dental": "dental",
-    "dermatology": "dermatology", "ophthalmology": "ophthalmology",
-    "cardiology": "cardiology", "orthopedics": "orthopedics",
-    "mental-health": "mental-health", "pediatrics": "pediatrics",
-    "ob-gyn": "obstetrics-gynecology", "ent": "ent",
-    "fertility-ivf": "fertility", "physiotherapy": "physiotherapy",
-    "pharmacy": "pharmacy", "labs-diagnostics": "laboratory",
-    "radiology-imaging": "radiology", "home-healthcare": "home-healthcare",
-    "alternative-medicine": "alternative-medicine", "neurology": "neurology",
-    "urology": "urology", "gastroenterology": "gastroenterology",
-    "oncology": "oncology", "emergency-care": "hospitals",
-  };
-  const file = CATEGORY_IMAGE_MAP[categorySlug] || "clinics";
-  return `${base}/images/categories/${file}.webp`;
-}
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
@@ -53,62 +39,6 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
-}
-
-/**
- * Resolve the URL segments into one of:
- * 1. /directory/dubai/{category}                  -> City + Category
- * 2. /directory/dubai/{area}                      -> City + Area
- * 3. /directory/dubai/{area}/{category}           -> City + Area + Category (facet)
- * 4. /directory/dubai/{category}/{listing}        -> Individual listing
- * 5. /directory/dubai/{area}/{category}/{listing} -> Individual listing (via area path)
- */
-async function resolveSegments(citySlug: string, segments: string[]) {
-  const [seg1, seg2, seg3] = segments;
-
-  if (segments.length === 1) {
-    // Could be category or area
-    const category = getCategoryBySlug(seg1);
-    if (category) return { type: "city-category" as const, category };
-    const area = getAreaBySlug(citySlug, seg1);
-    if (area) return { type: "city-area" as const, area };
-    return null;
-  }
-
-  if (segments.length === 2) {
-    // Could be: area+category, category+listing, or area+listing
-    const cat1 = getCategoryBySlug(seg1);
-    if (cat1) {
-      // seg1 is category -> seg2 must be a listing slug
-      const provider = await getProviderBySlug(seg2);
-      if (provider) return { type: "listing" as const, category: cat1, provider };
-      // Could be a subcategory
-      const subcats = getSubcategoriesByCategory(cat1.slug);
-      const sub = subcats.find((s) => s.slug === seg2);
-      if (sub) return { type: "city-category-subcategory" as const, category: cat1, subcategory: sub };
-      return null;
-    }
-
-    const area = getAreaBySlug(citySlug, seg1);
-    if (area) {
-      if (seg2 === "insurance") return { type: "area-insurance" as const, area };
-      const cat2 = getCategoryBySlug(seg2);
-      if (cat2) return { type: "area-category" as const, area, category: cat2 };
-      return null;
-    }
-    return null;
-  }
-
-  if (segments.length === 3) {
-    // area + category + listing
-    const area = getAreaBySlug(citySlug, seg1);
-    const cat = getCategoryBySlug(seg2);
-    const provider = await getProviderBySlug(seg3);
-    if (area && cat && provider) return { type: "listing" as const, area, category: cat, provider };
-    return null;
-  }
-
-  return null;
 }
 
 // No generateStaticParams — pages render on-demand via ISR.
@@ -159,6 +89,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             'x-default': `${base}/directory/${city.slug}/${resolved.area.slug}`,
           },
         },
+        openGraph: {
+          title: `Healthcare in ${resolved.area.name}, ${city.name}`,
+          description: `${total} healthcare providers in ${resolved.area.name}, ${city.name}. Browse verified listings.`,
+          type: 'website',
+          locale: 'en_AE',
+          siteName: 'UAE Open Healthcare Directory',
+          url: `${base}/directory/${city.slug}/${resolved.area.slug}`,
+          images: [{ url: `${base}/images/categories/clinics.webp`, width: 1200, height: 630, alt: `Healthcare in ${resolved.area.name}, ${city.name}` }],
+        },
       };
     }
     case "area-category": {
@@ -174,6 +113,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             'x-default': `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           },
         },
+        openGraph: {
+          title: `${resolved.category.name} in ${resolved.area.name}, ${city.name}`,
+          description: `${total} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Browse verified listings.`,
+          type: 'website',
+          locale: 'en_AE',
+          siteName: 'UAE Open Healthcare Directory',
+          url: `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.category.name} in ${resolved.area.name}, ${city.name}` }],
+        },
       };
     }
     case "area-insurance": {
@@ -188,6 +136,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           description: `Healthcare providers by insurance plan in ${area.name}, ${city.name}. Browse all accepted insurers.`,
           url,
           type: "website",
+          locale: 'en_AE',
+          siteName: 'UAE Open Healthcare Directory',
+          images: [{ url: `${base}/images/categories/clinics.webp`, width: 1200, height: 630, alt: `Insurance Coverage in ${area.name}, ${city.name}` }],
         },
       };
     }
@@ -196,7 +147,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const isEnriched = Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0) || Boolean(resolved.provider.phone) || Boolean(resolved.provider.website);
       return {
         title: `${resolved.provider.name} | ${resolved.category.name} in ${city.name}`,
-        description: `${resolved.provider.shortDescription} ${resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0 ? `Rating: ${resolved.provider.googleRating}/5.` : ""} Last verified ${resolved.provider.lastVerified}.`,
+        description: `${resolved.provider.shortDescription} ${resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0 ? `Rating: ${resolved.provider.googleRating}/5.` : ""} Last verified ${formatVerifiedDate(resolved.provider.lastVerified)}.`,
         ...(!isEnriched ? { robots: { index: true, follow: true, "max-snippet": 50 } } : {}),
         alternates: {
           canonical: listingCanonical,
@@ -225,6 +176,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
         },
+        openGraph: {
+          title: `${resolved.subcategory.name} in ${city.name} | ${resolved.category.name}`,
+          description: `${total} ${resolved.subcategory.name.toLowerCase()} specialists in ${city.name}. Browse verified listings.`,
+          type: 'website',
+          locale: 'en_AE',
+          siteName: 'UAE Open Healthcare Directory',
+          url: `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.subcategory.slug}`,
+          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.subcategory.name} in ${city.name}` }],
+        },
       };
     }
     default:
@@ -241,10 +201,7 @@ export default async function CatchAllPage({ params }: Props) {
 
   const base = getBaseUrl();
 
-  const DAY_NAMES: Record<string, string> = {
-    mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday",
-    fri: "Friday", sat: "Saturday", sun: "Sunday",
-  };
+  const DAY_NAMES = DAY_NAMES_EN;
 
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
@@ -309,6 +266,31 @@ export default async function CatchAllPage({ params }: Props) {
           />
         </Suspense>
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${city.name} — FAQ`} />
+
+        {/* Cross-link: Other specialties in this city */}
+        {(() => {
+          const allCategories = getCategories();
+          const siblings = allCategories.filter((c) => c.slug !== category.slug).slice(0, 8);
+          if (siblings.length === 0) return null;
+          return (
+            <section className="mt-10 mb-4">
+              <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other specialties in {city.name}</h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                {siblings.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/directory/${city.slug}/${c.slug}`}
+                    className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
       </div>
     );
   }
@@ -361,6 +343,7 @@ export default async function CatchAllPage({ params }: Props) {
   if (resolved.type === "area-category") {
     const { area, category } = resolved;
     const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
+    if (total === 0) notFound();
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, area, total);
 
@@ -621,10 +604,10 @@ export default async function CatchAllPage({ params }: Props) {
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
     const hasValidRating = Number(provider.googleRating) > 0;
-    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${provider.operatingHours?.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${provider.lastVerified}.`;
+    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${formatVerifiedDate(provider.lastVerified)}.`;
 
     const providerFaqs = [
-      { question: `What are the operating hours of ${provider.name}?`, answer: provider.operatingHours ? `${provider.name}: ${Object.entries(provider.operatingHours).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24h" : `${h.open}–${h.close}`}`).join(". ")}. Verified ${provider.lastVerified}.` : `Contact ${provider.name} for hours.` },
+      { question: `What are the operating hours of ${provider.name}?`, answer: hasValidHours(provider.operatingHours) ? `${provider.name}: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24h" : `${h.open}–${h.close}`}`).join(". ")}. Verified ${formatVerifiedDate(provider.lastVerified)}.` : `Contact ${provider.name} directly for current operating hours.` },
       { question: `Where is ${provider.name} located?`, answer: `${provider.name} is at ${provider.address}.${area ? ` In ${area.name}, ${city.name}.` : ` In ${city.name}, UAE.`}` },
       { question: `What services does ${provider.name} offer?`, answer: provider.services.length > 0 ? `${provider.name} offers: ${provider.services.join(", ")}. Per official UAE health authority records.` : `Contact ${provider.name} for services.` },
       { question: `Does ${provider.name} accept insurance?`, answer: provider.insurance.length > 0 ? `Yes. ${provider.name} accepts: ${provider.insurance.join(", ")}.` : `Contact ${provider.name} to confirm.` },
@@ -687,7 +670,7 @@ export default async function CatchAllPage({ params }: Props) {
               ) : (
                 <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
               )}
-              <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {provider.lastVerified}.</p>
+              <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {formatVerifiedDate(provider.lastVerified)}.</p>
             </div>
 
             {/* Services */}
@@ -760,7 +743,7 @@ export default async function CatchAllPage({ params }: Props) {
 
             <div className="flex items-center gap-2 font-['Geist',sans-serif] text-xs text-black/30 mb-6">
               <Calendar className="h-3.5 w-3.5" />
-              <span>Last verified: {provider.lastVerified} · Data from official UAE health authority register</span>
+              <span>Last verified: {formatVerifiedDate(provider.lastVerified)} · Data from official UAE health authority register</span>
             </div>
 
             <div className="bg-[#006828]/[0.04] rounded-2xl p-6">

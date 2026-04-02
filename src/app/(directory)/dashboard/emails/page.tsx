@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import type { EmailBlast } from '@/types/dashboard'
 
 export default function EmailsPage() {
-  const [emails, setEmails] = useState<any[]>([])
+  const [emails, setEmails] = useState<EmailBlast[]>([])
   const [loading, setLoading] = useState(true)
   const [previewId, setPreviewId] = useState<string | null>(null)
 

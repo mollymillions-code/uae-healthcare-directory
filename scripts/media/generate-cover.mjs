@@ -1,7 +1,8 @@
 import { GoogleGenAI } from '@google/genai'
 import { writeFileSync } from 'fs'
 
-const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyDHZLaFSmiz_Ggp9Zht5NhAJ9JjlHcj0yw'
+const API_KEY = process.env.GEMINI_API_KEY
+if (!API_KEY) { console.error('GEMINI_API_KEY env var required'); process.exit(1) }
 const prompt = process.argv[2]
 const filename = process.argv[3] || 'cover.png'
 const model = process.argv[4] || 'gemini-2.5-flash-image'

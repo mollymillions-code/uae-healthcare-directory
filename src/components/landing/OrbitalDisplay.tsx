@@ -2,10 +2,6 @@
 "use client";
 
 import { type FC, type ReactNode, useState, useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface OrbitalItem {
   icon: FC<{ className?: string }> | null;
@@ -53,69 +49,77 @@ export function OrbitalDisplay({
     const el = containerRef.current;
     if (!el) return;
 
-    const rafId = requestAnimationFrame(() => {
-      const center = el.querySelector<SVGElement>("[data-orbital-center]");
-      const innerG = el.querySelector<SVGGElement>("[data-orbital-inner]");
-      const outerG = el.querySelector<SVGGElement>("[data-orbital-outer]");
-      const rings = el.querySelectorAll<SVGCircleElement>("[data-orbital-ring]");
-      const nodes = el.querySelectorAll<SVGGElement>("[data-orbital-node]");
+    let rafId: number;
 
-      const tweens: gsap.core.Tween[] = [];
-      let tl: gsap.core.Timeline | null = null;
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
 
-      // Set initial states
-      if (center) gsap.set(center, { transformOrigin: "center center", scale: 0 });
-      gsap.set(rings, { opacity: 0 });
-      gsap.set(nodes, { transformOrigin: "center center", opacity: 0, scale: 0 });
+      rafId = requestAnimationFrame(() => {
+        const center = el.querySelector<SVGElement>("[data-orbital-center]");
+        const innerG = el.querySelector<SVGGElement>("[data-orbital-inner]");
+        const outerG = el.querySelector<SVGGElement>("[data-orbital-outer]");
+        const rings = el.querySelectorAll<SVGCircleElement>("[data-orbital-ring]");
+        const nodes = el.querySelectorAll<SVGGElement>("[data-orbital-node]");
 
-      // Entrance timeline
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-          toggleActions: "play none none none",
-        },
+        const tweens: any[] = [];
+        let tl: any = null;
+
+        // Set initial states
+        if (center) gsap.set(center, { transformOrigin: "center center", scale: 0 });
+        gsap.set(rings, { opacity: 0 });
+        gsap.set(nodes, { transformOrigin: "center center", opacity: 0, scale: 0 });
+
+        // Entrance timeline
+        tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        });
+
+        if (center) {
+          tl.to(center, { scale: 1, duration: 0.5, ease: "back.out(1.4)" });
+        }
+
+        tl.to(rings, { opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" }, "-=0.2");
+        tl.to(nodes, { opacity: 1, scale: 1, duration: 0.45, stagger: 0.06, ease: "back.out(1.2)" }, "-=0.2");
+
+        // Optional continuous rotation
+        if (animate) {
+          if (innerG) {
+            const t = gsap.to(innerG, {
+              rotation: 360,
+              duration: 140,
+              repeat: -1,
+              ease: "none",
+              transformOrigin: `${dim / 2}px ${dim / 2}px`,
+            });
+            tweens.push(t);
+          }
+          if (outerG) {
+            const t = gsap.to(outerG, {
+              rotation: -360,
+              duration: 200,
+              repeat: -1,
+              ease: "none",
+              transformOrigin: `${dim / 2}px ${dim / 2}px`,
+            });
+            tweens.push(t);
+          }
+        }
+
+        (el as any).__orbitalCleanup = { tweens, tl };
       });
-
-      if (center) {
-        tl.to(center, { scale: 1, duration: 0.5, ease: "back.out(1.4)" });
-      }
-
-      tl.to(rings, { opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" }, "-=0.2");
-      tl.to(nodes, { opacity: 1, scale: 1, duration: 0.45, stagger: 0.06, ease: "back.out(1.2)" }, "-=0.2");
-
-      // Optional continuous rotation
-      if (animate) {
-        if (innerG) {
-          const t = gsap.to(innerG, {
-            rotation: 360,
-            duration: 140,
-            repeat: -1,
-            ease: "none",
-            transformOrigin: `${dim / 2}px ${dim / 2}px`,
-          });
-          tweens.push(t);
-        }
-        if (outerG) {
-          const t = gsap.to(outerG, {
-            rotation: -360,
-            duration: 200,
-            repeat: -1,
-            ease: "none",
-            transformOrigin: `${dim / 2}px ${dim / 2}px`,
-          });
-          tweens.push(t);
-        }
-      }
-
-      (el as any).__orbitalCleanup = { tweens, tl };
-    });
+    })();
 
     return () => {
       cancelAnimationFrame(rafId);
       const cleanup = (el as any).__orbitalCleanup;
       if (cleanup) {
-        cleanup.tweens?.forEach((t: gsap.core.Tween) => t.kill());
+        cleanup.tweens?.forEach((t: any) => t.kill());
         if (cleanup.tl) {
           cleanup.tl.scrollTrigger?.kill();
           cleanup.tl.kill();

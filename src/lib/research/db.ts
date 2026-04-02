@@ -7,7 +7,13 @@ function getPool(): Pool {
     throw new Error('DATABASE_URL is not set')
   }
   if (!_pool) {
-    _pool = new Pool({ connectionString: process.env.DATABASE_URL })
+    _pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 5,
+      min: 1,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    })
   }
   return _pool
 }
@@ -19,4 +25,11 @@ export function getDb() {
     const result = await pool.query(text, values)
     return result.rows
   }
+}
+
+// Graceful shutdown — close pool on process termination
+if (typeof process !== "undefined") {
+  const shutdown = () => { _pool?.end().catch(() => {}); };
+  process.once("SIGTERM", shutdown);
+  process.once("SIGINT", shutdown);
 }

@@ -40,12 +40,9 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Dashboard auth ────────────────────────────────────────────────
-  // Skip auth in local development
-  const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
-
-  if (pathname.startsWith('/dashboard') && !isLocal) {
+  if (pathname.startsWith('/dashboard')) {
     const authCookie = request.cookies.get('zavis_dashboard_auth');
-    const dashboardKey = process.env.DASHBOARD_KEY || 'zavis_research_2026';
+    const dashboardKey = process.env.DASHBOARD_KEY || '';
 
     if (authCookie?.value !== dashboardKey) {
       const loginUrl = new URL('/login', request.url);
@@ -68,7 +65,7 @@ export function middleware(request: NextRequest) {
       if (!expectedKey || apiKey !== expectedKey) {
         // Also allow dashboard cookie for browser-based actions
         const authCookie = request.cookies.get('zavis_dashboard_auth');
-        const dashboardKey = process.env.DASHBOARD_KEY || 'zavis_research_2026';
+        const dashboardKey = process.env.DASHBOARD_KEY || '';
         if (authCookie?.value !== dashboardKey) {
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }

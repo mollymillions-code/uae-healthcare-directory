@@ -2,7 +2,7 @@ import { getAllPublishedReports, ReportMeta } from '@/lib/research/reports-fs'
 import { sampleReports } from '@/data/reports'
 import ResearchPageClient from '@/components/research/research-page-client'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 function getReports(): ReportMeta[] {
   const fsReports = getAllPublishedReports()

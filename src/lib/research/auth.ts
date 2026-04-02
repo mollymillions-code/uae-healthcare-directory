@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const DASHBOARD_KEY = process.env.DASHBOARD_KEY || 'zavis_research_2026'
+const DASHBOARD_KEY = process.env.DASHBOARD_KEY
+if (!DASHBOARD_KEY) {
+  console.warn('⚠️  DASHBOARD_KEY environment variable is not set — dashboard auth will reject all requests')
+}
 const API_KEY = process.env.REPORTS_API_KEY || ''
 
 /**
  * Check if a request has a valid dashboard session cookie.
  */
 export function isDashboardAuthenticated(request: NextRequest): boolean {
+  if (!DASHBOARD_KEY) return false
   const cookie = request.cookies.get('zavis_dashboard_auth')
   return cookie?.value === DASHBOARD_KEY
 }
@@ -23,6 +27,9 @@ export function isApiAuthenticated(request: NextRequest): boolean {
  * Login API handler — sets the auth cookie.
  */
 export async function handleLogin(request: NextRequest): Promise<NextResponse> {
+  if (!DASHBOARD_KEY) {
+    return NextResponse.json({ error: 'Dashboard auth not configured' }, { status: 503 })
+  }
   const body = await request.json()
   if (body.password === DASHBOARD_KEY) {
     const res = NextResponse.json({ ok: true })

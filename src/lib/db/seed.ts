@@ -26,8 +26,8 @@ function subcatId(catSlug: string, subSlug: string) { return `subcat_${catSlug}_
 
 async function seedCities() {
   console.log("Seeding cities...");
-  for (const city of CITIES) {
-    await db.insert(cities).values({
+  await db.insert(cities).values(
+    CITIES.map((city) => ({
       id: cityId(city.slug),
       name: city.name,
       slug: city.slug,
@@ -39,35 +39,34 @@ async function seedCities() {
       metaTitle: `Healthcare Directory in ${city.name}, UAE | Find Doctors, Clinics & Hospitals`,
       metaDescription: `Browse healthcare providers in ${city.name}, UAE. Find hospitals, clinics, dentists, and specialists with ratings, reviews, and contact details.`,
       sortOrder: city.sortOrder,
-    }).onConflictDoNothing();
-  }
+    }))
+  ).onConflictDoNothing();
   console.log(`  ✓ ${CITIES.length} cities`);
 }
 
 async function seedAreas() {
   console.log("Seeding areas...");
-  let count = 0;
-  for (const [citySlugKey, cityAreas] of Object.entries(AREAS)) {
-    for (const area of cityAreas) {
-      await db.insert(areas).values({
-        id: areaId(citySlugKey, area.slug),
-        cityId: cityId(citySlugKey),
-        name: area.name,
-        slug: area.slug,
-        nameAr: area.nameAr,
-        latitude: area.latitude,
-        longitude: area.longitude,
-      }).onConflictDoNothing();
-      count++;
-    }
+  const allAreas = Object.entries(AREAS).flatMap(([citySlugKey, cityAreas]) =>
+    cityAreas.map((area) => ({
+      id: areaId(citySlugKey, area.slug),
+      cityId: cityId(citySlugKey),
+      name: area.name,
+      slug: area.slug,
+      nameAr: area.nameAr,
+      latitude: area.latitude,
+      longitude: area.longitude,
+    }))
+  );
+  if (allAreas.length > 0) {
+    await db.insert(areas).values(allAreas).onConflictDoNothing();
   }
-  console.log(`  ✓ ${count} areas`);
+  console.log(`  ✓ ${allAreas.length} areas`);
 }
 
 async function seedCategories() {
   console.log("Seeding categories...");
-  for (const cat of CATEGORIES) {
-    await db.insert(categories).values({
+  await db.insert(categories).values(
+    CATEGORIES.map((cat) => ({
       id: catId(cat.slug),
       name: cat.name,
       slug: cat.slug,
@@ -76,27 +75,26 @@ async function seedCategories() {
       description: `Find the best ${cat.name.toLowerCase()} in the UAE. Browse listings with ratings, reviews, contact details, and locations.`,
       metaTitle: `${cat.name} in UAE | Healthcare Directory`,
       metaDescription: `Find ${cat.name.toLowerCase()} across Dubai, Abu Dhabi, Sharjah, and all UAE cities. Ratings, reviews, and contact details.`,
-    }).onConflictDoNothing();
-  }
+    }))
+  ).onConflictDoNothing();
   console.log(`  ✓ ${CATEGORIES.length} categories`);
 }
 
 async function seedSubcategories() {
   console.log("Seeding subcategories...");
-  let count = 0;
-  for (const [catSlug, subs] of Object.entries(SUBCATEGORIES)) {
-    for (const sub of subs) {
-      await db.insert(subcategories).values({
-        id: subcatId(catSlug, sub.slug),
-        categoryId: catId(catSlug),
-        name: sub.name,
-        slug: sub.slug,
-        sortOrder: sub.sortOrder,
-      }).onConflictDoNothing();
-      count++;
-    }
+  const allSubs = Object.entries(SUBCATEGORIES).flatMap(([catSlug, subs]) =>
+    subs.map((sub) => ({
+      id: subcatId(catSlug, sub.slug),
+      categoryId: catId(catSlug),
+      name: sub.name,
+      slug: sub.slug,
+      sortOrder: sub.sortOrder,
+    }))
+  );
+  if (allSubs.length > 0) {
+    await db.insert(subcategories).values(allSubs).onConflictDoNothing();
   }
-  console.log(`  ✓ ${count} subcategories`);
+  console.log(`  ✓ ${allSubs.length} subcategories`);
 }
 
 // Sample providers — realistic data for initial UI development
@@ -191,8 +189,7 @@ const SAMPLE_PROVIDERS = [
 
 async function seedProviders() {
   console.log("Seeding providers...");
-  let count = 0;
-  for (const p of SAMPLE_PROVIDERS) {
+  const providerValues = SAMPLE_PROVIDERS.map((p) => {
     const slug = p.name
       .toLowerCase()
       .replace(/[''\.]/g, "")
@@ -200,7 +197,7 @@ async function seedProviders() {
       .replace(/^-+|-+$/g, "")
       + `-${p.city}`;
 
-    await db.insert(providers).values({
+    return {
       id: createId("prov"),
       name: p.name,
       slug,
@@ -231,57 +228,60 @@ async function seedProviders() {
         sun: { open: "10:00", close: "16:00" },
       },
       amenities: ["Parking", "Wheelchair Accessible", "WiFi"],
-    }).onConflictDoNothing();
-    count++;
+    };
+  });
+  if (providerValues.length > 0) {
+    await db.insert(providers).values(providerValues).onConflictDoNothing();
   }
-  console.log(`  ✓ ${count} providers`);
+  console.log(`  ✓ ${providerValues.length} providers`);
 }
 
 async function seedFaqs() {
   console.log("Seeding FAQs...");
-  let count = 0;
+  const allFaqs: { id: string; entityType: string; entityId: string; question: string; answer: string; sortOrder: number }[] = [];
 
   // City-level FAQs
   for (const city of CITIES) {
-    const cityFaqs = [
+    const cityFaqData = [
       { q: `How many healthcare providers are in ${city.name}?`, a: `${city.name} has hundreds of registered healthcare providers including hospitals, clinics, dental practices, and specialty centers. Use our directory to browse all providers by category and area.` },
       { q: `What are the best-rated hospitals in ${city.name}?`, a: `The top-rated hospitals in ${city.name} can be found by sorting our hospital listings by Google rating. Many hospitals maintain ratings above 4.5 stars.` },
       { q: `How do I find a doctor near me in ${city.name}?`, a: `Use our search feature and enable location access to find healthcare providers nearest to you in ${city.name}. You can filter by specialty, area, and rating.` },
       { q: `Which insurance providers are accepted in ${city.name}?`, a: `Most healthcare providers in ${city.name} accept major insurance plans including Daman, Thiqa, Dubai Insurance Company (DIC), AXA, and others. Check individual provider listings for specific insurance acceptance.` },
     ];
-    for (let i = 0; i < cityFaqs.length; i++) {
-      await db.insert(faqs).values({
+    for (let i = 0; i < cityFaqData.length; i++) {
+      allFaqs.push({
         id: createId("faq"),
         entityType: "city",
         entityId: cityId(city.slug),
-        question: cityFaqs[i].q,
-        answer: cityFaqs[i].a,
+        question: cityFaqData[i].q,
+        answer: cityFaqData[i].a,
         sortOrder: i + 1,
-      }).onConflictDoNothing();
-      count++;
+      });
     }
   }
 
   // Category-level FAQs
   for (const cat of CATEGORIES) {
-    const catFaqs = [
+    const catFaqData = [
       { q: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`, a: `Browse our ${cat.name.toLowerCase()} directory to compare providers across all UAE cities. Sort by rating, read Google reviews, and check accepted insurance plans to find the best match.` },
       { q: `Are ${cat.name.toLowerCase()} covered by insurance in the UAE?`, a: `Most major insurance plans in the UAE cover ${cat.name.toLowerCase()} services. Coverage varies by plan — check with your insurance provider and verify acceptance at individual clinics.` },
     ];
-    for (let i = 0; i < catFaqs.length; i++) {
-      await db.insert(faqs).values({
+    for (let i = 0; i < catFaqData.length; i++) {
+      allFaqs.push({
         id: createId("faq"),
         entityType: "category",
         entityId: catId(cat.slug),
-        question: catFaqs[i].q,
-        answer: catFaqs[i].a,
+        question: catFaqData[i].q,
+        answer: catFaqData[i].a,
         sortOrder: i + 1,
-      }).onConflictDoNothing();
-      count++;
+      });
     }
   }
 
-  console.log(`  ✓ ${count} FAQs`);
+  if (allFaqs.length > 0) {
+    await db.insert(faqs).values(allFaqs).onConflictDoNothing();
+  }
+  console.log(`  ✓ ${allFaqs.length} FAQs`);
 }
 
 async function main() {

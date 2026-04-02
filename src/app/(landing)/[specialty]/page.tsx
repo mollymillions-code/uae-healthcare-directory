@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { SpecialtyPageClient } from "@/components/landing/pages/SpecialtyPageClient";
 import { specialties } from "@/data/landing/specialties";
 
@@ -48,5 +49,6 @@ export default async function SpecialtyPage({
   params: Promise<{ specialty: string }>;
 }) {
   const { specialty } = await params;
+  if (!specialties[specialty]) notFound();
   return <SpecialtyPageClient specialty={specialty} />;
 }

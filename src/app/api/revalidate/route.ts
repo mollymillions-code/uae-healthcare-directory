@@ -13,8 +13,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Invalid secret" }, { status: 401 });
   }
 
-  if (!path) {
-    return NextResponse.json({ error: "Path required" }, { status: 400 });
+  if (!path || !path.startsWith("/") || path.includes("..")) {
+    return NextResponse.json({ error: "Invalid path" }, { status: 400 });
   }
 
   revalidatePath(path);

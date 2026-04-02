@@ -1,42 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import type { PipelineRunSummary, PerformanceScore, AnalyticsRun } from '@/types/dashboard'
 
 export default function AnalyticsPage() {
-  const [runs, setRuns] = useState<any[]>([])
+  const [runs, setRuns] = useState<AnalyticsRun[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     // Fetch completed runs with scores
     fetch('/api/research/pipeline/runs?status=complete')
-      .then(r => r.json())
-      .then(async data => {
-        const runsWithScores = await Promise.all(
-          (data.runs || []).map(async (run: any) => {
-            const detail = await fetch(`/api/research/pipeline/runs/${run.id}`).then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to fetch completed runs (${r.status})`)
+        return r.json()
+      })
+      .then(async (data: { runs?: PipelineRunSummary[] }) => {
+        const runsWithScores: AnalyticsRun[] = await Promise.all(
+          (data.runs || []).map(async (run: PipelineRunSummary) => {
+            const detail: { score: PerformanceScore | null } = await fetch(`/api/research/pipeline/runs/${run.id}`).then(r => r.json())
             return { ...run, score: detail.score }
           })
         )
         setRuns(runsWithScores)
       })
+      .catch(err => setError(err instanceof Error ? err.message : 'Something went wrong'))
       .finally(() => setLoading(false))
   }, [])
 
   // Also fetch published runs
   useEffect(() => {
     fetch('/api/research/pipeline/runs?status=published')
-      .then(r => r.json())
-      .then(async data => {
-        const runsWithScores = await Promise.all(
-          (data.runs || []).map(async (run: any) => {
-            const detail = await fetch(`/api/research/pipeline/runs/${run.id}`).then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to fetch published runs (${r.status})`)
+        return r.json()
+      })
+      .then(async (data: { runs?: PipelineRunSummary[] }) => {
+        const runsWithScores: AnalyticsRun[] = await Promise.all(
+          (data.runs || []).map(async (run: PipelineRunSummary) => {
+            const detail: { score: PerformanceScore | null } = await fetch(`/api/research/pipeline/runs/${run.id}`).then(r => r.json())
             return { ...run, score: detail.score }
           })
         )
         setRuns(prev => [...prev, ...runsWithScores])
       })
+      .catch(err => setError(err instanceof Error ? err.message : 'Something went wrong'))
   }, [])
 
   return (
@@ -45,6 +54,10 @@ export default function AnalyticsPage() {
       <p style={{ color: '#5e5e72', fontSize: 14, marginBottom: 24 }}>
         Post-publish performance scores from LinkedIn, website traffic, email metrics, and search.
       </p>
+
+      {error && (
+        <p style={{ color: '#e63946', fontSize: 14, marginBottom: 16 }}>{error}</p>
+      )}
 
       {loading ? (
         <div style={{ padding: 40, textAlign: 'center', color: '#5e5e72' }}>Loading...</div>

@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     languages: {
       "en-AE": getBaseUrl(),
       "ar-AE": `${getBaseUrl()}/ar`,
+      "x-default": getBaseUrl(),
     },
   },
 };

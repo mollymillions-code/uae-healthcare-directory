@@ -12,7 +12,7 @@ interface Props {
   params: { slug: string }
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const report = getReportBySlug(params.slug)

@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 /* ─── Guide article data ─── */
 
@@ -349,7 +350,7 @@ export default function GuideArticlePage({
               <p
                 key={idx}
                 className="font-['Geist',sans-serif] text-black/40 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: paragraph }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(paragraph) }}
               />
             ))}
           </div>

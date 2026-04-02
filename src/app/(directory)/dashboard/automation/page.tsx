@@ -1,57 +1,15 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-
-interface Schedule {
-  id: string
-  schedule_type: string
-  status: string
-  enabled: boolean
-  last_run_at: string | null
-  config: Record<string, unknown>
-}
-
-interface AutomationRun {
-  id: string
-  run_type: string
-  status: string
-  current_stage: string | null
-  topic: string | null
-  report_slug: string | null
-  stage_log: Array<{ stage: string; status: string; duration_ms?: number; error?: string; output?: string }>
-  error_message: string | null
-  started_at: string
-  completed_at: string | null
-}
-
-interface QueueItem {
-  id: string
-  post_number: number
-  total_posts: number
-  media_type: string
-  angle: string
-  status: string
-  content: string | null
-  posted_at: string | null
-  error_message: string | null
-}
-
-interface Notification {
-  id: string
-  severity: string
-  title: string
-  message: string
-  read: boolean
-  created_at: string
-}
-
-interface PerformanceInsight {
-  week_start: string
-  report_slug: string | null
-  topic_scores: Record<string, number>
-  angle_scores: Record<string, number>
-  recommendations: Record<string, unknown>
-}
+import type {
+  AutomationSchedule,
+  AutomationRun,
+  PostQueueItem,
+  AutomationNotification,
+  PerformanceInsight,
+  AutomationLatestReport,
+  AutomationLatestScore,
+} from '@/types/dashboard'
 
 const SEVERITY_COLORS: Record<string, string> = {
   info: '#3a86ff',
@@ -77,13 +35,13 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function AutomationDashboard() {
-  const [schedules, setSchedules] = useState<Schedule[]>([])
+  const [schedules, setSchedules] = useState<AutomationSchedule[]>([])
   const [runs, setRuns] = useState<AutomationRun[]>([])
-  const [queue, setQueue] = useState<QueueItem[]>([])
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [queue, setQueue] = useState<PostQueueItem[]>([])
+  const [notifications, setNotifications] = useState<AutomationNotification[]>([])
   const [insights, setInsights] = useState<PerformanceInsight[]>([])
-  const [latestReport, setLatestReport] = useState<Record<string, unknown> | null>(null)
-  const [latestScore, setLatestScore] = useState<Record<string, unknown> | null>(null)
+  const [latestReport, setLatestReport] = useState<AutomationLatestReport | null>(null)
+  const [latestScore, setLatestScore] = useState<AutomationLatestScore | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [expandedRun, setExpandedRun] = useState<string | null>(null)
@@ -197,22 +155,22 @@ export default function AutomationDashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 24 }}>
             <div>
               <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 4 }}>
-                {(latestReport as Record<string, string>).report_title || (latestReport as Record<string, string>).topic}
+                {latestReport.report_title || latestReport.topic}
               </div>
               <div style={{ fontSize: 13, color: '#888' }}>
-                <a href={`https://research.zavis.ai/reports/${(latestReport as Record<string, string>).report_slug}`}
+                <a href={`https://research.zavis.ai/reports/${latestReport.report_slug}`}
                    target="_blank" style={{ color: '#006828' }}>
-                  research.zavis.ai/reports/{(latestReport as Record<string, string>).report_slug}
+                  research.zavis.ai/reports/{latestReport.report_slug}
                 </a>
               </div>
               <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-                Published {new Date((latestReport as Record<string, string>).published_at).toLocaleDateString()}
+                {latestReport.published_at ? `Published ${new Date(latestReport.published_at).toLocaleDateString()}` : 'Not yet published'}
               </div>
             </div>
             <MetricCard
               label="Score"
-              value={latestScore ? `${Number((latestScore as Record<string, number>).composite_score).toFixed(0)}/100` : '--'}
-              color={latestScore && Number((latestScore as Record<string, number>).composite_score) >= 75 ? '#006828' : '#d4a855'}
+              value={latestScore ? `${latestScore.composite_score.toFixed(0)}/100` : '--'}
+              color={latestScore && latestScore.composite_score >= 75 ? '#006828' : '#d4a855'}
             />
             <MetricCard label="Posts Queued" value={String(queue.length)} color="#3a86ff" />
             <MetricCard
@@ -390,11 +348,9 @@ export default function AutomationDashboard() {
                 }}>
                   <div style={{ fontSize: 11, color: '#666' }}>Week of {i.week_start}</div>
                   <div style={{ fontSize: 13, color: '#fff', marginTop: 4 }}>{i.report_slug || '--'}</div>
-                  {i.recommendations && (
+                  {i.recommendations?.next_topic_category && (
                     <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>
-                      {typeof i.recommendations === 'object' && (i.recommendations as Record<string, string>).next_topic_category
-                        ? `Next: ${(i.recommendations as Record<string, string>).next_topic_category}`
-                        : ''}
+                      Next: {i.recommendations.next_topic_category}
                     </div>
                   )}
                 </div>

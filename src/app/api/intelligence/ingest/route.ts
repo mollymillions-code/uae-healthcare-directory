@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { runContentPipeline } from "@/lib/intelligence/automation/pipeline";
 
-// Allow up to 300 seconds (Vercel Pro) or 60s (Hobby)
+// Allow up to 300 seconds for pipeline execution
 export const maxDuration = 300;
 
 // POST /api/intelligence/ingest
 // Triggers the content ingestion pipeline.
-// Protected by CRON_SECRET for Vercel Cron Jobs.
-// Vercel cron: every 2 hours (see vercel.json)
+// Protected by CRON_SECRET. Runs every 2 hours via GitHub Actions on EC2.
 export async function POST(request: Request) {
   // Verify cron secret
   const authHeader = request.headers.get("authorization");

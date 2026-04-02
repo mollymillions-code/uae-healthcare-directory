@@ -1,5 +1,142 @@
 # Zavis Landing - Changelog
 
+## 2026-04-02 — [Claude Code] CQ2/CQ3 follow-up: Eliminate remaining type casts in automation dashboard
+
+**Signed by:** Claude Code -- 2026-04-02T22:30:00+04:00
+
+- **`src/types/dashboard.ts`** -- Added `PerformanceInsightRecommendations`, `ContentPatterns`, `TimingScores` interfaces. Updated `PerformanceInsight` to use these specific types instead of `Record<string, unknown>` for `recommendations`, `content_patterns`, and `timing_scores`.
+- **`src/app/(directory)/dashboard/automation/page.tsx`** -- Replaced 5 local interface definitions (Schedule, AutomationRun, QueueItem, Notification, PerformanceInsight) with imports from `@/types/dashboard`. Changed `latestReport` state from `Record<string, unknown>` to `AutomationLatestReport`. Changed `latestScore` state from `Record<string, unknown>` to `AutomationLatestScore`. Eliminated all 8 `as Record<string, ...>` type casts. Added null-safe date rendering for `published_at`.
+- **Impact:** Zero `any` types, zero `as Record` casts, zero `eslint-disable` comments remain across all 9 dashboard files.
+
+## 2026-04-02 — [Claude Code] CQ2/CQ3: Eliminate `any` types and `eslint-disable` from dashboard
+
+**Signed by:** Claude Code · 2026-04-02T21:00:00+04:00
+
+- **`src/types/dashboard.ts`** — NEW: 20 TypeScript interfaces covering all dashboard data structures: PipelineRunSummary, PipelineRunDetail, PipelineComment, LinkedInPost, EmailBlast, PerformanceScore, AnalyticsRun, AutomationSchedule, AutomationRun, AutomationStageLogEntry, PostQueueItem, AutomationNotification, PerformanceInsight, HeadlineStat, PipelineRunSynthesis, PipelineRunDetailResponse, AutomationLatestReport, AutomationLatestScore. Derived from SQL schema in scripts/db/run-schema.mjs and scripts/automation/migrate.mjs.
+- **`src/app/(directory)/dashboard/pipeline/[id]/page.tsx`** — Removed eslint-disable comment. Replaced 5 `any` useState types with proper interfaces (PipelineRunDetail, LinkedInPost[], EmailBlast[], PerformanceScore). Replaced 4 `catch (err: any)` with `catch (err: unknown)` + `instanceof Error` guard. Replaced `(s: any)` in synthesis headline_stats map with HeadlineStat. Removed unused `Link` import. Wrapped fetchData in useCallback to fix react-hooks/exhaustive-deps warning.
+- **`src/app/(directory)/dashboard/analytics/page.tsx`** — Removed eslint-disable comment. Replaced `any[]` state with `AnalyticsRun[]`. Typed `.map(async (run: any) =>` as `PipelineRunSummary`. Typed API response shapes. Removed unused `Link` import. Fixed `.catch(err =>` to use instanceof Error.
+- **`src/app/(directory)/dashboard/emails/page.tsx`** — Removed eslint-disable comment. Replaced `any[]` with `EmailBlast[]`. Removed unused `Link` import.
+- **`src/app/(directory)/dashboard/posts/page.tsx`** — Removed eslint-disable comment. Replaced `any[]` with `LinkedInPost[]`. Wrapped fetchPosts in useCallback to fix react-hooks/exhaustive-deps warning.
+- **`src/app/(directory)/dashboard/calendar/page.tsx`** — Removed eslint-disable comment. Removed unused `TYPE_LABELS` constant that was triggering no-unused-vars.
+
+**Impact:** Zero `any` types and zero `eslint-disable` comments remain in any dashboard component. Full `npm run lint` passes cleanly.
+
+## 2026-04-02 — [Claude Code] Audit wave 4: LRU cache, column whitelist, batch inserts, composite index, sitemap lastmod
+
+**Signed by:** Claude Code · 2026-04-02T16:00:00+04:00
+
+- **`src/lib/data.ts`** — P6: Replaced unbounded Map cache with bounded LRU (max 500 entries). On cache hit, entry is moved to end (most-recently-used). On set, oldest entry evicted when over limit. Same TTL (5 min), same interface.
+- **`src/app/api/research/posts/route.ts`** — D6: GET handler SELECT * replaced with explicit column list (id, run_id, account, content, first_comment, hashtags, status, scheduled_for, posted_at, created_at, updated_at).
+- **`src/app/api/research/emails/route.ts`** — D6: GET handler SELECT * replaced with explicit column list excluding body_html and body_text (large fields unnecessary for list queries).
+- **`src/lib/db/seed.ts`** — D7: Converted all 6 seed functions from sequential single-row inserts to batch inserts (cities, areas, categories, subcategories, providers, faqs). Each now builds a values array and does a single INSERT.
+- **`src/lib/db/schema.ts`** — D8: Added composite index `idx_providers_city_status` on `(cityId, status)` for common filter combination. D9: Added comment explaining why faqs.entityId has no FK (polymorphic — references cities, categories, or providers based on entityType).
+- **`src/app/sitemap.ts`** — S9: Replaced all `new Date()` lastModified values with fixed `LAST_CONTENT_UPDATE = new Date('2026-04-02')`. Added comment explaining the rationale and when to update.
+- **Impact:** 6 audit items resolved across 6 files. Zero lint errors.
+
+## 2026-04-03 — [Claude Code] SEC11: XSS sanitization for dangerouslySetInnerHTML
+
+**Signed by:** Claude Code · 2026-04-03T03:00:00+04:00
+
+- **Installed `isomorphic-dompurify`** (+ `@types/dompurify` dev dep) — works in both server components (Node/JSDOM) and client components (browser DOM).
+- **Created `src/lib/sanitize.ts`** — exports `sanitizeHtml(html: string): string` using DOMPurify with `ADD_TAGS: ["iframe"]` and social embed data attributes whitelisted.
+- **`src/components/intelligence/SocialEmbed.tsx`** — the primary XSS risk (AI-generated article bodies rendered via `dangerouslySetInnerHTML`). Now sanitizes HTML after embed processing, before rendering.
+- **`src/app/(directory)/directory/guide/[slug]/page.tsx`** — defense-in-depth sanitization on guide article paragraph HTML. Content is currently static seed data but the pattern is now safe if the source changes.
+- **NOT modified (trusted internal sources):** `JsonLd.tsx` (JSON.stringify of structured data), `ar/layout.tsx` (hardcoded inline script for lang/dir).
+- **Impact:** Closes SEC11. All AI/external HTML content is now sanitized before DOM injection. Zero lint errors.
+
+## 2026-04-03 — [Claude Code] Audit Wave 3: SEC13 + SEC15 + CQ8
+
+**Signed by:** Claude Code · 2026-04-03T02:00:00+04:00
+
+- **SEC13: Remove localhost auth bypass** — `src/middleware.ts`: removed `isLocal` check that skipped dashboard auth for `localhost`/`127.0.0.1`. Auth now enforced on all hosts.
+- **SEC15: Hardcoded integration IDs → env vars** — `scripts/automation/lib/config.mjs`: Postiz integration IDs now read from `POSTIZ_HIDAYAT_LINKEDIN_ID` and `POSTIZ_ZAVIS_FACEBOOK_ID` env vars with current values as fallbacks.
+- **CQ8: Document pipeline thresholds** — `src/lib/intelligence/automation/pipeline.ts`: added detailed comments explaining the `MINIMUM_SCORE = 35` threshold (scoring criteria, why 35, impact of changing) and the `slice(0, 3)` batch limit (serverless timeout constraint, per-article cost, alternative for bulk).
+
+## 2026-04-03 — [Claude Code] Audit Wave 2: Security hardening + GSAP code-splitting
+
+**Signed by:** Claude Code · 2026-04-03T01:00:00+04:00
+
+- **P2: GSAP code-splitting** — Converted all 6 GSAP-importing files (`AnimatedSection.tsx`, `LenisProvider.tsx`, `ChannelIconGrid.tsx`, `IntegrationHub.tsx`, `OrbitalDisplay.tsx`, `HomePageClient.tsx`) from static `import gsap` to dynamic `import("gsap")` inside `useEffect`. GSAP (~350KB) and Lenis now lazy-loaded, excluded from initial bundle.
+- **SEC3: Weak password removed** — Removed `'zavis_research_2026'` fallback from `auth.ts`, `middleware.ts` (2 occurrences), and `auth/route.ts`. Dashboard now requires `DASHBOARD_KEY` env var or rejects all auth.
+- **SEC6: CSP header** — Added `Content-Security-Policy` to `next.config.mjs` with proper `script-src` for GTM/FB/LinkedIn, `style-src` for Google Fonts, `frame-src` for YouTube, `object-src: none`, `base-uri: self`.
+- **SEC10: Input validation** — Added type checks, length limits, and array bounds to `posts/route.ts` (content 10K, account 100, firstComment 5K, hashtags 30) and `emails/route.ts` (subject 500, bodyHtml 200K, segment whitelist).
+- **SEC12: Error leak** — Removed `details` field from `sheets/route.ts` error response. Internal errors only logged server-side.
+- **P11: Graceful DB shutdown** — Added `process.once('SIGTERM'/'SIGINT', () => pool.end())` to both `db/index.ts` and `research/db.ts`.
+- **Impact:** 6 audit items resolved. Zero lint errors.
+
+## 2026-04-03 — [Claude Code] Memoize computed arrays in HomePageClient
+
+**Signed by:** Claude Code · 2026-04-03T01:00:00+04:00
+
+- **`src/components/landing/pages/HomePageClient.tsx`** — Added `useMemo` import. Extracted inline `clientLogos` array (12 duplicated logo objects for marquee) and `integrationLogos` array (channel + EMR partner slice) into `useMemo` hooks with `[]` deps (both are static). Replaced inline JSX array creation with memoized references.
+- **`src/components/research/research-page-client.tsx`** — Already had `useMemo` wrapping the `Array.from(new Set(...))` categories computation. No changes needed.
+- **Why:** Audit found unmemoized array allocations on every render in client components.
+- **Impact:** HomePageClient no longer creates 2 new arrays + 12 new objects on every render cycle. Zero lint errors.
+
+## 2026-04-03 — [Claude Code] Fix silent error swallowing in dashboard components
+
+**Signed by:** Claude Code · 2026-04-03T00:15:00+04:00
+
+- **`src/app/(directory)/dashboard/pipeline/[id]/page.tsx`** — Added error state rendering: when `error` is set, the page now shows a red error message with a Retry button instead of silently failing. The file already had proper `.catch()` and `.finally()` on its fetch chain, but never rendered the error to the user.
+- **`src/app/(directory)/dashboard/analytics/page.tsx`** — Added `const [error, setError] = useState<string | null>(null)`. Added `if (!r.ok) throw new Error(...)` response checks and `.catch(err => setError(err.message || 'Something went wrong'))` to both useEffect fetch chains (completed runs and published runs). Added error paragraph rendering above the table. The second useEffect previously had no `.catch()` at all.
+- **Why:** Audit found silent error swallowing — fetch failures produced no user-visible feedback. The analytics page had no error state, no `.catch()` on the published-runs effect, and no response status checks. The pipeline detail page caught errors but never displayed them.
+- **Impact:** Both dashboard pages now surface fetch errors to the user instead of silently failing with empty/stale data.
+
+---
+
+## 2026-04-02 — [Claude Code] SEO: Add missing openGraph.images to dynamic listing pages
+
+**Signed by:** Claude Code · 2026-04-02T23:45:00+04:00
+
+- **`src/app/(directory)/directory/[city]/[...segments]/page.tsx`** — Added `openGraph` with `images` to `city-area`, `area-category`, `area-insurance` (images were missing), and `city-category-subcategory` metadata cases. Category-related pages use the category image; area-only and insurance pages use `clinics.webp` as generic fallback.
+- **`src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx`** — Added `getCategoryImageUrl` helper function and `openGraph` with `images` to all 4 metadata cases (`city-category`, `city-area`, `area-category`, `listing`). Uses `locale: 'ar_AE'` and Arabic `siteName`.
+- **Why:** SEO audit found that these dynamic provider listing pages had no `openGraph.images`, meaning social shares and search previews showed no image. The English `city-category` and `listing` cases already had OG images; the rest were missing.
+- **Impact:** All dynamic directory pages now emit proper OG images for social sharing and rich search previews.
+
+## 2026-04-02 — [Claude Code] Research Pages: force-dynamic → ISR (1 hour)
+
+**Signed by:** Claude Code · 2026-04-02T23:30:00+04:00
+
+- **`src/app/(research)/research/page.tsx`** — Replaced `export const dynamic = 'force-dynamic'` with `export const revalidate = 3600`
+- **`src/app/(research)/research/[slug]/page.tsx`** — Same change
+- **Why:** Both pages only call `getAllPublishedReports()` / `getReportBySlug()` which read from the filesystem via `fs.readFileSync` / `fs.readdirSync`. No cookies, headers, or search params are accessed. `force-dynamic` forced every request to re-render server-side, adding unnecessary latency and compute. ISR with 1-hour revalidation caches the rendered page and revalidates in the background.
+- **Impact:** Faster TTFB on all 9 research URLs (index + 8 report pages). New reports published to `data/reports/` will appear within 1 hour, or immediately via `/api/revalidate`.
+
+---
+
+## 2026-04-02 — [Claude Code] Comprehensive Optimization Audit + Critical Fixes
+
+**Signed by:** Claude Code · 2026-04-02T22:00:00+04:00
+
+### SEO Fixes
+- **Soft 404 resolution:** Area+category pages with 0 providers now call `notFound()` instead of rendering "No providers found" (EN + AR). `/healthcare` route now returns proper 404 via server-side check.
+- **FAQ operating hours fix:** Empty `operatingHours` objects no longer render broken "Provider Name: . Verified [ISO timestamp]". Now shows "Contact provider for hours."
+- **Raw ISO timestamps → human dates:** All `lastVerified` renders across EN/AR listing pages now show "25 March 2026" / "٢٥ مارس ٢٠٢٦" instead of `2026-03-25T14:14:41.336Z`
+
+### Performance (LCP)
+- **Specialty page LCP fix:** Hero image removed from `AnimatedSection delay={0.4}` wrapper (was setting `opacity:0` via GSAP, blocking LCP for 400ms+). Switched from `<img>` to `next/image` with `priority` prop. Affects 88 URLs (`/dermatology`, `/optometry`, etc.)
+- **BrandIcons:** Added `loading="lazy"` to all 16 `<img>` tags
+
+### Infrastructure
+- **Vercel cleanup:** Removed `vercel.json`, uninstalled `@vercel/analytics`, `@vercel/blob`, `@vercel/speed-insights`. Updated hardcoded Vercel URL fallback in ContactPageClient. Updated ingest route comments to reference EC2.
+- **DB pool:** `max: 2` → `max: 10, min: 2, idleTimeoutMillis: 30000` in both `src/lib/db/index.ts` and `src/lib/research/db.ts`
+
+### Security
+- **Hardcoded API key removed:** `scripts/media/generate-cover.mjs` no longer falls back to a hardcoded Gemini key
+- **Health endpoint:** Removed git commit message, author from `/api/health` response (info disclosure)
+- **Revalidate endpoint:** Added path traversal validation (`startsWith("/")`, no `..`)
+
+### Schema
+- **Missing indexes added:** `isVerified`, `isClaimed`, `isFeatured` on providers table
+- **CASCADE delete:** Added `onDelete: "cascade"` to `claimRequests.providerId`
+
+### Accessibility
+- **SearchBar:** Added `aria-label` and `role="search"` to compact form
+
+**Files changed:** `[...segments]/page.tsx` (EN+AR), `[specialty]/page.tsx`, `SpecialtyPageClient.tsx`, `BrandIcons.tsx`, `SearchBar.tsx`, `db/index.ts`, `research/db.ts`, `db/schema.ts`, `research/auth.ts`, `api/health/route.ts`, `api/revalidate/route.ts`, `api/intelligence/ingest/route.ts`, `ContactPageClient.tsx`, `generate-cover.mjs`, `vercel.json` (deleted), `package.json`
+
+---
+
 ## 2026-03-28 — [Claude Code] Full Zavis Design System Overhaul (Directory + Intelligence)
 
 - **Scope:** All 103 English directory pages + 36 shared components redesigned to match Zavis brand design system

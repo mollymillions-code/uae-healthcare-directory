@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
@@ -79,13 +78,6 @@ const TYPE_COLORS: Record<EventType, string> = {
   linkedin: '#0077b5',
   email: '#e63946',
   video: '#d4a855',
-}
-
-const TYPE_LABELS: Record<EventType, string> = {
-  report: 'Report',
-  linkedin: 'LinkedIn Post',
-  email: 'Email Blast',
-  video: 'Video',
 }
 
 const STATUS_STYLES: Record<EventStatus, { bg: string; color: string }> = {
