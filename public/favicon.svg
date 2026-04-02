@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#f5f0e8"/>
+  <text x="4" y="24" font-family="system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="24" fill="#1a1a1a" letter-spacing="-1">Z</text>
+  <circle cx="25" cy="24" r="3" fill="#00c853"/>
+</svg>

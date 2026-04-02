@@ -69,7 +69,10 @@ export const metadata: Metadata = {
     images: [`${baseUrl}/images/og-default.png`],
   },
   icons: {
-    icon: '/favicon.png',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
     apple: '/apple-touch-icon.png',
   },
   robots: { index: true, follow: true },
