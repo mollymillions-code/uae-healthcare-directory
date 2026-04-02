@@ -25,9 +25,7 @@ interface Props {
   params: { insurer: string };
 }
 
-export function generateStaticParams() {
-  return INSURER_PROFILES.map((p) => ({ insurer: p.slug }));
-}
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = getInsurerProfile(params.insurer);

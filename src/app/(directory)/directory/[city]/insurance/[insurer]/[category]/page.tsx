@@ -6,7 +6,7 @@ import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCities, getCategories, getCategoryBySlug,
+  getCityBySlug, getCategories, getCategoryBySlug,
   getInsuranceProviders, getProvidersByInsurance,
 } from "@/lib/data";
 import {
@@ -35,32 +35,7 @@ function getRegulatorSlug(citySlug: string): "dha" | "doh" | "mohap" {
   return "mohap";
 }
 
-// ─── generateStaticParams ─────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const cities = getCities();
-  const insurers = getInsuranceProviders();
-  const categories = getCategories();
-  const params: { city: string; insurer: string; category: string }[] = [];
-
-  for (const city of cities) {
-    for (const ins of insurers) {
-      const allProviders = await getProvidersByInsurance(ins.slug, city.slug);
-      if (allProviders.length === 0) continue;
-
-      for (const cat of categories) {
-        const catCount = allProviders.filter(
-          (p) => p.categorySlug === cat.slug
-        ).length;
-        if (catCount >= 2) {
-          params.push({ city: city.slug, insurer: ins.slug, category: cat.slug });
-        }
-      }
-    }
-  }
-
-  return params;
-}
+export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 

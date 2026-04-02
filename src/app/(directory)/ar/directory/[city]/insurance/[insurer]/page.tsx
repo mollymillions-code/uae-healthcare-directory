@@ -42,24 +42,7 @@ function getArabicMandatoryNote(citySlug: string, cityNameAr: string): string {
   return `يخضع التأمين الصحي في ${cityNameAr} للإرشادات الفيدرالية الصادرة عن وزارة الصحة ووقاية المجتمع MOHAP؛ وعلى الرغم من عدم إلزاميته محلياً، يوفر معظم أصحاب العمل تغطية جماعية لموظفيهم.`;
 }
 
-// ─── generateStaticParams ─────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const cities = getCities();
-  const insurers = getInsuranceProviders();
-  const params: { city: string; insurer: string }[] = [];
-
-  for (const city of cities) {
-    for (const ins of insurers) {
-      const count = await getProviderCountByInsurance(ins.slug, city.slug);
-      if (count > 0) {
-        params.push({ city: city.slug, insurer: ins.slug });
-      }
-    }
-  }
-
-  return params;
-}
+export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 

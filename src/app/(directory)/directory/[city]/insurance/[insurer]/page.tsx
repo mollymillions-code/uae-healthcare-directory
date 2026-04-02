@@ -52,24 +52,7 @@ function getInsurerTypeLabel(type: string): string {
   }
 }
 
-// ─── generateStaticParams ─────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const cities = getCities();
-  const insurers = getInsuranceProviders();
-  const params: { city: string; insurer: string }[] = [];
-
-  for (const city of cities) {
-    for (const ins of insurers) {
-      const count = await getProviderCountByInsurance(ins.slug, city.slug);
-      if (count > 0) {
-        params.push({ city: city.slug, insurer: ins.slug });
-      }
-    }
-  }
-
-  return params;
-}
+export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
