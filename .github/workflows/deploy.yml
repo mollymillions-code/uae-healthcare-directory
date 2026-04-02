@@ -36,6 +36,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           command_timeout: 40m
+          sync: true
           script: |
             set -e
             /home/ubuntu/zavis-deploy/deploy.sh
