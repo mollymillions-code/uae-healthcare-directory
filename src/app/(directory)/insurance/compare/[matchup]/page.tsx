@@ -67,14 +67,12 @@ function parseMatchupSlug(slug: string): { slugA: string; slugB: string } | null
   return { slugA, slugB };
 }
 
-// ─── Static Params ──────────────────────────────────────────────────────────
+// ─── Params ─────────────────────────────────────────────────────────────────
+
+export const dynamicParams = true;
 
 interface Props {
   params: { matchup: string };
-}
-
-export async function generateStaticParams() {
-  return (await getAllMatchups()).map((m) => ({ matchup: m.slug }));
 }
 
 // ─── Metadata ───────────────────────────────────────────────────────────────
