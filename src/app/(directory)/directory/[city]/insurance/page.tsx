@@ -16,9 +16,7 @@ interface Props {
   params: { city: string };
 }
 
-export function generateStaticParams() {
-  return getCities().map((c) => ({ city: c.slug }));
-}
+export const dynamicParams = true;
 
 export function generateMetadata({ params }: Props): Metadata {
   const city = getCityBySlug(params.city);
