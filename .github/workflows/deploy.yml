@@ -38,56 +38,76 @@ jobs:
           command_timeout: 40m
           script: |
             set -e
-            DEPLOY_DIR=/home/ubuntu/zavis-landing
-            BACKUP_DIR=/home/ubuntu/zavis-landing-backup
-            cd $DEPLOY_DIR
+            LIVE_DIR=/home/ubuntu/zavis-landing
+            BUILD_DIR=/home/ubuntu/zavis-landing-build
 
-            echo "===== SAFE DEPLOY START ====="
+            echo "===== ZERO-DOWNTIME DEPLOY START ====="
             echo "Time: $(date -u)"
+            echo "Site is LIVE throughout this entire build."
 
-            # 1. Backup current working .next before touching anything
-            if [ -d .next ] && [ -f .next/BUILD_ID ]; then
-              echo "[backup] Saving current .next as fallback..."
-              rm -rf $BACKUP_DIR/.next
-              mkdir -p $BACKUP_DIR
-              cp -a .next $BACKUP_DIR/.next
-              echo "[backup] Saved BUILD_ID: $(cat $BACKUP_DIR/.next/BUILD_ID)"
-            else
-              echo "[backup] No valid .next to backup — proceeding anyway"
-            fi
+            # 1. Prepare build directory (separate from live)
+            rm -rf $BUILD_DIR
+            mkdir -p $BUILD_DIR
 
-            # 2. Pull latest code (switch to live branch if still on main)
+            # 2. Pull latest code into live dir (code only, .next untouched)
+            cd $LIVE_DIR
             git checkout -- .
             CURRENT_BRANCH=$(git branch --show-current)
             if [ "$CURRENT_BRANCH" != "live" ]; then
               echo "[branch] Switching from $CURRENT_BRANCH to live..."
               git fetch origin live
-              # Clean untracked files that conflict with the live branch
               git clean -fd .vscode/ 2>/dev/null || true
               git checkout live
               git branch --set-upstream-to=origin/live live
             fi
             git pull origin live
+
+            # 3. Copy source into build directory
+            echo "[build] Copying source to build dir..."
+            rsync -a --exclude='.next' --exclude='node_modules' --exclude='.git' \
+              $LIVE_DIR/ $BUILD_DIR/
+
+            # Copy node_modules (faster than npm install from scratch)
+            cp -a $LIVE_DIR/node_modules $BUILD_DIR/node_modules 2>/dev/null || true
+
+            # Install any new/changed deps
+            cd $BUILD_DIR
             npm install
 
-            # 3. Build (incremental, uses .next/cache for speed)
-            echo "[build] Starting build..."
+            # Copy .next/cache from live for incremental build speed
+            if [ -d $LIVE_DIR/.next/cache ]; then
+              mkdir -p $BUILD_DIR/.next
+              cp -a $LIVE_DIR/.next/cache $BUILD_DIR/.next/cache
+            fi
+
+            # Copy env file
+            cp $LIVE_DIR/.env.local $BUILD_DIR/.env.local 2>/dev/null || true
+
+            # 4. Build in the isolated directory — PM2 keeps serving from LIVE_DIR
+            echo "[build] Starting build in isolated dir..."
             if npm run build; then
-              echo "[build] SUCCESS — BUILD_ID: $(cat .next/BUILD_ID)"
+              echo "[build] SUCCESS — BUILD_ID: $(cat $BUILD_DIR/.next/BUILD_ID)"
             else
-              echo "[build] FAILED — restoring backup .next"
-              rm -rf .next
-              if [ -d $BACKUP_DIR/.next ]; then
-                cp -a $BACKUP_DIR/.next .next
-                echo "[build] Restored BUILD_ID: $(cat .next/BUILD_ID)"
-              else
-                echo "[build] NO BACKUP AVAILABLE — site may be broken"
-              fi
-              pm2 restart zavis-landing
+              echo "[build] FAILED — site still running, no changes made"
+              rm -rf $BUILD_DIR
               exit 1
             fi
 
-            # 4. Restart PM2 to serve the new build
+            # 5. Atomic swap: move new .next into live dir
+            echo "[swap] Swapping .next directories..."
+            cd $LIVE_DIR
+
+            # Also sync any new/changed deps into live
+            rsync -a $BUILD_DIR/node_modules/ $LIVE_DIR/node_modules/
+
+            rm -rf .next.old
+            mv .next .next.old 2>/dev/null || true
+            mv $BUILD_DIR/.next .next
+
+            # Clean up any temp fallback process from manual recovery
+            pm2 delete zavis-landing-temp 2>/dev/null || true
+            rm -rf /home/ubuntu/zavis-landing-temp-serve 2>/dev/null || true
+
             pm2 restart zavis-landing
 
             # 6. Health check — if app doesn't respond, rollback
@@ -95,15 +115,18 @@ jobs:
             HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3200/ || echo "000")
             if [ "$HTTP_CODE" = "200" ]; then
               echo "[health] Site responding OK (HTTP $HTTP_CODE)"
+              rm -rf .next.old
+              rm -rf $BUILD_DIR
             else
               echo "[health] Site NOT responding (HTTP $HTTP_CODE) — rolling back"
-              if [ -d $BACKUP_DIR/.next ]; then
-                rm -rf .next
-                cp -a $BACKUP_DIR/.next .next
-                pm2 restart zavis-landing
-                sleep 3
-                echo "[health] Rolled back to BUILD_ID: $(cat .next/BUILD_ID)"
+              rm -rf .next
+              if [ -d .next.old ]; then
+                mv .next.old .next
+                echo "[rollback] Restored previous build"
               fi
+              pm2 restart zavis-landing
+              sleep 3
+              rm -rf $BUILD_DIR
               exit 1
             fi
 
