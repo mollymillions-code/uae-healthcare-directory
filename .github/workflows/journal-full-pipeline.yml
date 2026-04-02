@@ -19,7 +19,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           command_timeout: 25m
           script: |
-            cd /home/ubuntu/zavis-landing
+            DEPLOY_DIR=$(readlink -f /home/ubuntu/zavis-landing-active)
+            cd $DEPLOY_DIR
             git pull origin live
             mkdir -p public/images/intelligence
             npx tsx scripts/run-pipeline-persist.ts
