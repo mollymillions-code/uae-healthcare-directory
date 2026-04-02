@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
-type LenisInstance = { scrollTo: (target: number, opts?: { immediate?: boolean }) => void; raf: (time: number) => void; destroy: () => void; on: (event: string, callback: (...args: unknown[]) => void) => void };
+import type Lenis from "lenis";
 
-let lenisInstance: LenisInstance | null = null;
+let lenisInstance: Lenis | null = null;
 
-export function getLenis(): LenisInstance | null {
+export function getLenis(): Lenis | null {
   return lenisInstance;
 }
 
