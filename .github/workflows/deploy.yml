@@ -74,12 +74,6 @@ jobs:
             cd $BUILD_DIR
             npm install
 
-            # Copy .next/cache from live for incremental build speed
-            if [ -d $LIVE_DIR/.next/cache ]; then
-              mkdir -p $BUILD_DIR/.next
-              cp -a $LIVE_DIR/.next/cache $BUILD_DIR/.next/cache
-            fi
-
             # Copy env file
             cp $LIVE_DIR/.env.local $BUILD_DIR/.env.local 2>/dev/null || true
 
@@ -89,7 +83,7 @@ jobs:
               echo "[build] SUCCESS — BUILD_ID: $(cat $BUILD_DIR/.next/BUILD_ID)"
             else
               echo "[build] FAILED — site still running, no changes made"
-              rm -rf $BUILD_DIR
+              rm -rf $BUILD_DIR || true
               exit 1
             fi
 
