@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCities,
+  getCityBySlug,
   getInsuranceProviders, getProviderCountByInsurance,
 } from "@/lib/data";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCities,
+  getCityBySlug,
   getInsuranceProviders, getProviderCountByInsurance,
 } from "@/lib/data";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
