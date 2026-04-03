@@ -99,7 +99,7 @@ export default async function DirectoryHomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-[#2a2a2a]">
             {/* Main hero card — left half */}
             <Link href="/directory/dubai" className="lg:col-span-6 relative overflow-hidden rounded-none bg-[#1c1c1c] min-h-[420px] lg:min-h-[500px] group">
-              <Image src="/images/cities/dubai.webp" alt="Dubai Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+              <Image src="/images/cities/dubai.webp" alt="Dubai Healthcare" fill sizes="(max-width: 1024px) 100vw, 50vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
               <div className="relative z-10 p-6 flex flex-col justify-end h-full">
                 <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-3 w-fit font-['Geist',sans-serif]">Dubai</span>
@@ -115,7 +115,7 @@ export default async function DirectoryHomePage() {
             {/* Right column — 2 stacked cards */}
             <div className="lg:col-span-3 flex flex-col gap-px">
               <Link href="/directory/abu-dhabi" className="relative overflow-hidden bg-[#1c1c1c] flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/abu-dhabi.webp" alt="Abu Dhabi Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/abu-dhabi.webp" alt="Abu Dhabi Healthcare" fill sizes="(max-width: 1024px) 100vw, 25vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="relative z-10 p-6 flex flex-col justify-end h-full">
                   <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-2 w-fit font-['Geist',sans-serif]">Abu Dhabi</span>
@@ -126,7 +126,7 @@ export default async function DirectoryHomePage() {
                 </div>
               </Link>
               <Link href="/directory/sharjah" className="relative overflow-hidden bg-[#1c1c1c] flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/sharjah.webp" alt="Sharjah Healthcare" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src="/images/cities/sharjah.webp" alt="Sharjah Healthcare" fill sizes="(max-width: 1024px) 100vw, 25vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="relative z-10 p-6 flex flex-col justify-end h-full">
                   <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-2 w-fit font-['Geist',sans-serif]">Sharjah</span>
