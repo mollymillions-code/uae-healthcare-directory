@@ -15,6 +15,9 @@ import { CARE_JOURNEYS } from "@/lib/constants/care-journeys";
 import { PROCEDURE_COMPARISONS } from "@/lib/constants/procedure-comparisons";
 import { getAllComparisonSlugs } from "@/lib/compare";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
+import { PROFESSIONAL_CATEGORIES, ALL_SPECIALTIES, PHYSICIAN_SPECIALTIES, DENTIST_SPECIALTIES } from "@/lib/constants/professionals";
+import { getAllFacilitySlugs, getFacilitySpecialtyCombos, getAreaStats, getAreaSpecialtyCombos, getSpecialtiesWithBothLevels, getAllFacilities } from "@/lib/professionals";
+import { getTopAreas, getTopFacilities, getProfessionalsByAreaAndCategory } from "@/lib/workforce";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works", "health-insurance-uae", "what-is-dha",
@@ -271,6 +274,148 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (let i = 0; i < CITIES.length; i++) {
     for (let j = i + 1; j < CITIES.length; j++) {
       entries.push({ url: `${baseUrl}/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
+    }
+  }
+
+  // Professional directory
+  entries.push({ url: `${baseUrl}/professionals`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
+  entries.push({ url: `${baseUrl}/find-a-doctor`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
+  for (const cat of PROFESSIONAL_CATEGORIES) {
+    entries.push({ url: `${baseUrl}/professionals/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
+  }
+  for (const spec of ALL_SPECIALTIES) {
+    entries.push({ url: `${baseUrl}/professionals/${spec.category}/${spec.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+  }
+  for (const slug of getAllFacilitySlugs(20)) {
+    entries.push({ url: `${baseUrl}/professionals/facility/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+  }
+  for (const combo of getFacilitySpecialtyCombos(5)) {
+    entries.push({ url: `${baseUrl}/professionals/facility/${combo.facilitySlug}/${combo.specialtySlug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  }
+
+  // Professional directory — area pages
+  for (const area of getAreaStats()) {
+    entries.push({ url: `${baseUrl}/professionals/area/${area.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+  }
+  for (const combo of getAreaSpecialtyCombos(3)) {
+    entries.push({ url: `${baseUrl}/professionals/area/${combo.areaSlug}/${combo.specialtySlug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  }
+
+  // Professional directory — specialist/consultant split pages
+  for (const spec of getSpecialtiesWithBothLevels()) {
+    const specDef = ALL_SPECIALTIES.find((s) => s.slug === spec.slug);
+    if (specDef) {
+      entries.push({ url: `${baseUrl}/professionals/${specDef.category}/${spec.slug}/specialists`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+      entries.push({ url: `${baseUrl}/professionals/${specDef.category}/${spec.slug}/consultants`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
+  }
+
+  // Professional directory — guide pages
+  const PROF_GUIDE_SLUGS = [
+    "specialist-vs-consultant", "dha-licensing", "ftl-vs-reg", "how-to-verify-doctor",
+    "choosing-right-specialist", "healthcare-workforce", "medical-specialties-explained", "international-doctors-dubai",
+  ];
+  for (const slug of PROF_GUIDE_SLUGS) {
+    entries.push({ url: `${baseUrl}/professionals/guide/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.75 });
+  }
+
+  // Professional directory — stats page
+  entries.push({ url: `${baseUrl}/professionals/stats`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+
+  // Best doctors pages
+  const DOCTOR_SPECIALTIES = [...PHYSICIAN_SPECIALTIES, ...DENTIST_SPECIALTIES];
+  entries.push({ url: `${baseUrl}/best/doctors`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
+  for (const spec of DOCTOR_SPECIALTIES) {
+    entries.push({ url: `${baseUrl}/best/doctors/${spec.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
+  }
+
+  // Specialty comparison pages
+  const top15Specs = [...PHYSICIAN_SPECIALTIES].sort((a, b) => b.count - a.count).slice(0, 15);
+  for (let i = 0; i < top15Specs.length; i++) {
+    for (let j = i + 1; j < top15Specs.length; j++) {
+      entries.push({ url: `${baseUrl}/professionals/compare/${top15Specs[i].slug}-vs-${top15Specs[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
+    }
+  }
+
+  // Doctors-at facility alias pages
+  for (const fac of getAllFacilities(20).slice(0, 50)) {
+    entries.push({ url: `${baseUrl}/doctors-at/${fac.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+  }
+
+  // ─── Workforce Intelligence Section ─────────────────────────────────────────
+  // Hub pages
+  const workforceHubs = ["workforce", "workforce/overview", "workforce/employers", "workforce/specialties", "workforce/areas", "workforce/benchmarks", "workforce/careers", "workforce/rankings", "workforce/compare", "workforce/supply"];
+  for (const hub of workforceHubs) {
+    entries.push({ url: `${baseUrl}/${hub}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
+  }
+
+  // Category workforce pages
+  for (const cat of PROFESSIONAL_CATEGORIES) {
+    entries.push({ url: `${baseUrl}/workforce/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+    entries.push({ url: `${baseUrl}/workforce/career/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  }
+
+  // Specialty workforce + career + supply pages
+  for (const spec of ALL_SPECIALTIES) {
+    entries.push({ url: `${baseUrl}/workforce/specialty/${spec.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+    entries.push({ url: `${baseUrl}/workforce/career/${spec.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  }
+  for (const spec of PHYSICIAN_SPECIALTIES) {
+    entries.push({ url: `${baseUrl}/workforce/supply/${spec.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  }
+
+  // Employer workforce pages
+  for (const fac of getAllFacilities(20).slice(0, 100)) {
+    entries.push({ url: `${baseUrl}/workforce/employer/${fac.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  }
+
+  // Area workforce pages
+  const wfAreas = getAreaStats();
+  for (const area of wfAreas) {
+    entries.push({ url: `${baseUrl}/workforce/area/${area.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    for (const cat of PROFESSIONAL_CATEGORIES) {
+      const count = getProfessionalsByAreaAndCategory(area.slug, cat.slug).length;
+      if (count >= 10) {
+        entries.push({ url: `${baseUrl}/workforce/area/${area.slug}/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
+      }
+    }
+  }
+
+  // Rankings pages
+  entries.push({ url: `${baseUrl}/workforce/rankings/top-employers`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+  entries.push({ url: `${baseUrl}/workforce/rankings/largest-specialties`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+  for (const cat of PROFESSIONAL_CATEGORIES) {
+    entries.push({ url: `${baseUrl}/workforce/rankings/top-employers/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+  }
+
+  // Benchmark pages
+  const benchmarkSlugs = ["nurse-to-doctor", "staff-per-facility", "specialist-per-capita", "ftl-rate"];
+  for (const slug of benchmarkSlugs) {
+    entries.push({ url: `${baseUrl}/workforce/benchmarks/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.75 });
+  }
+
+  // Workforce comparison pages
+  const wfTop15 = [...PHYSICIAN_SPECIALTIES].sort((a, b) => b.count - a.count).slice(0, 15);
+  for (let i = 0; i < wfTop15.length; i++) {
+    for (let j = i + 1; j < wfTop15.length; j++) {
+      entries.push({ url: `${baseUrl}/workforce/compare/specialty/${wfTop15[i].slug}-vs-${wfTop15[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
+    }
+  }
+  const wfTopAreas = getTopAreas(10);
+  for (let i = 0; i < wfTopAreas.length; i++) {
+    for (let j = i + 1; j < wfTopAreas.length; j++) {
+      entries.push({ url: `${baseUrl}/workforce/compare/area/${wfTopAreas[i].slug}-vs-${wfTopAreas[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
+    }
+  }
+  const wfTopFacs = getTopFacilities(20);
+  for (let i = 0; i < wfTopFacs.length; i++) {
+    for (let j = i + 1; j < wfTopFacs.length; j++) {
+      entries.push({ url: `${baseUrl}/workforce/compare/employer/${wfTopFacs[i].slug}-vs-${wfTopFacs[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.55 });
+    }
+  }
+  for (let i = 0; i < PROFESSIONAL_CATEGORIES.length; i++) {
+    for (let j = i + 1; j < PROFESSIONAL_CATEGORIES.length; j++) {
+      entries.push({ url: `${baseUrl}/workforce/compare/category/${PROFESSIONAL_CATEGORIES[i].slug}-vs-${PROFESSIONAL_CATEGORIES[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
     }
   }
 

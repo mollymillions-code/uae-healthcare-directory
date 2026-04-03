@@ -26,6 +26,9 @@ export function AnimatedSection({
     const el = ref.current;
     if (prefersReducedMotion() || !el) return;
 
+    // Immediately hide so GSAP can animate in — only when JS is available
+    el.style.opacity = "0";
+
     let tween: gsap.core.Tween | undefined;
 
     (async () => {
@@ -85,6 +88,10 @@ export function StaggerContainer({
     const container = ref.current;
     if (prefersReducedMotion() || !container) return;
 
+    // Immediately hide children so GSAP can stagger them in — only when JS is available
+    const items = container.querySelectorAll("[data-stagger-item]");
+    items.forEach((item) => ((item as HTMLElement).style.opacity = "0"));
+
     let tween: gsap.core.Tween | undefined;
 
     (async () => {
@@ -92,7 +99,6 @@ export function StaggerContainer({
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
 
-      const items = container.querySelectorAll("[data-stagger-item]");
       if (!items.length) return;
 
       gsap.set(items, { opacity: 0, y: 28 });

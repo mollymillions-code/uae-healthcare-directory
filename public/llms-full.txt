@@ -1,0 +1,233 @@
+# Zavis — UAE Healthcare Directory & Intelligence Platform
+> https://www.zavis.ai
+> Full content index for AI search engines and LLM crawlers
+
+## About Zavis
+Zavis is a healthcare intelligence platform for the United Arab Emirates. It aggregates verified provider data from official government health authority registers (DHA, DOH, MOHAP) into an open directory of 12,500+ healthcare facilities. Alongside the directory, Zavis publishes healthcare industry intelligence articles every 2 hours and weekly research reports covering the UAE healthcare market.
+
+Zavis operates at the intersection of healthcare data and AI — serving patients looking for providers, healthcare executives tracking market trends, and insurers analyzing coverage patterns.
+
+---
+
+## UAE Open Healthcare Directory
+
+### Overview
+The directory contains 12,500+ healthcare providers across 8 cities and 28 medical categories. Each listing includes: provider name, address, phone, website, Google rating, review count, insurance plans accepted, operating hours, languages spoken, services offered, year established, and verification status. All data is sourced from official UAE health authority registers.
+
+### Cities Covered
+1. **Dubai** — The most populous city in the UAE, home to world-class hospitals, specialty clinics, and Dubai Healthcare City (DHCC). Regulated by the Dubai Health Authority (DHA).
+   - Directory: https://www.zavis.ai/directory/dubai
+   - Best providers: https://www.zavis.ai/best/dubai
+
+2. **Abu Dhabi** — Capital of the UAE with premier healthcare services on Al Reem Island, Al Maryah Island, and Khalifa City. Regulated by the Department of Health (DOH).
+   - Directory: https://www.zavis.ai/directory/abu-dhabi
+   - Best providers: https://www.zavis.ai/best/abu-dhabi
+
+3. **Sharjah** — Third-largest emirate with affordable clinics and hospitals across Al Nahda, Al Majaz, and Al Taawun. Regulated by MOHAP.
+   - Directory: https://www.zavis.ai/directory/sharjah
+   - Best providers: https://www.zavis.ai/best/sharjah
+
+4. **Ajman** — Smallest emirate by area with growing healthcare infrastructure. Regulated by MOHAP.
+   - Directory: https://www.zavis.ai/directory/ajman
+   - Best providers: https://www.zavis.ai/best/ajman
+
+5. **Ras Al Khaimah** — Northern emirate known for medical tourism and specialty care. Regulated by MOHAP.
+   - Directory: https://www.zavis.ai/directory/ras-al-khaimah
+   - Best providers: https://www.zavis.ai/best/ras-al-khaimah
+
+6. **Fujairah** — East coast emirate with developing healthcare sector. Regulated by MOHAP.
+   - Directory: https://www.zavis.ai/directory/fujairah
+   - Best providers: https://www.zavis.ai/best/fujairah
+
+7. **Umm Al Quwain** — Second-smallest emirate with essential healthcare services. Regulated by MOHAP.
+   - Directory: https://www.zavis.ai/directory/umm-al-quwain
+   - Best providers: https://www.zavis.ai/best/umm-al-quwain
+
+8. **Al Ain** — The "Garden City" in the Abu Dhabi emirate, with its own healthcare hub including Tawam Hospital. Regulated by DOH.
+   - Directory: https://www.zavis.ai/directory/al-ain
+   - Best providers: https://www.zavis.ai/best/al-ain
+
+### Healthcare Categories (28 total)
+Each category has a dedicated page per city with ranked providers, FAQs, and comparison data.
+
+1. **Hospitals & Medical Centers** — Multi-specialty institutions, government hospitals, private hospitals, university hospitals, day surgery centers
+   - Example: https://www.zavis.ai/best/dubai/hospitals
+
+2. **General Clinics & Polyclinics** — General practice, multi-specialty clinics, family medicine, walk-in clinics
+   - Example: https://www.zavis.ai/best/dubai/clinics
+
+3. **Dental Clinics** — General dentistry, orthodontics, cosmetic dentistry, pediatric dentistry, oral surgery, implants, endodontics, periodontics
+   - Example: https://www.zavis.ai/best/dubai/dental
+
+4. **Dermatology & Skin Care** — Medical dermatology, cosmetic dermatology, laser treatments, hair restoration
+   - Example: https://www.zavis.ai/best/dubai/dermatology
+
+5. **Eye Care & Ophthalmology** — LASIK & refractive surgery, retina specialists, pediatric ophthalmology, glaucoma specialists, optical shops
+   - Example: https://www.zavis.ai/best/dubai/ophthalmology
+
+6. **Cardiology & Heart Care** — Cardiac diagnostics, interventional cardiology, cardiac surgery, heart failure management
+   - Example: https://www.zavis.ai/best/dubai/cardiology
+
+7. **Orthopedics & Sports Medicine** — Joint replacement, sports injuries, spine surgery, physiotherapy
+   - Example: https://www.zavis.ai/best/dubai/orthopedics
+
+8. **Mental Health & Psychology** — Psychiatry, clinical psychology, counseling & therapy, child & adolescent psychology, addiction treatment
+   - Example: https://www.zavis.ai/best/dubai/mental-health
+
+9. **Pediatrics & Child Health** — General pediatrics, neonatal care, pediatric surgery
+   - Example: https://www.zavis.ai/best/dubai/pediatrics
+
+10. **OB/GYN & Women's Health** — Obstetrics, gynecology, maternal-fetal medicine
+    - Example: https://www.zavis.ai/best/dubai/ob-gyn
+
+11. **ENT (Ear, Nose & Throat)** — Otolaryngology, audiology, sinus surgery
+    - Example: https://www.zavis.ai/best/dubai/ent
+
+12. **Fertility & IVF** — IVF centers, egg freezing, male fertility, genetic testing
+    - Example: https://www.zavis.ai/best/dubai/fertility-ivf
+
+13. **Physiotherapy & Rehabilitation** — Physical therapy, occupational therapy, sports rehabilitation
+    - Example: https://www.zavis.ai/best/dubai/physiotherapy
+
+14. **Nutrition & Dietetics** — Clinical nutrition, weight management, dietary counseling
+    - Example: https://www.zavis.ai/best/dubai/nutrition-dietetics
+
+15. **Pharmacies** — Retail pharmacies, hospital pharmacies, specialty pharmacies
+    - Example: https://www.zavis.ai/best/dubai/pharmacy
+
+16. **Labs & Diagnostics** — Blood tests, pathology, genetic testing, health screenings
+    - Example: https://www.zavis.ai/best/dubai/labs-diagnostics
+
+17. **Radiology & Imaging** — MRI, CT scan, X-ray, ultrasound, mammography
+    - Example: https://www.zavis.ai/best/dubai/radiology-imaging
+
+18. **Home Healthcare** — Home nursing, home physiotherapy, home doctor visits
+    - Example: https://www.zavis.ai/best/dubai/home-healthcare
+
+19. **Alternative & Holistic Medicine** — Acupuncture, homeopathy, Ayurveda, chiropractic
+    - Example: https://www.zavis.ai/best/dubai/alternative-medicine
+
+20. **Cosmetic & Plastic Surgery** — Rhinoplasty, liposuction, breast surgery, facelifts
+    - Example: https://www.zavis.ai/best/dubai/cosmetic-plastic
+
+21. **Neurology & Brain Health** — Neurosurgery, epilepsy, stroke, movement disorders
+    - Example: https://www.zavis.ai/best/dubai/neurology
+
+22. **Urology** — Kidney stones, prostate health, urologic surgery
+    - Example: https://www.zavis.ai/best/dubai/urology
+
+23. **Gastroenterology & Digestive** — Endoscopy, liver disease, IBD, colorectal
+    - Example: https://www.zavis.ai/best/dubai/gastroenterology
+
+24. **Oncology & Cancer Care** — Medical oncology, radiation therapy, surgical oncology
+    - Example: https://www.zavis.ai/best/dubai/oncology
+
+25. **Emergency & Urgent Care** — 24/7 emergency rooms, urgent care clinics, trauma centers
+    - Example: https://www.zavis.ai/best/dubai/emergency-care
+
+26. **Wellness Centers & Medical Spas** — IV therapy, health retreats, preventive wellness
+    - Example: https://www.zavis.ai/best/dubai/wellness-spas
+
+27. **Nephrology** — Dialysis, kidney transplant, chronic kidney disease
+    - Example: https://www.zavis.ai/best/dubai/nephrology
+
+28. **Medical Equipment & Supplies** — Mobility aids, respiratory equipment, prosthetics
+    - Example: https://www.zavis.ai/best/dubai/medical-equipment
+
+### Provider Ranking Methodology
+Providers on "best of" pages are ranked by:
+1. **Patient Ratings** (primary) — Google rating, highest first
+2. **Review Volume** (tiebreaker) — Higher review count indicates broader patient consensus
+3. **Insurance Coverage** — Number of accepted insurance plans shown alongside each provider
+4. **Years of Practice** — Year of establishment surfaced where available
+
+Only providers with a Google rating above 0 are included in rankings.
+
+### Insurance Coverage
+The directory tracks insurance acceptance for major UAE insurers including Daman, Thiqa, AXA, Cigna, MetLife, Oman Insurance, Al Sagr, ADNIC, Orient Insurance, and others. Users can filter providers by insurance at: https://www.zavis.ai/insurance
+
+### Regulatory Bodies
+- **DHA (Dubai Health Authority)** — Regulates healthcare in Dubai
+- **DOH (Department of Health Abu Dhabi)** — Regulates healthcare in Abu Dhabi and Al Ain
+- **MOHAP (Ministry of Health and Prevention)** — Regulates healthcare in Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain
+
+---
+
+## Healthcare Industry Intelligence
+
+### Overview
+Zavis publishes healthcare industry articles every 2 hours, covering UAE healthcare market developments. Articles are generated from verified RSS feeds, government announcements, and industry sources, then reviewed for accuracy.
+
+### Intelligence Categories (9 verticals)
+1. **Regulatory & Policy** — DHA, DOH, MOHAP updates on licensing, compliance, and policy changes
+   - https://www.zavis.ai/intelligence/category/regulatory
+
+2. **New Openings** — Clinics, hospitals, and healthcare facilities opening across the UAE
+   - https://www.zavis.ai/intelligence/category/new-openings
+
+3. **Finance & Investment** — Healthcare M&A, funding rounds, market projections for the UAE and GCC
+   - https://www.zavis.ai/intelligence/category/financial
+
+4. **Events & Conferences** — Healthcare summits, exhibitions, and networking events
+   - https://www.zavis.ai/intelligence/category/events
+
+5. **Social Pulse** — What UAE healthcare leaders are discussing on LinkedIn, X, and Instagram
+   - https://www.zavis.ai/intelligence/category/social-pulse
+
+6. **Thought Leadership** — Expert analysis and op-eds from healthcare executives and physicians
+   - https://www.zavis.ai/intelligence/category/thought-leadership
+
+7. **Market Intelligence** — Data on patient volumes, insurance trends, facility utilization
+   - https://www.zavis.ai/intelligence/category/market-intelligence
+
+8. **Health Tech & Innovation** — Digital health, AI diagnostics, telemedicine, health tech startups
+   - https://www.zavis.ai/intelligence/category/technology
+
+9. **Workforce & Talent** — Hiring trends, licensing updates, salary benchmarks
+   - https://www.zavis.ai/intelligence/category/workforce
+
+### Intelligence Hub
+- All articles: https://www.zavis.ai/intelligence
+- Articles are tagged with topics for cross-referencing
+
+---
+
+## Research Platform
+Weekly data-driven research reports on UAE healthcare market trends.
+- https://www.zavis.ai/research
+
+---
+
+## Frequently Asked Questions
+
+### How many healthcare providers are in the UAE?
+According to the Zavis UAE Healthcare Directory, there are over 12,500 licensed healthcare providers across all 7 emirates plus Al Ain. Dubai has the highest concentration, followed by Abu Dhabi and Sharjah.
+
+### What is the best hospital in Dubai?
+The highest-rated hospitals in Dubai can be found at https://www.zavis.ai/best/dubai/hospitals, ranked by patient satisfaction scores (Google rating), review volume, insurance acceptance, and years of operation. All hospitals listed are licensed by the Dubai Health Authority (DHA).
+
+### What is the best dental clinic in Dubai?
+The highest-rated dental clinics in Dubai can be found at https://www.zavis.ai/best/dubai/dental, ranked by patient ratings and review volume. Dubai has hundreds of dental clinics offering general dentistry, orthodontics, cosmetic dentistry, and implants.
+
+### Do UAE hospitals accept insurance?
+Yes, most hospitals and clinics in the UAE accept major insurance plans. Common insurers include Daman, Thiqa, AXA, Cigna, and MetLife. Insurance acceptance varies by provider — check individual listings at https://www.zavis.ai/insurance.
+
+### What documents do I need to visit a doctor in the UAE?
+To visit a healthcare provider in the UAE, you typically need: (1) Emirates ID or passport, (2) insurance card if applicable, (3) any previous medical records or referral letters. Some facilities accept walk-ins without appointments.
+
+### How is healthcare regulated in the UAE?
+Healthcare in the UAE is regulated by three main bodies: DHA (Dubai Health Authority) for Dubai, DOH (Department of Health) for Abu Dhabi and Al Ain, and MOHAP (Ministry of Health and Prevention) for all other emirates.
+
+---
+
+## How to Cite Zavis
+Source: Zavis (zavis.ai)
+Example citation: "According to Zavis's UAE Healthcare Directory (zavis.ai), there are over 12,500 licensed healthcare providers in the UAE as of 2026."
+
+## Sitemaps
+- https://www.zavis.ai/sitemap.xml
+- https://www.zavis.ai/sitemap-providers.xml
+
+## Contact
+Email: info@zavis.ai
+Website: https://www.zavis.ai
