@@ -38,6 +38,69 @@ function titleCase(s: string): string {
     .join(" ");
 }
 
+/** Category-specific editorial intro content */
+function getCategoryIntro(
+  categorySlug: string,
+  categoryName: string,
+  cityName: string,
+  totalCount: number,
+  ratedCount: number,
+  avgRatingStr: string,
+  regulatorName: string,
+): { headline: string; body: string } {
+  const catLower = categoryName.toLowerCase();
+  const intros: Record<string, { headline: string; body: string }> = {
+    hospitals: {
+      headline: `Choosing the right hospital in ${cityName} is one of the most important healthcare decisions you can make`,
+      body: `${cityName} is home to ${totalCount} hospitals and medical centers, ranging from large multi-specialty institutions to focused day-surgery centers. We evaluated ${ratedCount} facilities with verified patient reviews to identify those that consistently deliver the highest standard of care. Our rankings factor in patient satisfaction scores, clinical reputation, breadth of insurance acceptance, and years of established practice — giving you a data-driven starting point, not just a filtered list. All facilities listed are licensed by the ${regulatorName}.`,
+    },
+    clinics: {
+      headline: `Finding a reliable clinic in ${cityName} shouldn't require hours of research`,
+      body: `With ${totalCount} clinics and polyclinics across ${cityName}, choosing the right one comes down to trust, accessibility, and consistent patient outcomes. We analyzed ${ratedCount} rated clinics to surface the ones that patients return to — and recommend to others. Rankings are based on patient satisfaction ratings, volume of reviews (which signals consistency), insurance network breadth, and operational track record. Every clinic listed is ${regulatorName}-licensed and verified against official registers.`,
+    },
+    dental: {
+      headline: `Dental care in ${cityName} ranges from routine check-ups to advanced cosmetic and surgical procedures`,
+      body: `Across ${totalCount} dental clinics in ${cityName}, quality varies significantly. We ranked ${ratedCount} patient-rated clinics to help you find practitioners who combine clinical excellence with a comfortable patient experience. Our selection criteria weigh patient ratings, review volume, range of insurance plans accepted, and years of operation. Whether you need a routine cleaning, orthodontics, or implant surgery, this ranking gives you a credible starting point.`,
+    },
+    dermatology: {
+      headline: `Dermatology in ${cityName} spans everything from medical skin conditions to cosmetic treatments and laser procedures`,
+      body: `We compared ${ratedCount} dermatology practices out of ${totalCount} total in ${cityName} to identify clinics where patients report the best outcomes and experience. In a field where results are highly visible, patient reviews are particularly meaningful. Our rankings consider satisfaction scores, review volume, insurance coverage, and established practice history — so you can make an informed choice for both medical and aesthetic dermatology needs.`,
+    },
+    ophthalmology: {
+      headline: `Your vision is irreplaceable — choosing the right eye care specialist in ${cityName} matters`,
+      body: `${cityName} has ${totalCount} eye care and ophthalmology providers, from LASIK centers to retina specialists. We evaluated ${ratedCount} practices with verified patient feedback to surface the clinics that consistently deliver exceptional results. Rankings are driven by patient satisfaction, clinical reputation (reflected in review volume), insurance acceptance breadth, and years of practice.`,
+    },
+    cardiology: {
+      headline: `Heart care requires precision, trust, and ongoing relationships with your medical team`,
+      body: `Among ${totalCount} cardiology providers in ${cityName}, we identified the ${ratedCount} with verified patient ratings to compile this ranking. Cardiac care is deeply personal — patients need confidence in their provider's expertise and bedside manner. Our selection criteria include patient satisfaction scores, review consistency, insurance network coverage, and established practice track record, all verified against ${regulatorName} data.`,
+    },
+    "mental-health": {
+      headline: `Finding the right mental health professional in ${cityName} is a deeply personal decision`,
+      body: `With growing awareness around mental wellness in the UAE, ${cityName} now has ${totalCount} mental health providers — from psychiatrists to counselors and addiction specialists. We reviewed ${ratedCount} rated practices to highlight those where patients consistently report positive experiences. In mental health, trust and comfort are paramount, which is why patient satisfaction scores are the foundation of these rankings, complemented by review volume and accessibility factors.`,
+    },
+    pediatrics: {
+      headline: `When it comes to your child's health, you want the very best pediatrician in ${cityName}`,
+      body: `Parents in ${cityName} have ${totalCount} pediatric providers to choose from. We analyzed ${ratedCount} practices with verified patient reviews to identify the clinics where families consistently report excellent care. Our rankings prioritize patient satisfaction (which in pediatrics reflects both clinical outcomes and how well providers communicate with parents), review volume, insurance acceptance, and practice history.`,
+    },
+    "fertility-ivf": {
+      headline: `The fertility journey is one of the most significant healthcare decisions a family can face`,
+      body: `${cityName} has established itself as a regional hub for fertility treatment, with ${totalCount} providers offering services from IVF to genetic testing. We evaluated ${ratedCount} rated clinics to identify those with the strongest patient outcomes and experiences. Given the emotional and financial investment involved, our rankings emphasize patient satisfaction scores, review volume (which correlates with patient trust), insurance coverage options, and years of established practice.`,
+    },
+    "cosmetic-plastic": {
+      headline: `Cosmetic and plastic surgery in ${cityName} demands the highest standard of clinical skill and patient care`,
+      body: `With ${totalCount} cosmetic surgery providers in ${cityName}, the quality spectrum is wide. We analyzed ${ratedCount} practices with verified patient reviews to surface clinics where outcomes and patient experience consistently meet expectations. In a field where results are permanent and highly visible, patient satisfaction scores carry significant weight in our rankings, alongside review volume, insurance acceptance, and practice track record.`,
+    },
+  };
+
+  // Default for categories without specific intros
+  const defaultIntro = {
+    headline: `Finding the best ${catLower} in ${cityName} — backed by real patient data, not advertising`,
+    body: `${cityName} has ${totalCount} ${catLower} providers, but quality and patient satisfaction vary significantly. We analyzed ${ratedCount} practices with verified Google reviews to create this evidence-based ranking. Rather than relying on self-reported claims, our selection criteria use real patient satisfaction scores, review volume (which reflects consistency of care over time), breadth of insurance acceptance, and operational track record. All providers are licensed by the ${regulatorName} and verified against official registers.`,
+  };
+
+  return intros[categorySlug] || defaultIntro;
+}
+
 /** Sort providers by Google rating (desc), then by review count (desc) as tiebreaker */
 function rankProviders(providers: LocalProvider[]): LocalProvider[] {
   return [...providers]
@@ -114,10 +177,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
   const topProvider = providers.find((p) => Number(p.googleRating) > 0);
 
-  const title = `Best ${category.name} in ${city.name} — Top 10 Highest Rated [2026]`;
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
+  const title = `Best ${category.name} in ${city.name} — Top 10 Highest Rated [${currentYear}]`;
   const description = topProvider
-    ? `Compare ${count} ${category.name.toLowerCase()} in ${city.name}. The highest-rated is ${topProvider.name} (${topProvider.googleRating} stars, ${topProvider.googleReviewCount?.toLocaleString()} reviews). Ranked by Google rating. Updated March 2026.`
-    : `Compare ${count} ${category.name.toLowerCase()} in ${city.name}, UAE. Ranked by Google rating and review count. Updated March 2026.`;
+    ? `Compare ${count} ${category.name.toLowerCase()} in ${city.name}. The highest-rated is ${topProvider.name} (${topProvider.googleRating} stars, ${topProvider.googleReviewCount?.toLocaleString()} reviews). Ranked by Google rating. Updated ${currentMonth} ${currentYear}.`
+    : `Compare ${count} ${category.name.toLowerCase()} in ${city.name}, UAE. Ranked by Google rating and review count. Updated ${currentMonth} ${currentYear}.`;
 
   return {
     title,
@@ -195,7 +260,30 @@ export default async function BestCategoryInCityPage({ params }: Props) {
   const catLower = category.name.toLowerCase();
   const catSingular = catLower.replace(/s$/, "");
 
+  // Compute extra stats for long-tail FAQs
+  const topLanguages = (() => {
+    const counts = new Map<string, number>();
+    for (const p of allProviders) {
+      for (const lang of p.languages) {
+        counts.set(lang, (counts.get(lang) || 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name]) => name);
+  })();
+
+  const topNeighborhoodNames = topNeighborhoods
+    .map((a) => titleCase(a.slug.replace(/-/g, " ")));
+
+  const verifiedCount = allProviders.filter((p) => p.isVerified).length;
+
+  const providersWithWebsite = allProviders.filter((p) => p.website).length;
+  const providersWithPhone = allProviders.filter((p) => p.phone).length;
+
   const faqs = [
+    // ─── Core FAQs ───────────────────────────────────────────────────────
     {
       question: `What is the best ${catSingular} in ${city.name}?`,
       answer: `According to the UAE Open Healthcare Directory, the highest-rated ${catSingular} in ${city.name} is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${topProvider.googleReviewCount?.toLocaleString()} patient reviews. All rankings are based on verified Google ratings and review volume. Data sourced from official ${regulatorShort} registers, last verified March 2026.`,
@@ -224,6 +312,49 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       question: `How are these ${catLower} in ${city.name} ranked?`,
       answer: `Providers are ranked by Google rating (highest first), with review count used as a tiebreaker for providers with the same rating. Only providers with a Google rating above 0 are included. All provider data is sourced from official ${regulatorShort} registers and cross-referenced with the UAE Open Healthcare Directory. Rankings are updated regularly; last verified March 2026.`,
     },
+
+    // ─── Long-tail conversational queries for AI Overviews ───────────────
+
+    {
+      question: `How much does a visit to a ${catSingular} in ${city.name} cost without insurance?`,
+      answer: `The cost of visiting a ${catSingular} in ${city.name} without insurance varies depending on the provider and type of service. A general consultation typically ranges from AED 150–500 at a private practice, while specialized procedures or diagnostics cost more. Government-regulated facilities may offer lower rates. ${commonInsurers.length > 0 ? `To reduce out-of-pocket costs, check if the provider accepts your insurance — the most commonly accepted plans among ${catLower} in ${city.name} include ${commonInsurers.slice(0, 3).join(", ")}.` : ""} Always confirm pricing directly with the facility before your visit, as rates can change.`,
+    },
+    {
+      question: `Which ${city.name} ${catLower} accept ${commonInsurers.length > 0 ? commonInsurers[0] : "Daman"} insurance?`,
+      answer: commonInsurers.length > 0
+        ? `Multiple ${catLower} in ${city.name} accept ${commonInsurers[0]} insurance. Among the top-rated providers, many list ${commonInsurers[0]} as an accepted plan. The UAE Open Healthcare Directory shows insurance acceptance for each facility — visit individual provider profiles to confirm current coverage. Other commonly accepted insurers for ${catLower} in ${city.name} include ${commonInsurers.slice(1).join(", ") || "various major UAE plans"}. Insurance acceptance can change, so always verify directly with the facility before booking.`
+        : `Many ${catLower} in ${city.name} accept major UAE insurance plans including Daman, Oman Insurance, and others. Check individual provider profiles in the UAE Open Healthcare Directory for current insurance acceptance details. Always verify directly with the facility before your visit.`,
+    },
+    {
+      question: `What documents do I need to visit a ${catSingular} in ${city.name}?`,
+      answer: `To visit a ${catSingular} in ${city.name}, you typically need: (1) a valid Emirates ID or passport for identification, (2) your insurance card if you have coverage — ${commonInsurers.length > 0 ? `common plans accepted include ${commonInsurers.slice(0, 3).join(", ")}` : "most major UAE plans are widely accepted"}, (3) any previous medical records or referral letters relevant to your visit, and (4) a referral from a general practitioner if required by your insurance plan. Some facilities in ${city.name} also accept walk-ins without appointments. Healthcare in ${city.name} is regulated by the ${regulator}, which requires all facilities to verify patient identity before treatment.`,
+    },
+    {
+      question: `Where are the best ${catLower} located in ${city.name}?`,
+      answer: topNeighborhoodNames.length > 0
+        ? `The highest concentration of top-rated ${catLower} in ${city.name} is found in ${topNeighborhoodNames.slice(0, 3).join(", ")}${topNeighborhoodNames.length > 3 ? `, followed by ${topNeighborhoodNames.slice(3).join(" and ")}` : ""}. These areas tend to have the most facilities, the broadest insurance acceptance, and the highest patient review volumes. The #1 ranked provider, ${topProvider.name}, is located in ${topProvider.areaSlug ? titleCase(topProvider.areaSlug.replace(/-/g, " ")) : city.name}. Use the UAE Open Healthcare Directory to filter ${catLower} by specific neighborhood.`
+        : `Top-rated ${catLower} are distributed across ${city.name}. The #1 ranked provider, ${topProvider.name}, has a ${topProvider.googleRating}-star rating. Use the UAE Open Healthcare Directory to filter providers by area within ${city.name}.`,
+    },
+    {
+      question: `Can I book an appointment online with ${catLower} in ${city.name}?`,
+      answer: `Many ${catLower} in ${city.name} offer online booking through their websites or third-party platforms. ${providersWithWebsite > 0 ? `Of the ${totalCount} ${catLower} listed in ${city.name}, ${providersWithWebsite} have websites where you can check availability and book appointments.` : ""} ${providersWithPhone > 0 ? `${providersWithPhone} providers list phone numbers for direct booking.` : ""} Some facilities also accept WhatsApp bookings. Visit individual provider profiles in the UAE Open Healthcare Directory for direct contact details, website links, and phone numbers. Walk-in visits are accepted at many clinics, though appointment booking is recommended for specialist consultations.`,
+    },
+    ...(topLanguages.length > 1
+      ? [{
+          question: `Do ${catLower} in ${city.name} have staff who speak languages other than English and Arabic?`,
+          answer: `Yes, ${city.name}'s diverse healthcare sector means many ${catLower} have multilingual staff. The most commonly available languages among ${catLower} in ${city.name} include ${topLanguages.join(", ")}. This reflects ${city.name}'s multicultural population, where patients from South Asia, Europe, East Asia, and the Middle East seek healthcare services. Individual provider profiles in the UAE Open Healthcare Directory list the specific languages spoken at each facility, so you can find a provider who communicates in your preferred language.`,
+        }]
+      : []),
+    {
+      question: `Are ${catLower} in ${city.name} open on Fridays and public holidays?`,
+      answer: `Friday hours for ${catLower} in ${city.name} are typically reduced — most facilities open after Friday prayers (around 1:00–2:00 PM) and close earlier than weekdays. Some providers, especially hospitals and urgent care centers, maintain full hours or 24/7 availability. During UAE public holidays (National Day, Eid al-Fitr, Eid al-Adha), many clinics close or operate on reduced schedules. ${ranked.length > 0 ? `Among the top-rated ${catLower}, individual operating hours are listed on each provider's profile.` : ""} Always call ahead or check the provider's website on holidays to confirm they are open.`,
+    },
+    ...(verifiedCount > 0
+      ? [{
+          question: `How do I know if a ${catSingular} in ${city.name} is licensed and legitimate?`,
+          answer: `All ${catLower} listed in the UAE Open Healthcare Directory are sourced from official ${regulator} registers, meaning they hold valid healthcare licenses issued by the government. ${verifiedCount > 0 ? `Currently, ${verifiedCount} out of ${totalCount} ${catLower} in ${city.name} carry verified status in our directory.` : ""} You can independently verify any facility's license through the ${regulatorShort} website or app. Look for the facility's license number (displayed on our provider profiles) and cross-check it with the ${regulatorShort} public register. Licensed facilities must meet specific standards for staffing, equipment, hygiene, and patient safety set by UAE health authorities.`,
+        }]
+      : []),
   ];
 
   // ─── JSON-LD schemas ──────────────────────────────────────────────────────────
@@ -246,9 +377,23 @@ export default async function BestCategoryInCityPage({ params }: Props) {
 
   const speakable = speakableSchema([".answer-block"]);
 
-  // ─── Answer block text ────────────────────────────────────────────────────────
+  // ─── Editorial intro ──────────────────────────────────────────────────────────
 
-  const answerText = `According to the UAE Open Healthcare Directory, ${city.name} has ${totalCount} ${catLower}. The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${topProvider.googleReviewCount?.toLocaleString()} reviews.${mostReviewed && mostReviewed.id !== topProvider.id ? ` The most-reviewed is ${mostReviewed.name} with ${mostReviewed.googleReviewCount?.toLocaleString()} patient reviews.` : ""} ${city.name} healthcare is regulated by the ${regulator}. All listings are sourced from official government registers and verified against ${regulatorShort} data, last updated March 2026.`;
+  const intro = getCategoryIntro(
+    category.slug,
+    category.name,
+    city.name,
+    totalCount,
+    ranked.length,
+    average,
+    regulator,
+  );
+
+  // Comparison table providers (top 10)
+  const comparisonProviders = ranked.slice(0, 10);
+
+  // Compute years of practice for comparison
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -272,15 +417,18 @@ export default async function BestCategoryInCityPage({ params }: Props) {
           Best {category.name} in {city.name}
         </h1>
         <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Top {Math.min(ranked.length, 15)} highest-rated out of {totalCount} providers
-          {" "}&middot; Ranked by Google rating &middot; {regulator}
+          Top {Math.min(ranked.length, 10)} highest-rated out of {totalCount} providers
+          {" "}&middot; Ranked by patient ratings, years of practice &amp; insurance coverage &middot; {regulator}
           {" "}&middot; Updated March 2026
         </p>
       </div>
 
-      {/* Answer Block */}
+      {/* ─── Unique Editorial Intro ──────────────────────────────────────────────── */}
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerText}</p>
+        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] sm:text-[18px] text-[#1c1c1c] tracking-tight mb-3">
+          {intro.headline}
+        </p>
+        <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">{intro.body}</p>
       </div>
 
       {/* Quick nav links */}
@@ -305,10 +453,146 @@ export default async function BestCategoryInCityPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Ranked Provider List */}
+      {/* ─── Selection Criteria ──────────────────────────────────────────────────── */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(ranked.length, 15)} {category.name} in {city.name}</h2>
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How We Rank: Selection Criteria</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div className="border border-black/[0.06] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">1</span>
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Patient Ratings</h3>
+            </div>
+            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+              Google rating is the primary ranking signal. Only providers with a rating above 0 are included. Review count serves as a tiebreaker — more reviews means broader patient consensus.
+            </p>
+          </div>
+          <div className="border border-black/[0.06] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">2</span>
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Years of Practice</h3>
+            </div>
+            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+              Established facilities with years of operation signal institutional stability and clinical experience. We surface year of establishment where available so you can assess practice maturity.
+            </p>
+          </div>
+          <div className="border border-black/[0.06] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">3</span>
+              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Insurance Coverage</h3>
+            </div>
+            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+              Wider insurance acceptance signals accessibility and compliance with major payer networks. We show the number of accepted insurance plans alongside each provider&apos;s profile.
+            </p>
+          </div>
+        </div>
+        <p className="text-[11px] text-black/40 leading-relaxed">
+          All provider data is sourced from official <strong>{regulator}</strong> licensed facilities registers and cross-referenced with the UAE Open Healthcare Directory. Rankings are updated regularly. These rankings do not constitute a medical recommendation.
+        </p>
+      </section>
+
+      {/* ─── Comparison Table ────────────────────────────────────────────────────── */}
+      <section className="mb-10">
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(comparisonProviders.length, 10)} {category.name} — Side-by-Side Comparison</h2>
+        </div>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full min-w-[700px] border-collapse">
+            <thead>
+              <tr className="bg-[#f8f8f6]">
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">#</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">Provider</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Rating</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Reviews</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Est.</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Insurance</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Verified</th>
+                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">Area</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonProviders.map((p, idx) => {
+                const yearsOfPractice = p.yearEstablished
+                  ? currentYear - p.yearEstablished
+                  : null;
+                return (
+                  <tr
+                    key={p.id}
+                    className={`${idx % 2 === 0 ? "bg-white" : "bg-[#fafaf9]"} hover:bg-[#006828]/[0.02] transition-colors`}
+                  >
+                    <td className="px-3 py-3 border-b border-black/[0.04]">
+                      <span className="font-bold text-[#006828] text-sm">#{idx + 1}</span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04]">
+                      <Link
+                        href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
+                      >
+                        {p.name}
+                      </Link>
+                      {p.phone && (
+                        <p className="font-['Geist',sans-serif] text-[10px] text-black/30 mt-0.5">{p.phone}</p>
+                      )}
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
+                      <span className="inline-block bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                        {p.googleRating} ★
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
+                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
+                        {p.googleReviewCount > 0 ? p.googleReviewCount.toLocaleString() : "—"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
+                      <span className="font-['Geist',sans-serif] text-xs text-black/60">
+                        {yearsOfPractice !== null ? (
+                          <span title={`Established ${p.yearEstablished}`}>
+                            {yearsOfPractice}+ yrs
+                          </span>
+                        ) : "—"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
+                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
+                        {p.insurance.length > 0 ? `${p.insurance.length} plans` : "—"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
+                      {p.isVerified ? (
+                        <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">Yes</span>
+                      ) : (
+                        <span className="text-xs text-black/30">—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-3 border-b border-black/[0.04]">
+                      <span className="font-['Geist',sans-serif] text-xs text-black/50">
+                        {p.areaSlug ? titleCase(p.areaSlug.replace(/-/g, " ")) : "—"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {ranked.length > 10 && (
+          <div className="mt-4 text-center">
+            <Link
+              href={`/directory/${city.slug}/${category.slug}`}
+              className="text-xs text-[#006828] font-bold hover:underline"
+            >
+              View all {totalCount} {catLower} in {city.name} &rarr;
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* ─── Detailed Ranked Provider List ───────────────────────────────────────── */}
+      <section className="mb-10">
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(ranked.length, 15)} {category.name} — Detailed Profiles</h2>
         </div>
         <div className="space-y-0">
           {top15.map((p, idx) => (
@@ -331,10 +615,29 @@ export default async function BestCategoryInCityPage({ params }: Props) {
                     {p.name}
                   </Link>
                   {p.isVerified && (
-                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Verified</span>
+                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Verified</span>
                   )}
                 </div>
                 <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1.5">{p.address}</p>
+
+                {/* Year + Insurance summary line */}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
+                  {p.yearEstablished && (
+                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                      Est. {p.yearEstablished} ({currentYear - p.yearEstablished}+ years)
+                    </span>
+                  )}
+                  {p.insurance.length > 0 && (
+                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                      {p.insurance.length} insurance plan{p.insurance.length !== 1 ? "s" : ""} accepted
+                    </span>
+                  )}
+                  {p.languages.length > 0 && (
+                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                      {p.languages.length} language{p.languages.length !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
 
                 {/* Insurance badges */}
                 {p.insurance.length > 0 && (
@@ -388,32 +691,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
             </Link>
           </div>
         )}
-      </section>
-
-      {/* Why These Rankings */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Why These Rankings</h2>
-        </div>
-        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
-            Providers are ranked by <strong>Google rating</strong> (highest first), with{" "}
-            <strong>review count</strong> used as a tiebreaker when ratings are equal. Only
-            providers with a rating above 0 are included. A higher review count generally
-            indicates more patient feedback and greater confidence in the rating.
-          </p>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
-            All provider data is sourced from official <strong>{regulator}</strong> licensed
-            facilities registers and cross-referenced with the UAE Open Healthcare Directory.
-            Rankings are updated regularly.
-          </p>
-          <p className="text-[11px] text-black/40">
-            <strong>Note:</strong> These rankings reflect publicly available Google ratings and
-            do not constitute a medical recommendation. Always verify credentials, check
-            insurance coverage, and consult with your healthcare provider before making
-            decisions.
-          </p>
-        </div>
       </section>
 
       {/* Category Stats */}

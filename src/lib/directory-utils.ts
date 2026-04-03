@@ -103,6 +103,7 @@ export const DAY_NAMES_EN: Record<string, string> = {
  * 5. /directory/{city}/{area}/{category}/{listing} -> listing (via area path)
  * 6. /directory/{city}/{category}/{subcategory}    -> city-category-subcategory (EN only)
  * 7. /directory/{city}/{area}/insurance             -> area-insurance (EN only)
+ * 8. /directory/{city}/{procedure}                  -> city-service (flat service URL)
  */
 export async function resolveSegments(citySlug: string, segments: string[]) {
   const [seg1, seg2, seg3] = segments;
@@ -112,6 +113,14 @@ export async function resolveSegments(citySlug: string, segments: string[]) {
     if (category) return { type: "city-category" as const, category };
     const area = getAreaBySlug(citySlug, seg1);
     if (area) return { type: "city-area" as const, area };
+    // Check if it's a procedure/service slug
+    try {
+      const { getProcedureBySlug } = await import("@/lib/constants/procedures");
+      const procedure = getProcedureBySlug(seg1);
+      if (procedure && procedure.cityPricing[citySlug]) {
+        return { type: "city-service" as const, procedure };
+      }
+    } catch { /* procedures module not available */ }
     return null;
   }
 

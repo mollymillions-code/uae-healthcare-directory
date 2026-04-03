@@ -14,6 +14,9 @@ import { getBaseUrl } from "@/lib/helpers";
 import { faqPageSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
+import { getProviders } from "@/lib/data";
+import { CITIES } from "@/lib/constants/cities";
+import { CATEGORIES } from "@/lib/constants/categories";
 
 export const revalidate = 3600;
 
@@ -22,6 +25,7 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  await loadDbArticles();
   const article = getArticleBySlug(params.slug);
   if (!article) return {};
 
@@ -228,15 +232,87 @@ export default async function ArticlePage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Cross-link to directory */}
-            <div className="border border-black/[0.06] rounded-2xl p-5">
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight mb-3">Browse the Directory</h3>
-              <div className="space-y-2">
-                <Link href="/directory/dubai" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Dubai Healthcare Providers</Link>
-                <Link href="/directory/abu-dhabi" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Abu Dhabi Healthcare Providers</Link>
-                <Link href="/directory/sharjah" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Sharjah Healthcare Providers</Link>
-              </div>
-            </div>
+            {/* Related Providers — hub-and-spoke cross-link */}
+            {await (async () => {
+              // Match article tags against known cities and categories
+              const tagsLower = article.tags.map((t) => t.toLowerCase());
+              const matchedCity = CITIES.find((c) =>
+                tagsLower.some((t) => t.includes(c.slug.replace(/-/g, " ")) || t.includes(c.name.toLowerCase()))
+              );
+              const matchedCategory = CATEGORIES.find((c) =>
+                tagsLower.some((t) => {
+                  const catWords = c.name.toLowerCase().split(/[\s&/]+/).filter((w) => w.length > 3);
+                  return t.includes(c.slug) || catWords.some((w) => t.includes(w.replace(/s$/, "")));
+                })
+              );
+
+              if (!matchedCity && !matchedCategory) {
+                // Fallback: static directory links
+                return (
+                  <div className="border border-black/[0.06] rounded-2xl p-5">
+                    <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight mb-3">Browse the Directory</h3>
+                    <div className="space-y-2">
+                      <Link href="/directory/dubai" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Dubai Healthcare Providers</Link>
+                      <Link href="/directory/abu-dhabi" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Abu Dhabi Healthcare Providers</Link>
+                      <Link href="/directory/sharjah" className="block font-['Geist',sans-serif] text-sm font-medium text-black/50 hover:text-[#006828] transition-colors">Sharjah Healthcare Providers</Link>
+                    </div>
+                  </div>
+                );
+              }
+
+              const { providers } = await getProviders({
+                citySlug: matchedCity?.slug,
+                categorySlug: matchedCategory?.slug,
+                sort: "rating",
+                limit: 5,
+              });
+
+              const topProviders = providers.filter((p) => Number(p.googleRating) > 0).slice(0, 4);
+              const contextLabel = matchedCity && matchedCategory
+                ? `${matchedCategory.name} in ${matchedCity.name}`
+                : matchedCategory
+                  ? matchedCategory.name
+                  : `Providers in ${matchedCity!.name}`;
+              const browseHref = matchedCity && matchedCategory
+                ? `/directory/${matchedCity.slug}/${matchedCategory.slug}`
+                : matchedCategory
+                  ? `/best/${matchedCategory.slug}`
+                  : `/directory/${matchedCity!.slug}`;
+
+              return (
+                <div className="border border-black/[0.06] rounded-2xl p-5">
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight mb-1">Related Providers</h3>
+                  <p className="font-['Geist',sans-serif] text-[11px] text-black/30 mb-3">{contextLabel}</p>
+                  {topProviders.length > 0 ? (
+                    <div className="space-y-3">
+                      {topProviders.map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                          className="block group"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-medium text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">{p.name}</p>
+                              <p className="font-['Geist',sans-serif] text-[11px] text-black/40 truncate">{p.address}</p>
+                            </div>
+                            {Number(p.googleRating) > 0 && (
+                              <span className="flex-shrink-0 bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">{p.googleRating} ★</span>
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                  <Link
+                    href={browseHref}
+                    className="block mt-3 pt-3 border-t border-black/[0.06] font-['Geist',sans-serif] text-xs font-semibold text-[#006828] hover:underline"
+                  >
+                    Browse all {contextLabel.toLowerCase()} &rarr;
+                  </Link>
+                </div>
+              );
+            })()}
           </aside>
         </div>
       </article>

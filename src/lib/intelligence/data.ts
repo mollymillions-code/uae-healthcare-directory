@@ -179,6 +179,63 @@ export function getArticlesByTag(tag: string, limit = 20): JournalArticle[] {
     .slice(0, limit);
 }
 
+/**
+ * Find articles relevant to a directory page context (city + category).
+ * Scores articles by tag overlap with city name, category name/slug, and recency.
+ * Used for hub-and-spoke cross-linking between directory and intelligence.
+ */
+export function getArticlesByDirectoryContext(
+  cityName: string,
+  categorySlug: string,
+  categoryName: string,
+  limit = 4,
+): JournalArticle[] {
+  const all = getAllArticlesSync();
+  if (all.length === 0) return [];
+
+  const cityLower = cityName.toLowerCase();
+  const catSlugLower = categorySlug.toLowerCase();
+  const catNameLower = categoryName.toLowerCase();
+  // Extract meaningful words from category name (skip "and", "&", short words)
+  const catKeywords = catNameLower
+    .split(/[\s&/]+/)
+    .filter((w) => w.length > 3)
+    .map((w) => w.replace(/(?<![s])s$/, "")); // singularize (skip words ending in "ss" like wellness)
+
+  const scored = all.map((a) => {
+    let score = 0;
+    const tagsLower = a.tags.map((t) => t.toLowerCase());
+    const titleLower = a.title.toLowerCase();
+    const excerptLower = a.excerpt.toLowerCase();
+
+    // City match in tags (+3) or title/excerpt (+2)
+    if (tagsLower.some((t) => t.includes(cityLower))) score += 3;
+    else if (titleLower.includes(cityLower) || excerptLower.includes(cityLower)) score += 2;
+
+    // Category slug match in tags (+3)
+    if (tagsLower.includes(catSlugLower)) score += 3;
+
+    // Category keyword matches in tags or title (+2 each)
+    for (const kw of catKeywords) {
+      if (tagsLower.some((t) => t.includes(kw))) score += 2;
+      else if (titleLower.includes(kw) || excerptLower.includes(kw)) score += 1;
+    }
+
+    // Recency bonus
+    const daysDiff = (Date.now() - new Date(a.publishedAt).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysDiff < 7) score += 2;
+    else if (daysDiff < 30) score += 1;
+
+    return { article: a, score };
+  });
+
+  return scored
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((s) => s.article);
+}
+
 export function getAllTags(): { tag: string; count: number }[] {
   const tagMap = new Map<string, number>();
   for (const article of getAllArticlesSync()) {

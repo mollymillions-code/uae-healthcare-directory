@@ -8,7 +8,11 @@ import { CONDITIONS } from "@/lib/constants/conditions";
 import { LAB_PROFILES, LAB_TESTS, TEST_CATEGORIES } from "@/lib/constants/labs";
 import { getAllLabLists } from "@/lib/labs-lists";
 import { CITIES } from "@/lib/constants/cities";
-import { PROCEDURES } from "@/lib/constants/procedures";
+import { PROCEDURES, PROCEDURE_CATEGORIES } from "@/lib/constants/procedures";
+import { PRICING_LISTS } from "@/lib/constants/pricing-lists";
+import { PRICING_GUIDES } from "@/lib/constants/pricing-guides";
+import { CARE_JOURNEYS } from "@/lib/constants/care-journeys";
+import { PROCEDURE_COMPARISONS } from "@/lib/constants/procedure-comparisons";
 import { getAllComparisonSlugs } from "@/lib/compare";
 import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 
@@ -45,7 +49,7 @@ export const revalidate = 3600;
 // the sitemap uses constants only (no DB), so we cannot determine real per-page
 // modification times. new Date() changes on every request, which is misleading to
 // crawlers. UPDATE THIS DATE when content (constants, guides, categories) changes.
-const LAST_CONTENT_UPDATE = new Date('2026-04-02');
+const LAST_CONTENT_UPDATE = new Date('2026-04-03');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();
@@ -210,6 +214,64 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push({ url: `${baseUrl}/insurance/guide`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   for (const slug of INSURANCE_GUIDE_SLUGS) {
     entries.push({ url: `${baseUrl}/insurance/guide/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
+  }
+
+  // Pricing hub — procedures, comparisons, lists, guides, journeys
+  entries.push({ url: `${baseUrl}/pricing`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
+  for (const proc of PROCEDURES) {
+    entries.push({ url: `${baseUrl}/pricing/${proc.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+    for (const city of CITIES) {
+      if (proc.cityPricing[city.slug]) {
+        entries.push({ url: `${baseUrl}/pricing/${proc.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+      }
+    }
+  }
+  for (const cat of PROCEDURE_CATEGORIES) {
+    entries.push({ url: `${baseUrl}/pricing/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    for (const city of CITIES) {
+      entries.push({ url: `${baseUrl}/pricing/category/${cat.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
+    }
+  }
+  for (const city of CITIES) {
+    entries.push({ url: `${baseUrl}/pricing/city/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+  }
+  // Pricing lists
+  entries.push({ url: `${baseUrl}/pricing/lists`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  for (const list of PRICING_LISTS) {
+    for (const city of CITIES) {
+      entries.push({ url: `${baseUrl}/pricing/lists/${list.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
+  }
+  // Pricing guides
+  entries.push({ url: `${baseUrl}/pricing/guide`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  for (const guide of PRICING_GUIDES) {
+    entries.push({ url: `${baseUrl}/pricing/guide/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+    for (const city of CITIES) {
+      entries.push({ url: `${baseUrl}/pricing/guide/${guide.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
+    }
+  }
+  // Care journeys
+  entries.push({ url: `${baseUrl}/pricing/journey`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  for (const journey of CARE_JOURNEYS) {
+    entries.push({ url: `${baseUrl}/pricing/journey/${journey.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+    for (const city of CITIES) {
+      entries.push({ url: `${baseUrl}/pricing/journey/${journey.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
+    }
+  }
+  // Procedure comparisons (vs pages)
+  entries.push({ url: `${baseUrl}/pricing/vs`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  for (const comp of PROCEDURE_COMPARISONS) {
+    entries.push({ url: `${baseUrl}/pricing/vs/${comp.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    for (const city of CITIES) {
+      entries.push({ url: `${baseUrl}/pricing/vs/${comp.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
+    }
+  }
+  // Price comparison tool + city-vs-city pages
+  entries.push({ url: `${baseUrl}/pricing/compare`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  for (let i = 0; i < CITIES.length; i++) {
+    for (let j = i + 1; j < CITIES.length; j++) {
+      entries.push({ url: `${baseUrl}/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
+    }
   }
 
   // Static pages

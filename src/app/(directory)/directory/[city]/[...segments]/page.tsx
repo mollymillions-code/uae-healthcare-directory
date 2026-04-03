@@ -17,6 +17,9 @@ import {
   getProviders, getTopRatedProviders,
   getInsuranceProviders,
 } from "@/lib/data";
+import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
+import { getJournalCategory } from "@/lib/intelligence/categories";
+import { formatDate } from "@/components/intelligence/utils";
 import {
   medicalOrganizationSchema, breadcrumbSchema, itemListSchema,
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
@@ -30,8 +33,15 @@ import {
 import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
+  CheckCircle, ExternalLink, Calendar, MessageSquareQuote, Activity, ArrowRight,
 } from "lucide-react";
+import {
+  PROCEDURES,
+  getProcedureBySlug,
+  formatAed,
+  type MedicalProcedure,
+} from "@/lib/constants/procedures";
+import { CITIES } from "@/lib/constants/cities";
 
 // ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
 export const revalidate = 21600;
@@ -187,6 +197,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       };
     }
+    case "city-service": {
+      const proc = resolved.procedure;
+      const pricing = proc.cityPricing[city.slug];
+      const providerCount = (await getProviders({ citySlug: city.slug, categorySlug: proc.categorySlug, limit: 1 })).total;
+      const url = `${base}/directory/${city.slug}/${proc.slug}`;
+      return {
+        title: `${proc.name} in ${city.name} — Find Providers & Costs [2026]`,
+        description: `Find providers offering ${proc.name.toLowerCase()} in ${city.name}. ${providerCount} verified providers. ${pricing ? `Typical cost: ${formatAed(pricing.typical)} (${formatAed(pricing.min)}–${formatAed(pricing.max)}).` : ""} Compare ratings, insurance, and book.`,
+        alternates: { canonical: url },
+        openGraph: {
+          title: `${proc.name} in ${city.name} — Providers & Costs`,
+          description: `${providerCount} providers offer ${proc.name.toLowerCase()} in ${city.name}. Compare ratings and costs.`,
+          type: "website",
+          locale: "en_AE",
+          siteName: "UAE Open Healthcare Directory",
+          url,
+          images: [{ url: getCategoryImageUrl(proc.categorySlug, base), width: 1200, height: 630, alt: `${proc.name} in ${city.name}` }],
+        },
+      };
+    }
     default:
       return {};
   }
@@ -266,6 +296,43 @@ export default async function CatchAllPage({ params }: Props) {
           />
         </Suspense>
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${city.name} — FAQ`} />
+
+        {/* Related Intelligence — hub-and-spoke cross-link */}
+        {await (async () => {
+          await loadDbArticles();
+          const relatedArticles = getArticlesByDirectoryContext(city.name, category.slug, category.name, 4);
+          if (relatedArticles.length === 0) return null;
+          return (
+            <section className="mt-10 mb-4">
+              <div className="flex items-center justify-between gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Intelligence</h2>
+                <Link href="/intelligence" className="font-['Geist',sans-serif] text-xs font-semibold text-[#006828] hover:underline">All coverage &rarr;</Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {relatedArticles.map((a) => {
+                  const cat = getJournalCategory(a.category);
+                  return (
+                    <Link
+                      key={a.id}
+                      href={`/intelligence/${a.slug}`}
+                      className="group block border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-['Geist',sans-serif] uppercase text-[10px] tracking-widest font-semibold text-[#006828]">{cat?.name ?? a.category}</span>
+                        <span className="text-black/20">&middot;</span>
+                        <span className="font-['Geist',sans-serif] text-[10px] text-black/30">{formatDate(a.publishedAt)}</span>
+                      </div>
+                      <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors leading-snug mb-1.5">
+                        {a.title}
+                      </h3>
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed line-clamp-2">{a.excerpt}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* Cross-link: Other specialties in this city */}
         {(() => {
@@ -833,6 +900,322 @@ export default async function CatchAllPage({ params }: Props) {
           </div>
         ) : (<div className="text-center py-12"><p className="text-black/40">No providers found yet.</p></div>)}
         <Pagination currentPage={1} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
+      </div>
+    );
+  }
+
+  // --- City + Service/Procedure Page ---
+  if (resolved.type === "city-service") {
+    const proc = resolved.procedure;
+    const pricing = proc.cityPricing[city.slug];
+    const regulator = city.slug === "dubai" ? "Dubai Health Authority (DHA)" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "Department of Health Abu Dhabi (DOH)" : "Ministry of Health and Prevention (MOHAP)";
+
+    // Providers in this category
+    const { providers, total: providerCount } = await getProviders({
+      citySlug: city.slug,
+      categorySlug: proc.categorySlug,
+      limit: 12,
+      sort: "rating",
+    });
+
+    // City comparison
+    const cityComparisons = CITIES.map((c) => {
+      const cp = proc.cityPricing[c.slug];
+      if (!cp) return null;
+      return { slug: c.slug, name: c.name, min: cp.min, max: cp.max, typical: cp.typical, isCurrent: c.slug === city.slug };
+    }).filter(Boolean) as { slug: string; name: string; min: number; max: number; typical: number; isCurrent: boolean }[];
+
+    // Related procedures in this city
+    const relatedProcs = proc.relatedProcedures
+      .map((slug) => getProcedureBySlug(slug))
+      .filter((p): p is MedicalProcedure => !!p && !!p.cityPricing[city.slug])
+      .slice(0, 6);
+
+    // Other procedures in this city (same category)
+    const sameCategoryProcs = PROCEDURES
+      .filter((p) => p.categorySlug === proc.categorySlug && p.slug !== proc.slug && p.cityPricing[city.slug])
+      .slice(0, 8);
+
+    const coverageLabel = proc.insuranceCoverage === "typically-covered" ? "Typically covered" : proc.insuranceCoverage === "partially-covered" ? "Partially covered" : proc.insuranceCoverage === "rarely-covered" ? "Rarely covered" : "Not covered";
+    const coverageBadge = proc.insuranceCoverage === "typically-covered" ? "bg-green-100 text-green-800" : proc.insuranceCoverage === "partially-covered" ? "bg-yellow-100 text-yellow-800" : proc.insuranceCoverage === "rarely-covered" ? "bg-orange-100 text-orange-800" : "bg-red-100 text-red-800";
+
+    // FAQs
+    const serviceFaqs = [
+      {
+        question: `Where can I get ${proc.name.toLowerCase()} in ${city.name}?`,
+        answer: `There are ${providerCount} ${proc.categorySlug.replace(/-/g, " ")} providers in ${city.name} listed in the UAE Open Healthcare Directory that may offer ${proc.name.toLowerCase()}. Browse providers below to compare by rating, insurance acceptance, and services. All data from official ${regulator} registers.`,
+      },
+      ...(pricing ? [{
+        question: `How much does ${proc.name.toLowerCase()} cost in ${city.name}?`,
+        answer: `${proc.name} in ${city.name} costs ${formatAed(pricing.min)} to ${formatAed(pricing.max)}, with a typical price of ${formatAed(pricing.typical)}. Pricing depends on facility type (government vs. private vs. premium), doctor experience, and clinical complexity. For detailed pricing, see our pricing page.`,
+      }] : []),
+      {
+        question: `Does insurance cover ${proc.name.toLowerCase()} in ${city.name}?`,
+        answer: proc.insuranceNotes,
+      },
+      {
+        question: `How long does ${proc.name.toLowerCase()} take?`,
+        answer: `${proc.name} typically takes ${proc.duration}. ${proc.recoveryTime !== "No recovery needed" ? `Recovery time is ${proc.recoveryTime.toLowerCase()}.` : "No recovery time is needed."} ${proc.anaesthesia !== "none" ? `${proc.anaesthesia.charAt(0).toUpperCase() + proc.anaesthesia.slice(1)} anaesthesia is typically used.` : "No anaesthesia is required."}`,
+      },
+      {
+        question: `What should I look for when choosing a provider for ${proc.name.toLowerCase()} in ${city.name}?`,
+        answer: `When choosing a provider for ${proc.name.toLowerCase()} in ${city.name}, consider: (1) patient ratings and review volume — higher-rated providers with more reviews indicate consistent quality, (2) insurance acceptance — check if the provider accepts your plan, (3) years of operation — established facilities signal clinical experience, (4) verify the provider is licensed by the ${regulator}. All providers listed below are verified against official government registers.`,
+      },
+      {
+        question: `Is ${proc.name.toLowerCase()} available in other UAE cities?`,
+        answer: cityComparisons.length > 1
+          ? `Yes, ${proc.name.toLowerCase()} is available in ${cityComparisons.filter((c) => !c.isCurrent).map((c) => c.name).join(", ")}. ${pricing ? `${city.name}'s typical price is ${formatAed(pricing.typical)}. ` : ""}Compare prices and providers across cities using the table below.`
+          : `${proc.name} pricing and availability varies across UAE cities. Check our pricing hub for city-by-city comparison.`,
+      },
+    ];
+
+    return (
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: proc.name }])} />
+        <JsonLd data={faqPageSchema(serviceFaqs)} />
+        <JsonLd data={speakableSchema([".answer-block"])} />
+
+        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: proc.name }]} />
+
+        {/* Header */}
+        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
+          {proc.name} in {city.name}
+        </h1>
+        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">
+          {providerCount} providers &middot; {proc.duration} &middot;{" "}
+          {coverageLabel} by insurance
+          {pricing && <> &middot; Typical cost: {formatAed(pricing.typical)}</>}
+          {" "}&middot; Updated March 2026
+        </p>
+
+        {/* Answer block */}
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+            Looking for {proc.name.toLowerCase()} in {city.name}? The UAE Open Healthcare Directory lists {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name} who may offer this procedure.
+            {pricing && <> The typical cost is {formatAed(pricing.typical)} (range: {formatAed(pricing.min)}–{formatAed(pricing.max)}).</>}
+            {" "}Providers below are ranked by patient ratings. All facilities are licensed by the {regulator}. {proc.description}
+          </p>
+        </div>
+
+        {/* Quick info cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
+            <Clock className="h-4 w-4 text-[#006828] mb-1.5" />
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Duration</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/50">{proc.duration}</p>
+          </div>
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
+            <Activity className="h-4 w-4 text-[#006828] mb-1.5" />
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Recovery</p>
+            <p className="font-['Geist',sans-serif] text-xs text-black/50">{proc.recoveryTime}</p>
+          </div>
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
+            <Shield className="h-4 w-4 text-[#006828] mb-1.5" />
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Insurance</p>
+            <span className={`inline-block mt-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded ${coverageBadge}`}>{coverageLabel}</span>
+          </div>
+          {pricing && (
+            <div className="bg-[#006828]/[0.04] border border-[#006828]/20 rounded-xl p-4">
+              <MapPin className="h-4 w-4 text-[#006828] mb-1.5" />
+              <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Typical Cost</p>
+              <p className="font-['Geist',sans-serif] text-sm font-bold text-[#006828]">{formatAed(pricing.typical)}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Providers offering this service */}
+        {providers.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                Providers Offering {proc.name} in {city.name}
+              </h2>
+            </div>
+            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
+              {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name} may perform {proc.name.toLowerCase()}. Ranked by patient rating. Contact providers directly to confirm availability and pricing.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              {providers.slice(0, 9).map((p) => (
+                <ProviderCard
+                  key={p.id}
+                  name={p.name}
+                  slug={p.slug}
+                  citySlug={p.citySlug}
+                  categorySlug={p.categorySlug}
+                  address={p.address}
+                  phone={p.phone}
+                  website={p.website}
+                  shortDescription={p.shortDescription}
+                  googleRating={p.googleRating}
+                  googleReviewCount={p.googleReviewCount}
+                  isClaimed={p.isClaimed}
+                  isVerified={p.isVerified}
+                />
+              ))}
+            </div>
+            {providerCount > 9 && (
+              <Link
+                href={`/directory/${city.slug}/${proc.categorySlug}`}
+                className="inline-flex items-center gap-1 text-sm font-bold text-[#006828] hover:underline"
+              >
+                View all {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name}
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            )}
+          </section>
+        )}
+
+        {/* Price comparison across cities */}
+        {pricing && cityComparisons.length > 1 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                {proc.name} Cost — UAE City Comparison
+              </h2>
+            </div>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="w-full min-w-[500px] text-sm border-collapse">
+                <thead>
+                  <tr className="bg-[#f8f8f6]">
+                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">City</th>
+                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">From</th>
+                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">Typical</th>
+                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">Up to</th>
+                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cityComparisons.map((comp, idx) => (
+                    <tr key={comp.slug} className={`${comp.isCurrent ? "bg-[#006828]/[0.04] font-bold" : idx % 2 === 0 ? "bg-white" : "bg-[#fafaf9]"} border-b border-black/[0.04]`}>
+                      <td className="px-3 py-3 text-[#1c1c1c]">
+                        {comp.name}
+                        {comp.isCurrent && <span className="text-[9px] text-[#006828] ml-1">(current)</span>}
+                      </td>
+                      <td className="px-3 py-3 text-right text-black/40">{formatAed(comp.min)}</td>
+                      <td className="px-3 py-3 text-right font-bold text-[#1c1c1c]">{formatAed(comp.typical)}</td>
+                      <td className="px-3 py-3 text-right text-black/40">{formatAed(comp.max)}</td>
+                      <td className="px-3 py-3 text-right">
+                        {comp.isCurrent ? (
+                          <span className="text-xs text-black/30">Viewing</span>
+                        ) : (
+                          <Link href={`/directory/${comp.slug}/${proc.slug}`} className="text-xs text-[#006828] font-semibold hover:underline">View</Link>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* What to expect */}
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What to Expect</h2>
+          </div>
+          <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed mb-3">
+            {proc.whatToExpect}
+          </p>
+          {proc.anaesthesia !== "none" && (
+            <p className="font-['Geist',sans-serif] text-sm text-black/50">
+              <strong>Anaesthesia:</strong> {proc.anaesthesia.charAt(0).toUpperCase() + proc.anaesthesia.slice(1)} anaesthesia is typically used for this procedure.
+            </p>
+          )}
+        </section>
+
+        {/* Insurance coverage */}
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
+          </div>
+          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-5">
+            <span className={`inline-block px-2 py-1 text-xs font-bold rounded ${coverageBadge} mb-2`}>{coverageLabel}</span>
+            <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{proc.insuranceNotes}</p>
+          </div>
+        </section>
+
+        {/* Related procedures in this city */}
+        {relatedProcs.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Procedures in {city.name}</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {relatedProcs.map((rp) => {
+                const rpPricing = rp.cityPricing[city.slug];
+                return (
+                  <Link
+                    key={rp.slug}
+                    href={`/directory/${city.slug}/${rp.slug}`}
+                    className="flex items-center justify-between border border-black/[0.06] rounded-xl px-4 py-3 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
+                  >
+                    <div>
+                      <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-medium text-[#1c1c1c] tracking-tight">{rp.name}</span>
+                      <p className="font-['Geist',sans-serif] text-xs text-black/40">{rp.duration}</p>
+                    </div>
+                    {rpPricing && (
+                      <span className="text-sm font-bold text-[#006828] whitespace-nowrap">{formatAed(rpPricing.typical)}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* More procedures in same category */}
+        {sameCategoryProcs.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More Procedures in {city.name}</h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {sameCategoryProcs.map((sp) => (
+                <Link
+                  key={sp.slug}
+                  href={`/directory/${city.slug}/${sp.slug}`}
+                  className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                >
+                  {sp.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Cross-links */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          {pricing && (
+            <Link
+              href={`/pricing/${proc.slug}/${city.slug}`}
+              className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
+            >
+              Detailed pricing breakdown &rarr;
+            </Link>
+          )}
+          <Link
+            href={`/directory/${city.slug}/${proc.categorySlug}`}
+            className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
+          >
+            All {proc.categorySlug.replace(/-/g, " ")} in {city.name} &rarr;
+          </Link>
+          <Link
+            href={`/best/${city.slug}/${proc.categorySlug}`}
+            className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
+          >
+            Best {proc.categorySlug.replace(/-/g, " ")} in {city.name} &rarr;
+          </Link>
+        </div>
+
+        <FaqSection faqs={serviceFaqs} title={`${proc.name} in ${city.name} — FAQ`} />
+
+        {/* Disclaimer */}
+        <div className="border-t border-black/[0.06] pt-4 mt-6">
+          <p className="text-[11px] text-black/40 leading-relaxed">
+            <strong>Disclaimer:</strong> Pricing is indicative and based on DOH Mandatory Tariff methodology and market-observed ranges. Actual costs depend on facility type, clinical complexity, and insurance coverage. Always confirm pricing directly with the provider. Provider data is sourced from official {regulator} registers, last verified March 2026.
+          </p>
+        </div>
       </div>
     );
   }

@@ -111,6 +111,10 @@ data/
 
 ## Active Work
 
+- **[Claude Code] 2026-04-04T01:00:00+04:00** — SEO & AEO Enhancement Sprint (6 items): Built "Best of" page enhancements (editorial intros, selection criteria, comparison tables), FAQ expansion for AI Overviews (7 long-tail queries per page), topical authority clusters (hub-and-spoke cross-linking between directory ↔ intelligence), llms.txt + llms-full.txt for AI crawlers, and service-specific flat URL landing pages (/directory/{city}/{procedure} — ~328 new pages). All lint-clean. COMPLETE.
+
+- **[Claude Code] 2026-04-03T23:30:00+04:00** — DHA Sheryan Professional Directory Scrape: Built Playwright-based scraper (`scripts/scrape-dha-professionals.mjs`) that pulls all healthcare professionals from DHA Sheryan REST API. Scraped 99,520 professionals across 4 categories (Physician: 24,186, Dentist: 7,713, Nurse & Midwife: 34,733, Allied Health: 32,888). 434 unique specialties, 5,505 unique facilities. Exported to JSON (per-category + merged) and CSV. Resume support via checkpoint files. IN PROGRESS — next: DB schema + SEO pages.
+
 - **[Claude Code] 2026-04-02T22:30:00+04:00** — CQ2/CQ3 follow-up: Fixed remaining `as Record<string, ...>` type casts in automation dashboard page (8 casts eliminated). Added `PerformanceInsightRecommendations`, `ContentPatterns`, `TimingScores` interfaces to `src/types/dashboard.ts`. Replaced local type definitions with imports from shared types file. Replaced `Record<string, unknown>` state types for `latestReport`/`latestScore` with proper `AutomationLatestReport`/`AutomationLatestScore` types. Zero lint errors. COMPLETE.
 
 - **[Claude Code] 2026-04-02T21:00:00+04:00** — CQ2/CQ3: Eliminated all `any` types and `eslint-disable` comments from 5 dashboard components. Created `src/types/dashboard.ts` with 20 typed interfaces for pipeline runs, comments, LinkedIn posts, email blasts, performance scores, automation schedules/runs/queue/notifications/insights. Updated analytics, emails, posts, pipeline detail, and calendar pages. Fixed useEffect dependency warnings. Zero lint errors. COMPLETE.

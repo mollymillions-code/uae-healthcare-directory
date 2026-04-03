@@ -1,0 +1,30 @@
+name: Quarterly Healthcare Data Report
+
+on:
+  # Runs on the 1st of Jan, Apr, Jul, Oct at 06:00 UTC (10:00 AM UAE)
+  schedule:
+    - cron: '0 6 1 1,4,7,10 *'
+  workflow_dispatch:
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Generate quarterly data report on EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            DEPLOY_DIR=$(readlink -f /home/ubuntu/zavis-landing-active)
+            cd $DEPLOY_DIR
+            git pull origin live
+
+            echo "=== Generating Quarterly Data Report ==="
+            npx tsx scripts/quarterly-data-report.ts
+
+            echo "=== Report generation complete: $(date -u) ==="

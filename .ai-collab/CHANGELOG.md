@@ -1,5 +1,46 @@
 # Zavis Landing - Changelog
 
+## 2026-04-04 — [Claude Code] SEO & AEO Enhancement Sprint — 6 major items
+
+**Signed by:** Claude Code · 2026-04-04T01:00:00+04:00
+
+### 1. "Best of" Page Enhancements (`/best/[city]/[category]`)
+- **`src/lib/data.ts`** — Added `yearEstablished?: number` to `LocalProvider` interface and `rowToProvider()` mapper (pulls from `year_established` DB column)
+- **`src/app/(directory)/best/[city]/[category]/page.tsx`** — Three major additions:
+  - **Unique editorial intro**: `getCategoryIntro()` function generates category-specific headlines + body text for 10 categories (hospitals, clinics, dental, dermatology, ophthalmology, cardiology, mental-health, pediatrics, fertility-ivf, cosmetic-plastic) with intelligent fallback for others
+  - **Selection criteria section**: "How We Rank" — 3-column card grid explaining ranking methodology (patient ratings, years of practice, insurance coverage)
+  - **Comparison table**: Side-by-side HTML table for top 10 providers with columns: Rank, Provider, Rating, Reviews, Established, Insurance Plans, Verified, Area
+
+### 2. FAQ Expansion for AI Overviews
+- **`src/app/(directory)/best/[city]/[category]/page.tsx`** — Added 7 long-tail conversational FAQs targeting AI Overview queries:
+  - Cost without insurance, specific insurer acceptance, required documents, provider locations by neighborhood, online booking availability, multilingual staff, Friday/holiday hours, license verification
+  - All data-driven using computed stats (topLanguages, topNeighborhoodNames, verifiedCount, providersWithWebsite, providersWithPhone)
+
+### 3. Topical Authority Clusters (hub-and-spoke cross-linking)
+- **`src/lib/intelligence/data.ts`** — NEW: `getArticlesByDirectoryContext(cityName, categorySlug, categoryName, limit)` — scores articles by tag overlap with city name + category keywords + recency for cross-linking
+- **`src/app/(directory)/directory/[city]/[...segments]/page.tsx`** — Added "Related Intelligence" section on city+category pages (between FAQ and "Other specialties"). Shows up to 4 relevant intelligence articles with category badge, date, title, and excerpt. Imports `loadDbArticles`, `getArticlesByDirectoryContext`, `getJournalCategory`, `formatDate`.
+- **`src/app/(directory)/intelligence/[slug]/page.tsx`** — Replaced static "Browse the Directory" sidebar with dynamic "Related Providers" section. Matches article tags against `CITIES` and `CATEGORIES` constants, queries top-rated providers for matched city+category, shows up to 4 providers with name, address, rating badge, and "Browse all" CTA. Falls back to static directory links if no match found. Imports `getProviders`, `CITIES`, `CATEGORIES`.
+
+### 4. llms.txt — AI Search Optimization
+- **`public/llms.txt`** — Enhanced with prioritized page URLs (directory cities, best-of rankings, intelligence categories), structured for AI crawlers. Added reference to llms-full.txt.
+- **`public/llms-full.txt`** — NEW: Comprehensive deep-indexing file with full city descriptions, all 28 healthcare categories with subcategories and example URLs, ranking methodology, insurance coverage info, regulatory bodies, all 9 intelligence verticals, FAQs, and citation format.
+
+### 5. AggregateRating Schema & IndexNow
+- **No changes needed** — both already implemented:
+  - `AggregateRating` in `medicalOrganizationSchema()` at `src/lib/seo.ts:55-65`
+  - `notifyIndexNow()` in `src/lib/intelligence/automation/pipeline.ts:89-111`
+
+### 6. Service-Specific Landing Pages (`/directory/{city}/{procedure}`)
+- **`src/lib/directory-utils.ts`** — Extended `resolveSegments()` to recognize procedure slugs as `city-service` route type. When a single segment doesn't match a category or area, checks against `PROCEDURES` constant via dynamic import.
+- **`src/app/(directory)/directory/[city]/[...segments]/page.tsx`** — Two additions:
+  - **Metadata case**: `city-service` case in `generateMetadata()` switch — generates SEO title/description with provider count and pricing data
+  - **Page rendering**: Full service landing page with: answer block, quick info cards (duration, recovery, insurance, cost), provider grid (top 9 by rating), UAE city price comparison table, "What to Expect" section, insurance coverage, related procedures, same-category procedures, cross-links to pricing/category/best-of pages, 6 FAQs, disclaimer
+  - Imports: `PROCEDURES`, `getProcedureBySlug`, `formatAed`, `MedicalProcedure`, `CITIES`, `Activity`, `ArrowRight`
+- **~328 new flat URLs** (41 procedures × 8 cities) — all via ISR (no pre-rendering)
+- **Examples**: `/directory/dubai/teeth-whitening`, `/directory/abu-dhabi/knee-replacement`, `/directory/sharjah/mri-scan`
+
+**Impact:** 6 SEO/AEO features shipped. ~328 new service landing pages. Hub-and-spoke cross-linking between directory and intelligence. Enhanced AI crawler discoverability. All lint-clean, zero errors.
+
 ## 2026-04-02 — [Claude Code] CQ2/CQ3 follow-up: Eliminate remaining type casts in automation dashboard
 
 **Signed by:** Claude Code -- 2026-04-02T22:30:00+04:00

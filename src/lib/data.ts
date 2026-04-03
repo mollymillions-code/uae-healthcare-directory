@@ -136,6 +136,7 @@ export interface LocalProvider {
   reviewSummaryAr?: string[];
   coverImageUrl?: string;
   googlePhotoUrl?: string;
+  yearEstablished?: number;
 }
 
 // ─── Query Cache (5-min TTL, bounded LRU, max 500 entries) ─────────────────────
@@ -213,6 +214,7 @@ function rowToProvider(row: any): LocalProvider {
     reviewSummaryAr: row.reviewSummaryAr ?? row.review_summary_ar ?? undefined,
     coverImageUrl: row.coverImageUrl ?? row.cover_image_url ?? undefined,
     googlePhotoUrl: row.googlePhotoUrl ?? row.google_photo_url ?? undefined,
+    yearEstablished: row.yearEstablished ?? row.year_established ?? undefined,
   };
 }
 
