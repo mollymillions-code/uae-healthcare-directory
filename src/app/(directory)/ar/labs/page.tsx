@@ -195,7 +195,7 @@ export default function ArabicLabsPage() {
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-accent transition-colors group"
           >
             <div className="min-w-0">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -287,7 +287,7 @@ export default function ArabicLabsPage() {
             <Link
               key={cat.slug}
               href={`/labs/category/${cat.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
             >
               <h3 className="text-sm font-bold text-dark mb-1 group-hover:text-accent transition-colors">{cat.name}</h3>
               <p className="text-[11px] text-muted">{testCount} فحص</p>
@@ -314,7 +314,7 @@ export default function ArabicLabsPage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> الأسعار المعروضة استرشادية وتستند إلى التسعير المتاح
           للعموم من مواقع المختبرات ومنصات التجميع وقوائم أسعار الزيارات المباشرة (2024–2025).

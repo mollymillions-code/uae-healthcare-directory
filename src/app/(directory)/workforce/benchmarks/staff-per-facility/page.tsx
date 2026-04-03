@@ -88,7 +88,7 @@ export default function StaffPerFacilityPage() {
         data={breadcrumbSchema([
           { name: "UAE", url: `${base}/` },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Benchmarks" },
+          { name: "Benchmarks", url: `${base}/workforce/benchmarks` },
           { name: "Staff per Facility" },
         ])}
       />
@@ -97,7 +97,7 @@ export default function StaffPerFacilityPage() {
         items={[
           { label: "UAE", href: "/" },
           { label: "Workforce Intelligence", href: "/workforce" },
-          { label: "Benchmarks" },
+          { label: "Benchmarks", href: "/workforce/benchmarks" },
           { label: "Staff per Facility" },
         ]}
       />

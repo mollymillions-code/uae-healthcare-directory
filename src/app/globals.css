@@ -181,7 +181,7 @@
 
   /* Article row — TC list style */
   .article-row {
-    @apply flex items-start gap-4 py-4 border-b border-light-200;
+    @apply flex items-start gap-4 py-4 border-b border-black/[0.06];
   }
 
   .article-row:last-child {
@@ -190,7 +190,7 @@
 
   /* Headline list item with green square bullet */
   .headline-item {
-    @apply flex items-start gap-3 py-3 border-b border-light-200;
+    @apply flex items-start gap-3 py-3 border-b border-black/[0.06];
   }
 
   .headline-item::before {
@@ -225,7 +225,7 @@
 
   /* Provider card */
   .provider-card {
-    @apply block py-4 border-b border-light-200 hover:bg-light-50 transition-colors px-2 -mx-2;
+    @apply block py-4 border-b border-black/[0.06] hover:bg-light-50 transition-colors px-2 -mx-2;
   }
 
   /* Prose for journal articles — STAT News style with serif */

@@ -15,6 +15,7 @@ import {
   getSpecialtyBySlug,
   PROFESSIONAL_STATS,
 } from "@/lib/constants/professionals";
+import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -106,6 +107,17 @@ export default function ConsultantsPage({ params }: Props) {
             url: base,
           },
         }}
+      />
+
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "UAE", url: `${base}/` },
+          { name: "Directory", url: `${base}/directory` },
+          { name: "Professionals", url: `${base}/professionals` },
+          { name: cat.name, url: `${base}/professionals/${cat.slug}` },
+          { name: spec.name, url: `${base}/professionals/${cat.slug}/${spec.slug}` },
+          { name: "Consultants" },
+        ])}
       />
 
       <Breadcrumb
@@ -218,7 +230,7 @@ export default function ConsultantsPage({ params }: Props) {
           <div className="mb-12">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-light-200">
+                <tr className="border-b border-black/[0.06]">
                   <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                     Facility
                   </th>
@@ -232,7 +244,7 @@ export default function ConsultantsPage({ params }: Props) {
               </thead>
               <tbody>
                 {topFacilities.map((fac, i) => (
-                  <tr key={fac.slug} className="border-b border-light-200">
+                  <tr key={fac.slug} className="border-b border-black/[0.06]">
                     <td className="py-3 pr-4">
                       <Link
                         href={`/professionals/facility/${fac.slug}`}
@@ -287,7 +299,7 @@ export default function ConsultantsPage({ params }: Props) {
           </thead>
           <tbody>
             {displayed.map((pro) => (
-              <tr key={pro.id} className="border-b border-light-200">
+              <tr key={pro.id} className="border-b border-black/[0.06]">
                 <td className="py-2.5 pr-4">
                   <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c] tracking-tight">
                     {pro.name}

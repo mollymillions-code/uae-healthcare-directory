@@ -239,7 +239,7 @@ export default function ArabicTestCategoryPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-accent transition-colors group"
           >
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -301,7 +301,7 @@ export default function ArabicTestCategoryPage({
             <Link
               key={c.slug}
               href={`/ar/labs/category/${c.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
             >
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
                 {c.name}
@@ -321,7 +321,7 @@ export default function ArabicTestCategoryPage({
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> أسعار فحوصات {cat.name} استرشادية
           وتستند إلى البيانات المتاحة للعموم من المختبرات التشخيصية في الإمارات.

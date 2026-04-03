@@ -134,7 +134,7 @@ export default function ArabicLabComparePage() {
           <span className="arrows">&gt;&gt;&gt;</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-light-50 border border-light-200 p-4">
+          <div className="bg-light-50 border border-black/[0.06] p-4">
             <TrendingDown className="w-5 h-5 text-accent mb-2" />
             <p className="text-xs font-bold text-dark mb-1">تفاوت في الأسعار يصل إلى 60%</p>
             <p className="text-[11px] text-muted leading-relaxed">
@@ -142,7 +142,7 @@ export default function ArabicLabComparePage() {
               مالاً حقيقياً، لا سيما للفحوصات الروتينية السنوية.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
+          <div className="bg-light-50 border border-black/[0.06] p-4">
             <CheckCircle className="w-5 h-5 text-accent mb-2" />
             <p className="text-xs font-bold text-dark mb-1">اختلافات في الاعتماد</p>
             <p className="text-[11px] text-muted leading-relaxed">
@@ -150,7 +150,7 @@ export default function ArabicLabComparePage() {
               الإلزامية. معلومة مفيدة لأطباق الفحص المعقدة أو الإحالات المتخصصة.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
+          <div className="bg-light-50 border border-black/[0.06] p-4">
             <MapPin className="w-5 h-5 text-accent mb-2" />
             <p className="text-xs font-bold text-dark mb-1">خدمة السحب المنزلي</p>
             <p className="text-[11px] text-muted leading-relaxed">
@@ -158,7 +158,7 @@ export default function ArabicLabComparePage() {
               لفحوصات الصيام التي تستدعي سحب العينة باكراً مع تجنب عناء التنقل.
             </p>
           </div>
-          <div className="bg-light-50 border border-light-200 p-4">
+          <div className="bg-light-50 border border-black/[0.06] p-4">
             <AlertCircle className="w-5 h-5 text-accent mb-2" />
             <p className="text-xs font-bold text-dark mb-1">وضع التأمين ضمن الشبكة</p>
             <p className="text-[11px] text-muted leading-relaxed">
@@ -193,7 +193,7 @@ export default function ArabicLabComparePage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء المسؤولية:</strong> الأسعار المعروضة استرشادية ومستقاة من قوائم
           الأسعار المتاحة للعموم ومنصات التجميع والتواصل المباشر مع المختبرات اعتباراً من

@@ -734,7 +734,7 @@ function HealthcareWorkforceContent() {
             </thead>
             <tbody>
               {PHYSICIAN_SPECIALTIES.slice(0, 15).map((spec) => (
-                <tr key={spec.slug} className="border-b border-light-200">
+                <tr key={spec.slug} className="border-b border-black/[0.06]">
                   <td className="py-2 pr-4">
                     <Link
                       href={`/professionals/${spec.category}/${spec.slug}`}
@@ -776,7 +776,7 @@ function HealthcareWorkforceContent() {
             </thead>
             <tbody>
               {PROFESSIONAL_STATS.topFacilities.map((fac, i) => (
-                <tr key={i} className="border-b border-light-200">
+                <tr key={i} className="border-b border-black/[0.06]">
                   <td className="py-2 pr-4">
                     <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c]">
                       {i + 1}. {fac.name}

@@ -244,7 +244,7 @@ export default function AreaSpecialtyPage({ params }: Props) {
               </thead>
               <tbody>
                 {topFacilities.map((fac, i) => (
-                  <tr key={fac.slug} className="border-b border-light-200">
+                  <tr key={fac.slug} className="border-b border-black/[0.06]">
                     <td className="py-3 pr-4">
                       <Link
                         href={`/professionals/facility/${fac.slug}`}
@@ -293,7 +293,7 @@ export default function AreaSpecialtyPage({ params }: Props) {
           </thead>
           <tbody>
             {sortedProfessionals.map((pro) => (
-              <tr key={pro.id} className="border-b border-light-200">
+              <tr key={pro.id} className="border-b border-black/[0.06]">
                 <td className="py-2.5 pr-4">
                   <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c] tracking-tight">
                     {pro.name}

@@ -13,12 +13,11 @@ import {
   PROFESSIONAL_STATS,
   ALL_SPECIALTIES,
 } from "@/lib/constants/professionals";
+import { DUBAI_POPULATION } from "@/lib/workforce";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
-
-const DUBAI_POPULATION = 3_600_000;
 
 const FAQS = [
   {
@@ -27,7 +26,7 @@ const FAQS = [
   },
   {
     question: "What is the physician-to-population ratio in Dubai?",
-    answer: `With ${PROFESSIONAL_STATS.physicians.toLocaleString()} licensed physicians serving an estimated population of 3.6 million, Dubai has approximately 1 physician for every ${Math.round(DUBAI_POPULATION / PROFESSIONAL_STATS.physicians).toLocaleString()} residents. This is one of the highest ratios in the MENA region.`,
+    answer: `With ${PROFESSIONAL_STATS.physicians.toLocaleString()} licensed physicians serving an estimated population of ${(DUBAI_POPULATION / 1_000_000).toFixed(2)} million, Dubai has approximately 1 physician for every ${Math.round(DUBAI_POPULATION / PROFESSIONAL_STATS.physicians).toLocaleString()} residents. This is one of the highest ratios in the MENA region.`,
   },
   {
     question: "How many healthcare facilities operate in Dubai?",
@@ -235,19 +234,19 @@ export default function StatsPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 w-10">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 w-10">
                 #
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialty
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
                 Category
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Count
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
                 % of Total
               </th>
             </tr>
@@ -303,16 +302,16 @@ export default function StatsPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 w-10">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 w-10">
                 #
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Facility
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Total Staff
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
                 Top Specialty
               </th>
             </tr>
@@ -413,13 +412,13 @@ export default function StatsPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Area
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Professionals
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
                 Top Specialties
               </th>
             </tr>
@@ -473,16 +472,16 @@ export default function StatsPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialty
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialists
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Consultants
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
                 Ratio (S:C)
               </th>
             </tr>

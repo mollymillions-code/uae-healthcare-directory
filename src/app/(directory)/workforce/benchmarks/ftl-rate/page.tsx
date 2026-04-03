@@ -54,7 +54,7 @@ export default function FTLRatePage() {
         data={breadcrumbSchema([
           { name: "UAE", url: `${base}/` },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Benchmarks" },
+          { name: "Benchmarks", url: `${base}/workforce/benchmarks` },
           { name: "FTL Rate" },
         ])}
       />
@@ -63,7 +63,7 @@ export default function FTLRatePage() {
         items={[
           { label: "UAE", href: "/" },
           { label: "Workforce Intelligence", href: "/workforce" },
-          { label: "Benchmarks" },
+          { label: "Benchmarks", href: "/workforce/benchmarks" },
           { label: "FTL Rate" },
         ]}
       />

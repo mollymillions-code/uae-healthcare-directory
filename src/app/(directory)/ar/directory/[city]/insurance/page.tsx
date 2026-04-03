@@ -97,7 +97,7 @@ export default async function ArabicInsuranceIndexPage({ params }: Props) {
           <Link
             key={ins.slug}
             href={`/ar/directory/${city.slug}/insurance/${ins.slug}`}
-            className="block border border-light-200 p-4 hover:border-accent transition-colors"
+            className="block border border-black/[0.06] p-4 hover:border-accent transition-colors"
             title={`تصفح مقدمي خدمة ${ins.name} في ${cityNameAr}`}
           >
             <div className="flex items-center justify-between mb-2">

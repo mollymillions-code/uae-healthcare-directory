@@ -251,7 +251,7 @@ export default function AreaProfessionalsPage({ params }: Props) {
           </thead>
           <tbody>
             {displayProfessionals.map((pro) => (
-              <tr key={pro.id} className="border-b border-light-200">
+              <tr key={pro.id} className="border-b border-black/[0.06]">
                 <td className="py-2.5 pr-4">
                   <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c] tracking-tight">
                     {pro.name}

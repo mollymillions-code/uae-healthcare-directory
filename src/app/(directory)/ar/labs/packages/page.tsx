@@ -211,7 +211,7 @@ export default function ArabicPackagesPage() {
             { value: mostBiomarkers.toString(), label: "أعلى عدد مؤشرات" },
             { value: labsWithPackages.toString(), label: "مختبر يوفر الباقات" },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-light-50 p-4 text-center border border-light-200">
+            <div key={label} className="bg-light-50 p-4 text-center border border-black/[0.06]">
               <p className="text-xl font-bold text-accent">{value}</p>
               <p className="text-xs text-muted mt-1">{label}</p>
             </div>
@@ -319,7 +319,7 @@ export default function ArabicPackagesPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-light-50 border border-light-200 p-5 mb-12">
+        <div className="bg-light-50 border border-black/[0.06] p-5 mb-12">
           <div className="flex items-center gap-2 mb-2">
             <Users className="w-4 h-4 text-accent" />
             <p className="text-sm font-bold text-dark">فحص صحة المرأة</p>
@@ -351,8 +351,8 @@ export default function ArabicPackagesPage() {
       </div>
 
       {comprehensiveExample && (
-        <div className="border border-light-200 mb-6 overflow-x-auto">
-          <div className="p-4 bg-light-50 border-b border-light-200">
+        <div className="border border-black/[0.06] mb-6 overflow-x-auto">
+          <div className="p-4 bg-light-50 border-b border-black/[0.06]">
             <p className="text-sm font-bold text-dark">
               Al Borg Diagnostics — العافية الشاملة (باقة 499 درهم مقابل الفحوصات الفردية)
             </p>
@@ -364,8 +364,8 @@ export default function ArabicPackagesPage() {
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-light-50">
-                <th className="text-right p-3 font-bold text-dark border-b border-light-200">الفحص</th>
-                <th className="text-left p-3 font-bold text-dark border-b border-light-200">السعر الفردي (درهم)</th>
+                <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">الفحص</th>
+                <th className="text-left p-3 font-bold text-dark border-b border-black/[0.06]">السعر الفردي (درهم)</th>
               </tr>
             </thead>
             <tbody>
@@ -383,17 +383,17 @@ export default function ArabicPackagesPage() {
                 { name: "تحليل البول", price: 40 },
               ].map((row, i) => (
                 <tr key={row.name} className={i % 2 === 0 ? "bg-white" : "bg-light-50"}>
-                  <td className="p-3 border-b border-light-200 text-dark">{row.name}</td>
-                  <td className="p-3 border-b border-light-200 text-left text-dark font-medium">
+                  <td className="p-3 border-b border-black/[0.06] text-dark">{row.name}</td>
+                  <td className="p-3 border-b border-black/[0.06] text-left text-dark font-medium">
                     {row.price}
                   </td>
                 </tr>
               ))}
               <tr className="bg-light-50 font-bold">
-                <td className="p-3 border-b border-light-200 text-dark">
+                <td className="p-3 border-b border-black/[0.06] text-dark">
                   الإجمالي عند طلب الفحوصات فردياً
                 </td>
-                <td className="p-3 border-b border-light-200 text-left text-dark">825</td>
+                <td className="p-3 border-b border-black/[0.06] text-left text-dark">825</td>
               </tr>
               <tr className="bg-accent-muted">
                 <td className="p-3 text-dark font-bold">
@@ -403,7 +403,7 @@ export default function ArabicPackagesPage() {
               </tr>
             </tbody>
           </table>
-          <div className="p-4 bg-light-50 border-t border-light-200 flex items-center gap-3">
+          <div className="p-4 bg-light-50 border-t border-black/[0.06] flex items-center gap-3">
             <TrendingDown className="w-5 h-5 text-accent flex-shrink-0" />
             <p className="text-sm font-bold text-dark">
               توفر الباقة 326 درهماً —{" "}
@@ -414,7 +414,7 @@ export default function ArabicPackagesPage() {
         </div>
       )}
 
-      <div className="bg-light-50 border border-light-200 p-5 mb-12">
+      <div className="bg-light-50 border border-black/[0.06] p-5 mb-12">
         <div className="flex items-start gap-3">
           <Wallet className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
           <div>
@@ -450,9 +450,9 @@ export default function ArabicPackagesPage() {
       </div>
       <div className="space-y-6 mb-12">
         {packagesByLab.map(({ lab, packages }) => (
-          <div key={lab.slug} className="border border-light-200">
+          <div key={lab.slug} className="border border-black/[0.06]">
             {/* Lab header */}
-            <div className="p-4 bg-light-50 border-b border-light-200 flex items-center justify-between">
+            <div className="p-4 bg-light-50 border-b border-black/[0.06] flex items-center justify-between">
               <div>
                 <Link
                   href={`/labs/${lab.slug}`}
@@ -482,7 +482,7 @@ export default function ArabicPackagesPage() {
               {packages.map((pkg, i) => (
                 <div
                   key={pkg.id}
-                  className={`p-4 ${i < packages.length - 1 ? "border-b sm:border-b-0 sm:border-r border-light-200" : ""}`}
+                  className={`p-4 ${i < packages.length - 1 ? "border-b sm:border-b-0 sm:border-r border-black/[0.06]" : ""}`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
@@ -495,7 +495,7 @@ export default function ArabicPackagesPage() {
                       </span>
                     )}
                     {pkg.price >= PREMIUM_MIN && (
-                      <span className="text-[9px] bg-light-100 text-dark px-1.5 py-0.5 font-bold border border-light-200 flex-shrink-0">
+                      <span className="text-[9px] bg-light-100 text-dark px-1.5 py-0.5 font-bold border border-black/[0.06] flex-shrink-0">
                         متميزة
                       </span>
                     )}
@@ -585,7 +585,7 @@ export default function ArabicPackagesPage() {
               "لوحة عافية كاملة مع ممرضة مرخصة من DHA تزور موقعك. الجمع المنزلي مشمول في السعر. النتائج رقمياً خلال 24 ساعة. احجز عبر التطبيق.",
           },
         ].map(({ icon: Icon, profile, recommendation, details }) => (
-          <div key={profile} className="border border-light-200 p-4 hover:border-accent transition-colors">
+          <div key={profile} className="border border-black/[0.06] p-4 hover:border-accent transition-colors">
             <div className="flex items-start gap-3 mb-3">
               <Icon className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
               <p className="text-xs font-bold text-muted uppercase tracking-wide">{profile}</p>
@@ -624,7 +624,7 @@ export default function ArabicPackagesPage() {
           <Link
             key={href}
             href={href}
-            className="border border-light-200 p-4 hover:border-accent transition-colors group flex items-center justify-between gap-3"
+            className="border border-black/[0.06] p-4 hover:border-accent transition-colors group flex items-center justify-between gap-3"
           >
             <div>
               <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -638,7 +638,7 @@ export default function ArabicPackagesPage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> أسعار الباقات مستندة إلى التسعير المتاح
           للعموم من مواقع المختبرات ومنصات التجميع (2024-2025). قد تتباين الأسعار

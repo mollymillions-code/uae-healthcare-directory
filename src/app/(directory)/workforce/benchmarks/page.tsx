@@ -120,7 +120,7 @@ export default function BenchmarksPage() {
     },
     {
       title: "Consultant Pipeline",
-      href: "/workforce/benchmarks/consultant-pipeline",
+      href: "/workforce/specialties",
       description:
         "Specialist-to-consultant progression ratio by specialty. Shows seniority depth and career advancement patterns in each discipline.",
       stats: [
@@ -143,7 +143,7 @@ export default function BenchmarksPage() {
     },
     {
       title: "Specialty Concentration",
-      href: "/workforce/benchmarks/specialty-concentration",
+      href: "/workforce/areas",
       description:
         "Geographic concentration index: what percentage of each specialty is clustered in just 3 areas. Identifies over-concentrated and well-distributed specialties.",
       stats: [

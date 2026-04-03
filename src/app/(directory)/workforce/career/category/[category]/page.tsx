@@ -60,7 +60,7 @@ export default function CareerCategoryPage({ params }: Props) {
         data={breadcrumbSchema([
           { name: "UAE", url: base },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Careers" },
+          { name: "Careers", url: `${base}/workforce/careers` },
           { name: catInfo.name },
         ])}
       />
@@ -69,7 +69,7 @@ export default function CareerCategoryPage({ params }: Props) {
         items={[
           { label: "UAE", href: "/" },
           { label: "Workforce Intelligence", href: "/workforce" },
-          { label: "Careers" },
+          { label: "Careers", href: "/workforce/careers" },
           { label: catInfo.name },
         ]}
       />

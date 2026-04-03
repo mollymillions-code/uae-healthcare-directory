@@ -152,7 +152,7 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
       </div>
 
       {/* حقائق رئيسية */}
-      <div className="bg-light-50 p-4 mb-8 border border-light-200">
+      <div className="bg-light-50 p-4 mb-8 border border-black/[0.06]">
         <h2 className="text-sm font-bold text-dark mb-3">حقائق رئيسية</h2>
         <ul className="space-y-1.5">
           {profile.keyFacts.map((fact) => (
@@ -188,10 +188,10 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
                 key={plan.id}
                 className={i % 2 === 0 ? "bg-white" : "bg-light-50"}
               >
-                <td className="px-3 py-2 font-medium text-dark border-b border-light-200">
+                <td className="px-3 py-2 font-medium text-dark border-b border-black/[0.06]">
                   {plan.name}
                 </td>
-                <td className="px-3 py-2 border-b border-light-200">
+                <td className="px-3 py-2 border-b border-black/[0.06]">
                   <span
                     className={`inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                       plan.tier === "vip"
@@ -206,23 +206,23 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
                     {getTierLabel(plan.tier)}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-muted border-b border-light-200">
+                <td className="px-3 py-2 text-muted border-b border-black/[0.06]">
                   {formatPremium(plan.premiumRange)}
                 </td>
-                <td className="px-3 py-2 text-muted border-b border-light-200">
+                <td className="px-3 py-2 text-muted border-b border-black/[0.06]">
                   {formatLimit(plan.annualLimit)}
                 </td>
-                <td className="px-3 py-2 text-muted border-b border-light-200">
+                <td className="px-3 py-2 text-muted border-b border-black/[0.06]">
                   {plan.copayOutpatient === 0 ? "0%" : `${plan.copayOutpatient}%`}
                 </td>
-                <td className="px-3 py-2 text-center border-b border-light-200">
+                <td className="px-3 py-2 text-center border-b border-black/[0.06]">
                   {plan.coverage.dental ? (
                     <span className="text-green-600 font-bold">✓</span>
                   ) : (
                     <span className="text-muted">—</span>
                   )}
                 </td>
-                <td className="px-3 py-2 text-center border-b border-light-200">
+                <td className="px-3 py-2 text-center border-b border-black/[0.06]">
                   {plan.coverage.optical ? (
                     <span className="text-green-600 font-bold">✓</span>
                   ) : (
@@ -269,7 +269,7 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
       )}
 
       {/* آلية المطالبات */}
-      <div className="mb-10 bg-light-50 border border-light-200 p-5">
+      <div className="mb-10 bg-light-50 border border-black/[0.06] p-5">
         <h2 className="text-sm font-bold text-dark mb-2">
           كيف تعمل المطالبات مع {profile.name}
         </h2>
@@ -312,7 +312,7 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
                   <Link
                     key={s.slug}
                     href={`/ar/insurance/${s.slug}`}
-                    className="block border border-light-200 bg-white p-4 hover:border-accent hover:shadow-sm transition-all group"
+                    className="block border border-black/[0.06] bg-white p-4 hover:border-accent hover:shadow-sm transition-all group"
                   >
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <span className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -376,7 +376,7 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
       </div>
 
       {/* إخلاء المسؤولية */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء المسؤولية:</strong> تفاصيل الخطط والأقساط المعروضة أرقام استرشادية. احصل على عرض سعر شخصي من {profile.name} أو وسيط معتمد. بيانات شبكة مقدمي الخدمة مصدرها الدليل الصحي المفتوح في الإمارات، آخر تحقق مارس 2026.
         </p>

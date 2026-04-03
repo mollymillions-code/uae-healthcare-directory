@@ -94,7 +94,7 @@ export default function ArabicComparePage() {
       </div>
 
       {/* إخلاء المسؤولية */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء المسؤولية:</strong> تفاصيل الخطط والأقساط المعروضة هي أرقام استرشادية مستندة إلى
           بيانات متاحة للعموم من سوق التأمين الإماراتي. احرص على الحصول على عروض أسعار شخصية من شركات

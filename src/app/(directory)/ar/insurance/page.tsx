@@ -179,7 +179,7 @@ export default async function ArabicInsuranceNavigatorPage() {
       <div className="answer-block mb-12" data-answer-block="true">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* بطاقة 1 — التغطية الإلزامية */}
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="inline-block w-2 h-6 bg-accent flex-shrink-0" />
               <h3 className="text-sm font-bold text-dark">التغطية الإلزامية</h3>
@@ -200,7 +200,7 @@ export default async function ArabicInsuranceNavigatorPage() {
           </div>
 
           {/* بطاقة 2 — آلية عمل الخطط */}
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="inline-block w-2 h-6 bg-accent flex-shrink-0" />
               <h3 className="text-sm font-bold text-dark">آلية عمل الخطط</h3>
@@ -219,7 +219,7 @@ export default async function ArabicInsuranceNavigatorPage() {
           </div>
 
           {/* بطاقة 3 — اختيار الخطة */}
-          <div className="border border-light-200 p-5">
+          <div className="border border-black/[0.06] p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="inline-block w-2 h-6 bg-accent flex-shrink-0" />
               <h3 className="text-sm font-bold text-dark">اختيار الخطة المناسبة</h3>
@@ -252,7 +252,7 @@ export default async function ArabicInsuranceNavigatorPage() {
             <Link
               key={insurer.slug}
               href={`/insurance/${insurer.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
             >
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -283,7 +283,7 @@ export default async function ArabicInsuranceNavigatorPage() {
           <Link
             key={city.slug}
             href={`/directory/${city.slug}/insurance`}
-            className="border border-light-200 p-4 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] p-4 hover:border-accent transition-colors group"
           >
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -312,7 +312,7 @@ export default async function ArabicInsuranceNavigatorPage() {
         <h2>اعثر على خطتك المناسبة</h2>
         <span className="arrows">&gt;&gt;&gt;</span>
       </div>
-      <div className="mb-12 bg-light-50 p-6 border border-light-200">
+      <div className="mb-12 bg-light-50 p-6 border border-black/[0.06]">
         <p className="text-xs text-muted mb-4">
           أجب على بضعة أسئلة وسنوصي بخطط تتناسب مع ميزانيتك واحتياجات تغطيتك ومدينتك المفضلة.
         </p>
@@ -346,7 +346,7 @@ export default async function ArabicInsuranceNavigatorPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             {/* DHA */}
-            <div className="bg-light-50 border border-light-200 p-5">
+            <div className="bg-light-50 border border-black/[0.06] p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="badge">دبي</span>
               </div>
@@ -356,7 +356,7 @@ export default async function ArabicInsuranceNavigatorPage() {
               </p>
             </div>
             {/* DOH */}
-            <div className="bg-light-50 border border-light-200 p-5">
+            <div className="bg-light-50 border border-black/[0.06] p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="badge">أبوظبي</span>
               </div>
@@ -366,7 +366,7 @@ export default async function ArabicInsuranceNavigatorPage() {
               </p>
             </div>
             {/* MOHAP */}
-            <div className="bg-light-50 border border-light-200 p-5">
+            <div className="bg-light-50 border border-black/[0.06] p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="badge">اتحادي</span>
               </div>
@@ -383,7 +383,7 @@ export default async function ArabicInsuranceNavigatorPage() {
       </div>
 
       {/* إخلاء المسؤولية */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء المسؤولية:</strong> نطاقات الأقساط وتفاصيل التغطية المعروضة هي أرقام استرشادية مستندة إلى بيانات متاحة للعموم من سوق التأمين الإماراتي. تتباين الأقساط الفعلية بحسب العمر والجنسية ونوع الإقامة وحجم مجموعة صاحب العمل والتاريخ الطبي. احرص دائماً على الحصول على عرض سعر شخصي من شركة التأمين أو وسيط معتمد قبل الشراء. هذه الأداة لأغراض معلوماتية فحسب ولا تُشكّل نصيحة تأمينية. البيانات مُصادَرة من الدليل الصحي المفتوح في الإمارات، آخر تحقق مارس 2026.
         </p>

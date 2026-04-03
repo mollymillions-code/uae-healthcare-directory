@@ -323,7 +323,7 @@ export default function WorkforceOverviewPage() {
           </p>
         </div>
       </div>
-      <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed mb-8">
+      <p className="font-['Geist',sans-serif] text-xs text-black/60 leading-relaxed mb-8">
         FTL professionals are permanently assigned to one facility and form the
         core clinical workforce. REG holders may work part-time, locum, or
         across multiple locations. A high FTL rate at a facility indicates
@@ -339,17 +339,17 @@ export default function WorkforceOverviewPage() {
       <div className="overflow-x-auto mb-8">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-black/10">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+            <tr className="border-b-2 border-[#1c1c1c]">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 #
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Facility
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Staff
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
                 Top Specialty
               </th>
             </tr>
@@ -398,17 +398,17 @@ export default function WorkforceOverviewPage() {
       <div className="overflow-x-auto mb-8">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-black/10">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+            <tr className="border-b-2 border-[#1c1c1c]">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 #
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialty
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
                 Category
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
                 Professionals
               </th>
             </tr>
@@ -460,17 +460,17 @@ export default function WorkforceOverviewPage() {
       <div className="overflow-x-auto mb-8">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-black/10">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+            <tr className="border-b-2 border-[#1c1c1c]">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialty
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Specialists
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Consultants
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
                 Consultant %
               </th>
             </tr>
@@ -520,14 +520,14 @@ export default function WorkforceOverviewPage() {
       <div className="overflow-x-auto mb-8">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-black/10">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+            <tr className="border-b-2 border-[#1c1c1c]">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Area
               </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Professionals
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 hidden sm:table-cell">
                 Top Specialty
               </th>
             </tr>

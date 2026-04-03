@@ -283,7 +283,7 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           <div className="overflow-x-auto -mx-4 sm:mx-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-light-200">
+                <tr className="border-b border-black/[0.06]">
                   <th className="text-right py-2 px-3 text-xs font-bold text-dark">الفحص</th>
                   <th className="text-left py-2 px-3 text-xs font-bold text-dark">السعر</th>
                   <th className="text-left py-2 px-3 text-xs font-bold text-dark" />
@@ -349,7 +349,7 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
       </div>
 
       {/* إخلاء المسؤولية */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> الأسعار المعروضة لـ {lab.name} استرشادية وتستند إلى
           البيانات المتاحة للعموم. قد تتباين الأسعار الفعلية بحسب موقع الفرع والتغطية التأمينية

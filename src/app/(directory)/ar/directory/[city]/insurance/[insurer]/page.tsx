@@ -249,7 +249,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
               <Link
                 key={cat.slug}
                 href={`/ar/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-light-200 px-3 py-2 hover:border-accent group transition-colors"
+                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-accent group transition-colors"
               >
                 <span className="text-xs font-bold text-dark group-hover:text-accent transition-colors">
                   {getArabicCategoryName(cat.slug)}
@@ -276,7 +276,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
           </div>
           <div className="space-y-0">
             {topRated.map((p, idx) => (
-              <div key={p.id} className="flex items-center gap-3 py-3 border-b border-light-200 last:border-b-0">
+              <div key={p.id} className="flex items-center gap-3 py-3 border-b border-black/[0.06] last:border-b-0">
                 <span className="text-xs font-bold text-muted w-5 flex-shrink-0">#{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <Link
@@ -344,7 +344,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
             )}
           </>
         ) : (
-          <div className="text-center py-12 border border-light-200">
+          <div className="text-center py-12 border border-black/[0.06]">
             <p className="text-muted mb-2">لم يتم العثور على مقدمي خدمة يقبلون {insurer.name} في {cityNameAr} حتى الآن.</p>
             <Link href={`/ar/directory/${city.slug}`} className="text-accent text-sm font-bold">
               عرض جميع مقدمي الرعاية الصحية في {cityNameAr} &larr;
@@ -368,7 +368,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/ar/directory/${c.slug}/insurance/${insurer.slug}`}
-                className="block border border-light-200 p-3 hover:border-accent transition-colors group text-center"
+                className="block border border-black/[0.06] p-3 hover:border-accent transition-colors group text-center"
               >
                 <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">{getArabicCityName(c.slug)}</p>
                 <p className="text-xs text-accent font-bold mt-1">{c.count} {ar.provider}</p>
@@ -390,7 +390,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
               <Link
                 key={ins.slug}
                 href={`/ar/directory/${city.slug}/insurance/${ins.slug}`}
-                className="block border border-light-200 p-4 hover:border-accent transition-colors"
+                className="block border border-black/[0.06] p-4 hover:border-accent transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-bold text-dark text-sm">{ins.name}</h3>
@@ -430,7 +430,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
+      <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> بيانات شبكة مقدمي الخدمة مصدرها السجلات الرسمية لـ {regulatorAr} ودليل الرعاية الصحية المفتوح في الإمارات، آخر تحقق مارس 2026.
           قد تتغير قبول التأمين في أي وقت — تحقق دائماً مع مكتب التأمين لدى مقدم الخدمة قبل زيارتك.

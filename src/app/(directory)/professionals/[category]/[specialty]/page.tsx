@@ -9,6 +9,7 @@ import {
   getCategoryBySlug,
   getSpecialtyBySlug,
 } from "@/lib/constants/professionals";
+import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -54,6 +55,11 @@ export default function SpecialtyPage({ params }: Props) {
   const professionals = getProfessionalsBySpecialty(spec.slug);
   const stats = getSpecialtyStats(spec.slug);
 
+  const displayLimit = 200;
+  const displayProfessionals = [...professionals]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, displayLimit);
+
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
@@ -72,6 +78,16 @@ export default function SpecialtyPage({ params }: Props) {
             name: spec.name,
           },
         }}
+      />
+
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "UAE", url: `${base}/` },
+          { name: "Directory", url: `${base}/directory` },
+          { name: "Professionals", url: `${base}/professionals` },
+          { name: cat.name, url: `${base}/professionals/${cat.slug}` },
+          { name: spec.name },
+        ])}
       />
 
       <Breadcrumb
@@ -148,14 +164,14 @@ export default function SpecialtyPage({ params }: Props) {
           <div className="mb-12">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-light-200">
-                  <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Facility</th>
-                  <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">{spec.name}</th>
+                <tr className="border-b border-black/[0.06]">
+                  <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Facility</th>
+                  <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">{spec.name}</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.topFacilities.map((fac, i) => (
-                  <tr key={fac.slug} className="border-b border-light-200">
+                  <tr key={fac.slug} className="border-b border-black/[0.06]">
                     <td className="py-3 pr-4">
                       <Link
                         href={`/professionals/facility/${fac.slug}`}
@@ -184,23 +200,21 @@ export default function SpecialtyPage({ params }: Props) {
         </h2>
       </div>
       <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
-        {stats.totalProfessionals.toLocaleString()} licensed {spec.name.toLowerCase()}{" "}
+        Showing {displayProfessionals.length < professionals.length ? `${displayProfessionals.length.toLocaleString()} of ` : ""}{stats.totalProfessionals.toLocaleString()} licensed {spec.name.toLowerCase()}{" "}
         professionals in Dubai, sorted alphabetically.
       </p>
       <div className="mb-8 professional-listing">
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Name</th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">License Type</th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">Facility</th>
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Name</th>
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">License Type</th>
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">Facility</th>
             </tr>
           </thead>
           <tbody>
-            {professionals
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((pro) => (
-                <tr key={pro.id} className="border-b border-light-200">
+            {displayProfessionals.map((pro) => (
+                <tr key={pro.id} className="border-b border-black/[0.06]">
                   <td className="py-2.5 pr-4">
                     <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c] tracking-tight">
                       {pro.name}
@@ -219,6 +233,12 @@ export default function SpecialtyPage({ params }: Props) {
           </tbody>
         </table>
       </div>
+      {professionals.length > displayLimit && (
+        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-8">
+          Showing {displayLimit} of {professionals.length.toLocaleString()} professionals.
+          View all {spec.name.toLowerCase()} professionals by facility using the top facilities table above.
+        </p>
+      )}
 
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">

@@ -59,7 +59,7 @@ export default function SpecialistPerCapitaPage() {
         data={breadcrumbSchema([
           { name: "UAE", url: `${base}/` },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Benchmarks" },
+          { name: "Benchmarks", url: `${base}/workforce/benchmarks` },
           { name: "Specialist per Capita" },
         ])}
       />
@@ -68,7 +68,7 @@ export default function SpecialistPerCapitaPage() {
         items={[
           { label: "UAE", href: "/" },
           { label: "Workforce Intelligence", href: "/workforce" },
-          { label: "Benchmarks" },
+          { label: "Benchmarks", href: "/workforce/benchmarks" },
           { label: "Specialist per Capita" },
         ]}
       />

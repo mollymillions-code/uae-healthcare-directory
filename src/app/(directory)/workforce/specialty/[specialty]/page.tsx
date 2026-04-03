@@ -45,7 +45,7 @@ export function generateMetadata({
       description: `${metrics.totalCount.toLocaleString()} ${metrics.name.toLowerCase()} professionals. ${metrics.per100K} per 100K population, ${metrics.concentrationIndex}% concentrated in top 3 areas.`,
       url: `${base}/workforce/specialty/${params.specialty}`,
       type: "website",
-      siteName: "Zavis Healthcare Intelligence",
+      siteName: "UAE Open Healthcare Directory",
     },
   };
 }
@@ -482,7 +482,7 @@ export default function SpecialtyWorkforcePage({
       </div>
 
       {/* Concentration Index Callout */}
-      <div className="bg-[#f8f8f6] border-l-4 border-black/10 py-4 px-6 mb-6">
+      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-4 px-6 mb-6">
         <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
           <strong>Concentration index:</strong>{" "}
           <span className="font-['Geist_Mono',monospace] font-bold text-[#1c1c1c]">

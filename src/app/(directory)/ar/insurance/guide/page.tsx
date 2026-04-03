@@ -105,7 +105,7 @@ export default function ArabicInsuranceGuideIndexPage() {
           <Link
             key={guide.slug}
             href={`/ar/insurance/guide/${guide.slug}`}
-            className="block border border-light-200 p-5 hover:border-accent transition-colors group"
+            className="block border border-black/[0.06] p-5 hover:border-accent transition-colors group"
           >
             <div className="flex items-start gap-3">
               <BookOpen className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
@@ -126,7 +126,7 @@ export default function ArabicInsuranceGuideIndexPage() {
       </div>
 
       {/* رابط العودة إلى دليل التأمين */}
-      <div className="mt-8 pt-6 border-t border-light-200">
+      <div className="mt-8 pt-6 border-t border-black/[0.06]">
         <Link
           href="/ar/insurance"
           className="text-sm font-medium text-accent hover:underline"

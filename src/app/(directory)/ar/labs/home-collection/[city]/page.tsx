@@ -412,7 +412,7 @@ export default function ArabicHomeCollectionCityPage({
           ].map(({ value, label }) => (
             <div
               key={label}
-              className="bg-light-50 p-4 text-center border border-light-200"
+              className="bg-light-50 p-4 text-center border border-black/[0.06]"
             >
               <p className="text-2xl font-bold text-accent">{value}</p>
               <p className="text-xs text-muted mt-1">{label}</p>
@@ -465,20 +465,20 @@ export default function ArabicHomeCollectionCityPage({
         </p>
       </div>
       <div className="overflow-x-auto mb-10">
-        <table className="w-full text-xs border border-light-200">
+        <table className="w-full text-xs border border-black/[0.06]">
           <thead>
             <tr className="bg-light-50">
-              <th className="text-right p-3 font-bold text-dark border-b border-light-200">المختبر</th>
-              <th className="text-right p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">المختبر</th>
+              <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">
                 رسوم السحب
               </th>
-              <th className="text-right p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">
                 وقت الاستجابة
               </th>
-              <th className="text-right p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">
                 الاعتمادات
               </th>
-              <th className="text-right p-3 font-bold text-dark border-b border-light-200">
+              <th className="text-right p-3 font-bold text-dark border-b border-black/[0.06]">
                 الفحوصات المتاحة
               </th>
             </tr>
@@ -493,7 +493,7 @@ export default function ArabicHomeCollectionCityPage({
                   key={lab.slug}
                   className={i % 2 === 0 ? "bg-white" : "bg-light-50"}
                 >
-                  <td className="p-3 border-b border-light-200">
+                  <td className="p-3 border-b border-black/[0.06]">
                     <Link
                       href={`/labs/${lab.slug}`}
                       className="font-bold text-dark hover:text-accent transition-colors"
@@ -506,7 +506,7 @@ export default function ArabicHomeCollectionCityPage({
                         : "سلسلة مختبرات"}
                     </div>
                   </td>
-                  <td className="p-3 border-b border-light-200">
+                  <td className="p-3 border-b border-black/[0.06]">
                     {lab.homeCollectionFee === 0 ? (
                       <span className="font-bold text-accent">مجاني</span>
                     ) : (
@@ -515,13 +515,13 @@ export default function ArabicHomeCollectionCityPage({
                       </span>
                     )}
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-muted">
                     {lab.turnaroundHours}س
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-muted">
                     {lab.accreditations.slice(0, 3).join("، ")}
                   </td>
-                  <td className="p-3 border-b border-light-200 text-muted">
+                  <td className="p-3 border-b border-black/[0.06] text-muted">
                     {labTestCount > 0 ? `${labTestCount} فحصاً` : "تواصل مع المختبر"}
                   </td>
                 </tr>
@@ -552,7 +552,7 @@ export default function ArabicHomeCollectionCityPage({
             <Link
               key={cat.slug}
               href={`/ar/labs/home-collection/${city.slug}/${cat.slug}`}
-              className="border border-light-200 p-3 hover:border-accent transition-colors group"
+              className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
             >
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
                 {cat.name}
@@ -586,7 +586,7 @@ export default function ArabicHomeCollectionCityPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-accent transition-colors group"
           >
             <div className="min-w-0">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -649,7 +649,7 @@ export default function ArabicHomeCollectionCityPage({
             body: "تصل العينات إلى مختبر المعالجة في غضون ساعات. تُسلَّم النتائج عبر تطبيق آمن أو بريد إلكتروني أو ملف PDF على واتساب. تتيح معظم الجهات مشاركة النتائج مباشرة مع طبيبك.",
           },
         ].map(({ icon: Icon, step, title, body }) => (
-          <div key={step} className="border border-light-200 p-4 bg-light-50">
+          <div key={step} className="border border-black/[0.06] p-4 bg-light-50">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 bg-accent text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                 {step}
@@ -663,7 +663,7 @@ export default function ArabicHomeCollectionCityPage({
       </div>
 
       {/* Regulatory note */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-light-50 border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
           <Award className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
           <div>
@@ -678,7 +678,7 @@ export default function ArabicHomeCollectionCityPage({
       </div>
 
       {/* Fasting prep */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-light-50 border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
           <Microscope className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
           <div>
@@ -691,7 +691,7 @@ export default function ArabicHomeCollectionCityPage({
       </div>
 
       {/* Insurance note */}
-      <div className="bg-light-50 border border-light-200 p-5 mb-10">
+      <div className="bg-light-50 border border-black/[0.06] p-5 mb-10">
         <div className="flex items-start gap-3">
           <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
           <div>
@@ -726,7 +726,7 @@ export default function ArabicHomeCollectionCityPage({
                 <Link
                   key={otherCity.slug}
                   href={`/ar/labs/home-collection/${otherCity.slug}`}
-                  className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                  className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -746,7 +746,7 @@ export default function ArabicHomeCollectionCityPage({
       )}
 
       {/* Browse all */}
-      <div className="border border-light-200 p-4 flex items-center justify-between gap-4 mb-8">
+      <div className="border border-black/[0.06] p-4 flex items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-sm font-bold text-dark">
             قارن جميع خدمات السحب المنزلي في الإمارات
@@ -764,7 +764,7 @@ export default function ArabicHomeCollectionCityPage({
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-light-200 pt-4">
+      <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء المسؤولية:</strong> تستند معلومات رسوم السحب المنزلي والتسعير إلى
           بيانات متاحة للعموم من مواقع المختبرات ومنصات التجميع (2024–2025). قد تتفاوت

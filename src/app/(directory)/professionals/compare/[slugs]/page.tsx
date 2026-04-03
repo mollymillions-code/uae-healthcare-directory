@@ -140,7 +140,8 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           At a Glance
         </h2>
       </div>
-      <div className="grid grid-cols-3 gap-0 mb-12 border border-black/[0.06]">
+      <div className="overflow-x-auto mb-12">
+      <div className="grid grid-cols-3 gap-0 border border-black/[0.06] min-w-[480px]">
         {/* Header Row */}
         <div className="p-4 bg-[#f8f8f6] border-b border-r border-black/[0.06]">
           <span className="font-['Geist',sans-serif] text-xs text-black/40 font-medium">
@@ -272,6 +273,7 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           </span>
         </div>
       </div>
+      </div>
 
       {/* Top Facilities Comparison */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
@@ -387,7 +389,7 @@ export default function CompareSpecialtiesPage({ params }: Props) {
               Full {specA.name} directory ({statsA.totalProfessionals.toLocaleString()} professionals) &rarr;
             </Link>
             <Link
-              href={`/professionals/${specA.category}/${specA.slug}/best`}
+              href={`/best/doctors/${specA.slug}`}
               className="block font-['Geist',sans-serif] text-sm text-[#006828] hover:underline"
             >
               Best {specA.name.toLowerCase()} doctors in Dubai &rarr;
@@ -406,7 +408,7 @@ export default function CompareSpecialtiesPage({ params }: Props) {
               Full {specB.name} directory ({statsB.totalProfessionals.toLocaleString()} professionals) &rarr;
             </Link>
             <Link
-              href={`/professionals/${specB.category}/${specB.slug}/best`}
+              href={`/best/doctors/${specB.slug}`}
               className="block font-['Geist',sans-serif] text-sm text-[#006828] hover:underline"
             >
               Best {specB.name.toLowerCase()} doctors in Dubai &rarr;

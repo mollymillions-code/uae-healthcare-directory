@@ -371,7 +371,7 @@ export default function ArabicTestDetailPage({ params }: { params: { test: strin
           {test.commonReasons.map((reason) => (
             <span
               key={reason}
-              className="text-xs bg-light-50 border border-light-200 px-3 py-1.5 text-dark"
+              className="text-xs bg-light-50 border border-black/[0.06] px-3 py-1.5 text-dark"
             >
               {reason}
             </span>
@@ -387,7 +387,7 @@ export default function ArabicTestDetailPage({ params }: { params: { test: strin
             <span className="arrows">&lt;&lt;&lt;</span>
           </div>
           <div className="answer-block" data-answer-block="true">
-            <div className="flex items-start gap-3 bg-light-50 border border-light-200 p-4 mb-4">
+            <div className="flex items-start gap-3 bg-light-50 border border-black/[0.06] p-4 mb-4">
               <BookOpen className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold text-dark mb-1">ماذا يقيس هذا الفحص</p>
@@ -408,14 +408,14 @@ export default function ArabicTestDetailPage({ params }: { params: { test: strin
             <span className="arrows">&lt;&lt;&lt;</span>
           </div>
           <div className="answer-block" data-answer-block="true">
-            <div className="flex items-start gap-3 bg-light-50 border border-light-200 p-4 mb-4">
+            <div className="flex items-start gap-3 bg-light-50 border border-black/[0.06] p-4 mb-4">
               <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold text-dark mb-1">الفئات الموصى بها</p>
                 <p className="text-sm text-muted leading-relaxed mb-3">
                   {medContent.whoShouldGetTested}
                 </p>
-                <div className="border-t border-light-200 pt-3">
+                <div className="border-t border-black/[0.06] pt-3">
                   <p className="text-xs font-bold text-dark mb-1">في سياق الإمارات</p>
                   <p className="text-sm text-muted leading-relaxed">
                     {medContent.uaeContext}
@@ -460,7 +460,7 @@ export default function ArabicTestDetailPage({ params }: { params: { test: strin
               <Link
                 key={t.slug}
                 href={`/ar/labs/test/${t.slug}`}
-                className="p-3 border border-light-200 hover:border-accent transition-colors group"
+                className="p-3 border border-black/[0.06] hover:border-accent transition-colors group"
               >
                 <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
                   {t.shortName}
@@ -478,7 +478,7 @@ export default function ArabicTestDetailPage({ params }: { params: { test: strin
       </div>
 
       {/* إخلاء المسؤولية */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> أسعار {test.name} استرشادية وتستند إلى البيانات
           المتاحة للعموم من المختبرات التشخيصية في الإمارات. قد تتباين الأسعار الفعلية

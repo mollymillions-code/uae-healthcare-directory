@@ -176,14 +176,14 @@ export default function ProfessionalsPage() {
       <div className="mb-12">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-light-200">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Facility</th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">Staff</th>
+            <tr className="border-b border-black/[0.06]">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">Facility</th>
+              <th scope="col" className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">Staff</th>
             </tr>
           </thead>
           <tbody>
             {topFacilities.map((fac, i) => (
-              <tr key={fac.slug} className="border-b border-light-200">
+              <tr key={fac.slug} className="border-b border-black/[0.06]">
                 <td className="py-3 pr-4">
                   <Link
                     href={`/professionals/facility/${fac.slug}`}

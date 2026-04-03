@@ -11,7 +11,7 @@ import path from "path";
 import {
   generateFacilitySlug,
   getSpecialtySlugFromApi,
-  ALL_SPECIALTIES,
+  getSpecialtyBySlug,
   PROFESSIONAL_CATEGORIES,
 } from "@/lib/constants/professionals";
 
@@ -75,7 +75,18 @@ function getCategorySlug(apiCategory: string): string {
 function loadData(): ParsedProfessional[] {
   if (_professionals) return _professionals;
 
-  const raw: Professional[] = JSON.parse(fs.readFileSync(DATA_PATH, "utf-8"));
+  let raw: Professional[];
+  try {
+    raw = JSON.parse(fs.readFileSync(DATA_PATH, "utf-8"));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(
+      `[professionals] Failed to load data from ${DATA_PATH}: ${message}. ` +
+      `Ensure dha_professionals_all.json exists in data/parsed/. Returning empty dataset.`
+    );
+    _professionals = [];
+    return _professionals;
+  }
   _professionals = raw.map((r) => {
     const { category, specialty } = parseCategoryAndSpecialty(r.categoryOrSpeciality || "");
     return {
@@ -151,7 +162,7 @@ function buildFacilityProfiles(): Map<string, FacilityProfile> {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 20)
       .map(([specSlug, count]) => {
-        const spec = ALL_SPECIALTIES.find((s) => s.slug === specSlug);
+        const spec = getSpecialtyBySlug(specSlug);
         return { slug: specSlug, name: spec?.name || specSlug, count };
       });
 
@@ -220,7 +231,7 @@ export function getAllFacilitySlugs(minStaff = 20): string[] {
 /** Get specialty stats: professionals count, facilities count, top facilities */
 export function getSpecialtyStats(specialtySlug: string) {
   const pros = getProfessionalsBySpecialty(specialtySlug);
-  const spec = ALL_SPECIALTIES.find((s) => s.slug === specialtySlug);
+  const spec = getSpecialtyBySlug(specialtySlug);
 
   const facCounts: Record<string, { name: string; count: number }> = {};
   let ftlCount = 0;
@@ -369,17 +380,27 @@ export const DUBAI_AREAS = [
   { slug: "hatta", name: "Hatta" },
 ];
 
+const areaCache = new Map<string, string>();
+
 function resolveArea(facilityName: string): string {
+  const cached = areaCache.get(facilityName);
+  if (cached !== undefined) return cached;
+
   const lower = facilityName.toLowerCase();
+  let result = "";
   // Check manual hospital map first
   for (const [key, area] of Object.entries(FACILITY_AREA_MAP)) {
-    if (lower.includes(key)) return area;
+    if (lower.includes(key)) { result = area; break; }
   }
   // Check keyword patterns
-  for (const [keyword, areaSlug] of AREA_KEYWORDS) {
-    if (lower.includes(keyword)) return areaSlug;
+  if (!result) {
+    for (const [keyword, areaSlug] of AREA_KEYWORDS) {
+      if (lower.includes(keyword)) { result = areaSlug; break; }
+    }
   }
-  return "";
+
+  areaCache.set(facilityName, result);
+  return result;
 }
 
 let _byArea: Map<string, ParsedProfessional[]> | null = null;
@@ -422,7 +443,7 @@ export function getAreaStats(): { slug: string; name: string; count: number; top
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10)
         .map(([slug, count]) => {
-          const spec = ALL_SPECIALTIES.find((s) => s.slug === slug);
+          const spec = getSpecialtyBySlug(slug);
           return { slug, name: spec?.name || slug, count };
         });
       return { ...area, count: pros.length, topSpecialties };
@@ -469,7 +490,7 @@ export function getSpecialtiesWithBothLevels(): { slug: string; name: string; sp
     const specialists = pros.filter((p) => p.specialty.startsWith("Specialist") || p.specialty.startsWith("General")).length;
     const consultants = pros.filter((p) => p.specialty.startsWith("Consultant")).length;
     if (specialists > 0 && consultants > 0) {
-      const spec = ALL_SPECIALTIES.find((s) => s.slug === slug);
+      const spec = getSpecialtyBySlug(slug);
       if (spec) results.push({ slug, name: spec.name, specialists, consultants });
     }
   }
@@ -530,7 +551,7 @@ export function getAggregateStats() {
 
   const specialtyCounts: { slug: string; name: string; count: number }[] = [];
   for (const [slug, pros] of Array.from(specialties.entries())) {
-    const spec = ALL_SPECIALTIES.find((s) => s.slug === slug);
+    const spec = getSpecialtyBySlug(slug);
     if (spec) {
       specialtyCounts.push({ slug, name: spec.name, count: pros.length });
     }

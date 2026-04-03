@@ -622,7 +622,7 @@ export default function ArabicInsuranceGuidePage({ params }: { params: { slug: s
           </div>
 
           {/* في هذا الدليل */}
-          <div className="mb-6 p-4 bg-light-50 border border-light-200">
+          <div className="mb-6 p-4 bg-light-50 border border-black/[0.06]">
             <p className="text-sm font-semibold text-dark mb-2">في هذا الدليل</p>
             <ul className="text-sm text-muted space-y-1 list-disc list-inside">
               {guide.faqs.map((faq) => (
@@ -646,7 +646,7 @@ export default function ArabicInsuranceGuidePage({ params }: { params: { slug: s
           </p>
 
           {/* روابط التنقل */}
-          <div className="mt-6 pt-6 border-t border-light-200 flex flex-wrap gap-4">
+          <div className="mt-6 pt-6 border-t border-black/[0.06] flex flex-wrap gap-4">
             <Link
               href="/ar/insurance/guide"
               className="text-sm font-medium text-accent hover:underline"
@@ -669,14 +669,14 @@ export default function ArabicInsuranceGuidePage({ params }: { params: { slug: s
 
         {/* أدلة ذات صلة */}
         {relatedGuides.length > 0 && (
-          <div className="max-w-3xl mt-10 pt-8 border-t border-light-200">
+          <div className="max-w-3xl mt-10 pt-8 border-t border-black/[0.06]">
             <h2 className="text-lg font-bold text-dark mb-4">أدلة ذات صلة</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {relatedGuides.map((related) => (
                 <Link
                   key={related.slug}
                   href={`/ar/insurance/guide/${related.slug}`}
-                  className="block border border-light-200 p-4 hover:border-accent transition-colors group"
+                  className="block border border-black/[0.06] p-4 hover:border-accent transition-colors group"
                 >
                   <p className="text-sm font-semibold text-dark group-hover:text-accent transition-colors leading-snug">
                     {related.title}

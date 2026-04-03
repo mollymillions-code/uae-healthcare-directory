@@ -50,7 +50,7 @@ export function generateMetadata({
       description: `${profile.totalCount.toLocaleString()} ${label.toLowerCase()} representing ${profile.percentOfWorkforce}% of Dubai's healthcare workforce. ${profile.per100K} per 100K population.`,
       url: `${base}/workforce/category/${params.category}`,
       type: "website",
-      siteName: "Zavis Healthcare Intelligence",
+      siteName: "UAE Open Healthcare Directory",
     },
   };
 }
@@ -191,7 +191,7 @@ export default function CategoryWorkforcePage({
 
       {/* OECD Benchmark Note */}
       {oecd && (
-        <div className="bg-[#f8f8f6] border-l-4 border-black/10 py-4 px-6 mb-12">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-4 px-6 mb-12">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             <strong>Benchmark:</strong> Dubai&apos;s rate of{" "}
             <span className="font-['Geist_Mono',monospace] font-bold text-[#1c1c1c]">

@@ -63,7 +63,7 @@ export default function NurseToDoctorPage() {
         data={breadcrumbSchema([
           { name: "UAE", url: `${base}/` },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Benchmarks" },
+          { name: "Benchmarks", url: `${base}/workforce/benchmarks` },
           { name: "Nurse-to-Doctor Ratio" },
         ])}
       />
@@ -72,7 +72,7 @@ export default function NurseToDoctorPage() {
         items={[
           { label: "UAE", href: "/" },
           { label: "Workforce Intelligence", href: "/workforce" },
-          { label: "Benchmarks" },
+          { label: "Benchmarks", href: "/workforce/benchmarks" },
           { label: "Nurse-to-Doctor Ratio" },
         ]}
       />

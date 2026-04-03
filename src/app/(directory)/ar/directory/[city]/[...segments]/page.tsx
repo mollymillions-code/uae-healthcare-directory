@@ -208,7 +208,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                 <Link
                   key={a.slug}
                   href={`/ar/directory/${city.slug}/${a.slug}/${category.slug}`}
-                  className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+                  className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-black/[0.06] hover:border-accent hover:bg-accent-muted transition-colors"
                 >
                   {a.nameAr || a.name}
                 </Link>
@@ -265,7 +265,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                   <Link
                     key={c.slug}
                     href={`/ar/directory/${city.slug}/${c.slug}`}
-                    className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+                    className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-black/[0.06] hover:border-accent hover:bg-accent-muted transition-colors"
                   >
                     {getArabicCategoryName(c.slug)}
                   </Link>
@@ -326,7 +326,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               <Link
                 key={cat.slug}
                 href={`/ar/directory/${city.slug}/${area.slug}/${cat.slug}`}
-                className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200 hover:border-accent hover:bg-accent-muted transition-colors"
+                className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-black/[0.06] hover:border-accent hover:bg-accent-muted transition-colors"
               >
                 {getArabicCategoryName(cat.slug)}
               </Link>
@@ -474,7 +474,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
               <div className="flex items-center gap-3 mb-2">
                 <span className="badge">{catNameAr}</span>
-                {area && <span className="inline-block bg-light-100 text-dark text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 border border-light-200">{areaNameAr}</span>}
+                {area && <span className="inline-block bg-light-100 text-dark text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 border border-black/[0.06]">{areaNameAr}</span>}
               </div>
               {provider.googleRating && <StarRating rating={Number(provider.googleRating)} reviewCount={provider.googleReviewCount} size="lg" />}
             </div>
@@ -485,7 +485,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
             </div>
 
             {/* About */}
-            <div className="border border-light-200 p-6 mb-6" data-section="about">
+            <div className="border border-black/[0.06] p-6 mb-6" data-section="about">
               <h2 className="font-semibold text-dark mb-3">{ar.aboutProvider} {provider.name}</h2>
               {(provider.descriptionAr || provider.description) ? (
                 <div className="text-muted leading-relaxed whitespace-pre-line">{provider.descriptionAr || provider.description}</div>
@@ -497,7 +497,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
             {/* Services */}
             {provider.services.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="services">
+              <div className="border border-black/[0.06] p-6 mb-6" data-section="services">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Stethoscope className="h-5 w-5 text-accent" /> {ar.services}</h2>
                 <p className="text-sm text-muted mb-3">يقدم {provider.name} هذه الخدمات في {cityNameAr}:</p>
                 <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="badge-outline px-3 py-1">{s}</span>))}</div>
@@ -506,11 +506,11 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
             {/* Operating Hours */}
             {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="hours">
+              <div className="border border-black/[0.06] p-6 mb-6" data-section="hours">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> {ar.operatingHours}</h2>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                   {Object.entries(provider.operatingHours).map(([d, h]) => (
-                    <div key={d} className="flex justify-between text-sm py-1 border-b border-light-200 last:border-b-0">
+                    <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
                       <span className="text-muted">{ar.days[d] || d}</span>
                       <span className="font-medium text-dark">{h.open === "00:00" && h.close === "23:59" ? ar.hours24 : `${h.open} – ${h.close}`}</span>
                     </div>
@@ -521,10 +521,10 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
             {/* Insurance */}
             {provider.insurance.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="insurance">
+              <div className="border border-black/[0.06] p-6 mb-6" data-section="insurance">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Shield className="h-5 w-5 text-accent" /> {ar.acceptedInsurance}</h2>
                 <p className="text-sm text-muted mb-3">يقبل {provider.name} خطط التأمين التالية:</p>
-                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-light-200">{i}</span>))}</div>
+                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block bg-light-100 text-dark text-sm px-3 py-1.5 border border-black/[0.06]">{i}</span>))}</div>
               </div>
             )}
 
@@ -533,7 +533,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               const reviews = provider.reviewSummaryAr || provider.reviewSummary;
               if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
               return (
-                <div className="border border-light-200 p-6 mb-6 bg-light-50" data-section="reviews">
+                <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
                   <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MessageSquareQuote className="h-5 w-5 text-accent" /> {ar.patientReviews}</h2>
                   <ul className="space-y-2">
                     {reviews.map((point: string, idx: number) => (
@@ -544,7 +544,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                     ))}
                   </ul>
                   {provider.googleRating && Number(provider.googleRating) > 0 && (
-                    <p className="text-xs text-muted mt-4 pt-3 border-t border-light-200">
+                    <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
                       بناءً على {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google. التقييم: {provider.googleRating}/5 نجوم.
                     </p>
                   )}
@@ -554,14 +554,14 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
             {/* Languages */}
             {provider.languages.length > 0 && (
-              <div className="border border-light-200 p-6 mb-6" data-section="languages">
+              <div className="border border-black/[0.06] p-6 mb-6" data-section="languages">
                 <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Languages className="h-5 w-5 text-accent" /> {ar.languagesSpoken}</h2>
                 <p className="text-sm text-muted">يتحدث طاقم {provider.name}: {provider.languages.join("، ")}.</p>
               </div>
             )}
 
             {/* Map */}
-            <div className="border border-light-200 p-6 mb-6" data-section="location">
+            <div className="border border-black/[0.06] p-6 mb-6" data-section="location">
               <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MapPin className="h-5 w-5 text-accent" /> {ar.location}</h2>
               <GoogleMapEmbed query={`${provider.name}, ${provider.address}`} />
               <p className="text-sm text-muted mt-3">{provider.address}</p>
@@ -576,7 +576,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-4">
-              <div className="border border-light-200 p-6">
+              <div className="border border-black/[0.06] p-6">
                 <h2 className="font-semibold text-dark mb-4">{ar.contact}</h2>
                 <div className="space-y-3">
                   {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-3 text-sm text-dark/70 hover:text-accent transition-colors"><Phone className="h-4 w-4" /> {provider.phone}</a>}
@@ -590,7 +590,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
 
               {!provider.isClaimed && (
-                <div className="border border-light-200 p-6 bg-accent-muted">
+                <div className="border border-black/[0.06] p-6 bg-accent-muted">
                   <h3 className="font-semibold text-dark mb-2">{ar.isThisYourBusiness}</h3>
                   <p className="text-sm text-muted mb-4">{ar.claimYourListing}</p>
                   <Link href={`/claim/${provider.id}`} className="btn-accent w-full">{ar.claimListing}</Link>
@@ -598,7 +598,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               )}
 
               {nearbyProviders.length > 0 && (
-                <div className="border border-light-200 p-6">
+                <div className="border border-black/[0.06] p-6">
                   <h3 className="font-semibold text-dark mb-3">{ar.nearby}</h3>
                   <div className="space-y-3">
                     {nearbyProviders.map((np) => (

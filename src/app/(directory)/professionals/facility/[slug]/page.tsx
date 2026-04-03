@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -51,31 +52,7 @@ export default function FacilityStaffPage({ params }: Props) {
   const base = getBaseUrl();
 
   if (!profile || professionals.length === 0) {
-    return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Breadcrumb
-          items={[
-            { label: "UAE", href: "/" },
-            { label: "Directory", href: "/directory" },
-            { label: "Professionals", href: "/professionals" },
-            { label: "Facility" },
-          ]}
-        />
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-4">
-          Facility Not Found
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed mb-8">
-          This facility does not exist in our directory or has no licensed staff on record.
-          It may use a different name in the DHA Sheryan registry.
-        </p>
-        <Link
-          href="/professionals"
-          className="font-['Geist',sans-serif] text-sm text-[#006828] hover:underline"
-        >
-          Back to Professional Directory
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   // Category breakdown
@@ -209,23 +186,23 @@ export default function FacilityStaffPage({ params }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b-2 border-[#1c1c1c]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Name
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden sm:table-cell">
                 Category
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden md:table-cell">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4 hidden md:table-cell">
                 Specialty
               </th>
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
+              <th scope="col" className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
                 License
               </th>
             </tr>
           </thead>
           <tbody>
             {displayProfessionals.map((pro) => (
-              <tr key={pro.id} className="border-b border-light-200">
+              <tr key={pro.id} className="border-b border-black/[0.06]">
                 <td className="py-2.5 pr-4">
                   <span className="font-['Bricolage_Grotesque',sans-serif] text-sm text-[#1c1c1c] tracking-tight">
                     {pro.name}

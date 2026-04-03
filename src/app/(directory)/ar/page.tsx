@@ -192,7 +192,7 @@ export default async function ArabicHomePage() {
               <Link
                 key={cat.slug}
                 href={`/ar/directory/dubai/${cat.slug}`}
-                className="flex items-center justify-between py-3 px-2 border-b border-light-200 hover:bg-light-50 transition-colors group"
+                className="flex items-center justify-between py-3 px-2 border-b border-black/[0.06] hover:bg-light-50 transition-colors group"
               >
                 <span className="text-sm font-medium text-dark group-hover:text-accent transition-colors">
                   {getArabicCategoryName(cat.slug)}
@@ -222,7 +222,7 @@ export default async function ArabicHomePage() {
               <Link
                 key={p.id}
                 href={`/ar/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                className="flex items-start gap-4 py-4 px-2 border-b border-light-200 hover:bg-white transition-colors group"
+                className="flex items-start gap-4 py-4 px-2 border-b border-black/[0.06] hover:bg-white transition-colors group"
               >
                 <span className="text-2xl font-bold text-accent/30 font-mono w-8 flex-shrink-0">
                   {String(idx + 1).padStart(2, "0")}

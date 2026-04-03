@@ -9,7 +9,7 @@ import {
   PROFESSIONAL_STATS,
   getSpecialtiesByCategory,
 } from "@/lib/constants/professionals";
-import { faqPageSchema } from "@/lib/seo";
+import { faqPageSchema, breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -113,6 +113,13 @@ export default function FindADoctorPage() {
         }}
       />
       <JsonLd data={faqPageSchema(FAQS)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "UAE", url: `${base}/` },
+          { name: "Directory", url: `${base}/directory` },
+          { name: "Find a Doctor" },
+        ])}
+      />
 
       <Breadcrumb
         items={[
@@ -243,7 +250,7 @@ export default function FindADoctorPage() {
       <div className="mb-12">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-light-200">
+            <tr className="border-b border-black/[0.06]">
               <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
                 Facility
               </th>
@@ -254,7 +261,7 @@ export default function FindADoctorPage() {
           </thead>
           <tbody>
             {topFacilities.map((fac, i) => (
-              <tr key={fac.slug} className="border-b border-light-200">
+              <tr key={fac.slug} className="border-b border-black/[0.06]">
                 <td className="py-3 pr-4">
                   <Link
                     href={`/professionals/facility/${fac.slug}`}
@@ -284,7 +291,7 @@ export default function FindADoctorPage() {
         {FAQS.map((faq) => (
           <div
             key={faq.question}
-            className="border-b border-light-200 py-6"
+            className="border-b border-black/[0.06] py-6"
           >
             <h3 className="font-['Bricolage_Grotesque',sans-serif] text-base font-semibold text-[#1c1c1c] tracking-tight mb-3">
               {faq.question}

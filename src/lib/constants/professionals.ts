@@ -162,8 +162,12 @@ export const ALL_SPECIALTIES: MedicalSpecialty[] = [
   ...ALLIED_HEALTH_SPECIALTIES,
 ];
 
+const SPECIALTY_BY_SLUG = new Map<string, MedicalSpecialty>(
+  ALL_SPECIALTIES.map((s) => [s.slug, s])
+);
+
 export function getSpecialtyBySlug(slug: string): MedicalSpecialty | undefined {
-  return ALL_SPECIALTIES.find((s) => s.slug === slug);
+  return SPECIALTY_BY_SLUG.get(slug);
 }
 
 export function getCategoryBySlug(slug: string): ProfessionalCategory | undefined {
@@ -301,8 +305,13 @@ export function getSpecialtySlugFromApi(apiSpecialty: string): string | undefine
 
 // ─── Facility slug generation ────────────────────────────────────────────────
 
+const slugCache = new Map<string, string>();
+
 export function generateFacilitySlug(name: string): string {
-  return name
+  const cached = slugCache.get(name);
+  if (cached !== undefined) return cached;
+
+  const slug = name
     .toLowerCase()
     .replace(/\s*-\s*dubai\s*health\s*/i, "-dh")
     .replace(/\s*(l\.?l\.?c\.?|fz-?llc|fzc|ltd|pvt|branch|br of)\s*/gi, "")
@@ -311,6 +320,9 @@ export function generateFacilitySlug(name: string): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
     .substring(0, 80);
+
+  slugCache.set(name, slug);
+  return slug;
 }
 
 // ─── Stats for AEO pages ────────────────────────────────────────────────────

@@ -409,7 +409,7 @@ export default async function ArabicLabCityPage({
           ].map(({ icon, value, label }) => (
             <div
               key={label}
-              className="bg-light-50 border border-light-200 p-4 text-center"
+              className="bg-light-50 border border-black/[0.06] p-4 text-center"
             >
               <div className="flex justify-center mb-1 text-accent">{icon}</div>
               <p className="text-2xl font-bold text-accent">{value}</p>
@@ -462,7 +462,7 @@ export default async function ArabicLabCityPage({
           <Link
             key={cat.slug}
             href={`/labs/city/${citySlug}/${cat.slug}`}
-            className="border border-light-200 p-3 hover:border-accent transition-colors group"
+            className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
           >
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -488,7 +488,7 @@ export default async function ArabicLabCityPage({
           <Link
             key={test.slug}
             href={`/labs/test/${test.slug}`}
-            className="flex items-center justify-between gap-4 p-4 border border-light-200 hover:border-accent transition-colors group"
+            className="flex items-center justify-between gap-4 p-4 border border-black/[0.06] hover:border-accent transition-colors group"
           >
             <div className="min-w-0">
               <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -523,7 +523,7 @@ export default async function ArabicLabCityPage({
       </div>
 
       {/* ── Answer block 2 — deep editorial ───────────────────────── */}
-      <div className="answer-block mb-10 bg-light-50 border border-light-200 p-5" data-answer-block="true">
+      <div className="answer-block mb-10 bg-light-50 border border-black/[0.06] p-5" data-answer-block="true">
         <div className="flex items-center gap-2 mb-3">
           <BarChart3 className="w-4 h-4 text-accent flex-shrink-0" />
           <h2 className="text-sm font-bold text-dark">
@@ -548,7 +548,7 @@ export default async function ArabicLabCityPage({
 
         {/* Visa medical box */}
         {content?.visaMedical && (
-          <div className="mt-4 border-t border-light-200 pt-4">
+          <div className="mt-4 border-t border-black/[0.06] pt-4">
             <p className="text-xs font-semibold text-dark mb-1">الفحص الطبي للإقامة</p>
             <p className="text-xs text-muted">{content.visaMedical}</p>
           </div>
@@ -583,7 +583,7 @@ export default async function ArabicLabCityPage({
               <Link
                 key={otherCity.slug}
                 href={`/ar/labs/city/${otherCity.slug}`}
-                className="border border-light-200 p-3 hover:border-accent transition-colors group"
+                className="border border-black/[0.06] p-3 hover:border-accent transition-colors group"
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
@@ -601,7 +601,7 @@ export default async function ArabicLabCityPage({
       </div>
 
       {/* ── Disclaimer ─────────────────────────────────────────────── */}
-      <div className="mt-8 border-t border-light-200 pt-4">
+      <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
           <strong>إخلاء مسؤولية:</strong> الأسعار المعروضة استرشادية وتستند إلى التسعير المتاح للعموم من مواقع المختبرات ومنصات التجميع (ServiceMarket وHealthchecks360 وDarDoc) وقوائم أسعار الزيارات المباشرة المنشورة (2024–2025). قد تتباين الأسعار الفعلية بحسب موقع الفرع والتغطية التأمينية والعروض الترويجية الجارية ومنهجية الفحص المحددة. يُرجى دائمًا التأكد من الأسعار مباشرةً مع المختبر قبل الحجز. هذه الصفحة للأغراض المعلوماتية فحسب ولا تُشكّل نصيحةً طبية. استشر طبيبًا مؤهلًا قبل طلب أي فحوصات مخبرية. بيانات المختبرات مصدرها سجلات المرافق المرخصة لدى{" "}
           {content?.regulator ?? "الجهة الصحية المختصة في الإمارات"}. آخر تحقق مارس 2026.

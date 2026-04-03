@@ -101,7 +101,7 @@ export default async function ArabicCityPage({ params }: Props) {
               <Link
                 key={cat.slug}
                 href={`/ar/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
+                className="flex items-center justify-between bg-light-50 border border-black/[0.06] px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
               >
                 <span className="font-medium">{getArabicCategoryName(cat.slug)}</span>
                 {count > 0 && (
@@ -127,7 +127,7 @@ export default async function ArabicCityPage({ params }: Props) {
                 <Link
                   key={area.slug}
                   href={`/ar/directory/${city.slug}/${area.slug}`}
-                  className="flex items-center justify-between bg-light-50 border border-light-200 px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
+                  className="flex items-center justify-between bg-light-50 border border-black/[0.06] px-4 py-3 text-sm text-dark hover:border-accent hover:bg-accent-muted transition-colors"
                 >
                   <span className="font-medium">{area.nameAr || area.name}</span>
                   {count > 0 && (

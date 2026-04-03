@@ -33,22 +33,10 @@ export function generateMetadata(): Metadata {
 
 const CAREER_GUIDES = [
   {
-    slug: "dha-licensing-process",
+    slug: "dha-licensing",
     title: "DHA Licensing Process",
     description:
       "Step-by-step guide to obtaining a DHA license through the Sheryan system for foreign-trained healthcare professionals.",
-  },
-  {
-    slug: "salary-benchmarks",
-    title: "Salary Benchmarks by Specialty",
-    description:
-      "Estimated compensation ranges for physicians, nurses, dentists, and allied health professionals in Dubai.",
-  },
-  {
-    slug: "top-employers-guide",
-    title: "Top Employers Guide",
-    description:
-      "Inside look at Dubai's largest healthcare employers — culture, staffing, and career growth opportunities.",
   },
   {
     slug: "specialist-vs-consultant",
@@ -57,16 +45,28 @@ const CAREER_GUIDES = [
       "Understanding the DHA designation hierarchy: when and how professionals advance from Specialist to Consultant.",
   },
   {
-    slug: "ftl-vs-reg-explained",
+    slug: "ftl-vs-reg",
     title: "FTL vs REG License Explained",
     description:
       "What Full Time License and Registration mean for your career, mobility, and earning potential in Dubai.",
   },
   {
-    slug: "high-demand-specialties",
-    title: "High-Demand Specialties 2026",
+    slug: "international-doctors-dubai",
+    title: "International Doctors in Dubai",
     description:
-      "Which specialties are growing fastest and where workforce gaps create the best opportunities for new hires.",
+      "What international medical graduates need to know about practicing in Dubai — qualifications, exams, and the licensing pathway.",
+  },
+  {
+    slug: "choosing-right-specialist",
+    title: "Choosing the Right Specialist",
+    description:
+      "How to select the right medical specialist in Dubai based on your condition, insurance, and clinical needs.",
+  },
+  {
+    slug: "healthcare-workforce",
+    title: "Healthcare Workforce Overview",
+    description:
+      "A data-driven overview of Dubai's healthcare workforce — size, growth trends, category breakdown, and what it means for job seekers.",
   },
 ];
 
@@ -211,7 +211,7 @@ export default function CareersPage() {
         {CAREER_GUIDES.map((guide) => (
           <Link
             key={guide.slug}
-            href={`/workforce/guide/${guide.slug}`}
+            href={`/professionals/guide/${guide.slug}`}
             className="border border-black/[0.06] p-5 hover:border-[#006828]/15 transition-colors group"
           >
             <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight mb-2 group-hover:text-[#006828] transition-colors">
