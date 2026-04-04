@@ -35,6 +35,13 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   gastroenterology: "gastroenterology",
   oncology: "oncology",
   "emergency-care": "hospitals",
+  "nephrology": "nephrology",
+  "medical-equipment": "medical-equipment",
+  "endocrinology": "endocrinology",
+  "pulmonology": "pulmonology",
+  "nutrition-dietetics": "clinics",
+  "cosmetic-plastic": "dermatology",
+  "wellness-spas": "alternative-medicine",
 };
 
 export function getCategoryImageUrl(categorySlug: string, base: string): string {

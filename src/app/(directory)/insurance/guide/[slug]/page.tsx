@@ -543,7 +543,7 @@ export default function InsuranceGuidePage({ params }: { params: { slug: string 
       url: base,
       logo: {
         "@type": "ImageObject",
-        url: `${base}/logo.png`,
+        url: `${base}/favicon.png`,
       },
     },
     mainEntityOfPage: `${base}/insurance/guide/${guide.slug}`,

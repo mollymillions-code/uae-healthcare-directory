@@ -575,7 +575,7 @@ export default function ArabicInsuranceGuidePage({ params }: { params: { slug: s
       url: base,
       logo: {
         "@type": "ImageObject",
-        url: `${base}/logo.png`,
+        url: `${base}/favicon.png`,
       },
     },
     mainEntityOfPage: `${base}/ar/insurance/guide/${guide.slug}`,

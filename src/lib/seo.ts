@@ -167,7 +167,7 @@ export function organizationSchema() {
       "AI-powered patient success platform and healthcare intelligence for the UAE",
     logo: {
       "@type": "ImageObject",
-      url: `${base}/logo.png`,
+      url: `${base}/favicon.png`,
     },
     contactPoint: {
       "@type": "ContactPoint",
