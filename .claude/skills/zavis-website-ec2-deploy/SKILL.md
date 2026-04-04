@@ -1,0 +1,255 @@
+---
+name: zavis-website-ec2-deploy
+description: "Zavis Website EC2 Deployment Skill — zero-downtime blue-green deployment for zavis.ai on EC2 (13.205.197.148). Use whenever the user asks to: deploy the Zavis website, SSH into the server, restart or check the app, tail PM2 or Nginx logs, debug a failed deploy, roll back, run DB migrations, check server health, verify the site is up, or anything requiring EC2 access. Triggers on: 'the server', 'production is down', 'deploy failed', 'check logs', 'PM2', 'restart the app', 'health check', 'Nginx', 'ssh in', 'check the server', 'zavis.ai is down', 'blue-green', 'rollback', or any reference to the live site."
+---
+
+# Zavis Website — EC2 Deployment (Blue-Green, Zero-Downtime)
+
+## ABSOLUTE RULES
+
+1. **NEVER deploy by SSH-ing into EC2 and running commands.** All deploys go through GitHub Actions by pushing to `live`. The only exception is `rollback.sh` for emergencies.
+2. **NEVER stop, delete, or modify the live PM2 process or its directory**
+3. **NEVER run `rm -rf .next` or `npm run build` on the live slot**
+4. **NEVER pipe build output through `head`, `tail`, or any pipe-closing command** — SIGPIPE kills the build silently
+5. **NEVER run two `next build` processes simultaneously** — they corrupt each other
+6. **NEVER edit source files directly on EC2** — changes get wiped on next deploy
+7. **NEVER use `appleboy/ssh-action`** — it opens dual SSH connections that race. Use raw SSH in workflows.
+8. **If unsure whether an action affects the live site: STOP and ASK the user first**
+
+---
+
+## PRE-FLIGHT CHECK (Run Before Any Server Operation)
+
+```bash
+EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+
+ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
+if [ "$ACTIVE" = "blue" ]; then LIVE_PORT=3200; else LIVE_PORT=3201; fi
+
+# Both must return 200
+$EC2 "curl -s -o /dev/null -w '%{http_code}' http://localhost:$LIVE_PORT/"
+$EC2 "curl -s -o /dev/null -w '%{http_code}' -H 'Host: www.zavis.ai' http://localhost/"
+```
+
+---
+
+## App Details
+
+| Property | Value |
+|---|---|
+| Domain | `www.zavis.ai` |
+| Framework | Next.js 14 (App Router), React 18, TypeScript |
+| Static pages | ~4,057 pre-rendered at build |
+| Build time | ~4-5 minutes |
+| DB pool | max 10 connections (in `src/lib/db/index.ts`) |
+| Deploy branch | `live` |
+
+**Git remotes (local):**
+- `origin` → `mollymillions-code/uae-healthcare-directory` (dev repo, runs lint only)
+- `zavis-support` → `zavis-support/zavis-landing` (EC2 pulls from here, runs deploy)
+
+Push to **both** remotes. Only `zavis-support` triggers the actual deploy (guarded by `if: github.repository == 'zavis-support/zavis-landing'` in the workflow).
+
+---
+
+## Server Access
+
+| IP | `13.205.197.148` |
+|---|---|
+| SSH user | `ubuntu` |
+| PEM key | `~/.ssh/zavis-ec2.pem` |
+
+```bash
+EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+```
+
+---
+
+## Blue-Green Architecture
+
+Two identical app copies. One is **live** (serving traffic), the other is **idle** (backup/build target). Deploys build on idle, swap traffic, keep old slot as instant rollback.
+
+```
+/home/ubuntu/zavis-landing-blue/     ← Blue slot (port 3200, PM2: zavis-blue)
+/home/ubuntu/zavis-landing-green/    ← Green slot (port 3201, PM2: zavis-green)
+/home/ubuntu/zavis-landing-active    ← Symlink → live slot
+/home/ubuntu/zavis-shared/           ← Shared .env.local + data/ (symlinked into both)
+/home/ubuntu/zavis-deploy/           ← Deploy infra (ON EC2 ONLY, not in git)
+  ├── active-slot                    ← "blue" or "green"
+  ├── deploy.sh                      ← Called by GitHub Actions
+  ├── rollback.sh                    ← Instant rollback
+  └── ecosystem.config.js            ← PM2 config for both slots
+```
+
+### Nginx
+
+```
+/etc/nginx/conf.d/zavis-upstream.conf   ← upstream zavis_backend { server 127.0.0.1:<PORT>; }
+/etc/nginx/sites-available/zavis.ai     ← Main domain config
+```
+
+Both site configs use the `zavis-landing-active` symlink for serving `/_next/static` directly from disk. **Do not change the Nginx config** — route groups with parentheses break when URL-encoded through proxy.
+
+---
+
+## How to Deploy
+
+**Always push through GitHub Actions. Never SSH in to deploy manually.**
+
+```bash
+git push origin live
+git push zavis-support live
+```
+
+GitHub Actions: lint → type check → SSH into EC2 → runs `deploy.sh`.
+
+### What deploy.sh does
+
+1. `flock` — acquires exclusive lock, exits if another deploy is running
+2. Reads `active-slot` → determines LIVE (untouched) and IDLE (build target)
+3. `git pull origin live` + `npm install` on IDLE slot
+4. Symlinks `.env.local` and `data/` from `/home/ubuntu/zavis-shared/`
+5. `rm -rf .next` → `npm run build` on IDLE slot (~4-5 min). If build fails → exit, live unaffected
+6. `pm2 start` IDLE slot → health check (retries 30x, 60s). If fails → stop idle, exit
+7. Swap Nginx upstream → `nginx -t` → `systemctl reload nginx`. If nginx -t fails → revert
+8. Post-swap health check with `-H 'Host: www.zavis.ai'`. If fails → revert upstream, reload
+9. Stop old live slot, update `active-slot`, `pm2 save`
+
+**Concurrency guards:**
+- GitHub Actions: `concurrency: { group: deploy-live, cancel-in-progress: false }`
+- deploy.sh: `flock` on `/tmp/zavis-deploy.lock` — rejects concurrent runs
+- Workflow only fires from `zavis-support` repo (not `origin`)
+
+### Monitor deploys
+
+```bash
+gh run list --limit 5
+gh run watch
+gh run view <run-id> --log
+```
+
+---
+
+## Rollback
+
+### Instant rollback (seconds)
+
+```bash
+$EC2 "/home/ubuntu/zavis-deploy/rollback.sh"
+```
+
+Starts the previous slot, health-checks it, swaps Nginx back, stops the broken slot.
+
+### Git revert (audit trail, ~5 min rebuild)
+
+```bash
+git revert HEAD
+git push origin live && git push zavis-support live
+```
+
+---
+
+## Emergency Recovery: Site Is Down
+
+```bash
+EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
+if [ "$ACTIVE" = "blue" ]; then PORT=3200; else PORT=3201; fi
+
+# 1. Restart active slot
+$EC2 "pm2 restart zavis-$ACTIVE"
+sleep 10
+$EC2 "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/"
+
+# 2. Check logs
+$EC2 "pm2 logs zavis-$ACTIVE --err --lines 50"
+
+# 3. Rollback to other slot
+$EC2 "/home/ubuntu/zavis-deploy/rollback.sh"
+
+# 4. LAST RESORT: both broken — rebuild (use nohup, SSH times out)
+$EC2 "cd /home/ubuntu/zavis-landing-$ACTIVE && rm -rf .next node_modules/.cache && nohup bash -c 'NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build > /tmp/rebuild.log 2>&1' > /dev/null 2>&1 &"
+$EC2 "tail -5 /tmp/rebuild.log"
+```
+
+---
+
+## Hard-Won Lessons (April 2026 Deploy Session)
+
+These cost 4+ hours of debugging. Do not repeat them.
+
+| Lesson | Detail |
+|---|---|
+| **Health checks need Host header** | `curl localhost/` without `-H 'Host: www.zavis.ai'` hits Nginx default server → 404. Always include the Host header for Nginx-level checks. |
+| **`appleboy/ssh-action` opens dual connections** | Two deploy.sh processes run concurrently, corrupt the build. Use raw SSH in workflows instead. |
+| **Deploy webhook races with GitHub Actions** | `zavis-deploy-webhook` (PM2 process) also triggers deploy.sh on push. It's currently stopped/errored — leave it that way, or delete it. |
+| **`generateStaticParams` exhausts DB pool** | Insurance pages with `generateStaticParams` opened too many connections during build. Fixed by removing static params and using `force-dynamic`. Watch for this pattern on any page with DB queries in static params. |
+| **Two repos = two deploys** | Both `origin` and `zavis-support` had deploy workflows. Fixed with `if: github.repository == 'zavis-support/zavis-landing'`. Origin only runs lint. |
+| **Always clear `node_modules/.cache`** | Before rebuilding after a failed build. Stale cache → `next-font-manifest.json` missing errors. |
+| **Always use `nohup` for manual builds** | SSH times out in ~20 min. Without nohup, disconnect kills the build mid-way. |
+| **Check `free -h` before building** | Builds need ~2-3GB RAM. Stop idle PM2 processes if memory is low. |
+
+---
+
+## Common Operations
+
+```bash
+EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
+
+# PM2
+$EC2 "pm2 status"
+$EC2 "pm2 logs zavis-$ACTIVE --lines 50"
+$EC2 "pm2 restart zavis-$ACTIVE"
+
+# Nginx
+$EC2 "cat /etc/nginx/conf.d/zavis-upstream.conf"
+$EC2 "sudo nginx -t && sudo systemctl reload nginx"
+$EC2 "sudo tail -50 /var/log/nginx/error.log"
+
+# Health
+$EC2 "curl -s -o /dev/null -w '%{http_code}' -H 'Host: www.zavis.ai' http://localhost/"
+curl -s -o /dev/null -w '%{http_code}' https://www.zavis.ai/api/health
+
+# Env vars (shared, both slots use it)
+$EC2 "cat /home/ubuntu/zavis-shared/.env.local"
+# After editing, restart active slot to pick up changes
+
+# DB
+$EC2 "psql -U zavis_admin -d zavis_landing -c 'SELECT count(*) FROM providers;'"
+# After schema changes: GRANT ALL ON ALL TABLES IN SCHEMA public TO zavis_admin;
+
+# Server health
+$EC2 "df -h && free -h"
+```
+
+### Manual Nginx Swap (Emergency Only)
+
+```bash
+# Switch to green
+$EC2 "echo 'upstream zavis_backend { server 127.0.0.1:3201; }' | sudo tee /etc/nginx/conf.d/zavis-upstream.conf && sudo nginx -t && sudo systemctl reload nginx && echo green > /home/ubuntu/zavis-deploy/active-slot && ln -sfn /home/ubuntu/zavis-landing-green /home/ubuntu/zavis-landing-active && pm2 save"
+
+# Switch to blue
+$EC2 "echo 'upstream zavis_backend { server 127.0.0.1:3200; }' | sudo tee /etc/nginx/conf.d/zavis-upstream.conf && sudo nginx -t && sudo systemctl reload nginx && echo blue > /home/ubuntu/zavis-deploy/active-slot && ln -sfn /home/ubuntu/zavis-landing-blue /home/ubuntu/zavis-landing-active && pm2 save"
+```
+
+---
+
+## Debugging Failed Deploys
+
+```bash
+gh run list --limit 5
+gh run view <run-id> --log
+```
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Lint/type error in CI | Code issue | Fix locally, push again |
+| Build OOM | Low RAM | `free -h`, stop idle processes |
+| `next-font-manifest.json` missing | Stale cache | `rm -rf node_modules/.cache .next` on idle slot |
+| Static file 404 | Broken symlink | Check `readlink /home/ubuntu/zavis-landing-active` |
+| Health check 404 through Nginx | Missing Host header | Use `-H 'Host: www.zavis.ai'` |
+| DB pool exhaustion during build | `generateStaticParams` with DB queries | Remove static params, use `force-dynamic` |
+| Two deploys running | Webhook + Actions race | Stop `zavis-deploy-webhook`, rely on `flock` guard |
+| PM2 crash-looping | Bad build | `pm2 logs zavis-<slot> --err --lines 50` |
+| `Permission denied` on git pull | SSH vs HTTPS remote | Use HTTPS: `git remote set-url origin <https-url>` |

@@ -40,7 +40,8 @@ next-env.d.ts
 
 # AI collab
 /.ai-collab/
-/.claude/
+/.claude/*
+!/.claude/skills/
 /data/parsed/*.json
 .env.local
 .env.prod-check
