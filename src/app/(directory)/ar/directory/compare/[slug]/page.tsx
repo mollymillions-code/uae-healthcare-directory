@@ -326,15 +326,15 @@ function ArCategoryComparisonView({ data }: { data: CategoryComparisonData }) {
   const faqs = [
     {
       question: `ما الفرق بين ${categoryA.name} و${categoryB.name} في ${cityNameAr}؟`,
-      answer: `${categoryA.name} في ${cityNameAr} لديها ${statsA.totalProviders.toLocaleString("ar-AE")} منشأة مع رسوم استشارة ${statsA.gpFeeRange}. ${categoryB.name} لديها ${statsB.totalProviders.toLocaleString("ar-AE")} منشأة مع رسوم ${statsB.gpFeeRange}. المتوسط التقييمي: ${statsA.avgRating > 0 ? statsA.avgRating.toFixed(1) : "غ.م"} مقابل ${statsB.avgRating > 0 ? statsB.avgRating.toFixed(1) : "غ.م"} نجوم.`,
+      answer: `${categoryA.name} في ${cityNameAr} لديها ${statsA.totalProviders.toLocaleString("ar-AE")} منشأة مع رسوم استشارة ${statsA.priceRange}. ${categoryB.name} لديها ${statsB.totalProviders.toLocaleString("ar-AE")} منشأة مع رسوم ${statsB.priceRange}. المتوسط التقييمي: ${statsA.avgRating > 0 ? statsA.avgRating.toFixed(1) : "غ.م"} مقابل ${statsB.avgRating > 0 ? statsB.avgRating.toFixed(1) : "غ.م"} نجوم.`,
     },
     {
       question: `متى أختار ${categoryA.name} بدلاً من ${categoryB.name}؟`,
-      answer: `${statsA.visitReason} للرعاية المتخصصة أو الإجراءات الجراحية. ${statsB.visitReason} للمشورة التخصصية الروتينية. تحقق دائماً من قبول التأمين قبل الحجز.`,
+      answer: `اختر ${categoryA.name} للرعاية المتخصصة أو الإجراءات الجراحية. اختر ${categoryB.name} للمشورة التخصصية الروتينية. تحقق دائماً من قبول التأمين قبل الحجز.`,
     },
     {
       question: `أيهما أرخص، ${categoryA.name} أم ${categoryB.name} في ${cityNameAr}؟`,
-      answer: `تتراوح رسوم ${categoryA.name} بين ${statsA.gpFeeRange} مقابل ${statsB.gpFeeRange} لـ${categoryB.name} في ${cityNameAr}. التكلفة الفعلية تتفاوت حسب مزود الخدمة والتأمين وتعقيد الزيارة.`,
+      answer: `تتراوح رسوم ${categoryA.name} بين ${statsA.priceRange} مقابل ${statsB.priceRange} لـ${categoryB.name} في ${cityNameAr}. التكلفة الفعلية تتفاوت حسب مزود الخدمة والتأمين وتعقيد الزيارة.`,
     },
   ];
 
@@ -374,7 +374,7 @@ function ArCategoryComparisonView({ data }: { data: CategoryComparisonData }) {
             {statsB.totalProviders.toLocaleString("ar-AE")} {categoryB.name}. متوسط التقييم:
             {" "}{statsA.avgRating > 0 ? statsA.avgRating.toFixed(1) : "غير متوفر"} نجوم مقابل{" "}
             {statsB.avgRating > 0 ? statsB.avgRating.toFixed(1) : "غير متوفر"} نجوم.
-            الرسوم الاسترشادية: {statsA.gpFeeRange} مقابل {statsB.gpFeeRange}.
+            الرسوم الاسترشادية: {statsA.priceRange} مقابل {statsB.priceRange}.
             البيانات من السجلات الحكومية الرسمية، آخر تحقق مارس 2026.
           </p>
         </div>
@@ -406,14 +406,14 @@ function ArCategoryComparisonView({ data }: { data: CategoryComparisonData }) {
                 <td className="py-3 px-4">{statsB.avgRating > 0 ? `${statsB.avgRating.toFixed(1)} ★` : "غير متوفر"}</td>
               </tr>
               <tr className="border-b border-black/[0.06]">
-                <td className="py-3 px-4 font-medium text-[#1c1c1c]">رسوم الاستشارة</td>
-                <td className="py-3 px-4">{statsA.gpFeeRange}</td>
-                <td className="py-3 px-4">{statsB.gpFeeRange}</td>
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">نطاق الأسعار</td>
+                <td className="py-3 px-4">{statsA.priceRange}</td>
+                <td className="py-3 px-4">{statsB.priceRange}</td>
               </tr>
               <tr className="border-b border-black/[0.06] bg-[#f8f8f6]">
-                <td className="py-3 px-4 font-medium text-[#1c1c1c]">متى تختاره</td>
-                <td className="py-3 px-4 text-xs text-black/60">{statsA.visitReason}</td>
-                <td className="py-3 px-4 text-xs text-black/60">{statsB.visitReason}</td>
+                <td className="py-3 px-4 font-medium text-[#1c1c1c]">ملاحظة التأمين</td>
+                <td className="py-3 px-4 text-xs text-black/60">{statsA.insuranceNote}</td>
+                <td className="py-3 px-4 text-xs text-black/60">{statsB.insuranceNote}</td>
               </tr>
             </tbody>
           </table>

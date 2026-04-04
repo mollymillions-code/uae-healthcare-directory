@@ -203,7 +203,7 @@ export default function ArSpecialistPerCapitaPage() {
                       href={`/ar/workforce/specialty/${spec.slug}`}
                       className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                     >
-                      {spec.nameAr || spec.name}
+                      {spec.name}
                     </Link>
                   </td>
                   <td className="py-2.5 pl-4 text-right hidden sm:table-cell">

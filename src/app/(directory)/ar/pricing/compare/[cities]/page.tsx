@@ -391,9 +391,9 @@ export default async function ArCityComparisonPage({
                 </td>
                 <td className="p-3 text-center">
                   {comp.cheaperCity === "A" ? (
-                    <TrendingDown className="w-4 h-4 text-green-600 mx-auto" title={cityANameAr} />
+                    <TrendingDown className="w-4 h-4 text-green-600 mx-auto" />
                   ) : comp.cheaperCity === "B" ? (
-                    <TrendingDown className="w-4 h-4 text-blue-600 mx-auto" title={cityBNameAr} />
+                    <TrendingDown className="w-4 h-4 text-blue-600 mx-auto" />
                   ) : (
                     <Minus className="w-4 h-4 text-black/40 mx-auto" />
                   )}
