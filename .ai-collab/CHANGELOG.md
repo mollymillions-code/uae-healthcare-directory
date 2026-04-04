@@ -1,5 +1,39 @@
 # Zavis Landing - Changelog
 
+## 2026-04-05 — [Claude Code] Fix Broken Book-a-Demo Form
+
+**Signed by:** Claude Code · 2026-04-05T23:15:00+04:00
+
+### Root Cause
+
+The demo booking form on `/contact` and `/book-a-demo` was completely broken — users saw "Something went wrong" on every submission. Three compounding issues:
+
+1. **Dead backend URL:** `ContactPageClient.tsx` fallback pointed to `zavis-onboarding.vercel.app` which returned HTTP 402 (Payment Required — Vercel billing issue).
+2. **Missing webhook secret:** Neither the landing site nor the onboarding backend had `LEADS_WEBHOOK_SECRET` configured, so even with a working URL, the backend rejected every request with 401.
+3. **CSP blocking:** `next.config.mjs` Content-Security-Policy `connect-src` did not include `clientops.zavisinternaltools.in`, so browsers silently blocked the fetch before it left the page.
+
+### Files Modified
+
+- **`src/components/landing/pages/ContactPageClient.tsx`** — Changed fallback `ZAVIS_API_URL` from `https://www.zavis.ai` to `https://clientops.zavisinternaltools.in` (the EC2 onboarding backend).
+- **`next.config.mjs`** — Added `https://clientops.zavisinternaltools.in` to CSP `connect-src` directive.
+
+### EC2 Configuration Changes
+
+- **`/home/ubuntu/zavis-shared/.env.local`** — Added `NEXT_PUBLIC_ZAVIS_API_URL=https://clientops.zavisinternaltools.in` and `NEXT_PUBLIC_LEADS_WEBHOOK_SECRET=<secret>`.
+- **`/home/ubuntu/zavis-onboarding/.env.local`** — Added matching `LEADS_WEBHOOK_SECRET=<secret>`.
+- Restarted `zavis-onboarding` PM2 process to pick up the new secret.
+
+### Commits
+
+- `01f5531` — fix: point book-a-demo form to EC2 onboarding backend
+- `862f08d` — fix: add clientops to CSP connect-src — unblocks demo booking form
+
+### Deployment
+
+Both commits deployed via GitHub Actions blue-green pipeline. Active slot swapped blue→green→blue across the two deploys. End-to-end verified: CORS preflight 204, POST returns 201, lead created in DB.
+
+---
+
 ## 2026-04-04 — [Claude Code] Arabic VS by City Page
 
 **Signed by:** Claude Code · 2026-04-04T14:00:00+04:00
