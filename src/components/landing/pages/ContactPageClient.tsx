@@ -13,7 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const ZAVIS_API_URL = process.env.NEXT_PUBLIC_ZAVIS_API_URL || "https://www.zavis.ai";
+const ZAVIS_API_URL = process.env.NEXT_PUBLIC_ZAVIS_API_URL || "https://clientops.zavisinternaltools.in";
 const LEADS_WEBHOOK_SECRET = process.env.NEXT_PUBLIC_LEADS_WEBHOOK_SECRET || "";
 
 const teamOptions = [
