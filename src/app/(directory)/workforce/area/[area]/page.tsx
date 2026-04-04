@@ -64,7 +64,7 @@ export default function AreaWorkforcePage({ params }: Props) {
         data={breadcrumbSchema([
           { name: "UAE", url: base },
           { name: "Workforce Intelligence", url: `${base}/workforce` },
-          { name: "Areas", url: `${base}/workforce` },
+          { name: "Areas", url: `${base}/workforce/areas` },
           { name: profile.name },
         ])}
       />

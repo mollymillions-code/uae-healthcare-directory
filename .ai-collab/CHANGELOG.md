@@ -1,5 +1,181 @@
 # Zavis Landing - Changelog
 
+## 2026-04-04 — [Claude Code] Arabic VS by City Page
+
+**Signed by:** Claude Code · 2026-04-04T14:00:00+04:00
+
+### File Created
+
+- **`src/app/(directory)/ar/pricing/vs/[comparison]/[city]/page.tsx`** — Arabic procedure-vs-procedure comparison page scoped to a specific UAE city. City-specific side-by-side comparison of two procedures, key differences table, cross-city comparison table, when-to-choose sections, insurance coverage block, 4 Arabic FAQs.
+
+### Pattern applied
+
+- `dir="rtl"` + `lang="ar"` on root wrapper div
+- `border-r-4` RTL callout block
+- `getArabicCityName()` for all city name display
+- `toLocaleString("ar-AE")` for all numbers and percentages
+- `regulatorAr()` inline helper (DHA/DOH/MOHAP in Arabic)
+- `insuranceLabelAr()` inline helper for Arabic coverage labels
+- hreflang en-AE/ar-AE alternates in metadata
+- `generateStaticParams` matching English (all comparison×city pairs where both procedures have city pricing)
+- `revalidate = 43200`, `dynamicParams = true`
+- BreadcrumbList + FAQPage + SpeakableSpecification JSON-LD
+- Zero ESLint warnings or errors
+
+### Impact
+
+- Completes all 13 Arabic pricing section pages requested. The other 12 (compare hub, compare/[cities], guide hub, guide/[guide], guide/[guide]/[city], journey hub, journey/[journey], journey/[journey]/[city], lists hub, lists/[listType]/[city], vs hub, vs/[comparison]) were already implemented in prior sessions.
+
+---
+
+## 2026-04-07 — [Claude Code] Arabic Pricing Pages (6 pages)
+
+**Signed by:** Claude Code · 2026-04-07T10:00:00+04:00
+
+### Files Created (6 new pages)
+- **`src/app/(directory)/ar/pricing/page.tsx`** — Arabic pricing hub. All UI text in Arabic MSA, 10 procedure categories with Arabic names, top-12 popular procedures with nameAr, full procedure list by category, key facts callout, 5 FAQs, disclaimer.
+- **`src/app/(directory)/ar/pricing/[procedure]/page.tsx`** — Arabic procedure detail page. Cheapest/most expensive city with Arabic names, city-by-city pricing table linking to /ar/pricing/[procedure]/[city], CostEstimator component, related procedures, 4 FAQs.
+- **`src/app/(directory)/ar/pricing/[procedure]/[city]/page.tsx`** — Arabic procedure×city page. Price card with visualisation, comparison table with % diff, CostEstimator, top-rated provider list (linking to /directory/... English), "about the procedure" section, 4 FAQs.
+- **`src/app/(directory)/ar/pricing/category/[category]/page.tsx`** — Arabic category hub. CATEGORY_NAMES_AR map for 10 categories, procedure grid with coverage badges, city stats table linking to /ar/pricing/category/[cat]/[city], 3 FAQs.
+- **`src/app/(directory)/ar/pricing/category/[category]/[city]/page.tsx`** — Arabic category×city page. Sorted procedure table, city comparison rows, CostEstimator with dominant coverage, 4 FAQs, Service + AggregateOffer JSON-LD.
+- **`src/app/(directory)/ar/pricing/city/[city]/page.tsx`** — Arabic city pricing hub. City rank vs all UAE, city comparison table, procedures by category with Arabic section headings linking to /ar/pricing/category/[cat]/[city], 4 FAQs.
+
+### Pattern applied across all 6 pages
+- `dir="rtl"` on root wrapper div
+- `border-r-4` (RTL) for callout boxes (replacing English `border-l-4`)
+- `getArabicCityName()` + `getArabicRegulator()` from `@/lib/i18n`
+- `proc.nameAr || proc.name` for procedure names
+- `toLocaleString("ar-AE")` for all numbers
+- `hreflang en-AE/ar-AE` alternates in metadata
+- `revalidate = 43200`, `dynamicParams = true` on dynamic pages
+- `generateStaticParams` matching English counterparts exactly
+- All internal links → `/ar/pricing/...` routes
+- Zero ESLint warnings/errors, zero TypeScript errors in new files
+
+## 2026-04-05 — [Claude Code] Arabic Mirror Pages: Stats, Compare, Find-a-Doctor, Best Doctors Hub, Best Doctors by Specialty, Doctors-At
+
+**Signed by:** Claude Code · 2026-04-05T10:00:00+04:00
+
+### Files Created (6 new pages)
+- **`src/app/(directory)/ar/professionals/stats/page.tsx`** — Arabic workforce stats page. RTL layout, all 6 metric tables (categories, top-20 specialties, top-20 facilities, license distribution, geographic areas, specialist vs consultant), Arabic numbers via `toLocaleString("ar-AE")`, `getArabicAreaName()` for area names, `nameAr` for category/specialty labels, hreflang en-AE/ar-AE, BreadcrumbList + Dataset + FAQPage JSON-LD.
+- **`src/app/(directory)/ar/professionals/compare/[slugs]/page.tsx`** — Arabic specialty comparison page. Parses `-vs-` slug pattern, `generateStaticParams` for top-15 physician specialty pairs, 6-row comparison grid, top-5 facilities per specialty, "when to see each" section, Arabic specialty names via `nameAr`, hreflang alternates.
+- **`src/app/(directory)/ar/find-a-doctor/page.tsx`** — Arabic find-a-doctor landing page. Category cards with Arabic descriptions, specialty grid by category (5 per category), top-15 hospitals table, 6 Arabic FAQs, CTA to /ar/professionals, BreadcrumbList + ItemList + FAQPage JSON-LD.
+- **`src/app/(directory)/ar/best/doctors/page.tsx`** — Arabic best doctors hub. Physician specialties grid (35 specialties), dental specialties grid (11), `FaqSection` component with 6 Arabic FAQs, ranking methodology section, 3-column related pages cross-links.
+- **`src/app/(directory)/ar/best/doctors/[specialty]/page.tsx`** — Arabic best-doctors-by-specialty page. `generateStaticParams` for all 46 PHYSICIAN + DENTIST specialties, top-10 doctors table, top-10 facilities table, "how we rank" section, related specialties grid, related directory category link, FAQPage JSON-LD, MedicalWebPage + ItemList schema.
+- **`src/app/(directory)/ar/doctors-at/[slug]/page.tsx`** — Arabic doctors-at facility page. `generateStaticParams` for top-50 facilities, doctor-by-specialty grid, alphabetical A-Z doctor table (100 limit), top-15 specialty frequency table, MedicalBusiness schema, hreflang en-AE/ar-AE.
+
+### Impact
+- 6 new Arabic page templates covering all major professional directory entry points
+- All pages: `dir="rtl"`, `revalidate = 43200`, `dynamicParams = true` where applicable
+- All links point to `/ar/...` routes
+- Hreflang alternates with reciprocal en-AE/ar-AE on all pages
+- Zero lint errors, zero ESLint warnings in new files
+
+## 2026-04-04 — [Claude Code] Arabic Mirror Pages for Professionals Facility + Area
+
+**Signed by:** Claude Code · 2026-04-04T10:00:00+04:00
+
+### Files Changed
+- **`src/app/(directory)/ar/professionals/facility/[slug]/page.tsx`** — Created Arabic facility staff page. RTL layout, dir="rtl", Arabic UI labels from `ar` i18n, Arabic numbers via `toLocaleString("ar-AE")`, top-50 staff table, specialty grid linking to `/ar/professionals/facility/{slug}/{specialty}`, hreflang en-AE/ar-AE alternates.
+- **`src/app/(directory)/ar/professionals/facility/[slug]/[specialty]/page.tsx`** — Created Arabic facility×specialty page. FTL/REG license breakdown, full staff listing, links to `/ar/professionals/facility/{slug}` and `/ar/professionals/{category}/{specialty}`, hreflang alternates.
+- **`src/app/(directory)/ar/professionals/area/[area]/page.tsx`** — Created Arabic area page. Uses `getArabicAreaName()` for Arabic area names, specialty grid linking to `/ar/professionals/area/{area}/{specialty}`, category stats, 100-row staff table with facility links pointing to `/ar/professionals/facility/{slug}`.
+- **`src/app/(directory)/ar/professionals/area/[area]/[specialty]/page.tsx`** — Created Arabic area×specialty page. Top facilities table, full alphabetical listing, links to English counterparts, hreflang alternates.
+
+### Impact
+- 4 new Arabic page templates mirroring the English professional directory
+- All pages: `revalidate = 43200`, `dynamicParams = true`, `generateStaticParams` matching English thresholds
+- Zero lint errors, zero TypeScript errors
+
+## 2026-04-05 — [Claude Code] Breadcrumb href, OG siteName, and Table Border Fixes
+
+**Signed by:** Claude Code · 2026-04-05T05:00:00+04:00
+
+### Files Changed
+- **`src/app/(directory)/workforce/benchmarks/nurse-to-doctor/page.tsx`** — Added href="/workforce/benchmarks" to Benchmarks breadcrumb item + matching breadcrumbSchema URL.
+- **`src/app/(directory)/workforce/benchmarks/staff-per-facility/page.tsx`** — Same breadcrumb fix.
+- **`src/app/(directory)/workforce/benchmarks/specialist-per-capita/page.tsx`** — Same breadcrumb fix.
+- **`src/app/(directory)/workforce/benchmarks/ftl-rate/page.tsx`** — Same breadcrumb fix.
+- **`src/app/(directory)/workforce/career/[specialty]/page.tsx`** — Added href="/workforce/careers" to Careers breadcrumb item + matching breadcrumbSchema URL.
+- **`src/app/(directory)/workforce/career/category/[category]/page.tsx`** — Same careers breadcrumb fix.
+- **`src/app/(directory)/workforce/category/[category]/page.tsx`** — Changed siteName from "Zavis Healthcare Intelligence" to "UAE Open Healthcare Directory".
+- **`src/app/(directory)/workforce/specialty/[specialty]/page.tsx`** — Same siteName fix.
+- **`src/app/(directory)/workforce/overview/page.tsx`** — Changed 4 table thead `<tr>` borders from `border-b border-black/10` to `border-b-2 border-[#1c1c1c]` (design system standard).
+
+### Why
+- Breadcrumb intermediate items without href break navigation and reduce SEO value of BreadcrumbList schema.
+- Inconsistent OG siteName hurts brand consistency in social media previews.
+- Table header borders should match the design system standard (thick bottom border) used elsewhere on the page.
+
+### Impact
+- 9 files changed, zero lint errors.
+
+## 2026-04-05 — [Claude Code] Accessibility and Design Consistency Fixes (WCAG, border-light-200, scope="col")
+
+**Signed by:** Claude Code · 2026-04-05T04:30:00+04:00
+
+### Files Changed
+- **`src/app/(directory)/workforce/overview/page.tsx`** — Changed text-black/40 to text-black/60 on FTL/REG explanation paragraph (WCAG AA contrast fix for body text). Added scope="col" to all th elements in thead (15 tables).
+- **`src/app/globals.css`** — Replaced 3 border-light-200 occurrences with border-black/[0.06] in .article-row, .headline-item, .provider-card utility classes.
+- **`src/app/(directory)/professionals/page.tsx`** — Replaced border-light-200 with border-black/[0.06], added scope="col" to th elements.
+- **`src/app/(directory)/professionals/[category]/page.tsx`** — Same border and scope fixes.
+- **`src/app/(directory)/professionals/[category]/[specialty]/page.tsx`** — Same border and scope fixes.
+- **`src/app/(directory)/professionals/facility/[slug]/page.tsx`** — Same border and scope fixes.
+- **`src/app/(directory)/professionals/stats/page.tsx`** — Added scope="col" to 16 th elements across 4 tables.
+- **`src/app/(directory)/professionals/guide/[slug]/page.tsx`** — Replaced border-light-200 with border-black/[0.06] in 2 table rows.
+- **`src/app/(directory)/professionals/area/[area]/page.tsx`** — Replaced border-light-200.
+- **`src/app/(directory)/professionals/area/[area]/[specialty]/page.tsx`** — Replaced border-light-200.
+- **`src/app/(directory)/professionals/[category]/[specialty]/consultants/page.tsx`** — Replaced border-light-200.
+- **`src/app/(directory)/professionals/[category]/[specialty]/specialists/page.tsx`** — Replaced border-light-200.
+- **`src/app/(directory)/professionals/facility/[slug]/[specialty]/page.tsx`** — Replaced border-light-200.
+- **`src/app/(directory)/find-a-doctor/page.tsx`** — Replaced border-light-200.
+- **18 Arabic pages** (ar/insurance/*, ar/labs/*, ar/directory/*, ar/page.tsx) — Replaced all border-light-200 with border-black/[0.06].
+
+### Why
+- border-light-200 was not a valid Tailwind utility despite light-200 being in the color config (Tailwind generates border-light-200 as a color but it renders as transparent in some build contexts). Replaced with explicit border-black/[0.06] for consistent rendering.
+- WCAG AA requires 4.5:1 contrast for body text; text-black/40 (~2.83:1) fails this. Only changed on paragraph-length text, not intentional de-emphasized labels.
+- scope="col" on th in thead is a WCAG accessibility requirement for screen readers to associate header cells with data columns.
+
+### Impact
+- 28 files changed, zero lint errors, zero new warnings. Purely visual/accessibility improvements -- no layout or functionality changes.
+
+## 2026-04-05 — [Claude Code] Fix Broken Internal Links and Add BreadcrumbList JSON-LD
+
+**Signed by:** Claude Code · 2026-04-05T03:00:00+04:00
+
+### Files Changed
+- **`src/app/(directory)/professionals/compare/[slugs]/page.tsx`** — Fixed broken "best doctors" links: changed `/professionals/{cat}/{spec}/best` (404) to `/best/doctors/{spec}` (correct route).
+- **`src/app/(directory)/workforce/benchmarks/page.tsx`** — Fixed 2 broken benchmark links: consultant-pipeline now points to `/workforce/specialties`, specialty-concentration now points to `/workforce/areas`. Both are existing hub pages.
+- **`src/app/(directory)/workforce/careers/page.tsx`** — Fixed career guide links: changed base path from `/workforce/guide/` (404) to `/professionals/guide/` (existing route). Remapped 6 guide slugs to match 6 existing guide pages (dha-licensing, specialist-vs-consultant, ftl-vs-reg, international-doctors-dubai, choosing-right-specialist, healthcare-workforce).
+- **`src/app/(directory)/professionals/[category]/page.tsx`** — Added `breadcrumbSchema` import and `<JsonLd data={breadcrumbSchema([...])} />` for BreadcrumbList structured data.
+- **`src/app/(directory)/professionals/[category]/[specialty]/page.tsx`** — Added BreadcrumbList JSON-LD with 5-level breadcrumb (UAE > Directory > Professionals > Category > Specialty).
+- **`src/app/(directory)/professionals/[category]/[specialty]/specialists/page.tsx`** — Added BreadcrumbList JSON-LD with 6-level breadcrumb (UAE > Directory > Professionals > Category > Specialty > Specialists).
+- **`src/app/(directory)/professionals/[category]/[specialty]/consultants/page.tsx`** — Added BreadcrumbList JSON-LD with 6-level breadcrumb (UAE > Directory > Professionals > Category > Specialty > Consultants).
+- **`src/app/(directory)/find-a-doctor/page.tsx`** — Added `breadcrumbSchema` to existing seo import and BreadcrumbList JSON-LD with 3-level breadcrumb (UAE > Directory > Find a Doctor).
+
+### Why
+Broken internal links create dead ends for users and waste crawl budget. Missing BreadcrumbList JSON-LD means Google cannot display breadcrumb rich results for these pages.
+
+### Impact
+- 3 pages with broken links fixed (compare, benchmarks hub, careers hub)
+- 5 pages now emit BreadcrumbList structured data for Google rich results
+- Zero lint errors
+
+## 2026-04-04 — [Claude Code] Fix 4 Critical Issues in Professional Directory
+
+**Signed by:** Claude Code · 2026-04-04T22:00:00+04:00
+
+### Files Changed
+- **`src/app/(directory)/professionals/[category]/[specialty]/page.tsx`** — Added displayLimit=200 to prevent rendering 28K+ rows. Sort applied to sliced array. Added "Showing X of Y" subtitle text and overflow note after table.
+- **`src/app/(directory)/professionals/facility/[slug]/page.tsx`** — Fixed soft 404: replaced custom "not found" HTML (HTTP 200) with `notFound()` from `next/navigation` for proper 404 response.
+- **`src/app/(directory)/professionals/stats/page.tsx`** — Removed local `DUBAI_POPULATION = 3_600_000` constant; now imports from `@/lib/workforce` which has the correct value of 3,660,000. Fixed hardcoded "3.6 million" FAQ text to use dynamic value.
+- **`src/lib/professionals.ts`** — Wrapped `JSON.parse(fs.readFileSync(...))` in try/catch so build doesn't crash with unhelpful error if data file is missing; logs clear error message and returns empty dataset gracefully.
+
+### Impact
+- Specialty pages with large datasets (e.g., registered-nurse) no longer attempt to render 28K+ table rows
+- Facility pages with invalid slugs now return proper HTTP 404 (SEO soft 404 fix)
+- Population-based calculations are consistent across all pages (3.66M, not 3.6M)
+- Build resilience improved: missing data file produces clear error instead of crash
+
 ## 2026-04-04 — [Claude Code] Complete Workforce Intelligence Section (~1,700 pages)
 
 **Signed by:** Claude Code · 2026-04-04T15:00:00+04:00

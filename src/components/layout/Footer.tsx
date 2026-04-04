@@ -13,8 +13,8 @@ export function Footer() {
           <span className="font-bold text-lg">UAE Open Healthcare Directory</span>
         </div>
 
-        {/* Columns — 4 columns: Cities, Directory, Data Sources, Insights */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-white/10 pt-8 mb-8">
+        {/* Columns — 5 columns: Cities, Services, Directory, Data Sources, Insights */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 border-t border-white/10 pt-8 mb-8">
           <div>
             <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
@@ -25,6 +25,19 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Services</h5>
+            <ul className="space-y-2">
+              <li><Link href="/professionals" className="text-sm text-white/60 hover:text-white transition-colors">Healthcare Professionals</Link></li>
+              <li><Link href="/find-a-doctor" className="text-sm text-white/60 hover:text-white transition-colors">Find a Doctor</Link></li>
+              <li><Link href="/best/doctors" className="text-sm text-white/60 hover:text-white transition-colors">Best Doctors</Link></li>
+              <li><Link href="/workforce" className="text-sm text-white/60 hover:text-white transition-colors">Workforce Intelligence</Link></li>
+              <li><Link href="/labs" className="text-sm text-white/60 hover:text-white transition-colors">Labs &amp; Diagnostics</Link></li>
+              <li><Link href="/insurance" className="text-sm text-white/60 hover:text-white transition-colors">Insurance Navigator</Link></li>
+              <li><Link href="/pricing" className="text-sm text-white/60 hover:text-white transition-colors">Medical Pricing</Link></li>
+              <li><Link href="/ar" className="text-sm text-white/60 hover:text-white transition-colors">النسخة العربية</Link></li>
             </ul>
           </div>
           <div>
@@ -68,7 +81,7 @@ export function Footer() {
           </span>
           <span className="text-xs text-white/40">
             by{" "}
-            <a href="https://zavis.ai" className="text-[#006828] hover:text-[#006828]-light transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href="https://zavis.ai" className="text-[#006828] hover:text-[#008a35] transition-colors" target="_blank" rel="noopener noreferrer">
               Zavis
             </a>
           </span>

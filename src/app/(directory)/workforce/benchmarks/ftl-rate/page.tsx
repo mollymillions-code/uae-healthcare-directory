@@ -233,7 +233,7 @@ export default function FTLRatePage() {
                 </td>
                 <td className="py-2.5 pr-4">
                   <Link
-                    href={`/professionals/area/${area.slug}`}
+                    href={`/workforce/area/${area.slug}`}
                     className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
                   >
                     {area.name}

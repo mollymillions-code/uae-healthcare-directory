@@ -19,6 +19,8 @@ const CITY_LINKS = [
 
 const SECTION_LINKS = [
   { label: "Search", href: "/search" },
+  { label: "Professionals", href: "/professionals" },
+  { label: "Labs", href: "/labs" },
   { label: "Insights", href: "/intelligence" },
   { label: "Research", href: "/research" },
   { label: "About", href: "/about" },
@@ -169,6 +171,8 @@ export function Header() {
             </div>
             <div className="border-t border-white/10 pt-3 flex flex-wrap gap-4">
               <Link href="/search" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Search</Link>
+              <Link href="/professionals" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Professionals</Link>
+              <Link href="/labs" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Labs</Link>
               <Link href="/intelligence" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Insights</Link>
               <Link href="/research" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Research</Link>
               <Link href="/claim" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Claim Listing</Link>

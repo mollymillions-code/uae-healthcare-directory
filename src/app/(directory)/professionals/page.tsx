@@ -228,6 +228,59 @@ export default function ProfessionalsPage() {
         </p>
       </div>
 
+      {/* Explore More */}
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          Explore More
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <Link
+          href="/professionals/stats"
+          className="border border-black/[0.06] p-4 hover:border-[#006828]/15 transition-colors group"
+        >
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+            Workforce Statistics
+          </p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            Aggregate workforce data, category breakdowns, and license type distribution
+          </p>
+        </Link>
+        <Link
+          href="/professionals/guide/how-to-verify-doctor-license-dubai"
+          className="border border-black/[0.06] p-4 hover:border-[#006828]/15 transition-colors group"
+        >
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+            Editorial Guides
+          </p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            How to verify a doctor&apos;s license, choose a specialist, and navigate Dubai healthcare
+          </p>
+        </Link>
+        <Link
+          href="/find-a-doctor"
+          className="border border-black/[0.06] p-4 hover:border-[#006828]/15 transition-colors group"
+        >
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+            Find a Doctor
+          </p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            Search DHA-licensed physicians by name, specialty, or facility
+          </p>
+        </Link>
+        <Link
+          href="/best/doctors"
+          className="border border-black/[0.06] p-4 hover:border-[#006828]/15 transition-colors group"
+        >
+          <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+            Best Doctors in Dubai
+          </p>
+          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            Top-rated doctors and specialists ranked by patient reviews and credentials
+          </p>
+        </Link>
+      </div>
+
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">

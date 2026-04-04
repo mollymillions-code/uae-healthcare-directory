@@ -103,6 +103,133 @@ export const ar = {
   provider: "مقدم خدمة",
   providerPlural: "مقدمي خدمات",
   patientReviews: "آراء المرضى",
+
+  // Professionals Directory
+  professionals: {
+    title: "دليل الكوادر الصحية في دبي",
+    subtitle: "كوادر صحية مرخّصة من هيئة صحة دبي",
+    description: "أكبر دليل بحث عام للكوادر الصحية المرخّصة من هيئة صحة دبي، مصدره السجل الطبي الرسمي شريان.",
+    browseByCategory: "تصفح حسب الفئة",
+    topSpecialties: "أبرز التخصصات",
+    topFacilities: "أكبر المنشآت الصحية",
+    licensedProfessionals: "كوادر صحية مرخّصة",
+    healthcareFacilities: "منشآت صحية",
+    specialtiesTracked: "تخصصات متابَعة",
+    professionalCategories: "فئات مهنية",
+    howManyProfessionals: "كم عدد الكوادر الصحية في دبي؟",
+    source: "المصدر",
+    disclaimer: "هيئة الصحة بدبي (DHA) — السجل الطبي المهني شريان. هذا الدليل لأغراض معلوماتية فقط. تحقق من أوراق الاعتماد المهنية مباشرة من هيئة الصحة بدبي قبل اتخاذ قرارات صحية.",
+    allProfessionals: "جميع الكوادر المهنية",
+    name: "الاسم",
+    licenseType: "نوع الترخيص",
+    facility: "المنشأة",
+    specialty: "التخصص",
+    showing: "عرض",
+    of: "من",
+    sortedAlphabetically: "مرتبة أبجدياً",
+    fullTimeLicense: "ترخيص دائم (FTL)",
+    registered: "مسجّل (REG)",
+    specialists: "أخصائيون",
+    consultants: "استشاريون",
+    staff: "الموظفون",
+    findClinics: "ابحث عن عيادات ومستشفيات",
+    inDubai: "في دبي",
+    exploreMore: "استكشف المزيد",
+    workforceStats: "إحصائيات القوى العاملة",
+    editorialGuides: "أدلة إرشادية",
+    findDoctor: "ابحث عن طبيب",
+    bestDoctors: "أفضل الأطباء في دبي",
+    aToZDirectory: "الدليل الأبجدي",
+  } as Record<string, string>,
+
+  // Workforce Intelligence
+  workforce: {
+    title: "معلومات القوى العاملة الصحية في دبي",
+    subtitle: "تحليلات سوق العمل الصحي في دبي",
+    description: "بيانات وتحليلات شاملة عن القوى العاملة الصحية في دبي — النسب، المعايير، التوزيع الجغرافي، ومقارنات التخصصات.",
+    overview: "نظرة عامة",
+    employers: "أصحاب العمل",
+    specialtiesHub: "التخصصات",
+    areas: "المناطق الجغرافية",
+    benchmarks: "المعايير المرجعية",
+    careers: "المسارات المهنية",
+    rankings: "التصنيفات",
+    compare: "المقارنات",
+    supplyAnalysis: "تحليل العرض",
+    topEmployers: "أكبر أصحاب العمل",
+    largestSpecialties: "أكبر التخصصات",
+    nurseToDoctorRatio: "نسبة الممرضين إلى الأطباء",
+    staffPerFacility: "الموظفون لكل منشأة",
+    specialistPerCapita: "الأخصائيون لكل فرد",
+    ftlRate: "معدل الترخيص الدائم",
+    concentrationIndex: "مؤشر التركز",
+    perCapita: "لكل 100,000 نسمة",
+    totalProfessionals: "إجمالي الكوادر المهنية",
+    facilities: "المنشآت",
+    category: "الفئة",
+  } as Record<string, string>,
+
+  // Best Doctors
+  bestDoctors: {
+    title: "أفضل الأطباء في دبي",
+    subtitle: "مصنّفون حسب الخبرة والتخصص ونوع الترخيص",
+    description: "أفضل الأطباء والمتخصصين المرخّصين من هيئة صحة دبي — مصنّفون حسب نسبة الاستشاريين ومعدل الترخيص الدائم.",
+    topSpecialists: "أبرز الأخصائيين",
+    findBestDoctor: "ابحث عن أفضل طبيب",
+    relatedSpecialties: "تخصصات ذات صلة",
+    topFacilitiesFor: "أبرز المنشآت لتخصص",
+    rankingMethodology: "منهجية التصنيف",
+  } as Record<string, string>,
+
+  // Find a Doctor
+  findDoctor: {
+    title: "ابحث عن طبيب في دبي",
+    subtitle: "ابحث بين أكثر من 99,000 كادر صحي مرخّص",
+    description: "ابحث في أكبر دليل للكوادر الصحية المرخّصة من هيئة صحة دبي. الأطباء وأطباء الأسنان والممرضون والمهنيون الصحيون المساندون.",
+    browseByCategory: "تصفح حسب الفئة",
+    browseBySpecialty: "تصفح حسب التخصص",
+    browseByFacility: "تصفح حسب المنشأة",
+  } as Record<string, string>,
+
+  // Dubai Areas
+  dubaiAreas: {
+    "deira": "ديرة",
+    "bur-dubai": "بر دبي",
+    "jumeirah": "جميرا",
+    "al-barsha": "البرشاء",
+    "dubai-marina": "دبي مارينا",
+    "business-bay": "الخليج التجاري",
+    "downtown-dubai": "وسط مدينة دبي",
+    "al-quoz": "القوز",
+    "jebel-ali": "جبل علي",
+    "al-nahda": "النهدة",
+    "karama": "الكرامة",
+    "al-garhoud": "القرهود",
+    "oud-metha": "عود ميثاء",
+    "al-mamzar": "الممزر",
+    "international-city": "المدينة العالمية",
+    "dubai-healthcare-city": "مدينة دبي الطبية",
+    "silicon-oasis": "واحة دبي للسيليكون",
+    "al-rashidiya": "الراشدية",
+    "motor-city": "موتور سيتي",
+    "al-mizhar": "المزهر",
+    "muhaisnah": "محيصنة",
+    "al-warqa": "الورقاء",
+    "al-satwa": "السطوة",
+    "al-safa": "الصفا",
+    "umm-suqeim": "أم سقيم",
+    "al-wasl": "الوصل",
+    "trade-centre": "المركز التجاري",
+    "al-khawaneej": "الخوانيج",
+    "nad-al-sheba": "ند الشبا",
+    "mirdif": "مردف",
+    "dubai-investment-park": "مجمع دبي للاستثمار",
+    "al-qusais": "القصيص",
+    "hor-al-anz": "هور العنز",
+    "port-saeed": "بور سعيد",
+    "discovery-gardens": "ديسكفري غاردنز",
+    "palm-jumeirah": "نخلة جميرا",
+  } as Record<string, string>,
 };
 
 export function getArabicCityName(slug: string): string {
@@ -115,4 +242,8 @@ export function getArabicCategoryName(slug: string): string {
 
 export function getArabicRegulator(citySlug: string): string {
   return ar.regulators[citySlug] || ar.regulators.default;
+}
+
+export function getArabicAreaName(slug: string): string {
+  return ar.dubaiAreas[slug] || slug;
 }

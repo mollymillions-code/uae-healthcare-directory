@@ -77,6 +77,27 @@ const SUB_HUBS = [
       "Career guides and workforce insights for healthcare professionals considering Dubai's labor market.",
     stat: "4 Categories",
   },
+  {
+    title: "Compare",
+    href: "/workforce/compare",
+    description:
+      "Side-by-side workforce comparisons across specialties, areas, employers, and categories using DHA Sheryan Registry data.",
+    stat: "4 Dimensions",
+  },
+  {
+    title: "Supply Analysis",
+    href: "/workforce/supply",
+    description:
+      "Specialty supply adequacy: per-capita rates, geographic coverage, employer concentration, and supply gaps across physician specialties.",
+    stat: "35 Specialties",
+  },
+  {
+    title: "Rankings",
+    href: "/workforce/rankings",
+    description:
+      "League tables for Dubai healthcare: top employers by staff count, largest specialties, staffing ratios, and FTL rates.",
+    stat: "4 Rankings",
+  },
 ];
 
 export default function WorkforceHubPage() {
