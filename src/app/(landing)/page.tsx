@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import { HomePageClient } from "@/components/landing/pages/HomePageClient";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationSchema, websiteWithSearchSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "AI Patient Success Platform for Healthcare Providers",
@@ -11,5 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default function LandingHomePage() {
-  return <HomePageClient />;
+  return (
+    <>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={websiteWithSearchSchema()} />
+      <HomePageClient />
+    </>
+  );
 }

@@ -28,7 +28,13 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: `Languages Spoken by Healthcare Providers in ${city.name} | UAE Open Healthcare Directory`,
     description: `Find healthcare providers in ${city.name} by language spoken. Browse doctors and clinics with staff speaking Arabic, English, Hindi, Urdu, and 15+ other languages. Last verified March 2026.`,
-    alternates: { canonical: `${base}/directory/${city.slug}/language` },
+    alternates: {
+      canonical: `${base}/directory/${city.slug}/language`,
+      languages: {
+        'en-AE': `${base}/directory/${city.slug}/language`,
+        'ar-AE': `${base}/ar/directory/${city.slug}/language`,
+      },
+    },
   };
 }
 

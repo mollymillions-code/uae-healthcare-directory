@@ -19,12 +19,14 @@ export function medicalOrganizationSchema(
   citySlug?: string
 ) {
   const resolvedCitySlug = citySlug || city.slug;
+  const base = getBaseUrl();
+  const providerUrl = `${base}/directory/${city.slug}/${category.slug}/${provider.slug}`;
   return {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
-    "@id": `${getBaseUrl()}/directory/${city.slug}/${category.slug}/${provider.slug}`,
+    "@id": providerUrl,
     name: provider.name,
-    url: `${getBaseUrl()}/directory/${city.slug}/${category.slug}/${provider.slug}`,
+    url: providerUrl,
     telephone: provider.phone,
     email: provider.email || undefined,
     description: provider.description,
@@ -42,6 +44,9 @@ export function medicalOrganizationSchema(
         latitude: parseFloat(provider.latitude),
         longitude: parseFloat(provider.longitude),
       },
+    } : {}),
+    ...(provider.coverImageUrl || provider.googlePhotoUrl ? {
+      image: provider.coverImageUrl || provider.googlePhotoUrl,
     } : {}),
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
@@ -84,6 +89,16 @@ export function medicalOrganizationSchema(
           paymentAccepted: provider.insurance.join(", "),
         }
       : {}),
+    ...(provider.languages.length > 0
+      ? {
+          availableLanguage: provider.languages.map((lang) => ({
+            "@type": "Language",
+            name: lang,
+          })),
+        }
+      : {}),
+    currenciesAccepted: "AED",
+    priceRange: "$$",
     dateModified: provider.lastVerified || new Date().toISOString().split("T")[0],
   };
 }
@@ -188,7 +203,7 @@ export function organizationSchema() {
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    sameAs: [base],
+    sameAs: ["https://www.linkedin.com/company/zavis-ai"],
   };
 }
 
@@ -442,6 +457,122 @@ const DAY_NAMES: Record<string, string> = {
   sat: "Saturday",
   sun: "Sunday",
 };
+
+/**
+ * WebSite schema with sitelinks searchbox — for homepage / directory root.
+ * Google may render a sitelinks search box in SERPs.
+ */
+export function websiteWithSearchSchema() {
+  const base = getBaseUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Zavis",
+    alternateName: "UAE Open Healthcare Directory",
+    url: base,
+    description:
+      "AI-powered healthcare intelligence and open directory for the UAE. 12,500+ licensed providers across 8 cities.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${base}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Zavis",
+      url: base,
+      logo: {
+        "@type": "ImageObject",
+        url: `${base}/favicon.png`,
+      },
+    },
+  };
+}
+
+/**
+ * Generates an optimized meta title for a provider listing page.
+ * Designed for higher CTR with rating, location, and value-add keywords.
+ */
+export function generateProviderMetaTitle(
+  provider: LocalProvider,
+  category: LocalCategory,
+  city: LocalCity
+): string {
+  const rating = Number(provider.googleRating);
+  const hasRating = rating > 0;
+  const parts: string[] = [provider.name];
+
+  if (hasRating) {
+    parts.push(`${provider.googleRating}/5 Rating`);
+  }
+
+  parts.push(city.name);
+
+  // Keep under ~60 chars for Google display
+  const title = parts.join(" — ");
+  if (title.length > 60) {
+    return `${provider.name} — ${category.name} in ${city.name} | Zavis`;
+  }
+  return `${title} | Zavis`;
+}
+
+/**
+ * Generates an optimized meta description for a provider listing page.
+ * Designed for rich snippet display with structured information.
+ */
+export function generateProviderMetaDescription(
+  provider: LocalProvider,
+  category: LocalCategory,
+  city: LocalCity,
+  area?: LocalArea | null
+): string {
+  const parts: string[] = [];
+  const rating = Number(provider.googleRating);
+  const hasRating = rating > 0;
+  const loc = area ? `${area.name}, ${city.name}` : city.name;
+
+  // Lead with rating if available
+  if (hasRating) {
+    parts.push(`${provider.googleRating}/5 stars (${provider.googleReviewCount?.toLocaleString()} reviews).`);
+  }
+
+  // Specialty
+  parts.push(`${category.name} in ${loc}, UAE.`);
+
+  // Insurance
+  if (provider.insurance.length > 0) {
+    const topInsurers = provider.insurance.slice(0, 3).join(", ");
+    parts.push(`Accepts ${topInsurers}${provider.insurance.length > 3 ? " + more" : ""}.`);
+  }
+
+  // Hours snippet
+  if (provider.operatingHours?.mon) {
+    const mon = provider.operatingHours.mon;
+    if (mon.open === "00:00" && mon.close === "23:59") {
+      parts.push("Open 24/7.");
+    } else {
+      parts.push(`Hours: ${mon.open}–${mon.close}.`);
+    }
+  }
+
+  // Phone CTA
+  if (provider.phone) {
+    parts.push(`Call ${provider.phone}.`);
+  }
+
+  // Regulator badge
+  parts.push(`Licensed by ${getRegulator(city.slug)}.`);
+
+  // Trim to ~155 chars for Google display
+  let desc = parts.join(" ");
+  if (desc.length > 160) {
+    desc = desc.slice(0, 157).replace(/\s+\S*$/, "") + "...";
+  }
+  return desc;
+}
 
 function getRegulator(citySlug: string): string {
   if (citySlug === "dubai") return "Dubai Health Authority (DHA)";

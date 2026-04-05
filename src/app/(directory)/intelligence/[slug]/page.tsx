@@ -11,7 +11,7 @@ import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
-import { faqPageSchema } from "@/lib/seo";
+import { faqPageSchema, breadcrumbSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
 import { PageEvent } from "@/components/analytics/PageEvent";
@@ -33,9 +33,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = getJournalCategory(article.category);
   const base = getBaseUrl();
 
+  const titleSuffix = " | Zavis Insights";
+  const metaTitle = (article.title.length + titleSuffix.length) <= 65
+    ? `${article.title}${titleSuffix}`
+    : article.title;
   return {
-    title: `${article.title} | Zavis Healthcare Industry Insights`,
-    description: article.excerpt,
+    title: metaTitle,
+    description: article.excerpt.length > 160 ? article.excerpt.slice(0, 157).replace(/\s+\S*$/, "") + "..." : article.excerpt,
     openGraph: {
       type: "article",
       title: article.title,
@@ -69,6 +73,12 @@ export default async function ArticlePage({ params }: PageProps) {
   return (
     <>
       <JsonLd data={articleSchema(article)} />
+      <JsonLd data={breadcrumbSchema([
+        { name: "Zavis", url: getBaseUrl() },
+        { name: "Intelligence", url: `${getBaseUrl()}/intelligence` },
+        { name: category?.name || article.category, url: `${getBaseUrl()}/intelligence/category/${article.category}` },
+        { name: article.title },
+      ])} />
       <JsonLd data={faqPageSchema(articleFaqs)} />
 
       <PageEvent event="article_view" params={{ slug: params.slug, category: fullArticle.category }} />

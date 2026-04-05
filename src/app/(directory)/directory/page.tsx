@@ -16,13 +16,13 @@ import { getBaseUrl } from "@/lib/helpers";
 import { ChevronRight, Search, BarChart3, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "UAE Open Healthcare Directory | Find Doctors, Clinics & Hospitals",
+  title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
   description:
-    "Free directory of 12,500+ licensed healthcare providers across the UAE. Find hospitals, clinics, dentists in Dubai, Abu Dhabi, Sharjah with ratings and contact details.",
+    "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty. Updated March 2026.",
   openGraph: {
     type: "website",
-    title: "UAE Open Healthcare Directory | Find Doctors, Clinics & Hospitals",
-    description: "Free directory of 12,500+ licensed healthcare providers across the UAE. Find hospitals, clinics, dentists in Dubai, Abu Dhabi, Sharjah with ratings and contact details.",
+    title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
+    description: "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
     locale: "en_AE",
     siteName: "UAE Open Healthcare Directory by Zavis",
     url: `${getBaseUrl()}/directory`,

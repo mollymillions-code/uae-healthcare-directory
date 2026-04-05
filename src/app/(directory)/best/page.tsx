@@ -25,7 +25,13 @@ export function generateMetadata(): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages: {
+        'en-AE': url,
+        'ar-AE': `${base}/ar/best`,
+      },
+    },
     openGraph: { title, description, url, type: "website" },
   };
 }

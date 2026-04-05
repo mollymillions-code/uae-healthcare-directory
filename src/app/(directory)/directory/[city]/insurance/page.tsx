@@ -26,7 +26,13 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: `Health Insurance Providers in ${city.name} | UAE Open Healthcare Directory`,
     description: `Browse health insurance providers accepted by healthcare facilities in ${city.name}, UAE. Find clinics and hospitals by insurance plan — Daman, Thiqa, AXA, Cigna, and more. Last verified March 2026.`,
-    alternates: { canonical: `${base}/directory/${city.slug}/insurance` },
+    alternates: {
+      canonical: `${base}/directory/${city.slug}/insurance`,
+      languages: {
+        'en-AE': `${base}/directory/${city.slug}/insurance`,
+        'ar-AE': `${base}/ar/directory/${city.slug}/insurance`,
+      },
+    },
   };
 }
 

@@ -18,6 +18,7 @@ import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 import { PROFESSIONAL_CATEGORIES, ALL_SPECIALTIES, PHYSICIAN_SPECIALTIES, DENTIST_SPECIALTIES } from "@/lib/constants/professionals";
 import { getAllFacilitySlugs, getFacilitySpecialtyCombos, getAreaStats, getAreaSpecialtyCombos, getSpecialtiesWithBothLevels, getAllFacilities } from "@/lib/professionals";
 import { getTopAreas, getTopFacilities, getProfessionalsByAreaAndCategory } from "@/lib/workforce";
+import { GUIDES } from "@/lib/guides/data";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works", "health-insurance-uae", "what-is-dha",
@@ -80,7 +81,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
     for (const cat of categories) {
       entries.push({
-        url: `${baseUrl}/directory/${city.slug}/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8,
+        url: `${baseUrl}/directory/${city.slug}/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.9,
         alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/${cat.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/${cat.slug}` } },
       });
     }
@@ -1019,6 +1020,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/intelligence/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.65,
       alternates: { languages: { en: `${baseUrl}/intelligence/category/${cat.slug}`, ar: `${baseUrl}/ar/intelligence/category/${cat.slug}` } },
     });
+  }
+
+  // SEO Guides (cost guides, comparisons, system guides)
+  entries.push({ url: `${baseUrl}/guides`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
+  for (const guide of GUIDES) {
+    entries.push({ url: `${baseUrl}/guides/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
   }
 
   return entries;

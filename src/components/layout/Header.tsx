@@ -30,7 +30,7 @@ function getArabicPath(pathname: string): string | null {
   if (pathname.startsWith('/ar')) {
     return pathname.replace(/^\/ar/, '') || '/';
   }
-  if (pathname === '/' || pathname.startsWith('/directory')) {
+  if (pathname === '/' || pathname.startsWith('/directory') || pathname.startsWith('/best')) {
     return `/ar${pathname}`;
   }
   return null;

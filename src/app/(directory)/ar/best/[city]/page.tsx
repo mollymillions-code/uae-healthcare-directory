@@ -1,20 +1,17 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { FaqSection } from "@/components/seo/FaqSection";
 import {
   getCities, getCityBySlug, getCategories,
   getProviders, getProviderCountByCategoryAndCity, getProviderCountByCity,
 } from "@/lib/data";
 import type { LocalProvider } from "@/lib/data";
-import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
+import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 
 export const revalidate = 43200;
-export const dynamicParams = true;
 
 async function getTopRatedForCategory(
   citySlug: string,
@@ -49,11 +46,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const totalCount = await getProviderCountByCity(city.slug);
   const base = getBaseUrl();
-  const cityNameAr = getArabicCityName(city.slug);
   const url = `${base}/ar/best/${city.slug}`;
+  const cityNameAr = getArabicCityName(city.slug);
 
-  const title = `أفضل الرعاية الصحية في ${cityNameAr} — أعلى العيادات والمستشفيات والمتخصصين تقييماً [2026]`;
-  const description = `ابحث عن أفضل مقدمي الرعاية الصحية في ${cityNameAr}، الإمارات. ${totalCount.toLocaleString("ar-AE")} منشأة مرتبة حسب تقييم Google عبر ${getCategories().length} تخصص. محدّث مارس 2026.`;
+  const title = `${ar.bestProviders} في ${cityNameAr} — أفضل العيادات والمستشفيات والمتخصصين [٢٠٢٦]`;
+  const description = `ابحث عن أفضل مقدمي الرعاية الصحية في ${cityNameAr}، الإمارات. ${totalCount} مقدم خدمة مرتب حسب تقييم Google عبر ${getCategories().length} تخصصاً. آخر تحديث مارس 2026.`;
 
   return {
     title,
@@ -63,20 +60,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: {
         "en-AE": `${base}/best/${city.slug}`,
         "ar-AE": url,
-        "x-default": `${base}/best/${city.slug}`,
       },
     },
     openGraph: { title, description, url, type: "website", locale: "ar_AE" },
   };
 }
 
-export default async function ArBestInCityPage({ params }: Props) {
+export default async function ArabicBestInCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
   const base = getBaseUrl();
+  const regulator = getArabicRegulator(city.slug);
   const cityNameAr = getArabicCityName(city.slug);
-  const regulatorAr = getArabicRegulator(city.slug);
   const totalCount = await getProviderCountByCity(city.slug);
   const categories = getCategories();
 
@@ -106,156 +102,133 @@ export default async function ArBestInCityPage({ params }: Props) {
     .filter((c) => c.totalProviders > 0)
     .sort((a, b) => b.totalProviders - a.totalProviders);
 
-  const faqs = [
-    {
-      question: `ما هي أفضل المستشفيات في ${cityNameAr}؟`,
-      answer: `يُصنِّف دليل الإمارات المفتوح للرعاية الصحية المستشفيات في ${cityNameAr} حسب تقييم Google ومراجعات المرضى. تُشرف على الرعاية الصحية في ${cityNameAr} جهة ${regulatorAr}.`,
-    },
-    {
-      question: `كم عدد مقدمي الرعاية الصحية في ${cityNameAr}؟`,
-      answer: `يوجد ${totalCount.toLocaleString("ar-AE")} مقدم رعاية صحية مُدرج في ${cityNameAr} عبر ${categoryData.length} تخصص، من بينها المستشفيات والعيادات وعيادات الأسنان ومراكز المتخصصين. جميع البيانات مصدرها السجلات الحكومية الرسمية.`,
-    },
-    {
-      question: `كيف يُحدَّد "أفضل" مقدمي الرعاية الصحية في ${cityNameAr}؟`,
-      answer: `يُصنَّف مقدمو الخدمات حسب تقييم Google (الأعلى أولاً)، مع استخدام عدد المراجعات كمعيار ثانوي. يُدرج فقط مقدمو الخدمات الحاصلون على تقييم أعلى من صفر. البيانات مصدرها سجلات ${regulatorAr} ودليل الإمارات المفتوح للرعاية الصحية.`,
-    },
-    {
-      question: `أي تخصص يضم أكبر عدد من مقدمي الخدمات في ${cityNameAr}؟`,
-      answer: categoryData.length > 0
-        ? `أكبر تخصص في ${cityNameAr} هو ${getArabicCategoryName(categoryData.sort((a, b) => b.count - a.count)[0].slug)} بـ ${categoryData[0].count.toLocaleString("ar-AE")} منشأة.`
-        : `تصفح التخصصات أدناه لمعرفة أعداد مقدمي الخدمات لكل تخصص في ${cityNameAr}.`,
-    },
-    {
-      question: `هل الرعاية الصحية في ${cityNameAr} خاضعة للتنظيم؟`,
-      answer: `نعم. جميع مقدمي الرعاية الصحية في ${cityNameAr} مرخصون ومُنظَّمون من قِبل ${regulatorAr}. يستقي دليل الإمارات المفتوح للرعاية الصحية بياناته من السجلات الحكومية الرسمية لضمان الدقة.`,
-    },
-  ];
-
   const sortedCategories = [...categoryData].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div dir="rtl" lang="ar" className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container-tc py-8">
       <JsonLd data={breadcrumbSchema([
-        { name: "الإمارات", url: base },
-        { name: "أفضل", url: `${base}/ar/best` },
+        { name: ar.home, url: `${base}/ar` },
+        { name: ar.bestProviders, url: `${base}/ar/best` },
         { name: cityNameAr },
       ])} />
-      <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
 
-      <Breadcrumb items={[
-        { label: "الإمارات", href: "/ar" },
-        { label: "أفضل", href: "/ar/best" },
-        { label: cityNameAr },
-      ]} />
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+        <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
+        <span>/</span>
+        <Link href="/ar/best" className="hover:text-accent transition-colors">{ar.bestProviders}</Link>
+        <span>/</span>
+        <span className="text-dark font-medium">{cityNameAr}</span>
+      </nav>
 
       <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          أفضل الرعاية الصحية في {cityNameAr}
+        <h1 className="text-3xl font-bold text-dark mb-2">
+          {ar.bestProviders} في {cityNameAr}
         </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          {totalCount.toLocaleString("ar-AE")} منشأة في {categoryData.length} تخصص
-          {" "}· {regulatorAr} · محدّث مارس 2026
+        <p className="text-sm text-muted">
+          {totalCount.toLocaleString("ar-AE")} {ar.provider} عبر {categoryData.length} تخصصاً
+          {" "}&middot; {regulator} &middot; {ar.lastUpdated}
         </p>
       </div>
 
-      <div className="border-r-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/60 leading-relaxed">
-          يضم دليل الإمارات المفتوح للرعاية الصحية {totalCount.toLocaleString("ar-AE")} منشأة صحية
-          في {cityNameAr} عبر {categoryData.length} تخصص. ستجد أدناه أعلى مقدمي الخدمات تقييماً
-          في كل فئة، مرتبين حسب تقييم Google وعدد المراجعات. جميع مقدمي الخدمات مرخصون من قِبل
-          {regulatorAr}. البيانات مصدرها السجلات الحكومية الرسمية، آخر تحقق مارس 2026.
+      <div className="answer-block mb-8" data-answer-block="true">
+        <p className="text-muted leading-relaxed">
+          يضم دليل الرعاية الصحية المفتوح في الإمارات {totalCount.toLocaleString("ar-AE")} مقدم رعاية صحية في {cityNameAr} عبر {categoryData.length} تخصصاً. ستجد أدناه أعلى مقدم خدمة تقييماً في كل فئة، مرتباً حسب تقييم Google وعدد المراجعات. جميع مقدمي الخدمات مرخصون من {regulator}. البيانات مصدرها السجلات الحكومية الرسمية، آخر تحقق مارس 2026.
         </p>
       </div>
 
+      {/* Quick nav */}
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={`/ar/directory/${city.slug}`}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
         >
-          الدليل الكامل لـ {cityNameAr}
+          دليل {cityNameAr} الكامل
         </Link>
         <Link
           href="/ar/best"
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-light-300 px-3 py-1.5 text-muted hover:border-accent hover:text-accent transition-colors"
         >
-          جميع المدن
+          {ar.allEmirates}
         </Link>
       </div>
 
+      {/* Category Grid */}
       <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">الأعلى تقييماً حسب التخصص</h2>
+        <div className="section-header">
+          <h2>{ar.topRated} حسب التخصص</h2>
+          <span className="arrows">&lt;&lt;&lt;</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedCategories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/ar/best/${city.slug}/${cat.slug}`}
-              className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                  {getArabicCategoryName(cat.slug)}
-                </h3>
-                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
-                  {cat.count.toLocaleString("ar-AE")}
-                </span>
-              </div>
+          {sortedCategories.map((cat) => {
+            const catNameAr = getArabicCategoryName(cat.slug);
+            return (
+              <Link
+                key={cat.slug}
+                href={`/ar/best/${city.slug}/${cat.slug}`}
+                className="block border border-light-200 p-4 hover:border-accent transition-colors group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
+                    {catNameAr}
+                  </h3>
+                  <span className="bg-accent text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+                    {cat.count}
+                  </span>
+                </div>
 
-              {cat.topProvider ? (
-                <div className="border-t border-black/[0.06] pt-3">
-                  <p className="text-[10px] text-black/40 uppercase tracking-wider mb-1">
-                    #1 الأعلى تقييماً
-                  </p>
-                  <p className="text-xs font-bold text-[#1c1c1c] truncate">
-                    {cat.topProvider.name}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {Number(cat.topProvider.googleRating) > 0 && (
-                      <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5">
-                        {cat.topProvider.googleRating} ★
-                      </span>
-                    )}
-                    {cat.topProvider.googleReviewCount > 0 && (
-                      <span className="text-[11px] text-black/40">
-                        {cat.topProvider.googleReviewCount.toLocaleString("ar-AE")} مراجعة
-                      </span>
-                    )}
+                {cat.topProvider ? (
+                  <div className="border-t border-light-200 pt-3">
+                    <p className="text-[10px] text-muted uppercase tracking-wider mb-1">
+                      #١ الأعلى تقييماً
+                    </p>
+                    <p className="text-xs font-bold text-dark truncate">
+                      {cat.topProvider.name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {Number(cat.topProvider.googleRating) > 0 && (
+                        <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5">
+                          {cat.topProvider.googleRating} ★
+                        </span>
+                      )}
+                      {cat.topProvider.googleReviewCount > 0 && (
+                        <span className="text-[11px] text-muted">
+                          {cat.topProvider.googleReviewCount.toLocaleString("ar-AE")} {ar.reviews}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="border-t border-black/[0.06] pt-3">
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40">{cat.count.toLocaleString("ar-AE")} منشأة مُدرجة</p>
-                </div>
-              )}
-            </Link>
-          ))}
+                ) : (
+                  <div className="border-t border-light-200 pt-3">
+                    <p className="text-xs text-muted">{cat.count} {ar.provider}</p>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      <FaqSection
-        faqs={faqs}
-        title={`أفضل الرعاية الصحية في ${cityNameAr} — أسئلة شائعة`}
-      />
-
+      {/* Other cities */}
       {otherCities.length > 0 && (
-        <section className="mb-10 mt-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">أفضل الرعاية الصحية في مدن أخرى</h2>
+        <section className="mb-10">
+          <div className="section-header">
+            <h2>{ar.bestProviders} في مدن أخرى</h2>
+            <span className="arrows">&lt;&lt;&lt;</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/ar/best/${c.slug}`}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
+                className="block border border-light-200 p-3 hover:border-accent transition-colors group text-center"
               >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                <p className="text-sm font-bold text-dark group-hover:text-accent transition-colors">
                   {getArabicCityName(c.slug)}
                 </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
-                  {c.totalProviders.toLocaleString("ar-AE")} منشأة
+                <p className="text-xs text-accent font-bold mt-1">
+                  {c.totalProviders.toLocaleString("ar-AE")} {ar.provider}
                 </p>
               </Link>
             ))}
@@ -263,14 +236,17 @@ export default async function ArBestInCityPage({ params }: Props) {
         </section>
       )}
 
-      <div className="border-t border-black/[0.06] pt-4 flex items-center justify-between gap-4 flex-wrap">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>إخلاء المسؤولية:</strong> التصنيفات مبنية على تقييمات Google وعدد المراجعات المتاحة للعموم
-          ولا تُعدّ توصية طبية. بيانات مقدمي الخدمات مصدرها سجلات {regulatorAr} الرسمية،
-          آخر تحقق مارس 2026. تحقق دائماً من التفاصيل مع مقدم الخدمة مباشرة.
+      {/* Disclaimer */}
+      <div className="border-t border-light-200 pt-4">
+        <p className="text-[11px] text-muted leading-relaxed">
+          <strong>تنويه:</strong> التصنيفات مبنية على تقييمات Google المتاحة للعموم وعدد المراجعات. لا تشكل توصية طبية. بيانات مقدمي الخدمات مصدرها سجلات {regulator} الرسمية ودليل الرعاية الصحية المفتوح في الإمارات، آخر تحقق مارس 2026. يرجى التأكد من التفاصيل مباشرة مع مقدم الخدمة.
         </p>
-        <Link href={`/best/${city.slug}`} className="text-[11px] text-[#006828] hover:underline whitespace-nowrap">
-          English →
+      </div>
+
+      {/* Language Switch */}
+      <div className="text-center pt-4 pb-8">
+        <Link href={`/best/${city.slug}`} className="text-accent text-sm hover:underline">
+          View in English / عرض بالإنجليزية
         </Link>
       </div>
     </div>

@@ -10,6 +10,8 @@ export const ar = {
   claimListing: "المطالبة بالقائمة",
   allEmirates: "جميع الإمارات",
   home: "الرئيسية",
+  insights: "رؤى وتحليلات",
+  research: "أبحاث",
 
   // Directory
   healthcareProviders: "مقدمو الرعاية الصحية",
@@ -25,6 +27,37 @@ export const ar = {
   sourceOfTruth: "المصدر الموثوق للرعاية الصحية في الإمارات",
   freeOpenNoPaywall: "مجاني · مفتوح · بدون اشتراك",
   faq: "الأسئلة الشائعة",
+  filterProviders: "تصفية مقدمي الخدمات",
+  byCondition: "حسب الحالة الطبية",
+  procedureCosts: "تكاليف الإجراءات",
+
+  // Best pages
+  best: "الأفضل",
+  bestProviders: "أفضل مقدمي الرعاية الصحية",
+  bestInCity: "الأفضل في",
+  basedOnRatings: "بناءً على تقييمات Google من مراجعات المرضى الفعلية",
+  topPicksIn: "أفضل الخيارات في",
+  viewAllIn: "عرض الكل في",
+  ratingStars: "نجوم من أصل ٥",
+  selectCity: "اختر المدينة",
+  selectCategory: "اختر التخصص",
+
+  // Insurance filter pages
+  insurance: "التأمين الصحي",
+  byInsurance: "حسب التأمين",
+  insuranceCoverage: "تغطية التأمين",
+  findByInsurance: "ابحث حسب التأمين",
+  providersAccepting: "مقدمو خدمات يقبلون",
+  browseByInsurance: "تصفح حسب شركة التأمين",
+  insurancePlans: "خطط التأمين",
+  acceptedInsurancePlans: "خطط التأمين المقبولة",
+
+  // Language filter pages
+  byLanguage: "حسب اللغة",
+  findByLanguage: "ابحث حسب اللغة",
+  browseByLanguage: "تصفح حسب اللغة",
+  languageFilter: "تصفية حسب اللغة",
+  providersSpeak: "مقدمو خدمات يتحدثون",
 
   // Listing
   services: "الخدمات",
@@ -246,4 +279,35 @@ export function getArabicRegulator(citySlug: string): string {
 
 export function getArabicAreaName(slug: string): string {
   return ar.dubaiAreas[slug] || slug;
+}
+
+const ARABIC_INSURANCE_NAMES: Record<string, string> = {
+  "daman": "ضمان", "thiqa": "ثقة", "saada": "سعادة", "nas": "ناس",
+  "axa": "أكسا", "cigna": "سيجنا", "bupa": "بوبا", "metlife": "ميتلايف",
+  "allianz": "أليانز", "oman-insurance": "عمان للتأمين",
+  "adnic": "أدنيك", "sukoon": "سكون", "almadallah": "المدلّة",
+  "neuron": "نيورون", "nextcare": "نكست كير", "mednet": "ميدنت",
+};
+
+const ARABIC_LANGUAGE_NAMES: Record<string, string> = {
+  "arabic": "العربية", "english": "الإنجليزية", "hindi": "الهندية",
+  "urdu": "الأردية", "tagalog": "التاغالوغية", "malayalam": "المالايالامية",
+  "tamil": "التاميلية", "farsi": "الفارسية", "french": "الفرنسية",
+  "german": "الألمانية", "russian": "الروسية", "chinese": "الصينية",
+};
+
+export function getArabicInsuranceName(slug: string): string {
+  return ARABIC_INSURANCE_NAMES[slug.toLowerCase()] || slug;
+}
+
+export function getArabicLanguageName(slug: string): string {
+  return ARABIC_LANGUAGE_NAMES[slug.toLowerCase()] || slug;
+}
+
+export function getArabicEquivalentPath(enPath: string): string {
+  return `/ar${enPath}`;
+}
+
+export function getEnglishEquivalentPath(arPath: string): string {
+  return arPath.replace(/^\/ar/, "") || "/";
 }

@@ -12,7 +12,7 @@ import {
   getProviderCountByCity, getProviderCountByAreaAndCity, getFaqs,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
-import { breadcrumbSchema, speakableSchema, faqPageSchema } from "@/lib/seo";
+import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -27,9 +27,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = await getProviderCountByCity(city.slug);
+  const regShort = city.slug === "dubai" ? "DHA" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "DOH" : "MOHAP";
   return {
-    title: `Healthcare Providers in ${city.name}, UAE | ${count}+ Listings`,
-    description: `Find ${count}+ healthcare providers in ${city.name}, UAE. Browse hospitals, clinics, dentists, and specialists with ratings, reviews, and contact details. Last verified March 2026.`,
+    title: `${count}+ Healthcare Providers in ${city.name}, UAE — Ratings & Reviews | Zavis`,
+    description: `Find and compare ${count}+ ${regShort}-licensed hospitals, clinics, dentists & specialists in ${city.name}. Google ratings, insurance accepted, hours & directions. Free directory, updated March 2026.`,
     alternates: {
       canonical: `${getBaseUrl()}/directory/${city.slug}`,
       languages: {
@@ -110,6 +111,7 @@ export default async function CityPage({ params }: Props) {
           { name: "UAE", url: base },
           { name: city.name, url: `${base}/directory/${city.slug}` },
         ])} />
+        <JsonLd data={itemListSchema(`Top Healthcare Providers in ${city.name}`, featuredProviders, city.name, base)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(faqs)} />
 
