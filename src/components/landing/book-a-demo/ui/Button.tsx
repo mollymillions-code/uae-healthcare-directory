@@ -1,6 +1,5 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { gtag_report_conversion } from "@/lib/gtag"
 
 type ButtonVariant = "default" | "secondary" | "outline" | "ghost" | "link"
 type ButtonSize = "default" | "sm" | "lg" | "icon"
@@ -44,9 +43,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(base, variantClasses[variant], sizeClasses[size], roundedClasses[rounded], className)}
-           onClick={() => {
-                gtag_report_conversion();
-              }}
         {...props}
 
       />
