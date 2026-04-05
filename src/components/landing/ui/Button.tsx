@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { gtag_report_conversion } from "@/lib/gtag";
 
 const variantClasses: Record<string, string> = {
   primary: "bg-[#25D465] text-white  border border-[#34A853]",
@@ -47,9 +46,6 @@ export const Button: React.FC<ButtonProps> = ({
       } ${sizeClasses[size]}`}
       disabled={isDisabled}
       {...props}
-      onClick={() => {
-        gtag_report_conversion();
-      }}
     >
       {loading && (
         <span className="animate-spin mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full" />

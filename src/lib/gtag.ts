@@ -5,18 +5,20 @@ declare global {
       eventName: string,
       params?: Record<string, unknown>
     ) => void;
+    dataLayer?: Record<string, unknown>[];
   }
 }
 
-export function gtag_report_conversion(): boolean {
+export function gtag_report_conversion(): void {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", "conversion", {
       send_to: "AW-17389420890/BYN3CLLm4JQbENqC9uNA",
-      // event_callback: callback,
     });
-  } else {
-    console.log("failed");
   }
+}
 
-  return false;
+export function trackEvent(eventName: string, params?: Record<string, unknown>): void {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
 }

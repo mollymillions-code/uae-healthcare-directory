@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { gtag_report_conversion, trackEvent } from "@/lib/gtag";
 import { AnimatedSection } from "@/components/landing/AnimatedSection";
 import Link from "next/link";
 import {
@@ -86,6 +87,8 @@ export function ContactPageClient() {
       .then(() => {
         setSubmitting(false);
         setSubmitted(true);
+        gtag_report_conversion();
+        trackEvent("demo_requested", { form_location: "book_a_demo_page" });
       })
       .catch(() => {
         setSubmitting(false);
