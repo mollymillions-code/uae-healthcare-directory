@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { gtag_report_conversion, trackEvent } from "@/lib/gtag";
+import { gtag_report_conversion, trackEvent, trackMetaLead, trackTwitterLead, trackLinkedInConversion } from "@/lib/gtag";
 import { AnimatedSection } from "@/components/landing/AnimatedSection";
 import Link from "next/link";
 import {
@@ -100,6 +100,9 @@ export function ContactPageClient() {
         setSubmitted(true);
         gtag_report_conversion();
         trackEvent("demo_requested", { form_location: "book_a_demo_page" });
+        trackMetaLead(formData.email);
+        trackTwitterLead();
+        trackLinkedInConversion();
       })
       .catch(() => {
         setSubmitting(false);
