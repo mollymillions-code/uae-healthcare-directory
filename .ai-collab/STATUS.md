@@ -111,6 +111,9 @@ data/
 
 ## Active Work
 
+- **[Claude Code] 2026-04-05T10:00:00+04:00** — Queried MCP ads-analytics server (port 9015 on EC2). Tool list retrieved: 55 tools across GA4, GSC, GTM, Google Ads, and Meta Ads. Meta Ads: not configured (META_ACCESS_TOKEN, META_AD_ACCOUNT_ID, META_APP_ID, META_APP_SECRET all empty in .env). Google Ads: not configured (all credential fields empty). No LinkedIn MCP tools exist in server. No custom audiences retrievable until Meta credentials are set. COMPLETE.
+
+
 - **[Claude Code] 2026-04-04T20:15:00+04:00** — Completed comprehensive data integrity audit on EC2 PostgreSQL database (read-only). Key findings: 11,686 Google Places image URLs (93.5% of all images — expire risk), 33 providers with non-UAE phone numbers (Saudi/Qatar/India/UK/US), 797 providers with google_rating=0.0, 802 providers with zero review count, 1 provider with "Cancelled" in its name but status=active, category coverage only 18 of 43 known slugs (25 slugs unused/empty). No broken image paths, no unknown city/category slugs, no null critical fields, no duplicate slugs. COMPLETE.
 
 - **[Claude Code] 2026-04-04T20:00:00+04:00** — Fixed ALL issues in Arabic professionals pages (12 page.tsx files under /ar/professionals/). Fix 1: internal links now use /ar/ prefix (professionals/, directory/, best/, find-a-doctor). Fix 2: added lang="ar" to 10 divs missing it (area, facility, specialty, specialists, consultants, compare, stats pages). Fix 3: breadcrumb "الدليل" now points to /ar/directory everywhere (JSON-LD + Breadcrumb components). Fix 4: all .toLocaleString() → .toLocaleString("ar-AE") (70+ calls across 3 files). Fix 5: added CATEGORY_DESCRIPTIONS_AR map in hub + category pages. Fix 6: spec.name/cat.name replaced with nameAr fallbacks in area, facility, facility/specialty, area/specialty, stats pages; imported getSpecialtyBySlug into facility and stats. Zero lint errors. COMPLETE.

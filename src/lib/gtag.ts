@@ -22,8 +22,20 @@ export function trackEvent(eventName: string, params?: Record<string, unknown>):
   window.dataLayer.push({ event: eventName, ...params });
 }
 
+/** Generate a unique event ID for Meta pixel ↔ CAPI deduplication */
+export function generateEventId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  // Fallback for older environments
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
 /** Fire Meta Lead event + Advanced Matching (hashes email client-side) */
-export async function trackMetaLead(email: string): Promise<void> {
+export async function trackMetaLead(email: string, eventId?: string): Promise<void> {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
   // Hash email for Meta Advanced Matching
   const encoder = new TextEncoder();
@@ -31,7 +43,8 @@ export async function trackMetaLead(email: string): Promise<void> {
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
   window.fbq("init", "1045406841134462", { em: hashHex });
-  window.fbq("track", "Lead");
+  // Pass eventID so Meta can deduplicate this client event against the CAPI server event
+  window.fbq("track", "Lead", {}, eventId ? { eventID: eventId } : undefined);
 }
 
 /** Fire Twitter/X Lead event */

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { gtag_report_conversion, trackEvent, trackMetaLead, trackTwitterLead, trackLinkedInConversion } from "@/lib/gtag";
+import { gtag_report_conversion, trackEvent, trackMetaLead, trackTwitterLead, trackLinkedInConversion, generateEventId } from "@/lib/gtag";
 import { AnimatedSection } from "@/components/landing/AnimatedSection";
 import Link from "next/link";
 import {
@@ -76,6 +76,24 @@ export function ContactPageClient() {
 
     setSubmitting(true);
 
+    // Generate event ID now — shared between client fbq pixel and CAPI server event
+    // Meta uses it to deduplicate: both count as one Lead, not two
+    const eventId = generateEventId();
+
+    // Parse name into first/last for CAPI identity matching
+    const nameParts = formData.name.trim().split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
+    // Read Meta browser cookies — passed raw (unhashed) to CAPI
+    const getCookie = (name: string) => {
+      if (typeof document === "undefined") return "";
+      const m = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"));
+      return m ? decodeURIComponent(m[1]) : "";
+    };
+    const fbp = getCookie("_fbp");
+    const fbc = getCookie("_fbc");
+
     fetch(`${ZAVIS_API_URL}/api/leads/website`, {
       method: "POST",
       headers: {
@@ -98,11 +116,29 @@ export function ContactPageClient() {
       .then(() => {
         setSubmitting(false);
         setSubmitted(true);
+
+        // Client-side conversions
         gtag_report_conversion();
         trackEvent("demo_requested", { form_location: "book_a_demo_page" });
-        trackMetaLead(formData.email);
+        trackMetaLead(formData.email, eventId); // fbq pixel with eventID for dedup
         trackTwitterLead();
         trackLinkedInConversion();
+
+        // Server-side Meta CAPI — fire and forget, never blocks form success
+        fetch("/api/capi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone,
+            firstName,
+            lastName,
+            eventId,
+            fbp,
+            fbc,
+            sourceUrl: typeof window !== "undefined" ? window.location.href : undefined,
+          }),
+        }).catch(() => {});
       })
       .catch(() => {
         setSubmitting(false);
