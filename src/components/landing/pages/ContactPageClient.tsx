@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gtag_report_conversion, trackEvent } from "@/lib/gtag";
 import { AnimatedSection } from "@/components/landing/AnimatedSection";
 import Link from "next/link";
@@ -43,6 +43,17 @@ export function ContactPageClient() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const formStartedRef = useRef(false);
+
+  useEffect(() => {
+    trackEvent("demo_page_view");
+  }, []);
+
+  function handleFormStart() {
+    if (formStartedRef.current) return;
+    formStartedRef.current = true;
+    trackEvent("demo_form_start");
+  }
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -195,6 +206,7 @@ export function ContactPageClient() {
                       type="text"
                       required
                       value={formData.name}
+                      onFocus={handleFormStart}
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }

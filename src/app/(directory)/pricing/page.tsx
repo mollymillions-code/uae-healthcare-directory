@@ -12,6 +12,7 @@ import {
 } from "@/lib/pricing";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { PageEvent } from "@/components/analytics/PageEvent";
 
 export const revalidate = 43200;
 
@@ -106,6 +107,7 @@ export default function PricingPage() {
         }}
       />
 
+      <PageEvent event="pricing_page_view" />
       <Breadcrumb
         items={[
           { label: "UAE", href: "/" },

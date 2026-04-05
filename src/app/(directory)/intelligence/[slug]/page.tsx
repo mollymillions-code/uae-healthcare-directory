@@ -14,6 +14,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { faqPageSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
+import { PageEvent } from "@/components/analytics/PageEvent";
 import { getProviders } from "@/lib/data";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
@@ -69,6 +70,8 @@ export default async function ArticlePage({ params }: PageProps) {
     <>
       <JsonLd data={articleSchema(article)} />
       <JsonLd data={faqPageSchema(articleFaqs)} />
+
+      <PageEvent event="article_view" params={{ slug: params.slug, category: fullArticle.category }} />
 
       {/* Back link */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">

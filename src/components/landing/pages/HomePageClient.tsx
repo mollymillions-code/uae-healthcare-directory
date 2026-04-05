@@ -10,6 +10,7 @@ import { homeTabs, homeTabContent, platformPillars } from "@/data/landing/home";
 import { emrPartners, channelPartners } from "@/data/landing/brand-partners";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
+import { trackEvent } from "@/lib/gtag";
 
 export function HomePageClient() {
   const [activeTab, setActiveTab] = useState(0);
@@ -98,6 +99,7 @@ export function HomePageClient() {
                 <ShimmerLink
                   href="/contact"
                   className="px-8 sm:px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]"
+                  onClick={() => trackEvent("cta_click", { location: "hero" })}
                 >
                   Book a Demo
                   <ArrowRight className="w-4 h-4" />
