@@ -40,7 +40,7 @@ export default function BusinessSolution() {
             </div>
             <div className="flex-1 flex items-end">
               <img
-                src="/images/landing/hc-business-sol-1.png"
+                src="/images/landing/hc-business-sol-1.webp"
                 alt="AI phone agents with audio visualization"
                 className="w-full h-auto max-h-[400px]"
               />
@@ -59,7 +59,7 @@ export default function BusinessSolution() {
             </div>
             <div className="flex-1 flex items-end">
               <img
-                src="/images/landing/hc-business-sol-2.png"
+                src="/images/landing/hc-business-sol-2.webp"
                 alt="Multi-language chat interface"
                 className="w-full h-auto max-h-[400px]"
               />
@@ -83,7 +83,7 @@ export default function BusinessSolution() {
                 </div>
                 <div className="flex-1">
                   <img
-                    src="/images/landing/hc-business-sol-3.png"
+                    src="/images/landing/hc-business-sol-3.webp"
                     alt="Broadcast messaging interface"
                     className="w-full h-auto"
                   />
@@ -124,7 +124,7 @@ export default function BusinessSolution() {
             </div>
             <div className="flex-1">
               <img
-                src="/images/landing/hc-business-sol-5.png"
+                src="/images/landing/hc-business-sol-5.webp"
                 alt="WhatsApp mobile interface"
                 className="w-full h-auto"
               />
@@ -144,7 +144,7 @@ export default function BusinessSolution() {
             </div>
             <div className="flex-1 flex items-end">
               <img
-                src="/images/landing/hc-business-sol-6.png"
+                src="/images/landing/hc-business-sol-6.webp"
                 alt="WhatsApp mobile interface"
                 className="w-full h-auto max-h-[350px]"
               />
@@ -166,7 +166,7 @@ export default function BusinessSolution() {
                 </div>
                 <div className="flex-1">
                   <img
-                    src="/images/landing/hc-business-sol-7.png"
+                    src="/images/landing/hc-business-sol-7.webp"
                     alt="Broadcast messaging interface"
                     className="w-full h-auto"
                   />
@@ -209,7 +209,7 @@ export default function BusinessSolution() {
                 </div>
                 <div className="flex-1 space-y-4">
                   <img
-                    src="/images/landing/hc-business-sol-9.png"
+                    src="/images/landing/hc-business-sol-9.webp"
                     alt="WhatsApp Pay interface"
                     className="w-full h-auto"
                   />

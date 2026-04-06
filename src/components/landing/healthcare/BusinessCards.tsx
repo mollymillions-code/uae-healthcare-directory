@@ -6,7 +6,7 @@ export default function BusinessCards() {
         "Department routing and queue updates",
         "Discharge follow up and recalls"
       ],
-      imageSrc: "/images/landing/hc-business-card-1.png",
+      imageSrc: "/images/landing/hc-business-card-1.webp",
       alt: "Capture Attention - Woman with headset",
       color: "#FCFDBF"
     },
@@ -16,7 +16,7 @@ export default function BusinessCards() {
         "Cycle based reminders",
         "Antenatal class and scan scheduling"
       ],
-      imageSrc: "/images/landing/hc-business-card-2.png",
+      imageSrc: "/images/landing/hc-business-card-2.webp",
       alt: "Handle Conversations - Man with headset",
       color: "#D7D1FF"
     },
@@ -26,7 +26,7 @@ export default function BusinessCards() {
         "Prescription on file and refills",
         "Delivery tracking"
       ],
-      imageSrc: "/images/landing/hc-business-card-3.png",
+      imageSrc: "/images/landing/hc-business-card-3.webp",
       alt: "Win Deals - Woman with headset",
       color: "#B5D1FF"
     },

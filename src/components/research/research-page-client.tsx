@@ -92,6 +92,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
                     src={featured.thumbnail}
                     alt={featured.title}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 )}
@@ -175,6 +176,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
                     src={report.thumbnail}
                     alt={report.title}
                     fill
+                    unoptimized
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 )}

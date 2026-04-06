@@ -21,7 +21,7 @@ const sectionData = {
       ],
       chatMessage:
         "Hi Jane, you have an appointment coming up at 6PM tomorrow morning!",
-      imageSrc: "/images/landing/patient-administration.png",
+      imageSrc: "/images/landing/patient-administration.webp",
     },
     "Booking Management": {
       heading:
@@ -32,7 +32,7 @@ const sectionData = {
       ],
       chatMessage:
         "Your appointment is confirmed for tomorrow at 2PM with Dr. Smith. Reply CANCEL to reschedule.",
-      imageSrc: "/images/landing/booking-management.png",
+      imageSrc: "/images/landing/booking-management.webp",
     },
     // "Diagnostics and Results": {
     //   heading:
@@ -43,7 +43,7 @@ const sectionData = {
     //   ],
     //   chatMessage:
     //     "Your blood test results are ready! Tap here to view your report securely.",
-    //   imageSrc: "/images/landing/patient-administration-2.png",
+    //   imageSrc: "/images/landing/patient-administration-2.webp",
     // },
     "Billing and Payments": {
       heading: "Estimates, pay links, and receipts in chat.",
@@ -53,7 +53,7 @@ const sectionData = {
       ],
       chatMessage:
         "Your copay of $25 is due. Pay now with this secure link: pay.clinic.com/jane123",
-      imageSrc: "/images/landing/billing-and-payments.png",
+      imageSrc: "/images/landing/billing-and-payments.webp",
     },
     "Broadcast & Campaigns": {
       heading:
@@ -64,7 +64,7 @@ const sectionData = {
       ],
       chatMessage:
         "It's time for your annual checkup! Book your appointment to stay on top of your health.",
-      imageSrc: "/images/landing/broadcast-and-campaigns.png",
+      imageSrc: "/images/landing/broadcast-and-campaigns.webp",
     },
     // "Care Program and Adherence": {
     //   heading:
@@ -75,7 +75,7 @@ const sectionData = {
     //   ],
     //   chatMessage:
     //     "Don't forget to take your morning medication! Reply TAKEN when complete.",
-    //   imageSrc: "/images/landing/patient-administration-2.png",
+    //   imageSrc: "/images/landing/patient-administration-2.webp",
     // },
     "Integration and Data": {
       heading:
@@ -86,7 +86,7 @@ const sectionData = {
       ],
       chatMessage:
         "Your patient data has been updated across all systems. View changes in your dashboard.",
-      imageSrc: "/images/landing/integration-and-data.png",
+      imageSrc: "/images/landing/integration-and-data.webp",
     },
   },
 };
@@ -244,7 +244,7 @@ export default function WhatsAppSection() {
            <div className="relative">
             <img
               src={
-                currentContent.imageSrc || "/images/landing/patient-administration.png"
+                currentContent.imageSrc || "/images/landing/patient-administration.webp"
               }
               alt="Woman using WhatsApp for healthcare appointment"
               className="w-full h-auto rounded-lg"

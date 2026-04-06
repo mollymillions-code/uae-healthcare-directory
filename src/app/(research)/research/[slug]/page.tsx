@@ -92,6 +92,7 @@ export default function ReportPage({ params }: Props) {
               src={report.meta.thumbnail}
               alt={report.meta.title}
               fill
+              unoptimized
               className="object-cover"
             />
           </div>

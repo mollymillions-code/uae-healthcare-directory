@@ -16,7 +16,7 @@ export default function KnowledgeBaseSection() {
         title: "AI-Powered Conversation Intelligence",
         description:
           "Zavis listens, learns, and adapts—extracting customer sentiment, tagging intents, and surfacing insights automatically from every chat or call.",
-        image: "/images/landing/conversation-intelligence.png",
+        image: "/images/landing/conversation-intelligence.webp",
         bgColor: "bg-yellow-200",
       },
       {
@@ -24,7 +24,7 @@ export default function KnowledgeBaseSection() {
         title: "Autonomous AI Actions & Routing",
         description:
           "Let AI not just respond—but decide. Whether it's sending follow-ups, flagging escalations, or scheduling appointments, Zavis acts instantly on customer context without human involvement.",
-        image: "/images/landing/autonomous-ai-actions-routing.png",
+        image: "/images/landing/autonomous-ai-actions-routing.webp",
         bgColor: "bg-blue-200",
       },
       {
@@ -40,7 +40,7 @@ export default function KnowledgeBaseSection() {
         title: "Plug & Play CRM Integration",
         description:
           "Out-of-the-box integrations with over 100 CRMs including HubSpot, Zoho, Salesforce, and Shopify.",
-        image: "/images/landing/knowledge.png",
+        image: "/images/landing/knowledge.webp",
         bgColor: "bg-green-200",
       },
       {
@@ -64,7 +64,7 @@ export default function KnowledgeBaseSection() {
         title: "Smart Campaign Automation",
         description:
           "Launch, schedule, and personalize large-scale campaigns with AI-led message optimization and trigger-based follow-ups.",
-        image: "/images/landing/industry-adaptive-template-1.png",
+        image: "/images/landing/industry-adaptive-template-1.webp",
         bgColor: "bg-teal-200",
       },
       {
@@ -72,7 +72,7 @@ export default function KnowledgeBaseSection() {
         title: "Performance Intelligence Hub",
         description:
           "See who clicked, who responded, which workflows convert, and how every team member is performing—instantly.",
-        image: "/images/landing/industry-adaptive-template-2.png",
+        image: "/images/landing/industry-adaptive-template-2.webp",
         bgColor: "bg-cyan-200",
       },
     ],
