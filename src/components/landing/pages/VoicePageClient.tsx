@@ -37,7 +37,7 @@ export function VoicePageClient() {
               <p className="font-['Geist',sans-serif] font-medium text-sm sm:text-base text-black/50 leading-relaxed max-w-md mx-auto lg:mx-0 mb-8">
                 Screen pop with patient profile on every call. Click-to-call, book into your EMR, and capture recordings in one timeline.
               </p>
-              <ShimmerLink href="/contact" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
+              <ShimmerLink href="/book-a-demo" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
                 Book a Demo
                 <ArrowRight className="w-4 h-4" />
               </ShimmerLink>
@@ -244,7 +244,7 @@ export function VoicePageClient() {
               <p className="font-['Geist',sans-serif] font-medium text-sm sm:text-base text-black/50 leading-relaxed max-w-md mx-auto lg:mx-0 mb-8">
                 Native Arabic dialect support with real-time English translation. Your coordinators handle calls in any language while the system translates, transcribes, and logs everything.
               </p>
-              <ShimmerLink href="/contact" className="px-8 py-3 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
+              <ShimmerLink href="/book-a-demo" className="px-8 py-3 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
                 Book a Demo
                 <ArrowRight className="w-4 h-4" />
               </ShimmerLink>
@@ -270,7 +270,7 @@ export function VoicePageClient() {
             <p className="font-['Geist',sans-serif] text-white/50 text-sm mb-8 max-w-md mx-auto">
               See how Zavis Voice can transform patient calls into bookings.
             </p>
-            <ShimmerLink href="/contact" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
+            <ShimmerLink href="/book-a-demo" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
               Book a Demo
               <ArrowRight className="w-4 h-4" />
             </ShimmerLink>

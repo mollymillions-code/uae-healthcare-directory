@@ -91,7 +91,7 @@ export function DesktopNav({
       {/* Desktop CTA button */}
       <div className="hidden lg:block">
         <Link
-          href="/contact"
+          href="/book-a-demo"
           className="group relative z-0 inline-flex items-center justify-center overflow-hidden rounded-full bg-[#0a0a0a] px-6 py-2.5 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-white transition-all duration-500 hover:text-[#004a1c] hover:shadow-[0_0_32px_rgba(0,104,40,0.45)]"
           style={{
             "--spread": "90deg",

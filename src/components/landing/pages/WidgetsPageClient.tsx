@@ -29,7 +29,7 @@ export function WidgetsPageClient() {
                 Embedded booking and chat widgets connected to your EMR in real
                 time. Patients self-serve without leaving your site.
               </p>
-              <ShimmerLink href="/contact" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
+              <ShimmerLink href="/book-a-demo" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]">
                 Book a Demo
                 <ArrowRight className="w-4 h-4" />
               </ShimmerLink>
@@ -168,7 +168,7 @@ export function WidgetsPageClient() {
             <p className="font-['Geist',sans-serif] text-white/50 text-sm mb-8 max-w-md mx-auto">
               See how Zavis widgets can convert website visitors into booked patients.
             </p>
-            <ShimmerLink href="/contact" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
+            <ShimmerLink href="/book-a-demo" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
               Book a Demo
               <ArrowRight className="w-4 h-4" />
             </ShimmerLink>

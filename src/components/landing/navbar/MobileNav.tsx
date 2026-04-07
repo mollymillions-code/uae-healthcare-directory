@@ -66,7 +66,7 @@ export function MobileNav({
         </div>
         <div className="mt-6">
           <ShimmerLink
-            href="/contact"
+            href="/book-a-demo"
             onClick={() => setMobileOpen(false)}
             className="w-full py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium shadow-[0_0_20px_rgba(0,104,40,0.4)]"
           >

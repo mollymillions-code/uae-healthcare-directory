@@ -188,8 +188,8 @@ export const megaMenus: MegaMenuData[] = [
         type: "card",
         items: [
           {
-            label: "Contact",
-            href: "/contact",
+            label: "Book a Demo",
+            href: "/book-a-demo",
             desc: "Book a demo, get pricing, or ask anything",
             card: true,
           },

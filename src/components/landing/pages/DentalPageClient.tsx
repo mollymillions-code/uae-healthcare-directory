@@ -40,7 +40,7 @@ export function DentalPageClient() {
           </AnimatedSection>
 
           <AnimatedSection delay={0.3}>
-            <ShimmerLink href="/contact" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)] mb-12">
+            <ShimmerLink href="/book-a-demo" className="px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)] mb-12">
               Book a Demo
               <ArrowRight className="w-4 h-4" />
             </ShimmerLink>
@@ -238,7 +238,7 @@ export function DentalPageClient() {
             <p className="font-['Geist',sans-serif] text-white/50 text-sm mb-8 max-w-md mx-auto">
               See how Zavis can help your clinic capture more leads, book more chairs, and grow revenue.
             </p>
-            <ShimmerLink href="/contact" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
+            <ShimmerLink href="/book-a-demo" background="rgba(255,255,255,1)" className="text-black px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.35)]">
               Book a Demo
               <ArrowRight className="w-4 h-4" />
             </ShimmerLink>

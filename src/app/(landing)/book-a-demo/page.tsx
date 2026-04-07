@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ContactPageClient } from "@/components/landing/pages/ContactPageClient";
 
 export const metadata: Metadata = {
-  title: "Book a Demo",
+  title: "Book a Demo | Zavis",
   description:
     "Schedule a personalized 1-on-1 demo of Zavis. See how AI-powered patient engagement can transform your healthcare practice.",
   alternates: {

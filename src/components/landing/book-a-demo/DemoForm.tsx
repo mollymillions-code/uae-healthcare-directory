@@ -46,6 +46,16 @@ export function DemoForm() {
       })
         .then((res) => res.json())
         .then(() => {
+          // Fire GA4 event via GTM data layer BEFORE redirect
+          // (Next.js App Router soft navigation doesn't trigger GTM historyChange reliably)
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({
+              event: 'demo_requested',
+              form_name: 'book-a-demo',
+              user_email: data.get('email'),
+              company_name: data.get('company'),
+            });
+          }
           router.push("/demo-requested")
         })
         .catch(() => {

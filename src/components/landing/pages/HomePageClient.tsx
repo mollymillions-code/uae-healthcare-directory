@@ -97,7 +97,7 @@ export function HomePageClient() {
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <ShimmerLink
-                  href="/contact"
+                  href="/book-a-demo"
                   className="px-8 sm:px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]"
                   onClick={() => trackEvent("cta_click", { location: "hero" })}
                 >

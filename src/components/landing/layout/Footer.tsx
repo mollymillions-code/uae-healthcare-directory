@@ -74,7 +74,7 @@ const footerLinks = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Contact", href: "/contact" },
+      { label: "Book a Demo", href: "/book-a-demo" },
     ],
   },
 ];
