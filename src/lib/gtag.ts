@@ -8,10 +8,11 @@ declare global {
   }
 }
 
-export function gtag_report_conversion(): void {
+export function gtag_report_conversion(transactionId?: string): void {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", "conversion", {
       send_to: "AW-17389420890/BYN3CLLm4JQbENqC9uNA",
+      transaction_id: transactionId || crypto.randomUUID(),
     });
   }
 }
@@ -37,14 +38,10 @@ export function generateEventId(): string {
 /** Fire Meta Lead event + Advanced Matching (hashes email client-side) */
 export async function trackMetaLead(email: string, eventId?: string): Promise<void> {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
-  // Hash email for Meta Advanced Matching
-  const encoder = new TextEncoder();
-  const data = encoder.encode(email.trim().toLowerCase());
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-  window.fbq("init", "1045406841134462", { em: hashHex });
-  // Pass eventID so Meta can deduplicate this client event against the CAPI server event
-  window.fbq("track", "Lead", {}, eventId ? { eventID: eventId } : undefined);
+  // Don't re-init the pixel — it's already initialized in layout.tsx.
+  // Advanced Matching email is handled server-side via CAPI (/api/capi).
+  // Just fire the Lead event with eventID for deduplication against CAPI.
+  window.fbq("track", "Lead", { content_name: "demo_request" }, eventId ? { eventID: eventId } : undefined);
 }
 
 /** Fire Twitter/X Lead event */
@@ -56,5 +53,8 @@ export function trackTwitterLead(): void {
 /** Fire LinkedIn conversion — replace CONVERSION_ID with your Campaign Manager conversion ID */
 export function trackLinkedInConversion(): void {
   if (typeof window === "undefined" || typeof window.lintrk !== "function") return;
-  window.lintrk("track", { conversion_id: 0 }); // TODO: replace 0 with your LinkedIn conversion ID
+  // conversion_id 0 is invalid — LinkedIn will silently discard this.
+  // Replace with your actual conversion ID from LinkedIn Campaign Manager → Conversions → Create Conversion → get the ID
+  // Until then, this is a no-op to avoid sending bad data
+  // window.lintrk("track", { conversion_id: YOUR_LINKEDIN_CONVERSION_ID });
 }
