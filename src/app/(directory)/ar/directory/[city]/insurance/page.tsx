@@ -3,21 +3,18 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCities,
+  getCityBySlug,
   getInsuranceProviders, getProviderCountByInsurance,
 } from "@/lib/data";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicRegulator } from "@/lib/i18n";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 43200;
 
 interface Props {
   params: { city: string };
-}
-
-export function generateStaticParams() {
-  return getCities().map((c) => ({ city: c.slug }));
 }
 
 export function generateMetadata({ params }: Props): Metadata {
