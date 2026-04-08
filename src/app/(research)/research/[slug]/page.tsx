@@ -85,15 +85,15 @@ export default function ReportPage({ params }: Props) {
           {report.meta.description}
         </p>
 
-        {/* Cover image */}
+        {/* Cover image — uses img tag to gracefully handle missing images without React error */}
         {report.meta.thumbnail && (
           <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#f0f0ee] mb-10 ring-1 ring-black/[0.06]">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={report.meta.thumbnail}
               alt={report.meta.title}
-              fill
-              unoptimized
-              className="object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
           </div>
         )}

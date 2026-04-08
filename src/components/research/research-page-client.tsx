@@ -1,9 +1,47 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Clock, ArrowRight, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+
+/** Styled placeholder when thumbnail is missing or fails to load */
+function ThumbnailPlaceholder({ title, category }: { title: string; category: string }) {
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-[#006828]/10 via-[#f0f0ee] to-[#006828]/5 flex flex-col items-center justify-center p-6 text-center">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-[#006828]/60 mb-2">{category}</span>
+      <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-medium text-black/50 leading-snug line-clamp-3 max-w-[80%]">{title}</span>
+    </div>
+  );
+}
+
+function FeaturedThumbnail({ thumbnail, title, category }: { thumbnail?: string; title: string; category: string }) {
+  const [failed, setFailed] = useState(false);
+  const onError = useCallback(() => setFailed(true), []);
+  return (
+    <div className="relative aspect-[16/10] lg:aspect-auto bg-[#f0f0ee]">
+      {thumbnail && !failed ? (
+        <Image src={thumbnail} alt={title} fill unoptimized className="object-cover" onError={onError} />
+      ) : (
+        <ThumbnailPlaceholder title={title} category={category} />
+      )}
+    </div>
+  );
+}
+
+function GridThumbnail({ thumbnail, title, category }: { thumbnail?: string; title: string; category: string }) {
+  const [failed, setFailed] = useState(false);
+  const onError = useCallback(() => setFailed(true), []);
+  return (
+    <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-[#f0f0ee] mb-4">
+      {thumbnail && !failed ? (
+        <Image src={thumbnail} alt={title} fill unoptimized className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" onError={onError} />
+      ) : (
+        <ThumbnailPlaceholder title={title} category={category} />
+      )}
+    </div>
+  );
+}
 
 interface ReportMeta {
   slug: string
@@ -86,17 +124,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
         <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <Link href={`/research/${featured.slug}`} className="group block">
             <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 lg:gap-10 bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:border-black/10 transition-colors">
-              <div className="relative aspect-[16/10] lg:aspect-auto bg-[#f0f0ee]">
-                {featured.thumbnail && (
-                  <Image
-                    src={featured.thumbnail}
-                    alt={featured.title}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                )}
-              </div>
+              <FeaturedThumbnail thumbnail={featured.thumbnail} title={featured.title} category={featured.category} />
               <div className="p-6 sm:p-8 lg:py-10 lg:pr-10 lg:pl-0 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-[#006828]">
@@ -170,17 +198,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
               href={`/research/${report.slug}`}
               className="group block"
             >
-              <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-[#f0f0ee] mb-4">
-                {report.thumbnail && (
-                  <Image
-                    src={report.thumbnail}
-                    alt={report.title}
-                    fill
-                    unoptimized
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                )}
-              </div>
+              <GridThumbnail thumbnail={report.thumbnail} title={report.title} category={report.category} />
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-[11px] font-semibold uppercase tracking-widest text-[#006828]">
                   {report.category}
