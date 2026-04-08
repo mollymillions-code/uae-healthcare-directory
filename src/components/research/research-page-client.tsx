@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { Clock, ArrowRight, ChevronRight } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 /** Styled placeholder when thumbnail is missing or fails to load */
@@ -21,7 +20,8 @@ function FeaturedThumbnail({ thumbnail, title, category }: { thumbnail?: string;
   return (
     <div className="relative aspect-[16/10] lg:aspect-auto bg-[#f0f0ee]">
       {thumbnail && !failed ? (
-        <Image src={thumbnail} alt={title} fill unoptimized className="object-cover" onError={onError} />
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img src={thumbnail} alt={title} className="absolute inset-0 w-full h-full object-cover" onError={onError} />
       ) : (
         <ThumbnailPlaceholder title={title} category={category} />
       )}
@@ -35,7 +35,8 @@ function GridThumbnail({ thumbnail, title, category }: { thumbnail?: string; tit
   return (
     <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-[#f0f0ee] mb-4">
       {thumbnail && !failed ? (
-        <Image src={thumbnail} alt={title} fill unoptimized className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" onError={onError} />
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img src={thumbnail} alt={title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" onError={onError} />
       ) : (
         <ThumbnailPlaceholder title={title} category={category} />
       )}

@@ -5,7 +5,6 @@ import { Metadata } from 'next'
 import { ReportViewer } from '@/components/research/report-viewer'
 import { Header } from '@/components/research/header'
 import { Clock, ArrowLeft, ArrowDown, ChevronRight } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface Props {
