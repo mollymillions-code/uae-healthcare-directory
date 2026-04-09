@@ -43,7 +43,8 @@ const DATA_DIR = join(PROJECT_ROOT, "data");
 
 const SIMILARITY_THRESHOLD = 0.4; // Below this → ask Gemini Flash for verification
 const LLM_REJECT_THRESHOLD = 0.1; // Below this → reject outright without LLM check
-const RATE_LIMIT_MS = 50;         // 50ms between requests — safe with 4 round-robin keys
+const RATE_LIMIT_MS = 30;         // 30ms between requests — safe with 9 round-robin keys
+const CONCURRENCY = 5;            // Process 5 providers in parallel
 const CHECKPOINT_INTERVAL = 50;   // Save progress every N providers
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 1000;       // Exponential backoff: 1s, 2s, 4s
