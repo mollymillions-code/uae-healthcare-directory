@@ -298,15 +298,19 @@ async function main() {
             `INSERT INTO providers (
               id, name, slug, name_ar, category_id, category_slug, facility_type,
               country, city_id, city_slug, address, latitude, longitude,
+              google_place_id, google_rating, google_review_count,
               phone, email, website, license_number,
-              services, languages, insurance, photos,
+              description, short_description, review_summary,
+              services, languages, insurance, operating_hours, photos,
               status, is_claimed, is_verified, is_featured,
               created_at, updated_at
             ) VALUES (
               $1, $2, $3, $4, $5, $6, $7,
               $8, $9, $10, $11, $12, $13,
-              $14, $15, $16, $17,
-              $18, $19, $20, $21,
+              $14, $15, $16,
+              $17, $18, $19, $20,
+              $21, $22, $23,
+              $24, $25, $26, $27, $28,
               'active', false, false, false,
               NOW(), NOW()
             )
@@ -323,15 +327,22 @@ async function main() {
               provCityId,
               provCitySlug,
               address,
-              p.lat ? String(p.lat) : null,
-              p.lng ? String(p.lng) : null,
+              p.latitude ? String(p.latitude) : (p.lat ? String(p.lat) : null),
+              p.longitude ? String(p.longitude) : (p.lng ? String(p.lng) : null),
+              p.googlePlaceId || null,
+              p.googleRating ? String(p.googleRating) : null,
+              p.googleReviewCount ? Number(p.googleReviewCount) : null,
               p.phone || null,
               p.email || null,
               p.website || null,
               p.licenseNumber || null,
+              p.description || null,
+              p.shortDescription || null,
+              JSON.stringify(p.reviewSummary || []),
               JSON.stringify(p.services || []),
               JSON.stringify(p.languages || []),
               JSON.stringify(p.insurance || []),
+              p.operatingHours ? JSON.stringify(p.operatingHours) : null,
               JSON.stringify(p.photos || []),
             ]
           );
