@@ -41,6 +41,11 @@ export function countryDirectoryUrl(countryCode: string, ...segments: string[]):
   return `/${countryCode}/directory${segments.length > 0 ? "/" + segments.join("/") : ""}`;
 }
 
+/** Build a best-of URL with country prefix */
+export function countryBestUrl(countryCode: string, ...segments: string[]): string {
+  return `/${countryCode}/best${segments.length > 0 ? "/" + segments.join("/") : ""}`;
+}
+
 /** Country display names for metadata */
 export const COUNTRY_NAMES: Record<string, string> = {
   qa: "Qatar",

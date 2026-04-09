@@ -163,7 +163,7 @@ export async function GET() {
       }
     }
 
-    for (const citySlug of citiesWithBestSet) {
+    for (const citySlug of Array.from(citiesWithBestSet)) {
       if (!structuralBestSet.has(citySlug)) {
         const cityBestUrl = escapeXml(
           `${baseUrl}/${COUNTRY_CODE}/best/${citySlug}`
