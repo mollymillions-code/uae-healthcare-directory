@@ -1,4 +1,4 @@
-const PLUNK_API_BASE = 'https://next-api.useplunk.com/v1'
+const PLUNK_API_BASE = process.env.PLUNK_API_BASE || 'https://next-api.useplunk.com/v1'
 const DEFAULT_FROM = 'research@zavis.ai'
 const DEFAULT_FROM_NAME = 'Zavis Research'
 

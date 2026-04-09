@@ -90,12 +90,19 @@ async function sendNotification(claim: {
     <p style="color: #666; font-size: 12px;">Review this claim at the admin dashboard or reply to this email.</p>
   `;
 
+  const NOTIFY_EMAILS = [
+    "syed@zavis.ai",
+    "sayan@zavis.ai",
+    "anuj@zavis.ai",
+    "mohit@zavis.ai",
+  ];
+
   // Try Plunk first (already used in codebase)
   if (process.env.PLUNK_SECRET_KEY) {
     try {
       const { sendEmail } = await import("@/lib/research/plunk");
       await sendEmail({
-        to: "syed@zavis.ai",
+        to: NOTIFY_EMAILS,
         subject: `New Claim Request: ${claim.providerName}`,
         body: emailBody,
         from: "directory@zavis.ai",
@@ -115,7 +122,7 @@ async function sendNotification(claim: {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "Zavis Directory <directory@zavis.ai>",
-        to: ["syed@zavis.ai"],
+        to: NOTIFY_EMAILS,
         subject: `New Claim Request: ${claim.providerName}`,
         html: emailBody,
       });

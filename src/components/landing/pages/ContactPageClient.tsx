@@ -143,6 +143,7 @@ export function ContactPageClient() {
       .catch(() => {
         setSubmitting(false);
         setError("Something went wrong. Please try again or email us at syed@zavis.ai.");
+        trackEvent("demo_submit_failed", { form_location: "book_a_demo_page" });
       });
   };
 
