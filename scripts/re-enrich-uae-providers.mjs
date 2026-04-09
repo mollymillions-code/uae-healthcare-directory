@@ -50,7 +50,12 @@ const RETRY_BASE_MS = 1000;       // Exponential backoff: 1s, 2s, 4s
 const LOCATION_DRIFT_THRESHOLD_M = 500; // Update coords if >500m apart
 
 // LLM verification via OpenRouter (Gemini 3.1 Flash Lite Preview)
-const OPENROUTER_KEY = process.env.OPENROUTER_KEY || "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";
+const OPENROUTER_KEY = process.env.OPENROUTER_KEY;
+if (!OPENROUTER_KEY) {
+  console.error("ERROR: OPENROUTER_KEY environment variable is required.");
+  console.error("Set it in .env.local on EC2, NOT in code (keys get revoked if committed to git).");
+  process.exit(1);
+}
 const LLM_MODEL = "google/gemini-3.1-flash-lite-preview";
 const LLM_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
