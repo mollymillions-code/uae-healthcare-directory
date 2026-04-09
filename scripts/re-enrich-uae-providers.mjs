@@ -924,6 +924,21 @@ async function main() {
         stats.noGoogleResult++;
         console.log(`[${displayIdx}/${displayTotal}] ${provider.name} (${provider.city_slug}, ${provider.category_slug})`);
         console.log(`  Text Search: NO RESULTS`);
+
+        // No Google result means we can't verify existing data — clear unverified fields
+        if (LIVE_MODE && (provider.website || provider.google_rating || provider.google_photo_url)) {
+          await pool.query(`
+            UPDATE providers SET
+              website = NULL,
+              google_rating = NULL,
+              google_review_count = NULL,
+              google_photo_url = NULL,
+              google_reviews_last_fetched = NULL
+            WHERE id = $1
+          `, [provider.id]);
+          console.log(`  → CLEARED unverified data (no Google result to verify against)`);
+        }
+
         mismatches.push({
           provider_id: provider.id,
           provider_name: provider.name,
@@ -935,6 +950,7 @@ async function main() {
           google_website: "",
           current_phone: provider.phone || "",
           google_phone: "",
+          action: "cleared_no_google_result",
         });
         await sleep(RATE_LIMIT_MS);
         continue;
@@ -962,6 +978,21 @@ async function main() {
       if (outsideUAE) {
         stats.unmatched++;
         console.log(`  → Skipped: result is outside UAE region (wrong country)`);
+
+        // Clear unverified fields — can't trust data from wrong-country match
+        if (LIVE_MODE && (provider.website || provider.google_rating || provider.google_photo_url)) {
+          await pool.query(`
+            UPDATE providers SET
+              website = NULL,
+              google_rating = NULL,
+              google_review_count = NULL,
+              google_photo_url = NULL,
+              google_reviews_last_fetched = NULL
+            WHERE id = $1
+          `, [provider.id]);
+          console.log(`  → CLEARED unverified data (Google result was outside UAE)`);
+        }
+
         mismatches.push({
           provider_id: provider.id,
           provider_name: provider.name,
@@ -973,6 +1004,7 @@ async function main() {
           google_website: "",
           current_phone: provider.phone || "",
           google_phone: "",
+          action: "cleared_outside_uae",
         });
         await sleep(RATE_LIMIT_MS);
         continue;
@@ -989,7 +1021,39 @@ async function main() {
         const verdict = llmResult.isSame
           ? `YES but low confidence (${llmResult.confidence}%)`
           : `NO (${llmResult.confidence}%) — ${llmResult.reason}`;
-        console.log(`  → LLM says: ${verdict} — flagged for review`);
+        console.log(`  → LLM says: ${verdict}`);
+
+        // CRITICAL: If we can't verify this provider, the existing website/phone/rating
+        // data came from the original blind-match script and CANNOT be trusted.
+        // Clear all Google-sourced fields to prevent showing wrong data.
+        if (LIVE_MODE) {
+          const oldWebsite = provider.website || "";
+          const oldPhone = provider.phone || "";
+          const oldRating = provider.google_rating;
+          const oldPhoto = provider.google_photo_url;
+
+          await pool.query(`
+            UPDATE providers SET
+              website = NULL,
+              google_rating = NULL,
+              google_review_count = NULL,
+              google_photo_url = NULL,
+              google_reviews_last_fetched = NULL
+            WHERE id = $1
+          `, [provider.id]);
+
+          const cleared = [];
+          if (oldWebsite) cleared.push(`website: ${oldWebsite}`);
+          if (oldPhone) cleared.push(`phone kept (from official register)`);
+          if (oldRating) cleared.push(`rating: ${oldRating}`);
+          if (oldPhoto) cleared.push(`photo`);
+          if (cleared.length > 0) {
+            console.log(`  → CLEARED unverified data: ${cleared.join(', ')}`);
+            stats.websiteChanged = (stats.websiteChanged || 0) + (oldWebsite ? 1 : 0);
+          }
+        }
+
+        console.log(`  → Unmatched — unverified Google data cleared from DB`);
         mismatches.push({
           provider_id: provider.id,
           provider_name: provider.name,
@@ -1004,6 +1068,7 @@ async function main() {
           llm_verified: "rejected",
           llm_confidence: llmResult.confidence,
           llm_reason: llmResult.reason,
+          action: "cleared_unverified_data",
         });
         await sleep(RATE_LIMIT_MS);
         continue;
