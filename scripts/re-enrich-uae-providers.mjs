@@ -926,7 +926,7 @@ async function main() {
         console.log(`  Text Search: NO RESULTS`);
 
         // No Google result means we can't verify existing data — clear unverified fields
-        if (LIVE_MODE && (provider.website || provider.google_rating || provider.google_photo_url)) {
+        if (opts.live && (provider.website || provider.google_rating || provider.google_photo_url)) {
           await pool.query(`
             UPDATE providers SET
               website = NULL,
@@ -980,7 +980,7 @@ async function main() {
         console.log(`  → Skipped: result is outside UAE region (wrong country)`);
 
         // Clear unverified fields — can't trust data from wrong-country match
-        if (LIVE_MODE && (provider.website || provider.google_rating || provider.google_photo_url)) {
+        if (opts.live && (provider.website || provider.google_rating || provider.google_photo_url)) {
           await pool.query(`
             UPDATE providers SET
               website = NULL,
@@ -1026,7 +1026,7 @@ async function main() {
         // CRITICAL: If we can't verify this provider, the existing website/phone/rating
         // data came from the original blind-match script and CANNOT be trusted.
         // Clear all Google-sourced fields to prevent showing wrong data.
-        if (LIVE_MODE) {
+        if (opts.live) {
           const oldWebsite = provider.website || "";
           const oldPhone = provider.phone || "";
           const oldRating = provider.google_rating;
