@@ -51,12 +51,16 @@ const LOCATION_DRIFT_THRESHOLD_M = 500; // Update coords if >500m apart
 
 // LLM verification via OpenRouter (Gemini 3.1 Flash Lite Preview)
 // Round-robin across multiple keys to parallelize and avoid rate limits
-const OPENROUTER_KEYS = [
-  process.env.OPENROUTER_KEY,
-  process.env.OPENROUTER_KEY_2,
-  process.env.OPENROUTER_KEY_3,
-  process.env.OPENROUTER_KEY_4,
-].filter(Boolean);
+const OPENROUTER_KEYS = [];
+for (let i = 0; i <= 20; i++) {
+  const key = process.env[i === 0 ? 'OPENROUTER_KEY' : `OPENROUTER_KEY_${i + 1}`];
+  if (key) OPENROUTER_KEYS.push(key);
+}
+// Also check numbered keys starting from 2
+for (let i = 2; i <= 20; i++) {
+  const key = process.env[`OPENROUTER_KEY_${i}`];
+  if (key && !OPENROUTER_KEYS.includes(key)) OPENROUTER_KEYS.push(key);
+}
 if (OPENROUTER_KEYS.length === 0) {
   console.error("ERROR: At least one OPENROUTER_KEY* environment variable is required.");
   console.error("Set in .env.local on EC2, NOT in code (keys get revoked if committed to git).");
@@ -68,6 +72,7 @@ function getNextLLMKey() {
   llmKeyIndex++;
   return key;
 }
+console.log(`  LLM keys loaded: ${OPENROUTER_KEYS.length} (round-robin for speed)`);
 const LLM_MODEL = "google/gemini-3.1-flash-lite-preview";
 const LLM_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
