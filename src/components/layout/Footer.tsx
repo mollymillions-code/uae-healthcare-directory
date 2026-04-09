@@ -1,7 +1,44 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { CITIES } from "@/lib/constants/cities";
+import { COUNTRIES } from "@/lib/constants/countries";
+
+function useFooterCountry(pathname: string) {
+  return useMemo(() => {
+    const match = pathname.match(/^\/(qa|sa|bh|kw)(\/|$)/);
+    if (!match) return null;
+    const code = match[1];
+    const country = COUNTRIES.find((c) => c.code === code);
+    if (!country) return null;
+    const cities = CITIES.filter((c) => c.country === code);
+    return { code, name: country.name, cities, regulators: country.regulators };
+  }, [pathname]);
+}
 
 export function Footer() {
+  const pathname = usePathname();
+  const countryCtx = useFooterCountry(pathname);
+
+  const directoryTitle = countryCtx
+    ? `${countryCtx.name} Open Healthcare Directory`
+    : "UAE Open Healthcare Directory";
+  const footerCities = countryCtx
+    ? countryCtx.cities
+    : CITIES.filter((c) => c.country === "ae");
+  const cityLinkPrefix = countryCtx ? `/${countryCtx.code}/directory` : "/directory";
+  const copyrightName = countryCtx
+    ? `${countryCtx.name} Open Healthcare Directory`
+    : "UAE Open Healthcare Directory";
+  const residentsLabel = countryCtx
+    ? `Free for all ${countryCtx.name} residents.`
+    : "Free for all UAE residents.";
+  const dataSources = countryCtx
+    ? [...countryCtx.regulators, "Google Places"]
+    : ["DHA — Dubai", "DOH — Abu Dhabi", "MOHAP — Northern Emirates", "Google Places"];
+
   return (
     <footer className="bg-dark text-white mt-16">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
@@ -10,7 +47,7 @@ export function Footer() {
           <span className="bg-[#006828] w-8 h-8 flex items-center justify-center text-white font-bold text-sm">
             Z
           </span>
-          <span className="font-bold text-lg">UAE Open Healthcare Directory</span>
+          <span className="font-bold text-lg">{directoryTitle}</span>
         </div>
 
         {/* Columns — 5 columns: Cities, Services, Directory, Data Sources, Insights */}
@@ -18,9 +55,9 @@ export function Footer() {
           <div>
             <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Cities</h5>
             <ul className="space-y-2">
-              {CITIES.map((city) => (
+              {footerCities.map((city) => (
                 <li key={city.slug}>
-                  <Link href={`/directory/${city.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">
+                  <Link href={`${cityLinkPrefix}/${city.slug}`} className="text-sm text-white/60 hover:text-white transition-colors">
                     {city.name}
                   </Link>
                 </li>
@@ -56,10 +93,9 @@ export function Footer() {
           <div>
             <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-4">Data Sources</h5>
             <ul className="space-y-2">
-              <li><span className="text-sm text-white/60">DHA — Dubai</span></li>
-              <li><span className="text-sm text-white/60">DOH — Abu Dhabi</span></li>
-              <li><span className="text-sm text-white/60">MOHAP — Northern Emirates</span></li>
-              <li><span className="text-sm text-white/60">Google Places</span></li>
+              {dataSources.map((source) => (
+                <li key={source}><span className="text-sm text-white/60">{source}</span></li>
+              ))}
             </ul>
           </div>
           <div>
@@ -77,7 +113,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <span className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} UAE Open Healthcare Directory. Free for all UAE residents.
+            &copy; {new Date().getFullYear()} {copyrightName}. {residentsLabel}
           </span>
           <span className="text-xs text-white/40">
             by{" "}

@@ -288,7 +288,7 @@ export function organizationSchema() {
     name: "Zavis",
     url: base,
     description:
-      "AI-powered patient success platform and healthcare intelligence for the UAE",
+      "AI-powered patient success platform and healthcare intelligence for the GCC",
     logo: {
       "@type": "ImageObject",
       url: `${base}/favicon.png`,
@@ -300,18 +300,20 @@ export function organizationSchema() {
     },
     foundingDate: "2025",
     knowsAbout: [
-      "UAE healthcare",
-      "Dubai Health Authority",
-      "Department of Health Abu Dhabi",
-      "MOHAP",
-      "UAE health insurance",
+      "GCC healthcare",
       "Healthcare directory",
-      "Medical facilities UAE",
+      "Medical facilities",
+      "Health insurance",
+      "Patient success",
+      "Healthcare intelligence",
     ],
-    areaServed: {
-      "@type": "Country",
-      name: "United Arab Emirates",
-    },
+    areaServed: [
+      { "@type": "Country", name: "United Arab Emirates" },
+      { "@type": "Country", name: "Qatar" },
+      { "@type": "Country", name: "Saudi Arabia" },
+      { "@type": "Country", name: "Bahrain" },
+      { "@type": "Country", name: "Kuwait" },
+    ],
     sameAs: [
       "https://www.linkedin.com/company/zavisai/",
       "https://www.instagram.com/heyzavis",
@@ -507,8 +509,10 @@ export function generateFacetAnswerBlock(
 
 /**
  * Returns typical consultation price range (AED) for a category in a city.
+ * Returns null for non-UAE countries (no reliable pricing data).
  */
-function getCategoryPriceRange(categorySlug: string, citySlug: string): string {
+function getCategoryPriceRange(categorySlug: string, citySlug: string, countryCode?: string): string | null {
+  if (countryCode && countryCode !== "ae") return null;
   const isNorthern = !["dubai", "abu-dhabi", "al-ain", "sharjah"].includes(citySlug);
 
   const priceMap: Record<string, { dubai: string; abuDhabi: string; northern: string; sharjah: string }> = {
@@ -575,18 +579,18 @@ export function generateFacetFaqs(
   category: LocalCategory,
   area: LocalArea | null,
   providerCount: number,
-  options?: { countryName?: string; regulators?: string[] }
+  options?: { countryName?: string; countryCode?: string; regulators?: string[] }
 ): { question: string; answer: string }[] {
   const loc = area ? `${area.name}, ${city.name}` : city.name;
   const catLower = category.name.toLowerCase();
   const resolvedCountryName = options?.countryName ?? "UAE";
   const directoryName = `${resolvedCountryName} Open Healthcare Directory`;
-  const priceRange = getCategoryPriceRange(category.slug, city.slug);
+  const priceRange = getCategoryPriceRange(category.slug, city.slug, options?.countryCode);
   const insuranceContext = options?.regulators
     ? `Healthcare in ${city.name} is regulated by ${options.regulators.join(", ")}. Check individual listings for specific insurance acceptance.`
     : getCityInsuranceContext(city.slug);
 
-  return [
+  const faqs: { question: string; answer: string }[] = [
     {
       question: `How many ${catLower} are there in ${loc}?`,
       answer: `According to the ${directoryName}, there are ${providerCount} ${catLower} listed in ${loc}, ${resolvedCountryName}. Browse the ${directoryName} to compare providers by rating, insurance acceptance, and services offered.`,
@@ -603,15 +607,22 @@ export function generateFacetFaqs(
       question: `How do I book an appointment at a ${catLower.replace(/s$/, "")} in ${loc}?`,
       answer: `You can book by calling the provider directly using the phone number on their listing page in the ${directoryName}, or visit their website for online booking. Many ${catLower} in ${loc} also accept walk-in appointments. Emergency care is available 24/7 with immediate triage; non-critical cases are typically seen within 30–120 minutes.`,
     },
-    {
+  ];
+
+  // Only include pricing FAQ for UAE where we have reliable benchmarks
+  if (priceRange) {
+    faqs.push({
       question: `How much does a ${catLower.replace(/s$/, "")} consultation cost in ${loc}?`,
       answer: `Typical prices for ${catLower} in ${loc} are ${priceRange}. Prices can vary depending on the specific provider, procedure complexity, and whether you are paying out-of-pocket or through insurance. Government and semi-government facilities tend to charge on the lower end of the range. Always confirm fees with the provider before your visit.`,
-    },
-    {
-      question: `Which insurance plans are accepted by ${catLower} in ${loc}?`,
-      answer: `${insuranceContext} Many ${catLower} in ${loc} also accept international plans for visitors and expatriates. Use the insurance filter on individual provider listing pages on the ${directoryName} to confirm which plans a specific clinic or hospital accepts.`,
-    },
-  ];
+    });
+  }
+
+  faqs.push({
+    question: `Which insurance plans are accepted by ${catLower} in ${loc}?`,
+    answer: `${insuranceContext} Many ${catLower} in ${loc} also accept international plans for visitors and expatriates. Use the insurance filter on individual provider listing pages on the ${directoryName} to confirm which plans a specific clinic or hospital accepts.`,
+  });
+
+  return faqs;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────

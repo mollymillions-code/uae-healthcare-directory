@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
+import { COUNTRIES } from "@/lib/constants/countries";
 
-const CITY_LINKS = [
+const UAE_CITY_LINKS = [
   { label: "Dubai", href: "/directory/dubai" },
   { label: "Abu Dhabi", href: "/directory/abu-dhabi" },
   { label: "Sharjah", href: "/directory/sharjah" },
@@ -16,6 +17,22 @@ const CITY_LINKS = [
   { label: "UAQ", href: "/directory/umm-al-quwain" },
   { label: "Al Ain", href: "/directory/al-ain" },
 ];
+
+function useCountryContext(pathname: string) {
+  return useMemo(() => {
+    const match = pathname.match(/^\/(qa|sa|bh|kw)(\/|$)/);
+    if (!match) return null;
+    const code = match[1];
+    const country = COUNTRIES.find((c) => c.code === code);
+    if (!country) return null;
+    const cities = CITIES.filter((c) => c.country === code);
+    const cityLinks = cities.map((c) => ({
+      label: c.name,
+      href: `/${code}/directory/${c.slug}`,
+    }));
+    return { code, name: country.name, cities, cityLinks };
+  }, [pathname]);
+}
 
 const SECTION_LINKS = [
   { label: "Search", href: "/search" },
@@ -39,8 +56,19 @@ function getArabicPath(pathname: string): string | null {
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const countryCtx = useCountryContext(pathname);
 
-  const activeCity = CITY_LINKS.find((c) => pathname.startsWith(c.href))?.href;
+  const cityLinks = countryCtx ? countryCtx.cityLinks : UAE_CITY_LINKS;
+  const directoryName = countryCtx
+    ? `${countryCtx.name} Healthcare Directory`
+    : "UAE Healthcare Directory";
+  const directoryHome = countryCtx ? `/${countryCtx.code}/directory` : "/directory";
+  const mobileCities = countryCtx
+    ? CITIES.filter((c) => c.country === countryCtx.code)
+    : CITIES.filter((c) => c.country === "ae");
+  const mobileCitiesLabel = countryCtx ? "Cities" : "Emirates";
+
+  const activeCity = cityLinks.find((c) => pathname.startsWith(c.href))?.href;
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -62,12 +90,12 @@ export function Header() {
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo — prominent like Bloomberg masthead */}
-            <Link href="/directory" className="flex items-center gap-3 flex-shrink-0">
+            <Link href={directoryHome} className="flex items-center gap-3 flex-shrink-0">
               <span className="bg-[#006828] w-8 h-8 rounded-lg flex items-center justify-center text-white font-medium text-sm font-['Bricolage_Grotesque',sans-serif]">
                 Z
               </span>
               <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[20px] sm:text-[22px] tracking-tight text-white whitespace-nowrap">
-                UAE Healthcare Directory
+                {directoryName}
               </span>
             </Link>
 
@@ -116,7 +144,7 @@ export function Header() {
           <div className="flex items-center justify-between">
             {/* City tabs — left */}
             <nav className="flex items-center gap-0 overflow-x-auto scrollbar-none">
-              {CITY_LINKS.map((link) => {
+              {cityLinks.map((link) => {
                 const isActive = activeCity === link.href;
                 return (
                   <Link
@@ -156,12 +184,12 @@ export function Header() {
       {mobileOpen && (
         <div className="lg:hidden bg-[#111] border-t border-white/10">
           <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
-            <p className="uppercase text-[10px] tracking-widest font-medium text-white/30 font-['Geist',sans-serif]">Emirates</p>
+            <p className="uppercase text-[10px] tracking-widest font-medium text-white/30 font-['Geist',sans-serif]">{mobileCitiesLabel}</p>
             <div className="grid grid-cols-2 gap-1">
-              {CITIES.map((city) => (
+              {mobileCities.map((city) => (
                 <Link
                   key={city.slug}
-                  href={`/directory/${city.slug}`}
+                  href={countryCtx ? `/${countryCtx.code}/directory/${city.slug}` : `/directory/${city.slug}`}
                   className="font-['Geist',sans-serif] text-sm text-white/60 hover:text-white py-1.5 px-2 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >

@@ -915,6 +915,7 @@ export async function GccSegmentsPage({
     const topProvider = providers[0];
     const countryOpts = {
       countryName: country.name,
+      countryCode: country.code,
       regulators: country.regulators,
     };
     const schemaOpts = {
@@ -1264,6 +1265,7 @@ export async function GccSegmentsPage({
     const topProvider = providers[0];
     const countryOptsAC = {
       countryName: country.name,
+      countryCode: country.code,
       regulators: country.regulators,
     };
     const schemaOptsAC = {
