@@ -25,9 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const count = await getProviderCountByCity(city.slug);
   const cityNameAr = getArabicCityName(city.slug);
   const base = getBaseUrl();
+  const year = new Date().getFullYear();
   return {
-    title: `${ar.healthcareProviders} في ${cityNameAr} | +${count} قائمة`,
-    description: `ابحث عن أكثر من ${count} مقدم رعاية صحية في ${cityNameAr}، الإمارات. تصفح المستشفيات والعيادات وأطباء الأسنان والمتخصصين مع التقييمات والمراجعات وتفاصيل الاتصال. آخر تحقق مارس 2026.`,
+    title: `+${count} مقدم رعاية صحية في ${cityNameAr} — قارن [${year}]`,
+    description: `قارن بين +${count} مستشفى وعيادة وطبيب أسنان في ${cityNameAr}. تقييمات، مراجعات، تأمين مقبول، مواعيد واتجاهات. دليل مجاني.`,
     alternates: {
       canonical: `${base}/ar/directory/${city.slug}`,
       languages: {

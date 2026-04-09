@@ -22,6 +22,12 @@ export function articleSchema(article: JournalArticle) {
       "@type": "Organization",
       name: "Zavis Healthcare Industry Insights",
       url: base,
+      logo: {
+        "@type": "ImageObject",
+        url: `${base}/images/og-default.png`,
+        width: 1200,
+        height: 630,
+      },
     },
     mainEntityOfPage: {
       "@type": "WebPage",

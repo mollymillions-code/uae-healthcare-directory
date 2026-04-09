@@ -10,6 +10,14 @@ const pool = new Pool({
   connectionTimeoutMillis: 5000,
 });
 
+// Prevent unhandled pool errors from crashing the process.
+// When PostgreSQL restarts (e.g. unattended-upgrades), it sends
+// "terminating connection due to administrator command" which would
+// otherwise crash Next.js. The pool automatically replaces dead connections.
+pool.on("error", (err) => {
+  console.error("[DB Pool] Background connection error (non-fatal):", err.message);
+});
+
 export const db = drizzle(pool, { schema });
 export type DB = typeof db;
 

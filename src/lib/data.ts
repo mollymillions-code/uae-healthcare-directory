@@ -136,6 +136,7 @@ export interface LocalProvider {
   reviewSummaryAr?: string[];
   coverImageUrl?: string;
   googlePhotoUrl?: string;
+  photos?: string[];
   yearEstablished?: number;
 }
 
@@ -214,6 +215,7 @@ function rowToProvider(row: any): LocalProvider {
     reviewSummaryAr: row.reviewSummaryAr ?? row.review_summary_ar ?? undefined,
     coverImageUrl: row.coverImageUrl ?? row.cover_image_url ?? undefined,
     googlePhotoUrl: row.googlePhotoUrl ?? row.google_photo_url ?? undefined,
+    photos: row.photos?.length ? row.photos : undefined,
     yearEstablished: row.yearEstablished ?? row.year_established ?? undefined,
   };
 }
@@ -870,6 +872,10 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
     );
   }
 
+  const cacheKey = `ins:${insurerSlug}:${citySlug || "all"}`;
+  const cached = getCached<LocalProvider[]>(cacheKey);
+  if (cached) return cached;
+
   // Use SQL-level JSONB filtering to avoid loading all providers into JS
   await ensureDbModules();
   const t = _providersTable!;
@@ -886,7 +892,9 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
   const rows = await _db!.select().from(t).where(where);
-  return rows.map(rowToProvider);
+  const result = rows.map(rowToProvider);
+  setCache(cacheKey, result);
+  return result;
 }
 
 export async function getProviderCountByInsurance(insurerSlug: string, citySlug: string): Promise<number> {

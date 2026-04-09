@@ -11,6 +11,8 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: [
       `${getBaseUrl()}/sitemap.xml`,
       `${getBaseUrl()}/sitemap-providers.xml`,
+      `${getBaseUrl()}/sitemap-providers-ar.xml`,
+      `${getBaseUrl()}/sitemap-intelligence.xml`,
     ],
   };
 }

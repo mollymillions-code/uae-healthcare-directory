@@ -11,7 +11,7 @@ import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
-import { faqPageSchema, breadcrumbSchema } from "@/lib/seo";
+import { faqPageSchema, breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ArrowLeft } from "lucide-react";
 import { PageEvent } from "@/components/analytics/PageEvent";
@@ -80,6 +80,7 @@ export default async function ArticlePage({ params }: PageProps) {
         { name: article.title },
       ])} />
       <JsonLd data={faqPageSchema(articleFaqs)} />
+      <JsonLd data={speakableSchema(["h1", "article"])} />
 
       <PageEvent event="article_view" params={{ slug: params.slug, category: fullArticle.category }} />
 

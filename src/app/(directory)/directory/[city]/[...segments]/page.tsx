@@ -23,7 +23,7 @@ import { formatDate } from "@/components/intelligence/utils";
 import {
   medicalOrganizationSchema, breadcrumbSchema, itemListSchema,
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
-  generateProviderParagraph,
+  generateProviderParagraph, truncateTitle, truncateDescription,
 } from "@/lib/seo";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
 import {
@@ -64,9 +64,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   switch (resolved.type) {
     case "city-category": {
       const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `${resolved.category.name} in ${city.name}, UAE | ${total} ${total === 1 ? "Provider" : "Providers"}`,
-        description: `Find ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"} with contact details. Last verified March 2026.`,
+        title: truncateTitle(`${total} Best ${resolved.category.name} in ${city.name} [${year}]`),
+        description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`),
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.category.slug}`,
           languages: {
@@ -88,9 +89,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
     case "city-area": {
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `Healthcare in ${resolved.area.name}, ${city.name} | ${total} ${total === 1 ? "Provider" : "Providers"}`,
-        description: `Find healthcare providers in ${resolved.area.name}, ${city.name}, UAE. Hospitals, clinics, and specialists with ratings.`,
+        title: truncateTitle(`${total} Providers in ${resolved.area.name}, ${city.name} [${year}]`),
+        description: truncateDescription(`Compare ${total} healthcare providers in ${resolved.area.name}, ${city.name}. Hospitals, clinics & specialists with ratings, reviews, insurance & directions. Free.`),
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.area.slug}`,
           languages: {
@@ -112,9 +114,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
     case "area-category": {
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `${resolved.category.name} in ${resolved.area.name}, ${city.name} | ${total} ${total === 1 ? "Provider" : "Providers"}`,
-        description: `Find ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}, UAE. ${total} verified ${total === 1 ? "provider" : "providers"}.`,
+        title: truncateTitle(`${total} ${resolved.category.name} in ${resolved.area.name}, ${city.name} [${year}]`),
+        description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Ratings, reviews, insurance & hours. Verified, free directory.`),
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           languages: {
@@ -138,8 +141,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const { area } = resolved;
       const url = `${base}/directory/${city.slug}/${area.slug}/insurance`;
       return {
-        title: `Insurance Coverage in ${area.name}, ${city.name} | UAE Open Healthcare Directory`,
-        description: `Find healthcare providers by insurance plan in ${area.name}, ${city.name}, UAE. Browse accepted insurers — Daman, Thiqa, AXA, Cigna, and more. Verified listings, last updated March 2026.`,
+        title: truncateTitle(`Insurance Coverage in ${area.name}, ${city.name} | Zavis`),
+        description: truncateDescription(`Find healthcare providers by insurance plan in ${area.name}, ${city.name}, UAE. Browse accepted insurers — Daman, Thiqa, AXA, Cigna, and more. Verified listings.`),
         alternates: { canonical: url },
         openGraph: {
           title: `Insurance Coverage in ${area.name}, ${city.name}`,
@@ -155,9 +158,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     case "listing": {
       const listingCanonical = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       const isEnriched = Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0) || Boolean(resolved.provider.phone) || Boolean(resolved.provider.website);
+
+      // --- SEO title: hard 60-char cap, high-intent modifiers ---
+      const maxTitleLen = 60;
+      const seoSuffix = " | Zavis";
+      const idealTitle = `${resolved.provider.name}, ${city.name} — Reviews, Doctors & Insurance`;
+      let seoTitle: string;
+      if ((idealTitle + seoSuffix).length <= maxTitleLen) {
+        seoTitle = idealTitle + seoSuffix;
+      } else {
+        const shortTitle = `${resolved.provider.name} — Reviews & Insurance`;
+        if ((shortTitle + seoSuffix).length <= maxTitleLen) {
+          seoTitle = shortTitle + seoSuffix;
+        } else {
+          const available = maxTitleLen - " — Reviews & Insurance | Zavis".length;
+          seoTitle = resolved.provider.name.slice(0, available).trim() + " — Reviews & Insurance" + seoSuffix;
+        }
+      }
+
+      // --- SEO description: max ~155 chars, packed with structured data ---
+      const descParts: string[] = [];
+      const prov = resolved.provider;
+      if (prov.googleRating && Number(prov.googleRating) > 0) {
+        const reviewBit = prov.googleReviewCount ? ` (${prov.googleReviewCount} reviews)` : "";
+        descParts.push(`★ ${prov.googleRating}/5${reviewBit}`);
+      }
+      if (prov.services && prov.services.length > 0) {
+        descParts.push(`Services: ${prov.services.slice(0, 3).join(", ")}`);
+      }
+      if (prov.insurance && prov.insurance.length > 0) {
+        descParts.push(`Insurance: ${prov.insurance.slice(0, 3).join(", ")}`);
+      }
+      if (prov.phone) {
+        descParts.push("☎ Contact info available");
+      }
+      const descBody = descParts.length > 0 ? descParts.join(". ") + "." : (prov.shortDescription || "");
+      const seoDesc = truncateDescription(`${prov.name}: ${descBody} Hours & directions on Zavis.`);
+
       return {
-        title: `${resolved.provider.name} | ${resolved.category.name} in ${city.name}`,
-        description: `${resolved.provider.shortDescription} ${resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0 ? `Rating: ${resolved.provider.googleRating}/5.` : ""} Last verified ${formatVerifiedDate(resolved.provider.lastVerified)}.`,
+        title: seoTitle,
+        description: seoDesc,
         ...(!isEnriched ? { robots: { index: true, follow: true, "max-snippet": 50 } } : {}),
         alternates: {
           canonical: listingCanonical,
@@ -203,8 +243,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const providerCount = (await getProviders({ citySlug: city.slug, categorySlug: proc.categorySlug, limit: 1 })).total;
       const url = `${base}/directory/${city.slug}/${proc.slug}`;
       return {
-        title: `${proc.name} in ${city.name} — Find Providers & Costs [2026]`,
-        description: `Find providers offering ${proc.name.toLowerCase()} in ${city.name}. ${providerCount} verified providers. ${pricing ? `Typical cost: ${formatAed(pricing.typical)} (${formatAed(pricing.min)}–${formatAed(pricing.max)}).` : ""} Compare ratings, insurance, and book.`,
+        title: truncateTitle(`${proc.name} in ${city.name} — Providers & Costs [${new Date().getFullYear()}]`),
+        description: truncateDescription(`Find providers offering ${proc.name.toLowerCase()} in ${city.name}. ${providerCount} verified providers. ${pricing ? `Typical cost: ${formatAed(pricing.typical)} (${formatAed(pricing.min)}–${formatAed(pricing.max)}).` : ""} Compare ratings, insurance, and book.`),
         alternates: { canonical: url },
         openGraph: {
           title: `${proc.name} in ${city.name} — Providers & Costs`,
@@ -670,21 +710,113 @@ export default async function CatchAllPage({ params }: Props) {
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
+    // Same-category providers for internal linking
+    const sameCategoryResult = await getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      areaSlug: area?.slug,
+      limit: 7,
+      sort: "rating",
+    });
+    const sameCategoryProviders = sameCategoryResult.providers.filter((p) => p.id !== provider.id).slice(0, 6);
+    const sameCategoryTotal = sameCategoryResult.total > 0 ? sameCategoryResult.total - 1 : 0;
+
+    // Build insurance slug lookup for linking
+    const allInsurers = getInsuranceProviders();
+    const insurerSlugMap = new Map<string, string>();
+    for (const ins of allInsurers) {
+      insurerSlugMap.set(ins.name.toLowerCase(), ins.slug);
+    }
+
     const hasValidRating = Number(provider.googleRating) > 0;
     const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${formatVerifiedDate(provider.lastVerified)}.`;
 
-    const providerFaqs = [
-      { question: `What are the operating hours of ${provider.name}?`, answer: hasValidHours(provider.operatingHours) ? `${provider.name}: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24h" : `${h.open}–${h.close}`}`).join(". ")}. Verified ${formatVerifiedDate(provider.lastVerified)}.` : `Contact ${provider.name} directly for current operating hours.` },
-      { question: `Where is ${provider.name} located?`, answer: `${provider.name} is at ${provider.address}.${area ? ` In ${area.name}, ${city.name}.` : ` In ${city.name}, UAE.`}` },
-      { question: `What services does ${provider.name} offer?`, answer: provider.services.length > 0 ? `${provider.name} offers: ${provider.services.join(", ")}. Per official UAE health authority records.` : `Contact ${provider.name} for services.` },
-      { question: `Does ${provider.name} accept insurance?`, answer: provider.insurance.length > 0 ? `Yes. ${provider.name} accepts: ${provider.insurance.join(", ")}.` : `Contact ${provider.name} to confirm.` },
+    const areaName = area?.name || "";
+    const locationLabel = areaName ? `${areaName}, ${city.name}` : city.name;
+    const providerFaqs: { question: string; answer: string }[] = [
+      { question: `What are the opening hours of ${provider.name} in ${city.name}?`, answer: hasValidHours(provider.operatingHours) ? `${provider.name} in ${city.name} operates on the following schedule: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24 hours" : `${h.open}–${h.close}`}`).join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}.` : `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}.` },
+      { question: `Which insurance plans does ${provider.name} accept?`, answer: provider.insurance.length > 0 ? `${provider.name} accepts the following insurance plans: ${provider.insurance.join(", ")}. Always confirm coverage details directly with the provider before your visit.` : `Contact ${provider.name} directly to confirm which insurance plans are currently accepted.` },
+      { question: `What medical services are available at ${provider.name}?`, answer: provider.services.length > 0 ? `${provider.name} provides the following medical services: ${provider.services.join(", ")}. This information is sourced from official UAE health authority records.` : `Contact ${provider.name} for a full list of available medical services.` },
+      { question: `How do I get to ${provider.name} in ${locationLabel}?`, answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${parseFloat(provider.latitude) !== 0 ? " You can find directions via Google Maps." : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}` },
     ];
+    // Dynamic FAQ: Google rating
+    if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
+      providerFaqs.push({
+        question: `What is the Google rating of ${provider.name}?`,
+        answer: `${provider.name} has a rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews on Google.`,
+      });
+    }
+    // Dynamic FAQ: Languages spoken
+    if (provider.languages.length > 0) {
+      providerFaqs.push({
+        question: `What languages do staff speak at ${provider.name}?`,
+        answer: `Staff at ${provider.name} speak ${provider.languages.join(", ")}. This makes the facility accessible to a diverse patient population in ${city.name}.`,
+      });
+    }
+    // Dynamic FAQ: Year established
+    if (provider.yearEstablished && provider.yearEstablished > 0) {
+      const yearsOperating = new Date().getFullYear() - provider.yearEstablished;
+      providerFaqs.push({
+        question: `How long has ${provider.name} been operating?`,
+        answer: `${provider.name} has been serving patients since ${provider.yearEstablished}${yearsOperating > 0 ? `, making it a healthcare provider with ${yearsOperating} years of experience in ${city.name}` : ""}.`,
+      });
+    }
+
+    // Build HTML-enriched FAQ answers for JSON-LD schema (Google supports HTML in acceptedAnswer.text)
+    const providerProfileUrl = `/directory/${city.slug}/${category.slug}/${provider.slug}`;
+    const lat = parseFloat(provider.latitude);
+    const lng = parseFloat(provider.longitude);
+    const hasValidCoords = lat !== 0 && lng !== 0;
+
+    const providerFaqsRich: { question: string; answer: string }[] = [
+      {
+        question: `What are the opening hours of ${provider.name} in ${city.name}?`,
+        answer: hasValidHours(provider.operatingHours)
+          ? `${provider.name} in ${city.name} operates on the following schedule: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24 hours" : `${h.open}–${h.close}`}`).join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}. <a href="${providerProfileUrl}">View full profile</a>`
+          : `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}. <a href="${providerProfileUrl}">View full profile</a>`,
+      },
+      {
+        question: `Which insurance plans does ${provider.name} accept?`,
+        answer: provider.insurance.length > 0
+          ? `${provider.name} accepts the following insurance plans: ${provider.insurance.map((ins) => { const slug = insurerSlugMap.get(ins.toLowerCase()); return slug ? `<a href="/insurance/${slug}">${ins}</a>` : ins; }).join(", ")}. Always confirm coverage details directly with the provider before your visit.`
+          : `Contact ${provider.name} directly to confirm which insurance plans are currently accepted.`,
+      },
+      {
+        question: `What medical services are available at ${provider.name}?`,
+        answer: provider.services.length > 0
+          ? `${provider.name} provides the following medical services: ${provider.services.join(", ")}. This information is sourced from official UAE health authority records. See all <a href="/directory/${city.slug}/${category.slug}">${category.name} in ${city.name}</a>`
+          : `Contact ${provider.name} for a full list of available medical services.`,
+      },
+      {
+        question: `How do I get to ${provider.name} in ${locationLabel}?`,
+        answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${hasValidCoords ? ` <a href="https://maps.google.com/?q=${lat},${lng}">Get directions</a>` : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}`,
+      },
+    ];
+    if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
+      providerFaqsRich.push({
+        question: `What is the Google rating of ${provider.name}?`,
+        answer: `${provider.name} has a rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews on Google. <a href="${providerProfileUrl}">View full profile and reviews</a>`,
+      });
+    }
+    if (provider.languages.length > 0) {
+      providerFaqsRich.push({
+        question: `What languages do staff speak at ${provider.name}?`,
+        answer: `Staff at ${provider.name} speak ${provider.languages.join(", ")}. This makes the facility accessible to a diverse patient population in ${city.name}.`,
+      });
+    }
+    if (provider.yearEstablished && provider.yearEstablished > 0) {
+      const yearsOp = new Date().getFullYear() - provider.yearEstablished;
+      providerFaqsRich.push({
+        question: `How long has ${provider.name} been operating?`,
+        answer: `${provider.name} has been serving patients since ${provider.yearEstablished}${yearsOp > 0 ? `, making it a healthcare provider with ${yearsOp} years of experience in ${city.name}` : ""}.`,
+      });
+    }
 
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd data={medicalOrganizationSchema(provider, city, category, area, city.slug)} />
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: category.name, url: `${base}/directory/${city.slug}/${category.slug}` }, { name: provider.name }])} />
-        <JsonLd data={faqPageSchema(providerFaqs)} />
+        <JsonLd data={faqPageSchema(providerFaqsRich)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
@@ -746,6 +878,9 @@ export default async function CatchAllPage({ params }: Props) {
                 <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Stethoscope className="h-5 w-5 text-[#006828]" /> Services</h2>
                 <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} provides these services in {city.name}:</p>
                 <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="inline-block font-['Geist',sans-serif] border border-[#006828]/20 text-[#006828] text-sm px-3 py-1 rounded-full">{s}</span>))}</div>
+                <Link href={`/directory/${city.slug}/${category.slug}`} className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-sm text-[#006828] hover:text-[#004d1c] mt-4 transition-colors">
+                  Browse all {category.name} in {city.name} <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
               </div>
             )}
 
@@ -769,7 +904,14 @@ export default async function CatchAllPage({ params }: Props) {
               <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="insurance">
                 <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Shield className="h-5 w-5 text-[#006828]" /> Accepted Insurance</h2>
                 <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} accepts these insurance plans:</p>
-                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => (<span key={i} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]">{i}</span>))}</div>
+                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => {
+                  const insurerSlug = insurerSlugMap.get(i.toLowerCase());
+                  return insurerSlug ? (
+                    <Link key={i} href={`/insurance/${insurerSlug}`} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/30 hover:text-[#006828] transition-colors">{i}</Link>
+                  ) : (
+                    <span key={i} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]">{i}</span>
+                  );
+                })}</div>
               </div>
             )}
 
@@ -816,6 +958,58 @@ export default async function CatchAllPage({ params }: Props) {
             <div className="bg-[#006828]/[0.04] rounded-2xl p-6">
               <FaqSection faqs={providerFaqs} title={`${provider.name} — FAQ`} />
             </div>
+
+            {/* Same-category providers for internal linking */}
+            {sameCategoryProviders.length > 0 && (
+              <div className="border border-black/[0.06] rounded-2xl p-6 mt-5">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-4 tracking-tight">
+                  More {category.name} in {area?.name || city.name}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {sameCategoryProviders.map((sp) => (
+                    <Link
+                      key={sp.id}
+                      href={`/directory/${sp.citySlug}/${sp.categorySlug}/${sp.slug}`}
+                      className="flex items-start gap-3 p-3 rounded-xl border border-black/[0.04] hover:border-[#006828]/20 transition-colors group"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">{sp.name}</p>
+                        {Number(sp.googleRating) > 0 && (
+                          <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">{sp.googleRating}/5 ★ · {sp.googleReviewCount?.toLocaleString()} reviews</p>
+                        )}
+                        {sp.areaSlug && (
+                          <p className="font-['Geist',sans-serif] text-xs text-black/25 mt-0.5">{getAreaBySlug(city.slug, sp.areaSlug)?.name || sp.areaSlug}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {sameCategoryTotal > sameCategoryProviders.length && (
+                  <Link
+                    href={`/directory/${city.slug}/${category.slug}${area ? `/${area.slug}` : ""}`}
+                    className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-sm text-[#006828] hover:text-[#004d1c] mt-4 transition-colors"
+                  >
+                    View all {sameCategoryTotal} {category.name} in {area?.name || city.name} <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* Best page callout — only show when at least one provider has a rating */}
+            {sameCategoryProviders.some(p => Number(p.googleRating) > 0) && (
+              <Link
+                href={`/best/${city.slug}/${category.slug}`}
+                className="flex items-center justify-between border border-[#006828]/15 bg-[#006828]/[0.03] rounded-2xl p-5 mt-5 group hover:border-[#006828]/30 transition-colors"
+              >
+                <div>
+                  <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                    See the Best {category.name} in {city.name}
+                  </p>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">Curated ranking based on ratings, reviews, and verification status</p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-[#006828] flex-shrink-0" />
+              </Link>
+            )}
           </div>
 
           {/* Sidebar */}

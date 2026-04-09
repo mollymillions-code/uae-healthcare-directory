@@ -14,7 +14,7 @@ import {
   getTestCategoryLabel,
   formatPrice,
 } from "@/lib/labs";
-import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, speakableSchema, labTestProductSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -269,6 +269,12 @@ export default function TestDetailPage({ params }: { params: { test: string } })
           }),
         }}
       />
+
+      {comparison && comparison.prices.length > 0 && (
+        <JsonLd
+          data={labTestProductSchema(test, comparison.prices.map((p) => ({ labName: p.labName, price: p.price })))}
+        />
+      )}
 
       <Breadcrumb
         items={[

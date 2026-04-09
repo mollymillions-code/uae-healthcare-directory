@@ -9,6 +9,22 @@
 import { getBaseUrl } from "./helpers";
 import type { LocalProvider, LocalCategory, LocalCity, LocalArea } from "./data";
 
+// ─── SEO Truncation Helpers ───────────────────────────────────────────────────
+
+/** Truncate a title to fit within maxLen, respecting word boundaries */
+export function truncateTitle(title: string, maxLen = 58): string {
+  if (title.length <= maxLen) return title;
+  const lastSpace = title.lastIndexOf(' ', maxLen);
+  return lastSpace > maxLen * 0.6 ? title.slice(0, lastSpace) : title.slice(0, maxLen);
+}
+
+/** Truncate a description to fit within maxLen, adding ellipsis at word boundary */
+export function truncateDescription(desc: string, maxLen = 155): string {
+  if (desc.length <= maxLen) return desc;
+  const lastSpace = desc.lastIndexOf(' ', maxLen);
+  return (lastSpace > maxLen * 0.7 ? desc.slice(0, lastSpace) : desc.slice(0, maxLen)) + '...';
+}
+
 // ─── Schema.org Generators ─────────────────────────────────────────────────────
 
 export function medicalOrganizationSchema(
@@ -18,12 +34,42 @@ export function medicalOrganizationSchema(
   area?: LocalArea | null,
   citySlug?: string
 ) {
+  // Map category slugs to the most specific schema.org subtype
+  const schemaTypeMap: Record<string, string> = {
+    hospitals: "Hospital",
+    clinics: "MedicalClinic",
+    dental: "Dentist",
+    pharmacy: "Pharmacy",
+    ophthalmology: "MedicalClinic",
+    "mental-health": "MedicalClinic",
+    "home-healthcare": "MedicalBusiness",
+    "labs-diagnostics": "DiagnosticLab",
+    "medical-equipment": "MedicalBusiness",
+  };
+  const schemaType = schemaTypeMap[category.slug] || "MedicalBusiness";
+
   const resolvedCitySlug = citySlug || city.slug;
   const base = getBaseUrl();
   const providerUrl = `${base}/directory/${city.slug}/${category.slug}/${provider.slug}`;
+  const lat = parseFloat(provider.latitude);
+  const lng = parseFloat(provider.longitude);
+  const hasValidCoords = lat !== 0 && lng !== 0;
+  const ratingVal = Number(provider.googleRating);
+  const hasValidRating = ratingVal > 0 && (provider.googleReviewCount ?? 0) > 0;
+
+  // Build image field: prefer photos array (up to 3), fall back to single cover/google image
+  const imageUrls: string[] = [];
+  if (provider.photos && provider.photos.length > 0) {
+    imageUrls.push(...provider.photos.slice(0, 3));
+  } else if (provider.coverImageUrl) {
+    imageUrls.push(provider.coverImageUrl);
+  } else if (provider.googlePhotoUrl) {
+    imageUrls.push(provider.googlePhotoUrl);
+  }
+
   return {
     "@context": "https://schema.org",
-    "@type": "MedicalBusiness",
+    "@type": schemaType,
     "@id": providerUrl,
     name: provider.name,
     url: providerUrl,
@@ -31,6 +77,7 @@ export function medicalOrganizationSchema(
     email: provider.email || undefined,
     description: provider.description,
     medicalSpecialty: provider.services.length > 0 ? provider.services[0] : category.name,
+    isAcceptingNewPatients: true,
     address: {
       "@type": "PostalAddress",
       streetAddress: provider.address,
@@ -38,15 +85,33 @@ export function medicalOrganizationSchema(
       addressRegion: city.emirate,
       addressCountry: "AE",
     },
-    ...(parseFloat(provider.latitude) !== 0 && parseFloat(provider.longitude) !== 0 ? {
+    ...(hasValidCoords ? {
       geo: {
         "@type": "GeoCoordinates",
-        latitude: parseFloat(provider.latitude),
-        longitude: parseFloat(provider.longitude),
+        latitude: lat,
+        longitude: lng,
       },
+      hasMap: `https://www.google.com/maps?q=${lat},${lng}`,
     } : {}),
-    ...(provider.coverImageUrl || provider.googlePhotoUrl ? {
-      image: provider.coverImageUrl || provider.googlePhotoUrl,
+    ...(imageUrls.length > 0 ? {
+      image: imageUrls.length === 1 ? imageUrls[0] : imageUrls,
+    } : {}),
+    ...(provider.amenities && provider.amenities.length > 0 ? {
+      amenityFeature: provider.amenities.map((a) => ({
+        "@type": "LocationFeatureSpecification",
+        name: a,
+        value: true,
+      })),
+    } : {}),
+    ...(provider.phone ? {
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: provider.phone,
+        contactType: "appointment",
+        availableLanguage: provider.languages.length > 0
+          ? provider.languages.map((lang) => ({ "@type": "Language", name: lang }))
+          : undefined,
+      },
     } : {}),
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
@@ -56,15 +121,14 @@ export function medicalOrganizationSchema(
         name: getRegulator(resolvedCitySlug),
       },
     },
-    isBasedOn: "Official UAE health authority licensed facilities register",
-    ...(provider.googleRating && Number(provider.googleRating) > 0
+    ...(hasValidRating
       ? {
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: provider.googleRating,
             bestRating: "5",
             worstRating: "1",
-            reviewCount: provider.googleReviewCount || 1,
+            reviewCount: provider.googleReviewCount,
           },
         }
       : {}),
@@ -95,8 +159,10 @@ export function medicalOrganizationSchema(
             "@type": "Language",
             name: lang,
           })),
+          knowsLanguage: provider.languages,
         }
       : {}),
+    ...(provider.website ? { sameAs: [provider.website] } : {}),
     currenciesAccepted: "AED",
     priceRange: "$$",
     dateModified: provider.lastVerified || new Date().toISOString().split("T")[0],
@@ -139,36 +205,69 @@ export function itemListSchema(
   cityName: string,
   baseUrl?: string
 ) {
+  const base = baseUrl || getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name,
+    description: `Top ${providers.length} ${name} ranked by patient ratings and reviews`,
     numberOfItems: providers.length,
-    itemListElement: providers.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      item: {
-        "@type": "MedicalBusiness",
-        ...(baseUrl ? { "@id": `${baseUrl}/directory/${p.citySlug}/${p.categorySlug}/${p.slug}` } : {}),
-        name: p.name,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: p.address,
-          addressLocality: cityName,
-          addressCountry: "AE",
+    itemListOrder: "https://schema.org/ItemListOrderDescending",
+    itemListElement: providers.map((p, i) => {
+      const ratingVal = Number(p.googleRating);
+      const hasValidRating = ratingVal > 0 && (p.googleReviewCount ?? 0) > 0;
+      const providerUrl = `${base}/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`;
+      return {
+        "@type": "ListItem",
+        position: i + 1,
+        url: providerUrl,
+        item: {
+          "@type": "MedicalBusiness",
+          "@id": providerUrl,
+          name: p.name,
+          url: providerUrl,
+          ...(p.phone ? { telephone: p.phone } : {}),
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: p.address,
+            addressLocality: cityName,
+            addressCountry: "AE",
+          },
+          ...(hasValidRating
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: p.googleRating,
+                  bestRating: "5",
+                  worstRating: "1",
+                  reviewCount: p.googleReviewCount,
+                },
+              }
+            : {}),
+          ...(p.services.length > 0 ? {
+            medicalSpecialty: p.services[0],
+          } : {}),
         },
-        ...(p.googleRating && Number(p.googleRating) > 0
-          ? {
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: p.googleRating,
-                reviewCount: p.googleReviewCount || 1,
-              },
-            }
-          : {}),
-      },
-    })),
+      };
+    }),
   };
+}
+
+/**
+ * Generate an ItemList schema specifically for category listing pages.
+ * Includes richer data per provider for Google carousel/list display.
+ */
+export function providerListSchema(
+  providers: LocalProvider[],
+  categoryName: string,
+  cityName: string
+) {
+  return itemListSchema(
+    `${categoryName} in ${cityName}`,
+    providers,
+    cityName,
+    getBaseUrl()
+  );
 }
 
 export function organizationSchema() {
@@ -203,7 +302,10 @@ export function organizationSchema() {
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    sameAs: ["https://www.linkedin.com/company/zavis-ai"],
+    sameAs: [
+      "https://www.linkedin.com/company/zavisai/",
+      "https://www.instagram.com/heyzavis",
+    ],
   };
 }
 
@@ -233,6 +335,49 @@ export function medicalWebPageSchema(
       "@type": "Organization",
       name: "Zavis",
       url: getBaseUrl(),
+    },
+  };
+}
+
+/**
+ * Product + AggregateOffer schema for lab test pages.
+ * Triggers price badge rich results in Google SERPs.
+ */
+export function labTestProductSchema(
+  test: { name: string; slug: string; description: string; shortName: string },
+  prices: Array<{ labName: string; price: number }>
+): Record<string, unknown> {
+  const base = getBaseUrl();
+  const sortedPrices = [...prices].sort((a, b) => a.price - b.price);
+  const lowPrice = sortedPrices[0]?.price ?? 0;
+  const highPrice = sortedPrices[sortedPrices.length - 1]?.price ?? 0;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: test.name,
+    alternateName: test.shortName,
+    description: test.description,
+    category: "Medical Lab Test",
+    url: `${base}/labs/test/${test.slug}`,
+    brand: {
+      "@type": "Organization",
+      name: "UAE Diagnostic Laboratories",
+    },
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice,
+      highPrice,
+      priceCurrency: "AED",
+      offerCount: prices.length,
+      availability: "https://schema.org/InStock",
+      offers: sortedPrices.map((p) => ({
+        "@type": "Offer",
+        price: p.price,
+        priceCurrency: "AED",
+        seller: { "@type": "Organization", name: p.labName },
+        availability: "https://schema.org/InStock",
+      })),
     },
   };
 }
@@ -572,6 +717,145 @@ export function generateProviderMetaDescription(
     desc = desc.slice(0, 157).replace(/\s+\S*$/, "") + "...";
   }
   return desc;
+}
+
+// ─── Physician List Schema (for professional specialty pages) ────────────────
+
+export function physicianListSchema(
+  professionals: Array<{
+    name: string;
+    specialty: string;
+    facility?: string;
+    licenseType?: string;
+  }>,
+  specialty: string,
+  city: string
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${specialty} in ${city}`,
+    description: `Licensed ${specialty.toLowerCase()} professionals practicing in ${city}, sourced from the DHA Sheryan Medical Registry.`,
+    numberOfItems: professionals.length,
+    itemListOrder: "https://schema.org/ItemListUnordered",
+    itemListElement: professionals.map((pro, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Physician",
+        name: pro.name,
+        medicalSpecialty: specialty,
+        ...(pro.facility
+          ? {
+              worksFor: {
+                "@type": "MedicalOrganization",
+                name: pro.facility,
+              },
+            }
+          : {}),
+        ...(pro.licenseType
+          ? {
+              hasCredential: {
+                "@type": "EducationalOccupationalCredential",
+                credentialCategory: pro.licenseType === "FTL"
+                  ? "Full-Time License"
+                  : pro.licenseType === "REG"
+                  ? "Registered License"
+                  : pro.licenseType,
+                recognizedBy: {
+                  "@type": "Organization",
+                  name: "Dubai Health Authority (DHA)",
+                },
+              },
+            }
+          : {}),
+        areaServed: {
+          "@type": "City",
+          name: city,
+          containedInPlace: { "@type": "Country", name: "United Arab Emirates" },
+        },
+      },
+    })),
+  };
+}
+
+// ─── Insurance Agency Schema (for insurer detail pages) ──────────────────────
+
+export function insuranceAgencySchema(
+  profile: {
+    name: string;
+    slug: string;
+    website: string;
+    headquarters: string;
+    foundedYear: number;
+    type: string;
+    regulators: string[];
+    claimsPhone: string;
+    keyFacts: string[];
+    plans: Array<{
+      name: string;
+      tier: string;
+      targetAudience: string;
+      premiumRange: { min: number; max: number };
+    }>;
+  },
+  stats: { totalProviders?: number; byCity?: Array<{ cityName: string }> } | null
+): Record<string, unknown> {
+  const base = getBaseUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    additionalType: "https://schema.org/InsuranceAgency",
+    "@id": `${base}/insurance/${profile.slug}`,
+    name: profile.name,
+    url: `https://${profile.website}`,
+    description: `${profile.name} is a ${profile.type} health insurance provider in the UAE. ${profile.keyFacts[0]}.`,
+    foundingDate: String(profile.foundedYear),
+    areaServed: {
+      "@type": "Country",
+      name: "United Arab Emirates",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: profile.headquarters,
+      addressCountry: "AE",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: profile.claimsPhone,
+      contactType: "claims",
+    },
+    ...(stats && stats.totalProviders
+      ? {
+          memberOf: {
+            "@type": "ProgramMembership",
+            name: `${profile.name} Provider Network`,
+            description: `Network of ${stats.totalProviders.toLocaleString()} healthcare providers across ${stats.byCity?.length || 0} UAE cities`,
+          },
+        }
+      : {}),
+    makesOffer: profile.plans.map((plan) => ({
+      "@type": "Service",
+      name: `${profile.name} ${plan.name}`,
+      description: `${plan.tier.charAt(0).toUpperCase() + plan.tier.slice(1)} tier health insurance plan. ${plan.targetAudience}. Annual premium: AED ${plan.premiumRange.min.toLocaleString()}–${plan.premiumRange.max.toLocaleString()}.`,
+      areaServed: {
+        "@type": "Country",
+        name: "United Arab Emirates",
+      },
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "AED",
+        price: plan.premiumRange.min,
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          priceCurrency: "AED",
+          minPrice: plan.premiumRange.min,
+          maxPrice: plan.premiumRange.max,
+          unitText: "per year",
+        },
+      },
+    })),
+  };
 }
 
 function getRegulator(citySlug: string): string {

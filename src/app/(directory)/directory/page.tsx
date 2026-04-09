@@ -11,31 +11,34 @@ import {
   getProviderCountByCity,
   getProviderCountByCategory,
 } from "@/lib/data";
-import { speakableSchema, faqPageSchema } from "@/lib/seo";
+import { speakableSchema, faqPageSchema, truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ChevronRight, Search, BarChart3, Phone } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
-  description:
-    "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty. Updated March 2026.",
-  openGraph: {
-    type: "website",
-    title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
-    description: "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
-    locale: "en_AE",
-    siteName: "UAE Open Healthcare Directory by Zavis",
-    url: `${getBaseUrl()}/directory`,
-    images: [{ url: `${getBaseUrl()}/images/og-default.png`, width: 1200, height: 630, alt: "UAE Open Healthcare Directory" }],
-  },
-  alternates: {
-    canonical: `${getBaseUrl()}/directory`,
-    languages: {
-      'en-AE': `${getBaseUrl()}/directory`,
-      'ar-AE': `${getBaseUrl()}/ar`,
+export async function generateMetadata(): Promise<Metadata> {
+  const year = new Date().getFullYear();
+  const base = getBaseUrl();
+  return {
+    title: truncateTitle(`UAE Healthcare Directory — 12,500+ Providers [${year}]`),
+    description: truncateDescription(`Compare 12,500+ DHA/DOH/MOHAP-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`),
+    openGraph: {
+      type: "website",
+      title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
+      description: "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
+      locale: "en_AE",
+      siteName: "UAE Open Healthcare Directory by Zavis",
+      url: `${base}/directory`,
+      images: [{ url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "UAE Open Healthcare Directory" }],
     },
-  },
-};
+    alternates: {
+      canonical: `${base}/directory`,
+      languages: {
+        'en-AE': `${base}/directory`,
+        'ar-AE': `${base}/ar`,
+      },
+    },
+  };
+}
 
 export const revalidate = 21600;
 

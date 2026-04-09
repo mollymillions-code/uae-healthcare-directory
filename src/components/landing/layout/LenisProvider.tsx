@@ -40,15 +40,24 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
 
       lenis.on("scroll", ScrollTrigger.update);
 
-      gsap.ticker.add((time: number) => {
+      const tickerCallback = (time: number) => {
         lenis.raf(time * 1000);
-      });
-      gsap.ticker.lagSmoothing(0);
+      };
+      gsap.ticker.add(tickerCallback);
+      gsap.ticker.lagSmoothing(500, 33);
+
+      // Store refs for cleanup
+      (lenis as Lenis & { _tickerCallback?: (t: number) => void; _gsapRef?: typeof gsap })._tickerCallback = tickerCallback;
+      (lenis as Lenis & { _gsapRef?: typeof gsap })._gsapRef = gsap;
     })();
 
     return () => {
       destroyed = true;
       if (lenisInstance) {
+        const inst = lenisInstance as Lenis & { _tickerCallback?: (t: number) => void; _gsapRef?: typeof gsap };
+        if (inst._tickerCallback && inst._gsapRef) {
+          inst._gsapRef.ticker.remove(inst._tickerCallback);
+        }
         lenisInstance.destroy();
         lenisInstance = null;
       }

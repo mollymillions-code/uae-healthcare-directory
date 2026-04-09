@@ -45,13 +45,13 @@ export async function GET() {
       const enUrl = escapeXml(`${baseUrl}${path}`);
       const arUrl = escapeXml(`${baseUrl}/ar${path}`);
 
-      // English page with hreflang alternates
+      // Arabic page with hreflang alternates
       entries.push(
         `  <url>` +
-          `<loc>${enUrl}</loc>` +
+          `<loc>${arUrl}</loc>` +
           `<lastmod>${lastmod}</lastmod>` +
           `<changefreq>monthly</changefreq>` +
-          `<priority>0.8</priority>` +
+          `<priority>0.7</priority>` +
           `<xhtml:link rel="alternate" hreflang="en-AE" href="${enUrl}"/>` +
           `<xhtml:link rel="alternate" hreflang="ar-AE" href="${arUrl}"/>` +
           `<xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}"/>` +
@@ -60,13 +60,13 @@ export async function GET() {
     }
 
     if (entries.length === 0) {
-      console.error("[sitemap-providers] Query returned 0 results — returning 500");
+      console.error("[sitemap-providers-ar] Query returned 0 results — returning 500");
       return new Response(buildXml([]), { status: 500, headers: SITEMAP_HEADERS });
     }
 
     return new Response(buildXml(entries), { headers: SITEMAP_HEADERS });
   } catch (error) {
-    console.error("[sitemap-providers] Failed to generate:", error);
+    console.error("[sitemap-providers-ar] Failed to generate:", error);
     return new Response(buildXml([]), { status: 500, headers: SITEMAP_HEADERS });
   }
 }

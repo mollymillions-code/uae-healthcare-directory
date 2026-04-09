@@ -16,6 +16,7 @@ import {
 import {
   medicalOrganizationSchema, breadcrumbSchema,
   itemListSchema, speakableSchema,
+  truncateTitle, truncateDescription,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import {
@@ -50,9 +51,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     case "city-category": {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `${catNameAr} في ${cityNameAr} | ${total} ${ar.provider}`,
-        description: `ابحث عن أفضل ${catNameAr} في ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد مع تقييمات Google ومراجعات وتفاصيل الاتصال. آخر تحقق مارس 2026.`,
+        title: truncateTitle(`${total} أفضل ${catNameAr} في ${cityNameAr} [${year}]`, 50),
+        description: truncateDescription(`قارن ${total} ${catNameAr} في ${cityNameAr}. تقييمات، مراجعات، تأمين مقبول، مواعيد واتجاهات. مرخص. دليل مجاني.`, 145),
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
           languages: {
@@ -75,9 +77,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     case "city-area": {
       const areaNameAr = resolved.area.nameAr || resolved.area.name;
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `الرعاية الصحية في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
-        description: `ابحث عن مقدمي الرعاية الصحية في ${areaNameAr}، ${cityNameAr}، الإمارات. مستشفيات وعيادات ومتخصصون مع تقييمات.`,
+        title: truncateTitle(`${total} مقدم رعاية صحية في ${areaNameAr}، ${cityNameAr} [${year}]`, 50),
+        description: truncateDescription(`قارن ${total} مقدم رعاية صحية في ${areaNameAr}، ${cityNameAr}. مستشفيات، عيادات ومتخصصون. تقييمات، تأمين واتجاهات. مجاني.`, 145),
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}`,
           languages: {
@@ -101,9 +104,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const areaNameAr = resolved.area.nameAr || resolved.area.name;
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const year = new Date().getFullYear();
       return {
-        title: `${catNameAr} في ${areaNameAr}، ${cityNameAr} | ${total} ${ar.provider}`,
-        description: `ابحث عن ${catNameAr} في ${areaNameAr}، ${cityNameAr}، الإمارات. ${total} ${ar.provider} معتمد.`,
+        title: truncateTitle(`${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr} [${year}]`, 50),
+        description: truncateDescription(`قارن ${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr}. تقييمات، مراجعات، تأمين ومواعيد. دليل مجاني معتمد.`, 145),
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           languages: {
@@ -127,9 +131,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const enListingUrl = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       const arListingUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
+
+      // --- Arabic SEO title: hard 60-char cap, high-intent modifiers ---
+      const arMaxTitleLen = 60;
+      const arSuffix = " | Zavis";
+      const arIdealTitle = `${resolved.provider.name}، ${cityNameAr} — تقييمات وأطباء وتأمين`;
+      let arSeoTitle: string;
+      if ((arIdealTitle + arSuffix).length <= arMaxTitleLen) {
+        arSeoTitle = arIdealTitle + arSuffix;
+      } else {
+        const arShortTitle = `${resolved.provider.name} — تقييمات وتأمين`;
+        if ((arShortTitle + arSuffix).length <= arMaxTitleLen) {
+          arSeoTitle = arShortTitle + arSuffix;
+        } else {
+          const arAvailable = arMaxTitleLen - " — تقييمات وتأمين | Zavis".length;
+          arSeoTitle = resolved.provider.name.slice(0, arAvailable).trim() + " — تقييمات وتأمين" + arSuffix;
+        }
+      }
+
+      // --- Arabic SEO description: max ~155 chars, packed with structured data ---
+      const arDescParts: string[] = [];
+      const arProv = resolved.provider;
+      if (arProv.googleRating && Number(arProv.googleRating) > 0) {
+        const arReviewBit = arProv.googleReviewCount ? ` (${arProv.googleReviewCount} تقييم)` : "";
+        arDescParts.push(`★ ${arProv.googleRating}/5${arReviewBit}`);
+      }
+      if (arProv.services && arProv.services.length > 0) {
+        arDescParts.push(`الخدمات: ${arProv.services.slice(0, 3).join("، ")}`);
+      }
+      if (arProv.insurance && arProv.insurance.length > 0) {
+        arDescParts.push(`التأمين: ${arProv.insurance.slice(0, 3).join("، ")}`);
+      }
+      if (arProv.phone) {
+        arDescParts.push("☎ معلومات الاتصال متاحة");
+      }
+      const arDescBody = arDescParts.length > 0 ? arDescParts.join(". ") + "." : (arProv.shortDescription || "");
+      const arSeoDesc = truncateDescription(`${arProv.name}: ${arDescBody} الساعات والاتجاهات على Zavis.`, 145);
+
       return {
-        title: `${resolved.provider.name} | ${catNameAr} في ${cityNameAr}`,
-        description: `${resolved.provider.shortDescription} التقييم: ${resolved.provider.googleRating}/5. آخر تحقق ${formatVerifiedDateAr(resolved.provider.lastVerified)}.`,
+        title: arSeoTitle,
+        description: arSeoDesc,
         alternates: {
           canonical: arListingUrl,
           languages: {

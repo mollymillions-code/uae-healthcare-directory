@@ -13,6 +13,7 @@ import {
   generateProcedureAnswerBlock,
   generateProcedureFaqs,
   procedureSchema,
+  procedureHowToSchema,
   formatAed,
   PROCEDURES,
 } from "@/lib/pricing";
@@ -113,6 +114,9 @@ export default async function ProcedureDetailPage({ params }: Props) {
       />
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
+      {procedureHowToSchema(proc) && (
+        <JsonLd data={procedureHowToSchema(proc)!} />
+      )}
 
       <Breadcrumb
         items={[

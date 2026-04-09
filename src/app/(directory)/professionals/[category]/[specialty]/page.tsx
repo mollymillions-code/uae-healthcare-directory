@@ -9,8 +9,9 @@ import {
   getCategoryBySlug,
   getSpecialtyBySlug,
 } from "@/lib/constants/professionals";
-import { breadcrumbSchema } from "@/lib/seo";
+import { breadcrumbSchema, physicianListSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { FaqSection } from "@/components/seo/FaqSection";
 
 export const revalidate = 43200;
 export const dynamicParams = true;
@@ -60,6 +61,27 @@ export default function SpecialtyPage({ params }: Props) {
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, displayLimit);
 
+  const faqs = [
+    {
+      question: `How many ${spec.name.toLowerCase()} professionals are licensed in Dubai?`,
+      answer: `There are ${stats.totalProfessionals.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals practicing in Dubai, according to the DHA Sheryan Medical Registry. Of these, ${stats.ftlCount.toLocaleString()} hold a full-time license (FTL) and ${stats.regCount.toLocaleString()} are registered (REG).`,
+    },
+    {
+      question: `What qualifications do ${spec.name.toLowerCase()} professionals need in Dubai?`,
+      answer: `${spec.name} professionals in Dubai must be licensed by the Dubai Health Authority (DHA) through the Sheryan system. Applicants need a recognised medical degree, relevant postgraduate training, and must pass the DHA licensing examination. Licenses are issued as either Full-Time License (FTL) for permanent practitioners or Registration (REG) for those under supervision or on temporary assignments.`,
+    },
+    {
+      question: `Which facilities employ the most ${spec.name.toLowerCase()} professionals in Dubai?`,
+      answer: stats.topFacilities.length > 0
+        ? `The largest employer of ${spec.name.toLowerCase()} professionals in Dubai is ${stats.topFacilities[0].name} with ${stats.topFacilities[0].count.toLocaleString()} practitioners on staff.${stats.topFacilities.length > 1 ? ` Other major employers include ${stats.topFacilities.slice(1, 4).map((f) => `${f.name} (${f.count.toLocaleString()})`).join(", ")}.` : ""} These ${spec.name.toLowerCase()} professionals work across ${stats.totalFacilities.toLocaleString()} facilities in Dubai.`
+        : `${spec.name} professionals in Dubai work across ${stats.totalFacilities.toLocaleString()} healthcare facilities. Browse the full list above to find specific facilities.`,
+    },
+    {
+      question: `How do I find a ${spec.name.toLowerCase()} in Dubai?`,
+      answer: `You can browse all ${stats.totalProfessionals.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals in Dubai on this page. The directory includes each professional's name, license type, and employing facility. All data is sourced from the official DHA Sheryan Medical Professional Registry and updated regularly.`,
+    },
+  ];
+
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
@@ -88,6 +110,22 @@ export default function SpecialtyPage({ params }: Props) {
           { name: cat.name, url: `${base}/professionals/${cat.slug}` },
           { name: spec.name },
         ])}
+      />
+
+      <JsonLd data={faqPageSchema(faqs)} />
+      <JsonLd data={speakableSchema([".professional-listing", "h1"])} />
+
+      <JsonLd
+        data={physicianListSchema(
+          displayProfessionals.map((pro) => ({
+            name: pro.name,
+            specialty: spec.name,
+            facility: pro.facilityName || undefined,
+            licenseType: pro.licenseType || undefined,
+          })),
+          spec.name,
+          "Dubai"
+        )}
       />
 
       <Breadcrumb
@@ -239,6 +277,11 @@ export default function SpecialtyPage({ params }: Props) {
           View all {spec.name.toLowerCase()} professionals by facility using the top facilities table above.
         </p>
       )}
+
+      {/* FAQ */}
+      <div className="mt-12">
+        <FaqSection faqs={faqs} title={`${spec.name} in Dubai — FAQ`} />
+      </div>
 
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">

@@ -16,7 +16,7 @@ import {
   formatLimit,
   getTierLabel,
 } from "@/lib/insurance";
-import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, speakableSchema, insuranceAgencySchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -101,6 +101,7 @@ export default async function InsurerDetailPage({ params }: Props) {
       />
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd data={insuranceAgencySchema(profile, stats ?? null)} />
 
       <Breadcrumb
         items={[

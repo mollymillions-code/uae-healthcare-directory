@@ -12,7 +12,7 @@ import {
   getProviderCountByCity, getProviderCountByAreaAndCity, getFaqs,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
-import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
+import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema, truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
@@ -28,9 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!city) return {};
   const count = await getProviderCountByCity(city.slug);
   const regShort = city.slug === "dubai" ? "DHA" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "DOH" : "MOHAP";
+  const year = new Date().getFullYear();
   return {
-    title: `${count}+ Healthcare Providers in ${city.name}, UAE — Ratings & Reviews | Zavis`,
-    description: `Find and compare ${count}+ ${regShort}-licensed hospitals, clinics, dentists & specialists in ${city.name}. Google ratings, insurance accepted, hours & directions. Free directory, updated March 2026.`,
+    title: truncateTitle(`${count}+ Healthcare Providers in ${city.name} — Compare [${year}]`),
+    description: truncateDescription(`Find & compare ${count}+ ${regShort}-licensed hospitals, clinics, dentists & specialists in ${city.name}. Ratings, reviews, insurance, hours & directions. Free directory.`),
     alternates: {
       canonical: `${getBaseUrl()}/directory/${city.slug}`,
       languages: {

@@ -333,7 +333,6 @@ export function procedureSchema(procedure: MedicalProcedure) {
     howPerformed: procedure.whatToExpect,
     preparation: procedure.anaesthesia !== "none" ? `${procedure.anaesthesia} anaesthesia` : "No anaesthesia required",
     followup: procedure.recoveryTime,
-    status: "https://schema.org/EventScheduled",
     code: {
       "@type": "MedicalCode",
       codeValue: procedure.cptCode,
@@ -386,6 +385,90 @@ export function procedureCityOffersSchema(
       "@type": "City",
       name: cityName,
     },
+  };
+}
+
+/**
+ * Generate HowTo schema for a procedure's "What to Expect" section.
+ * Only emits the schema when the procedure has meaningful preparation info.
+ */
+export function procedureHowToSchema(procedure: MedicalProcedure): Record<string, unknown> | null {
+  // Only generate HowTo when we have substantive whatToExpect content
+  if (!procedure.whatToExpect || procedure.whatToExpect.length < 30) return null;
+
+  const base = getBaseUrl();
+  const steps: { "@type": string; name: string; text: string; position: number }[] = [];
+  let position = 1;
+
+  // Step 1: Preparation / anaesthesia
+  if (procedure.anaesthesia !== "none") {
+    const anaesthesiaLabel =
+      procedure.anaesthesia === "local"
+        ? "local anaesthesia"
+        : procedure.anaesthesia === "sedation"
+        ? "sedation"
+        : procedure.anaesthesia === "general"
+        ? "general anaesthesia"
+        : "anaesthesia (type varies by case)";
+    steps.push({
+      "@type": "HowToStep",
+      name: "Preparation and anaesthesia",
+      text: `Before the procedure, your medical team will prepare you for ${anaesthesiaLabel}. Follow any fasting or pre-operative instructions provided by your doctor.`,
+      position: position++,
+    });
+  } else {
+    steps.push({
+      "@type": "HowToStep",
+      name: "Preparation",
+      text: "No anaesthesia is required. Your doctor will explain the procedure and answer any questions before starting.",
+      position: position++,
+    });
+  }
+
+  // Step 2: The procedure itself (from whatToExpect)
+  steps.push({
+    "@type": "HowToStep",
+    name: `The ${procedure.name} procedure`,
+    text: procedure.whatToExpect,
+    position: position++,
+  });
+
+  // Step 3: Recovery (only if there is a recovery period)
+  if (procedure.recoveryTime && procedure.recoveryTime !== "No recovery needed") {
+    const settingNote =
+      procedure.setting === "inpatient"
+        ? "You will be monitored in the hospital during your stay."
+        : procedure.setting === "day-case"
+        ? "You can typically go home the same day."
+        : procedure.setting === "outpatient"
+        ? "You can leave shortly after the procedure."
+        : "Hospital stay requirements vary by case.";
+    steps.push({
+      "@type": "HowToStep",
+      name: "Recovery",
+      text: `Expected recovery time is ${procedure.recoveryTime.toLowerCase()}. ${settingNote} Follow your doctor's post-procedure instructions carefully.`,
+      position: position++,
+    });
+  }
+
+  const avgTypical = Math.round(
+    Object.values(procedure.cityPricing).reduce((sum, p) => sum + p.typical, 0) /
+    Math.max(Object.keys(procedure.cityPricing).length, 1)
+  );
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `What to Expect: ${procedure.name}`,
+    description: procedure.description,
+    url: `${base}/pricing/${procedure.slug}`,
+    totalTime: procedure.duration ? (() => { const nums = procedure.duration.match(/\d+/g); return nums && nums.length > 0 ? `PT${nums[nums.length - 1]}M` : undefined; })() : undefined,
+    estimatedCost: {
+      "@type": "MonetaryAmount",
+      currency: "AED",
+      value: avgTypical,
+    },
+    step: steps,
   };
 }
 
