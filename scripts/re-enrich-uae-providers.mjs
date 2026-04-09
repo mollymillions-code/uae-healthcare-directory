@@ -43,18 +43,30 @@ const DATA_DIR = join(PROJECT_ROOT, "data");
 
 const SIMILARITY_THRESHOLD = 0.4; // Below this → ask Gemini Flash for verification
 const LLM_REJECT_THRESHOLD = 0.1; // Below this → reject outright without LLM check
-const RATE_LIMIT_MS = 100;        // 100ms between requests = 10 QPS
+const RATE_LIMIT_MS = 50;         // 50ms between requests — safe with 4 round-robin keys
 const CHECKPOINT_INTERVAL = 50;   // Save progress every N providers
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 1000;       // Exponential backoff: 1s, 2s, 4s
 const LOCATION_DRIFT_THRESHOLD_M = 500; // Update coords if >500m apart
 
 // LLM verification via OpenRouter (Gemini 3.1 Flash Lite Preview)
-const OPENROUTER_KEY = process.env.OPENROUTER_KEY;
-if (!OPENROUTER_KEY) {
-  console.error("ERROR: OPENROUTER_KEY environment variable is required.");
-  console.error("Set it in .env.local on EC2, NOT in code (keys get revoked if committed to git).");
+// Round-robin across multiple keys to parallelize and avoid rate limits
+const OPENROUTER_KEYS = [
+  process.env.OPENROUTER_KEY,
+  process.env.OPENROUTER_KEY_2,
+  process.env.OPENROUTER_KEY_3,
+  process.env.OPENROUTER_KEY_4,
+].filter(Boolean);
+if (OPENROUTER_KEYS.length === 0) {
+  console.error("ERROR: At least one OPENROUTER_KEY* environment variable is required.");
+  console.error("Set in .env.local on EC2, NOT in code (keys get revoked if committed to git).");
   process.exit(1);
+}
+let llmKeyIndex = 0;
+function getNextLLMKey() {
+  const key = OPENROUTER_KEYS[llmKeyIndex % OPENROUTER_KEYS.length];
+  llmKeyIndex++;
+  return key;
 }
 const LLM_MODEL = "google/gemini-3.1-flash-lite-preview";
 const LLM_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
@@ -531,7 +543,7 @@ function jaccardSimilarity(a, b) {
  * Returns { isSame: boolean, confidence: number 0-100 }
  */
 async function verifyMatchWithLLM(dbName, dbCity, dbCategory, googleName, googleAddress) {
-  if (!OPENROUTER_KEY) return { isSame: false, confidence: 0, reason: "no_api_key" };
+  if (OPENROUTER_KEYS.length === 0) return { isSame: false, confidence: 0, reason: "no_api_key" };
 
   const prompt = `You are verifying healthcare provider data in the UAE. Determine if these two entries refer to the SAME real-world business.
 
@@ -563,7 +575,7 @@ Reply ONLY with valid JSON, no markdown:
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENROUTER_KEY}`,
+        "Authorization": `Bearer ${getNextLLMKey()}`,
         "HTTP-Referer": "https://www.zavis.ai",
         "X-Title": "Zavis Provider Data Verification",
       },
