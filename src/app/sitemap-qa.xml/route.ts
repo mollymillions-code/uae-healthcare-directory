@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { providers } from "@/lib/db/schema";
-import { eq, and, or, gt, isNotNull } from "drizzle-orm";
+import { eq, and, or, gt, isNotNull, sql } from "drizzle-orm";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { getBaseUrl } from "@/lib/helpers";
@@ -82,6 +82,119 @@ export async function GET() {
             `<priority>0.7</priority>` +
             `</url>`
         );
+      }
+    }
+
+    // --- Best pages (structural from constants) ---
+
+    // Country best index: /{country}/best
+    const bestIndexUrl = escapeXml(`${baseUrl}/${COUNTRY_CODE}/best`);
+    entries.push(
+      `  <url>` +
+        `<loc>${bestIndexUrl}</loc>` +
+        `<lastmod>${today}</lastmod>` +
+        `<changefreq>weekly</changefreq>` +
+        `<priority>0.7</priority>` +
+        `</url>`
+    );
+
+    // City best pages + city+category best combos from constants
+    for (const city of countryCities) {
+      const cityBestUrl = escapeXml(
+        `${baseUrl}/${COUNTRY_CODE}/best/${city.slug}`
+      );
+      entries.push(
+        `  <url>` +
+          `<loc>${cityBestUrl}</loc>` +
+          `<lastmod>${today}</lastmod>` +
+          `<changefreq>weekly</changefreq>` +
+          `<priority>0.7</priority>` +
+          `</url>`
+      );
+
+      for (const cat of CATEGORIES) {
+        const catBestUrl = escapeXml(
+          `${baseUrl}/${COUNTRY_CODE}/best/${city.slug}/${cat.slug}`
+        );
+        entries.push(
+          `  <url>` +
+            `<loc>${catBestUrl}</loc>` +
+            `<lastmod>${today}</lastmod>` +
+            `<changefreq>weekly</changefreq>` +
+            `<priority>0.8</priority>` +
+            `</url>`
+        );
+      }
+    }
+
+    // --- Best pages (DB-backed: only combos with >= 3 rated providers) ---
+
+    // Query city+category combos that have >= 3 rated providers (non-thin)
+    const ratedCombos = await db
+      .select({
+        citySlug: providers.citySlug,
+        categorySlug: providers.categorySlug,
+        cnt: sql<number>`count(*)`.as("cnt"),
+      })
+      .from(providers)
+      .where(
+        and(
+          eq(providers.status, "active"),
+          eq(providers.country, COUNTRY_CODE),
+          gt(providers.googleRating, "0")
+        )
+      )
+      .groupBy(providers.citySlug, providers.categorySlug);
+
+    // Collect DB-backed city+category combos into a Set for deduplication
+    const structuralBestSet = new Set<string>();
+    for (const city of countryCities) {
+      structuralBestSet.add(`${city.slug}`);
+      for (const cat of CATEGORIES) {
+        structuralBestSet.add(`${city.slug}/${cat.slug}`);
+      }
+    }
+
+    // Add DB-only combos not already covered by structural constants
+    const citiesWithBestSet = new Set<string>();
+    for (const combo of ratedCombos) {
+      if (combo.cnt >= 3 && combo.citySlug) {
+        citiesWithBestSet.add(combo.citySlug);
+      }
+    }
+
+    for (const citySlug of citiesWithBestSet) {
+      if (!structuralBestSet.has(citySlug)) {
+        const cityBestUrl = escapeXml(
+          `${baseUrl}/${COUNTRY_CODE}/best/${citySlug}`
+        );
+        entries.push(
+          `  <url>` +
+            `<loc>${cityBestUrl}</loc>` +
+            `<lastmod>${today}</lastmod>` +
+            `<changefreq>weekly</changefreq>` +
+            `<priority>0.7</priority>` +
+            `</url>`
+        );
+      }
+    }
+
+    for (const combo of ratedCombos) {
+      if (combo.cnt >= 3 && combo.citySlug && combo.categorySlug) {
+        const key = `${combo.citySlug}/${combo.categorySlug}`;
+        if (!structuralBestSet.has(key)) {
+          const comboBestUrl = escapeXml(
+            `${baseUrl}/${COUNTRY_CODE}/best/${combo.citySlug}/${combo.categorySlug}`
+          );
+          entries.push(
+            `  <url>` +
+              `<loc>${comboBestUrl}</loc>` +
+              `<lastmod>${today}</lastmod>` +
+              `<changefreq>weekly</changefreq>` +
+              `<priority>0.8</priority>` +
+              `</url>`
+          );
+        }
       }
     }
 

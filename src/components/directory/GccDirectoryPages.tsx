@@ -51,6 +51,7 @@ import {
   getCitiesByCountry,
   cityBelongsToCountry,
   countryDirectoryUrl,
+  countryBestUrl,
   COUNTRY_LOCALES,
 } from "@/lib/country-directory-utils";
 import {
@@ -1006,6 +1007,24 @@ export async function GccSegmentsPage({
             )}
           </p>
         </div>
+
+        {/* Best page callout — only show when there are rated providers */}
+        {providers.some((p) => Number(p.googleRating) > 0) && (
+          <Link
+            href={countryBestUrl(country.code, city.slug, category.slug)}
+            className="flex items-center justify-between bg-[#1c1c1c] text-white px-5 py-3.5 mb-6 hover:bg-[#2a2a2a] transition-colors group"
+          >
+            <div>
+              <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm tracking-tight">
+                See the Best {category.name} in {city.name}
+              </p>
+              <p className="font-['Geist',sans-serif] text-xs text-white/50 mt-0.5">
+                Top-rated providers ranked by patient reviews
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-white/40 group-hover:text-white transition-colors flex-shrink-0" />
+          </Link>
+        )}
 
         {areas.length > 0 && (
           <div className="mb-6">
