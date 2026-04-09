@@ -13,6 +13,10 @@ export default function robots(): MetadataRoute.Robots {
       `${getBaseUrl()}/sitemap-providers.xml`,
       `${getBaseUrl()}/sitemap-providers-ar.xml`,
       `${getBaseUrl()}/sitemap-intelligence.xml`,
+      `${getBaseUrl()}/sitemap-qa.xml`,
+      `${getBaseUrl()}/sitemap-sa.xml`,
+      `${getBaseUrl()}/sitemap-bh.xml`,
+      `${getBaseUrl()}/sitemap-kw.xml`,
     ],
   };
 }

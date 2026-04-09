@@ -32,7 +32,8 @@ export function medicalOrganizationSchema(
   city: LocalCity,
   category: LocalCategory,
   area?: LocalArea | null,
-  citySlug?: string
+  citySlug?: string,
+  options?: { countryCode?: string; countryPrefix?: string; currency?: string; regulators?: string[] }
 ) {
   // Map category slugs to the most specific schema.org subtype
   const schemaTypeMap: Record<string, string> = {
@@ -49,8 +50,12 @@ export function medicalOrganizationSchema(
   const schemaType = schemaTypeMap[category.slug] || "MedicalBusiness";
 
   const resolvedCitySlug = citySlug || city.slug;
+  const countryCode = options?.countryCode ?? "AE";
+  const countryPrefix = options?.countryPrefix;
+  const currency = options?.currency ?? "AED";
   const base = getBaseUrl();
-  const providerUrl = `${base}/directory/${city.slug}/${category.slug}/${provider.slug}`;
+  const directoryRoot = countryPrefix ? `/${countryPrefix}/directory` : "/directory";
+  const providerUrl = `${base}${directoryRoot}/${city.slug}/${category.slug}/${provider.slug}`;
   const lat = parseFloat(provider.latitude);
   const lng = parseFloat(provider.longitude);
   const hasValidCoords = lat !== 0 && lng !== 0;
@@ -83,7 +88,7 @@ export function medicalOrganizationSchema(
       streetAddress: provider.address,
       addressLocality: area?.name || city.name,
       addressRegion: city.emirate,
-      addressCountry: "AE",
+      addressCountry: countryCode.toUpperCase(),
     },
     ...(hasValidCoords ? {
       geo: {
@@ -118,7 +123,7 @@ export function medicalOrganizationSchema(
       credentialCategory: "Health Authority License",
       recognizedBy: {
         "@type": "Organization",
-        name: getRegulator(resolvedCitySlug),
+        name: options?.regulators ? options.regulators.join(", ") : getRegulator(resolvedCitySlug),
       },
     },
     ...(hasValidRating
@@ -163,7 +168,7 @@ export function medicalOrganizationSchema(
         }
       : {}),
     ...(provider.website ? { sameAs: [provider.website] } : {}),
-    currenciesAccepted: "AED",
+    currenciesAccepted: currency,
     priceRange: "$$",
     dateModified: provider.lastVerified || new Date().toISOString().split("T")[0],
   };
@@ -203,9 +208,12 @@ export function itemListSchema(
   name: string,
   providers: LocalProvider[],
   cityName: string,
-  baseUrl?: string
+  baseUrl?: string,
+  options?: { countryCode?: string; countryPrefix?: string }
 ) {
   const base = baseUrl || getBaseUrl();
+  const cCode = (options?.countryCode ?? "AE").toUpperCase();
+  const directoryRoot = options?.countryPrefix ? `/${options.countryPrefix}/directory` : "/directory";
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -216,7 +224,7 @@ export function itemListSchema(
     itemListElement: providers.map((p, i) => {
       const ratingVal = Number(p.googleRating);
       const hasValidRating = ratingVal > 0 && (p.googleReviewCount ?? 0) > 0;
-      const providerUrl = `${base}/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`;
+      const providerUrl = `${base}${directoryRoot}/${p.citySlug}/${p.categorySlug}/${p.slug}`;
       return {
         "@type": "ListItem",
         position: i + 1,
@@ -231,7 +239,7 @@ export function itemListSchema(
             "@type": "PostalAddress",
             streetAddress: p.address,
             addressLocality: cityName,
-            addressCountry: "AE",
+            addressCountry: cCode,
           },
           ...(hasValidRating
             ? {
@@ -260,13 +268,15 @@ export function itemListSchema(
 export function providerListSchema(
   providers: LocalProvider[],
   categoryName: string,
-  cityName: string
+  cityName: string,
+  options?: { countryCode?: string; countryPrefix?: string }
 ) {
   return itemListSchema(
     `${categoryName} in ${cityName}`,
     providers,
     cityName,
-    getBaseUrl()
+    getBaseUrl(),
+    options
   );
 }
 
@@ -392,9 +402,11 @@ export function generateProviderParagraph(
   provider: LocalProvider,
   city: LocalCity,
   category: LocalCategory,
-  area?: LocalArea | null
+  area?: LocalArea | null,
+  countryName?: string
 ): string {
   const parts: string[] = [];
+  const resolvedCountryName = countryName ?? "United Arab Emirates";
 
   // Opening sentence
   const locationDesc = area
@@ -402,7 +414,7 @@ export function generateProviderParagraph(
     : city.name;
 
   parts.push(
-    `${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} located in ${locationDesc}, United Arab Emirates.`
+    `${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} located in ${locationDesc}, ${resolvedCountryName}.`
   );
 
   // Services
@@ -465,11 +477,17 @@ export function generateFacetAnswerBlock(
   category: LocalCategory,
   area: LocalArea | null,
   providerCount: number,
-  topProvider?: LocalProvider
+  topProvider?: LocalProvider,
+  options?: { countryName?: string; regulators?: string[] }
 ): string {
   const locationDesc = area ? `${area.name}, ${city.name}` : city.name;
+  const resolvedCountryName = options?.countryName ?? "UAE";
+  const directoryName = `${resolvedCountryName} Open Healthcare Directory`;
+  const regulatorText = options?.regulators
+    ? options.regulators.join(", ")
+    : getRegulator(city.slug);
 
-  let answer = `According to the UAE Open Healthcare Directory, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, UAE.`;
+  let answer = `According to the ${directoryName}, there are ${providerCount} ${category.name.toLowerCase()} in ${locationDesc}, ${resolvedCountryName}.`;
 
   if (topProvider && topProvider.googleRating && Number(topProvider.googleRating) > 0) {
     const reviewPart = topProvider.googleReviewCount
@@ -480,7 +498,7 @@ export function generateFacetAnswerBlock(
     answer += ` Providers include ${topProvider.name} and others.`;
   }
 
-  answer += ` All listings include contact details, operating hours, accepted insurance plans, and directions. Healthcare in ${city.name} is regulated by the ${getRegulator(city.slug)}. Data sourced from official government registers, last verified March 2026.`;
+  answer += ` All listings include contact details, operating hours, accepted insurance plans, and directions. Healthcare in ${city.name} is regulated by the ${regulatorText}. Data sourced from official government registers, last verified March 2026.`;
 
   return answer;
 }
@@ -556,29 +574,34 @@ export function generateFacetFaqs(
   city: LocalCity,
   category: LocalCategory,
   area: LocalArea | null,
-  providerCount: number
+  providerCount: number,
+  options?: { countryName?: string; regulators?: string[] }
 ): { question: string; answer: string }[] {
   const loc = area ? `${area.name}, ${city.name}` : city.name;
   const catLower = category.name.toLowerCase();
+  const resolvedCountryName = options?.countryName ?? "UAE";
+  const directoryName = `${resolvedCountryName} Open Healthcare Directory`;
   const priceRange = getCategoryPriceRange(category.slug, city.slug);
-  const insuranceContext = getCityInsuranceContext(city.slug);
+  const insuranceContext = options?.regulators
+    ? `Healthcare in ${city.name} is regulated by ${options.regulators.join(", ")}. Check individual listings for specific insurance acceptance.`
+    : getCityInsuranceContext(city.slug);
 
   return [
     {
       question: `How many ${catLower} are there in ${loc}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${providerCount} ${catLower} listed in ${loc}, UAE. Browse the UAE Open Healthcare Directory to compare providers by rating, insurance acceptance, and services offered.`,
+      answer: `According to the ${directoryName}, there are ${providerCount} ${catLower} listed in ${loc}, ${resolvedCountryName}. Browse the ${directoryName} to compare providers by rating, insurance acceptance, and services offered.`,
     },
     {
       question: `How do I find ${catLower} in ${loc}?`,
-      answer: `Browse ${providerCount} ${catLower} in ${loc} on the UAE Open Healthcare Directory. Compare providers by services offered, accepted insurance plans, operating hours, and patient reviews where available. Typical wait times for a GP walk-in are 15–45 minutes; specialist appointments can usually be booked within 1–7 days.`,
+      answer: `Browse ${providerCount} ${catLower} in ${loc} on the ${directoryName}. Compare providers by services offered, accepted insurance plans, operating hours, and patient reviews where available. Typical wait times for a GP walk-in are 15–45 minutes; specialist appointments can usually be booked within 1–7 days.`,
     },
     {
       question: `Do ${catLower} in ${loc} accept insurance?`,
-      answer: `Most ${catLower} in ${loc} accept major UAE insurance plans. ${insuranceContext} Check individual listings on the UAE Open Healthcare Directory for specific insurance acceptance.`,
+      answer: `Most ${catLower} in ${loc} accept major insurance plans. ${insuranceContext} Check individual listings on the ${directoryName} for specific insurance acceptance.`,
     },
     {
       question: `How do I book an appointment at a ${catLower.replace(/s$/, "")} in ${loc}?`,
-      answer: `You can book by calling the provider directly using the phone number on their listing page in the UAE Open Healthcare Directory, or visit their website for online booking. Many ${catLower} in ${loc} also accept walk-in appointments. Emergency care is available 24/7 with immediate triage; non-critical cases are typically seen within 30–120 minutes.`,
+      answer: `You can book by calling the provider directly using the phone number on their listing page in the ${directoryName}, or visit their website for online booking. Many ${catLower} in ${loc} also accept walk-in appointments. Emergency care is available 24/7 with immediate triage; non-critical cases are typically seen within 30–120 minutes.`,
     },
     {
       question: `How much does a ${catLower.replace(/s$/, "")} consultation cost in ${loc}?`,
@@ -586,7 +609,7 @@ export function generateFacetFaqs(
     },
     {
       question: `Which insurance plans are accepted by ${catLower} in ${loc}?`,
-      answer: `${insuranceContext} Many ${catLower} in ${loc} also accept international plans for visitors and expatriates. Use the insurance filter on individual provider listing pages on the UAE Open Healthcare Directory to confirm which plans a specific clinic or hospital accepts.`,
+      answer: `${insuranceContext} Many ${catLower} in ${loc} also accept international plans for visitors and expatriates. Use the insurance filter on individual provider listing pages on the ${directoryName} to confirm which plans a specific clinic or hospital accepts.`,
     },
   ];
 }
@@ -672,12 +695,14 @@ export function generateProviderMetaDescription(
   provider: LocalProvider,
   category: LocalCategory,
   city: LocalCity,
-  area?: LocalArea | null
+  area?: LocalArea | null,
+  options?: { countryName?: string; regulators?: string[] }
 ): string {
   const parts: string[] = [];
   const rating = Number(provider.googleRating);
   const hasRating = rating > 0;
   const loc = area ? `${area.name}, ${city.name}` : city.name;
+  const resolvedCountryName = options?.countryName ?? "UAE";
 
   // Lead with rating if available
   if (hasRating) {
@@ -685,7 +710,7 @@ export function generateProviderMetaDescription(
   }
 
   // Specialty
-  parts.push(`${category.name} in ${loc}, UAE.`);
+  parts.push(`${category.name} in ${loc}, ${resolvedCountryName}.`);
 
   // Insurance
   if (provider.insurance.length > 0) {
@@ -709,7 +734,7 @@ export function generateProviderMetaDescription(
   }
 
   // Regulator badge
-  parts.push(`Licensed by ${getRegulator(city.slug)}.`);
+  parts.push(`Licensed by ${options?.regulators ? options.regulators.join(", ") : getRegulator(city.slug)}.`);
 
   // Trim to ~155 chars for Google display
   let desc = parts.join(" ");

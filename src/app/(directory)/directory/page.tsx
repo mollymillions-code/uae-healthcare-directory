@@ -285,6 +285,40 @@ export default async function DirectoryHomePage() {
         </div>
       </section>
 
+      {/* ─── Healthcare Directories Across the GCC ─── */}
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">
+            Healthcare Directories Across the GCC
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { flag: "\ud83c\uddf6\ud83c\udde6", name: "Qatar", href: "/qa/directory" },
+            { flag: "\ud83c\uddf8\ud83c\udde6", name: "Saudi Arabia", href: "/sa/directory" },
+            { flag: "\ud83c\udde7\ud83c\udded", name: "Bahrain", href: "/bh/directory" },
+            { flag: "\ud83c\uddf0\ud83c\uddfc", name: "Kuwait", href: "/kw/directory" },
+          ].map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              className="flex items-center gap-3 bg-white border border-black/[0.06] rounded-xl px-5 py-4 hover:border-[#006828]/20 hover:shadow-card transition-all duration-300 group"
+            >
+              <span className="text-2xl">{c.flag}</span>
+              <div>
+                <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
+                  {c.name} Healthcare Directory
+                </span>
+                <span className="block font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
+                  Browse providers
+                </span>
+              </div>
+              <ChevronRight className="ml-auto h-4 w-4 text-black/20 group-hover:text-[#006828] transition-colors" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* ─── FAQs ─── */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <FaqSection faqs={homeFaqs} />

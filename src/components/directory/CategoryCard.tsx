@@ -10,6 +10,8 @@ interface CategoryCardProps {
   icon: string;
   citySlug?: string;
   providerCount?: number;
+  /** Override the default href (used for country-prefixed routes) */
+  hrefOverride?: string;
 }
 
 export function CategoryCard({
@@ -18,8 +20,9 @@ export function CategoryCard({
   icon,
   citySlug,
   providerCount,
+  hrefOverride,
 }: CategoryCardProps) {
-  const href = citySlug ? `/directory/${citySlug}/${slug}` : `/directory/dubai/${slug}`;
+  const href = hrefOverride ?? (citySlug ? `/directory/${citySlug}/${slug}` : `/directory/dubai/${slug}`);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (Icons as any)[icon] || Icons.Stethoscope;

@@ -81,6 +81,7 @@ export interface LocalCity {
   slug: string;
   name: string;
   emirate: string;
+  country: string;
   nameAr?: string;
   latitude: string;
   longitude: string;
@@ -301,12 +302,16 @@ const CATEGORY_BY_SLUG = new Map(MAPPED_CATEGORIES.map((c) => [c.slug, c]));
 
 // ─── Synchronous Data Access Functions (from constants, never DB) ────────────
 
-export function getCities(): LocalCity[] {
-  return CITIES as unknown as LocalCity[];
+export function getCities(country?: string): LocalCity[] {
+  const all = CITIES as unknown as LocalCity[];
+  // Default to UAE-only when no country is specified — prevents 43 GCC cities
+  // from appearing on the 45+ existing call sites that expect UAE cities only.
+  const cc = country ?? "ae";
+  return all.filter((c) => c.country === cc);
 }
 
 export function getCityBySlug(slug: string): LocalCity | undefined {
-  return CITIES.find((c) => c.slug === slug);
+  return (CITIES as unknown as LocalCity[]).find((c) => c.slug === slug);
 }
 
 export function getAreasByCity(citySlug: string): LocalArea[] {
@@ -592,6 +597,7 @@ export async function getProviders(filters?: {
   page?: number;
   limit?: number;
   sort?: "rating" | "name" | "relevance";
+  country?: string;
 }): Promise<{ providers: LocalProvider[]; total: number; page: number; totalPages: number }> {
   // ─── Verify DB has data (first call only) ──────────────────────────────────
   await verifyDbHasData();
@@ -646,6 +652,15 @@ export async function getProviders(filters?: {
 
   // Build WHERE conditions
   const conditions = [];
+  // Default to UAE when neither country nor citySlug is passed — prevents GCC
+  // providers from leaking into UAE directory pages once GCC data is seeded.
+  // When citySlug is set, it already scopes to a specific country's city, so
+  // no default country filter is needed.
+  if (filters?.country) {
+    conditions.push(_eq!(t.country, filters.country));
+  } else if (!filters?.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
   if (filters?.citySlug) conditions.push(_eq!(t.citySlug, filters.citySlug));
   if (filters?.categorySlug) conditions.push(_eq!(t.categorySlug, filters.categorySlug));
   if (filters?.areaSlug) conditions.push(_eq!(t.areaSlug, filters.areaSlug));

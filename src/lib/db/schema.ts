@@ -17,6 +17,7 @@ export const cities = pgTable("cities", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   emirate: text("emirate").notNull(),
+  country: text("country").notNull().default("ae"),
   nameAr: text("name_ar"),
   latitude: numeric("latitude", { precision: 10, scale: 7 }),
   longitude: numeric("longitude", { precision: 10, scale: 7 }),
@@ -113,6 +114,9 @@ export const providers = pgTable(
     subcategorySlug: text("subcategory_slug"),
     facilityType: text("facility_type"),
 
+    // Country
+    country: text("country").notNull().default("ae"),
+
     // Location
     cityId: text("city_id")
       .notNull()
@@ -190,6 +194,11 @@ export const providers = pgTable(
     ratingIdx: index("idx_providers_rating").on(table.googleRating),
     citySlugIdx: index("idx_providers_city_slug").on(table.citySlug),
     categorySlugIdx: index("idx_providers_category_slug").on(table.categorySlug),
+    countryIdx: index("idx_providers_country").on(table.country),
+    countryCitySlugIdx: index("idx_providers_country_city_slug").on(
+      table.country,
+      table.citySlug
+    ),
     citySlugCategorySlugIdx: index("idx_providers_city_cat_slug").on(
       table.citySlug,
       table.categorySlug
