@@ -66,7 +66,7 @@ export function Navbar() {
     <>
       <nav ref={navRef} className="sticky top-0 z-50 bg-[#f8f8f6]/90 border-b border-black/5" style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="relative flex items-center justify-between h-16">
             <Link
               href="/"
               className="flex-shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006828] rounded"

@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Clock, ArrowRight, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { Footer } from '@/components/landing/layout/Footer'
 
 /** Styled placeholder when thumbnail is missing or fails to load */
 function ThumbnailPlaceholder({ title, category }: { title: string; category: string }) {
@@ -248,23 +249,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-black/[0.06] bg-[#f8f8f6]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] text-sm">ZAVIS</span>
-              <span className="text-black/20 text-[12px] ml-1.5">Research</span>
-            </div>
-            <div className="flex items-center gap-5 text-[12px] text-black/30">
-              <Link href="/" className="hover:text-black/60 transition-colors">zavis.ai</Link>
-              <a href="https://www.linkedin.com/company/zavis" target="_blank" rel="noopener noreferrer" className="hover:text-black/60 transition-colors">LinkedIn</a>
-              <a href="https://www.zavis.ai/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-black/60 transition-colors">Privacy</a>
-              <span>2026 Zavis Inc.</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
