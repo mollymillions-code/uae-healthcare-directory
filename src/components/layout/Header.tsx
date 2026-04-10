@@ -91,10 +91,15 @@ export function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo — prominent like Bloomberg masthead */}
             <Link href={directoryHome} className="flex items-center gap-3 flex-shrink-0">
-              <span className="bg-[#006828] w-8 h-8 rounded-lg flex items-center justify-center text-white font-medium text-sm font-['Bricolage_Grotesque',sans-serif]">
-                Z
-              </span>
-              <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[20px] sm:text-[22px] tracking-tight text-white whitespace-nowrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/zavis-logo-light.svg"
+                alt="Zavis"
+                className="h-[26px] w-auto"
+                draggable={false}
+              />
+              <span className="hidden sm:inline-block h-5 w-px bg-white/20" />
+              <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[16px] sm:text-[18px] tracking-tight text-white/80 whitespace-nowrap">
                 {directoryName}
               </span>
             </Link>

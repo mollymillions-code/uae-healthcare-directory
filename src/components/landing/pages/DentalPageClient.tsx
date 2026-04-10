@@ -5,7 +5,7 @@ import { AnimatedSection } from "@/components/landing/AnimatedSection";
 import { LogoBar } from "@/components/landing/LogoBar";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
-import svgPaths from "@/imports/svg-w8pwpn6t1p";
+import { ZavisLogo } from "@/components/landing/navbar/ZavisLogo";
 import { dentalFeatures as features, comparisonRows } from "@/data/landing/dental";
 import { emrPartners } from "@/data/landing/brand-partners";
 
@@ -170,21 +170,7 @@ export function DentalPageClient() {
                     </th>
                     <th className="p-4 text-left bg-[#006828] text-white font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm w-[20%]">
                       <div className="flex items-center justify-center">
-                        <svg
-                          width="60"
-                          height="16"
-                          viewBox="0 0 80 21"
-                          fill="none"
-                        >
-                          <g clipPath="url(#zavisTableLogo)">
-                            <path d={svgPaths.p5d2e200} fill="white" />
-                          </g>
-                          <defs>
-                            <clipPath id="zavisTableLogo">
-                              <rect width="80" height="21" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg>
+                        <ZavisLogo color="white" />
                       </div>
                     </th>
                     <th className="p-4 text-center bg-white font-['Geist',sans-serif] font-semibold text-sm text-black/50 w-[20%]">
