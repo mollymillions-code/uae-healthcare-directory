@@ -110,6 +110,34 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Cross-country GCC directories — helps Google discover all country directories */}
+        <div className="border-t border-white/10 pt-6 pb-4">
+          <h5 className="text-xs font-bold text-[#006828] uppercase tracking-wider mb-3">
+            Healthcare Directories Across the GCC
+          </h5>
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <Link href="/directory" className="text-white/60 hover:text-white transition-colors">
+              UAE Healthcare Directory
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/sa/directory" className="text-white/60 hover:text-white transition-colors">
+              Saudi Arabia Healthcare Directory
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/qa/directory" className="text-white/60 hover:text-white transition-colors">
+              Qatar Healthcare Directory
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/bh/directory" className="text-white/60 hover:text-white transition-colors">
+              Bahrain Healthcare Directory
+            </Link>
+            <span className="text-white/20">·</span>
+            <Link href="/kw/directory" className="text-white/60 hover:text-white transition-colors">
+              Kuwait Healthcare Directory
+            </Link>
+          </div>
+        </div>
+
         {/* Bottom */}
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <span className="text-xs text-white/40">

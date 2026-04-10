@@ -197,6 +197,26 @@ export async function GET() {
       }
     }
 
+    // --- Filter pages (24-hour, emergency, walk-in) ---
+    // Include these for every city in the country — the pages themselves
+    // return 404 if fewer than 3 providers match, so Google will drop thin pages.
+    const FILTER_SEGMENTS = ["24-hour", "emergency", "walk-in"];
+    for (const city of countryCities) {
+      for (const segment of FILTER_SEGMENTS) {
+        const filterUrl = escapeXml(
+          `${baseUrl}/${COUNTRY_CODE}/directory/${city.slug}/${segment}`
+        );
+        entries.push(
+          `  <url>` +
+            `<loc>${filterUrl}</loc>` +
+            `<lastmod>${today}</lastmod>` +
+            `<changefreq>weekly</changefreq>` +
+            `<priority>0.7</priority>` +
+            `</url>`
+        );
+      }
+    }
+
     // --- Individual provider pages from DB ---
 
     // Only include providers that pass richness check (exclude name-only stubs)
