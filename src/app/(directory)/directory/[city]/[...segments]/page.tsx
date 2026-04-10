@@ -188,6 +188,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }
 
       // --- SEO description: max ~155 chars, packed with structured data ---
+      // Build only from non-empty parts; fall back to a proper sentence for cleared providers.
       const descParts: string[] = [];
       const prov = resolved.provider;
       if (prov.googleRating && Number(prov.googleRating) > 0) {
@@ -203,8 +204,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       if (prov.phone) {
         descParts.push("☎ Contact info available");
       }
-      const descBody = descParts.length > 0 ? descParts.join(". ") + "." : (prov.shortDescription || "");
-      const seoDesc = truncateDescription(`${prov.name}: ${descBody} Hours & directions on Zavis.`);
+      let seoDesc: string;
+      if (descParts.length > 0) {
+        // Enriched provider: structured description
+        seoDesc = truncateDescription(`${prov.name}: ${descParts.join(". ")}. Hours & directions on Zavis.`);
+      } else if (prov.shortDescription) {
+        // Has a pre-written description
+        seoDesc = truncateDescription(`${prov.name}: ${prov.shortDescription}`);
+      } else {
+        // Cleared provider: build a proper full-sentence fallback (prevents malformed "Name: . Hours...")
+        const areaBit = resolved.area?.name ? `${resolved.area.name}, ` : "";
+        seoDesc = truncateDescription(
+          `${prov.name} is a ${resolved.category.name.toLowerCase()} in ${areaBit}${city.name}, UAE. Address, hours & directions on the UAE Open Healthcare Directory by Zavis.`
+        );
+      }
 
       return {
         title: seoTitle,
@@ -222,7 +235,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
         openGraph: {
           title: `${resolved.provider.name} | ${resolved.category.name} in ${city.name}`,
-          description: resolved.provider.shortDescription || '',
+          description: seoDesc, // Reuse the same full description (never empty)
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',

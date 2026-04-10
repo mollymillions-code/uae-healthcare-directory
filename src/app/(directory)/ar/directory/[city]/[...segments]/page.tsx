@@ -482,7 +482,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
     const areaNameAr = area?.nameAr || area?.name || "";
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
-    const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`;
+    const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating && Number(provider.googleRating) > 0 ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`;
 
     return (
       <div className="container-tc py-8">
@@ -517,7 +517,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                 <span className="badge">{catNameAr}</span>
                 {area && <span className="inline-block bg-light-100 text-dark text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 border border-black/[0.06]">{areaNameAr}</span>}
               </div>
-              {provider.googleRating && <StarRating rating={Number(provider.googleRating)} reviewCount={provider.googleReviewCount} size="lg" />}
+              {provider.googleRating && Number(provider.googleRating) > 0 && <StarRating rating={Number(provider.googleRating)} reviewCount={provider.googleReviewCount} size="lg" />}
             </div>
 
             {/* Answer block */}
@@ -645,7 +645,9 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                     {nearbyProviders.map((np) => (
                       <Link key={np.id} href={`/ar/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block text-sm hover:text-accent transition-colors">
                         <p className="font-medium text-dark">{np.name}</p>
-                        <p className="text-xs text-muted">{np.googleRating} {ar.stars}</p>
+                        {np.googleRating && Number(np.googleRating) > 0 && (
+                          <p className="text-xs text-muted">{np.googleRating} {ar.stars}</p>
+                        )}
                       </Link>
                     ))}
                   </div>
