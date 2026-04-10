@@ -714,9 +714,15 @@ export async function generateGccSegmentsMetadata(
       const year = new Date().getFullYear();
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.category.slug)}`;
       return {
-        title: truncateTitle(
-          `${total} Best ${resolved.category.name} in ${city.name}, ${country.name} [${year}]`
-        ),
+        title: (() => {
+          const full = `${total} Best ${resolved.category.name} in ${city.name}, ${country.name} [${year}]`;
+          if (full.length <= 58) return full;
+          const short = `${total} ${resolved.category.name} in ${city.name}, ${country.name} [${year}]`;
+          if (short.length <= 58) return short;
+          const shorter = `${total} ${resolved.category.name} in ${city.name} [${year}]`;
+          if (shorter.length <= 58) return shorter;
+          return truncateTitle(`${resolved.category.name} in ${city.name}, ${country.name} [${year}]`);
+        })(),
         description: truncateDescription(
           `Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, ${country.name}. Ratings, reviews, insurance accepted & hours. Free directory.`
         ),
