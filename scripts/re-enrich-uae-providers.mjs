@@ -103,10 +103,14 @@ const TEXT_SEARCH_COST = 0.032;
 const PLACE_DETAILS_COST = 0.017;
 
 // ─── File paths ───────────────────────────────────────────────────────────────
+// Worker-aware: when running multiple parallel instances, each uses its own files.
+// Set WORKER_ID=1, WORKER_ID=2, etc. to distinguish. Default is "main".
 
-const CHECKPOINT_PATH = join(DATA_DIR, "re-enrichment-checkpoint.json");
-const REPORT_PATH = join(DATA_DIR, "re-enrichment-report.json");
-const MISMATCHES_PATH = join(DATA_DIR, "re-enrichment-mismatches.csv");
+const WORKER_ID = process.env.WORKER_ID || "main";
+const WORKER_SUFFIX = WORKER_ID === "main" ? "" : `-worker${WORKER_ID}`;
+const CHECKPOINT_PATH = join(DATA_DIR, `re-enrichment-checkpoint${WORKER_SUFFIX}.json`);
+const REPORT_PATH = join(DATA_DIR, `re-enrichment-report${WORKER_SUFFIX}.json`);
+const MISMATCHES_PATH = join(DATA_DIR, `re-enrichment-mismatches${WORKER_SUFFIX}.csv`);
 
 // ─── Environment ──────────────────────────────────────────────────────────────
 
