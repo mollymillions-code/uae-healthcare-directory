@@ -33,7 +33,7 @@ import {
 import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, ExternalLink, Calendar, MessageSquareQuote, Activity, ArrowRight,
+  CheckCircle, ExternalLink, Calendar, Activity, ArrowRight,
   Accessibility, Image as ImageIcon, Star, Quote,
 } from "lucide-react";
 import {
