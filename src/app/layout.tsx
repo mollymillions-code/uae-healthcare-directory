@@ -104,8 +104,11 @@ export default function RootLayout({
       </head>
       {/* Google Tag Manager — loads GA4 + Google Ads + all event tags */}
       <Script id="gtm" strategy="afterInteractive">{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9N3FDMQ');`}</Script>
-      {/* Minimal gtag shim — lets gtag_report_conversion() push to dataLayer for GTM */}
-      <Script id="gtag-shim" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;`}</Script>
+      {/* Minimal gtag shim — lets gtag_report_conversion() push to dataLayer for GTM.
+          Recursion guard: drops gtag("event", X, ...) calls for event names that have
+          GTM HTML tags re-pushing the same event, which would otherwise infinite-loop
+          and crash the browser. Incident 2026-04-10: GTM tags 68/71/72/73. */}
+      <Script id="gtag-shim" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){var a=arguments;if(a[0]==="event"){var n=a[1];if(n==="engaged_session"||n==="scroll_milestone"||n==="outbound_click"||n==="contact_click")return;}dataLayer.push(a);}window.gtag=gtag;`}</Script>
       {/* Microsoft Clarity */}
       <Script id="clarity" strategy="lazyOnload">{`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","swpafowqk4");`}</Script>
       {/* LinkedIn Insight Tag — afterInteractive so conversions aren't missed */}
