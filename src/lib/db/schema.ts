@@ -164,6 +164,65 @@ export const providers = pgTable(
     googlePhotoUrl: text("google_photo_url"),
     photos: jsonb("photos").$type<string[]>().default([]),
 
+    // Comprehensive Google Places (New API) data — fetched once, served forever from R2.
+    // `gallery_photos` URLs live on our R2 bucket; we never hit the Places API at runtime.
+    googlePlaceDetails: jsonb("google_place_details").$type<Record<string, unknown>>(),
+    galleryPhotos: jsonb("gallery_photos")
+      .$type<
+        Array<{
+          url: string;
+          widthPx: number;
+          heightPx: number;
+          attributions: Array<{ displayName: string; uri: string }>;
+        }>
+      >()
+      .default([]),
+    googleReviews: jsonb("google_reviews")
+      .$type<
+        Array<{
+          name?: string;
+          rating: number;
+          text?: { text: string; languageCode: string };
+          originalText?: { text: string; languageCode: string };
+          authorAttribution?: {
+            displayName: string;
+            uri?: string;
+            photoUri?: string;
+          };
+          publishTime: string;
+          relativePublishTimeDescription?: string;
+        }>
+      >()
+      .default([]),
+    editorialSummary: text("editorial_summary"),
+    editorialSummaryLang: text("editorial_summary_lang"),
+    accessibilityOptions: jsonb("accessibility_options").$type<{
+      wheelchairAccessibleEntrance?: boolean;
+      wheelchairAccessibleParking?: boolean;
+      wheelchairAccessibleRestroom?: boolean;
+      wheelchairAccessibleSeating?: boolean;
+    }>(),
+    googleTypes: jsonb("google_types").$type<string[]>().default([]),
+    plusCodeGlobal: text("plus_code_global"),
+    plusCodeCompound: text("plus_code_compound"),
+    googleMapsUri: text("google_maps_uri"),
+    priceLevel: text("price_level"),
+    openingHoursPeriods: jsonb("opening_hours_periods").$type<
+      Array<{
+        open: { day: number; hour: number; minute: number };
+        close?: { day: number; hour: number; minute: number };
+      }>
+    >(),
+    currentOpeningHours: jsonb("current_opening_hours").$type<{
+      openNow?: boolean;
+      weekdayDescriptions?: string[];
+      periods?: unknown[];
+    }>(),
+    addressComponents: jsonb("address_components").$type<
+      Array<{ longText: string; shortText: string; types: string[] }>
+    >(),
+    googleFetchedAt: timestamp("google_fetched_at", { withTimezone: true }),
+
     // Status
     status: text("status").notNull().default("active"),
     isClaimed: boolean("is_claimed").default(false),
