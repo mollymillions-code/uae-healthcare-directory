@@ -1230,11 +1230,13 @@ async function main() {
         stats.hoursUpdated++;
       }
 
-      // Photo
+      // Photo — store ONLY the photo_reference, not the full URL.
+      // The full URL would leak the API key into every page's HTML (JSON-LD image field).
+      // Frontend wraps this reference with /api/places/photo?ref={ref} proxy.
       if (details.photos && details.photos.length > 0) {
         const photoRef = details.photos[0].photo_reference;
         if (photoRef) {
-          updateData.google_photo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photoRef}&key=${apiKey}`;
+          updateData.google_photo_url = photoRef;
           stats.photoUpdated++;
         }
       }

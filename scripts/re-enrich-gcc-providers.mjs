@@ -1256,11 +1256,12 @@ async function enrichProvider(provider, apiKey, countryConfig, opts) {
       result.statsUpdate.hoursUpdated++;
     }
 
-    // Photo
+    // Photo — store ONLY the photo_reference (not full URL with API key).
+    // Frontend wraps this with /api/places/photo?ref={ref} proxy.
     if (details.photos && details.photos.length > 0) {
       const photoRef = details.photos[0].photo_reference;
       if (photoRef) {
-        updateData.google_photo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photoRef}&key=${apiKey}`;
+        updateData.google_photo_url = photoRef;
         result.statsUpdate.photoUpdated++;
       }
     }

@@ -69,7 +69,15 @@ export function medicalOrganizationSchema(
   } else if (provider.coverImageUrl) {
     imageUrls.push(provider.coverImageUrl);
   } else if (provider.googlePhotoUrl) {
-    imageUrls.push(provider.googlePhotoUrl);
+    // google_photo_url stores a bare photo_reference (not a full URL with API key).
+    // Wrap it with the server-side proxy so the API key is never exposed in HTML.
+    const photoRef = provider.googlePhotoUrl;
+    if (/^[A-Za-z0-9_-]+$/.test(photoRef)) {
+      imageUrls.push(`${base}/api/places/photo?ref=${encodeURIComponent(photoRef)}&w=800`);
+    } else if (photoRef.startsWith("http")) {
+      // Legacy data — full URL that should have been scrubbed. Skip it defensively
+      // rather than emit it (which could still leak a stale key).
+    }
   }
 
   return {
@@ -78,10 +86,11 @@ export function medicalOrganizationSchema(
     "@id": providerUrl,
     name: provider.name,
     url: providerUrl,
-    telephone: provider.phone,
-    email: provider.email || undefined,
-    description: provider.description,
-    medicalSpecialty: provider.services.length > 0 ? provider.services[0] : category.name,
+    // Omit empty fields — Google flags empty string description/telephone as low quality
+    ...(provider.phone ? { telephone: provider.phone } : {}),
+    ...(provider.email ? { email: provider.email } : {}),
+    ...(provider.description ? { description: provider.description } : {}),
+    medicalSpecialty: (provider.services && provider.services.length > 0) ? provider.services[0] : category.name,
     isAcceptingNewPatients: true,
     address: {
       "@type": "PostalAddress",
@@ -139,17 +148,18 @@ export function medicalOrganizationSchema(
       : {}),
     ...(provider.operatingHours
       ? {
-          openingHoursSpecification: Object.entries(provider.operatingHours).map(
-            ([day, hours]) => ({
+          // Filter partial entries — Google Rich Results Test fails on null opens/closes
+          openingHoursSpecification: Object.entries(provider.operatingHours)
+            .filter(([, hours]) => hours && hours.open && hours.close)
+            .map(([day, hours]) => ({
               "@type": "OpeningHoursSpecification",
               dayOfWeek: DAY_NAMES[day] || day,
               opens: hours.open,
               closes: hours.close,
-            })
-          ),
+            })),
         }
       : {}),
-    availableService: provider.services.map((s) => ({
+    availableService: (provider.services ?? []).map((s) => ({
       "@type": "MedicalProcedure",
       name: s,
     })),
@@ -169,9 +179,26 @@ export function medicalOrganizationSchema(
       : {}),
     ...(provider.website ? { sameAs: [provider.website] } : {}),
     currenciesAccepted: currency,
-    priceRange: "$$",
+    priceRange: derivePriceRange(category.slug),
     dateModified: provider.lastVerified || new Date().toISOString().split("T")[0],
   };
+}
+
+/**
+ * Derive a priceRange ($ to $$$$) from the provider category.
+ * Previously hardcoded to "$$" for all 12,504 providers which Google flags as
+ * a duplicate structured data signal.
+ */
+function derivePriceRange(categorySlug: string): string {
+  const s = categorySlug.toLowerCase();
+  if (s.includes("hospital")) return "$$$";
+  if (s.includes("pharmacy") || s.includes("optical") || s.includes("optic")) return "$";
+  if (s.includes("medical-equipment") || s.includes("home-healthcare")) return "$$";
+  if (s.includes("aesthetic") || s.includes("cosmetic") || s.includes("plastic")) return "$$$$";
+  if (s.includes("dental") || s.includes("dermatology") || s.includes("ophthalm")) return "$$$";
+  if (s.includes("physio") || s.includes("diagnostic") || s.includes("lab")) return "$$";
+  if (s.includes("clinic") || s.includes("medical")) return "$$";
+  return "$$";
 }
 
 export function faqPageSchema(faqs: { question: string; answer: string }[]) {

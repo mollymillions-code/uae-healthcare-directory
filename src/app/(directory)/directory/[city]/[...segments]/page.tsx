@@ -157,7 +157,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
     case "listing": {
       const listingCanonical = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
-      const isEnriched = Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0) || Boolean(resolved.provider.phone) || Boolean(resolved.provider.website);
+      // Thin-content guard: a provider is "enriched" only if it has at least 2 of the
+      // key fields. This prevents Google from flagging pages with only a name+address
+      // as thin content and hurting overall site quality signals.
+      const enrichmentFields = [
+        Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0),
+        Boolean(resolved.provider.phone),
+        Boolean(resolved.provider.website),
+        Boolean(resolved.provider.description && resolved.provider.description.length > 80),
+        Boolean(resolved.provider.operatingHours && Object.keys(resolved.provider.operatingHours).length > 0),
+      ];
+      const enrichmentScore = enrichmentFields.filter(Boolean).length;
+      const isEnriched = enrichmentScore >= 2;
 
       // --- SEO title: hard 60-char cap, high-intent modifiers ---
       const maxTitleLen = 60;
@@ -198,7 +209,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return {
         title: seoTitle,
         description: seoDesc,
-        ...(!isEnriched ? { robots: { index: true, follow: true, "max-snippet": 50 } } : {}),
+        // Non-enriched providers get noindex,follow to protect site quality signals
+        // while preserving link equity. They'll be re-indexed once enrichment completes.
+        ...(!isEnriched ? { robots: { index: false, follow: true } } : {}),
         alternates: {
           canonical: listingCanonical,
           languages: {

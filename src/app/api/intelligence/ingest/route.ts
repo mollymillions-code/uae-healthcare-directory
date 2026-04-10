@@ -8,10 +8,12 @@ export const maxDuration = 300;
 // Triggers the content ingestion pipeline.
 // Protected by CRON_SECRET. Runs every 2 hours via GitHub Actions on EC2.
 export async function POST(request: Request) {
-  // Verify cron secret
+  // Verify cron secret — fail CLOSED. If CRON_SECRET is not set, reject all requests.
+  // Previously this was fail-open: without CRON_SECRET, the route was fully public,
+  // allowing DoS + Gemini cost amplification via repeated pipeline triggers.
   const authHeader = request.headers.get("authorization");
   if (
-    process.env.CRON_SECRET &&
+    !process.env.CRON_SECRET ||
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

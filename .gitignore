@@ -43,6 +43,13 @@ next-env.d.ts
 /.claude/*
 !/.claude/skills/
 /data/parsed/*.json
+/data/parsed/*.csv
+/data/parsed/*.log
+/data/parsed/*.txt
+/data/parsed/ad-audiences/
+/data/parsed/bahrain-raw/
+/data/parsed/dha_professionals*
+/data/audit/
 .env.local
 .env.prod-check
 .env.vercel-check

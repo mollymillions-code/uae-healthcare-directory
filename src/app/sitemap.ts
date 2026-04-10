@@ -53,7 +53,7 @@ export const revalidate = 3600;
 // the sitemap uses constants only (no DB), so we cannot determine real per-page
 // modification times. new Date() changes on every request, which is misleading to
 // crawlers. UPDATE THIS DATE when content (constants, guides, categories) changes.
-const LAST_CONTENT_UPDATE = new Date('2026-04-05');
+const LAST_CONTENT_UPDATE = new Date('2026-04-10');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();

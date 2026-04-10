@@ -11,6 +11,8 @@
  * Content is static (defined here), but provider data is pulled live from PostgreSQL.
  */
 
+import { OPERATOR_GUIDES } from "./operator-guides-data";
+
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
 export type GuideTemplateType = "cost-guide" | "comparison" | "system-guide";
@@ -1163,6 +1165,9 @@ export const GUIDES: GuideDefinition[] = [
     relatedTags: ["veneers", "cosmetic-dentistry", "dental", "smile-makeover", "dubai"],
     lastReviewed: "2026-04-01",
   },
+
+  // Operator-facing guides (B2B: clinic owners, managers, operators) — see operator-guides-data.ts
+  ...OPERATOR_GUIDES,
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────

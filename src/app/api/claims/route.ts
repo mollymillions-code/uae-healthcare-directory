@@ -61,31 +61,49 @@ async function sendNotification(claim: {
   requestedChanges: Record<string, string> | null;
   notes: string | null;
 }) {
+  // HTML-escape all user-supplied fields before interpolating into the email body.
+  // Without this, a malicious claim submission can inject <script> or phishing
+  // links into internal notification emails sent to the team.
+  const esc = (s: string | null | undefined): string => {
+    if (s == null) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  };
+
+  // Validate proofDocumentUrl is a safe URL (http/https only) before using as href
+  const safeProofUrl = claim.proofDocumentUrl && /^https?:\/\//.test(claim.proofDocumentUrl)
+    ? esc(claim.proofDocumentUrl)
+    : null;
+
   const changesHtml = claim.requestedChanges
     ? Object.entries(claim.requestedChanges)
         .filter(([, v]) => v)
-        .map(([k, v]) => `<li><strong>${k}:</strong> ${v}</li>`)
+        .map(([k, v]) => `<li><strong>${esc(k)}:</strong> ${esc(v)}</li>`)
         .join("")
     : "<li>No specific changes requested</li>";
 
   const emailBody = `
     <h2>New Listing Claim Request</h2>
-    <p><strong>Facility:</strong> ${claim.providerName}</p>
-    <p><strong>Claim ID:</strong> ${claim.id}</p>
+    <p><strong>Facility:</strong> ${esc(claim.providerName)}</p>
+    <p><strong>Claim ID:</strong> ${esc(claim.id)}</p>
     <hr>
     <h3>Contact Information</h3>
-    <p><strong>Name:</strong> ${claim.contactName}</p>
-    <p><strong>Email:</strong> ${claim.contactEmail}</p>
-    <p><strong>Phone:</strong> ${claim.contactPhone}</p>
-    <p><strong>Job Title:</strong> ${claim.jobTitle || "Not provided"}</p>
+    <p><strong>Name:</strong> ${esc(claim.contactName)}</p>
+    <p><strong>Email:</strong> ${esc(claim.contactEmail)}</p>
+    <p><strong>Phone:</strong> ${esc(claim.contactPhone)}</p>
+    <p><strong>Job Title:</strong> ${esc(claim.jobTitle) || "Not provided"}</p>
     <hr>
     <h3>Proof of Ownership</h3>
-    <p><strong>Type:</strong> ${claim.proofType || "Not specified"}</p>
-    ${claim.proofDocumentUrl ? `<p><a href="${claim.proofDocumentUrl}">View uploaded document</a></p>` : "<p>No document uploaded</p>"}
+    <p><strong>Type:</strong> ${esc(claim.proofType) || "Not specified"}</p>
+    ${safeProofUrl ? `<p><a href="${safeProofUrl}">View uploaded document</a></p>` : "<p>No document uploaded</p>"}
     <hr>
     <h3>Requested Changes</h3>
     <ul>${changesHtml}</ul>
-    ${claim.notes ? `<h3>Notes</h3><p>${claim.notes}</p>` : ""}
+    ${claim.notes ? `<h3>Notes</h3><p>${esc(claim.notes)}</p>` : ""}
     <hr>
     <p style="color: #666; font-size: 12px;">Review this claim at the admin dashboard or reply to this email.</p>
   `;
@@ -248,6 +266,22 @@ export async function POST(request: NextRequest) {
       if (proofFile.size > 10 * 1024 * 1024) {
         return NextResponse.json(
           { error: "File too large. Maximum size is 10MB." },
+          { status: 400 }
+        );
+      }
+      // MIME type allowlist — only common document/image formats.
+      // Prevents uploading HTML (XSS via R2 public URL), executables, or scripts.
+      const allowedTypes = new Set([
+        "application/pdf",
+        "image/png", "image/jpeg", "image/jpg", "image/webp", "image/heic", "image/heif",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ]);
+      const fileName = (proofFile.name || "").toLowerCase();
+      const allowedExts = /\.(pdf|png|jpe?g|webp|heic|heif|doc|docx)$/i;
+      if (!allowedTypes.has(proofFile.type) || !allowedExts.test(fileName)) {
+        return NextResponse.json(
+          { error: "Invalid file type. Allowed: PDF, PNG, JPG, WebP, HEIC, DOC, DOCX." },
           { status: 400 }
         );
       }
