@@ -147,6 +147,7 @@ function parseArgs() {
     limit: null,
     offset: 0,
     resume: false,
+    onlyMissingPlaceId: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -178,6 +179,9 @@ function parseArgs() {
         break;
       case "--resume":
         opts.resume = true;
+        break;
+      case "--only-missing-place-id":
+        opts.onlyMissingPlaceId = true;
         break;
       case "-h":
       case "--help":
@@ -268,7 +272,7 @@ async function createBackup() {
 /**
  * Fetch UAE providers, optionally filtered by city.
  */
-async function getUAEProviders(citySlug = null) {
+async function getUAEProviders(citySlug = null, onlyMissingPlaceId = false) {
   const db = getPool();
 
   let query = `
@@ -284,6 +288,10 @@ async function getUAEProviders(citySlug = null) {
   if (citySlug) {
     params.push(citySlug);
     query += ` AND city_slug = $${params.length}`;
+  }
+
+  if (onlyMissingPlaceId) {
+    query += ` AND (google_place_id IS NULL OR google_place_id = '')`;
   }
 
   query += ` ORDER BY city_slug, name`;
@@ -838,7 +846,7 @@ async function main() {
   // ── Load providers ──────────────────────────────────────────────────────────
 
   console.log("Querying UAE providers from database...");
-  let providers = await getUAEProviders(opts.city);
+  let providers = await getUAEProviders(opts.city, opts.onlyMissingPlaceId);
   console.log(`  Found ${providers.length} UAE providers${opts.city ? ` in ${opts.city}` : ""}`);
 
   // Apply offset
