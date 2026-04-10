@@ -11,6 +11,7 @@ This is the Zavis Landing production site (zavis.ai). Every push to `live` deplo
 3. **Never import things you don't use.** This is the #1 cause of broken deploys. Every unused import is a lint error that blocks production deployment.
 4. **All `data.ts` functions are ASYNC.** You must `await` them. See "Data Layer" section below.
 5. **Read `.ai-collab/DATA-MIGRATION.md`** if you're working with provider data — it explains the JSON→DB migration and how data access works now.
+6. **Read `docs/analytics-and-gtm.md` before touching ANY analytics code.** This includes GTM tags, the `gtag` shim in `src/app/layout.tsx`, `dataLayer`, `trackEvent`, or anything in `src/lib/gtag.ts`. A GTM recursion bug crashed every homepage tab for half a day on 2026-04-10. The doc has the hard rules and the debugging playbook.
 
 ---
 
@@ -119,6 +120,8 @@ If you add a new GitHub Actions workflow that needs the database, it MUST use `a
 | Editing files on EC2 via SSH | Changes wiped on next deploy | Always go through GitHub |
 | Adding schema without granting permissions | Queries fail silently | Run `GRANT ALL` after schema changes |
 | Not testing build locally | Build fails → deploy blocked | Run `npm run build` before pushing |
+| GTM Custom HTML tag that calls `gtag("event", X, ...)` with its own trigger event name | Infinite recursion — homepage CPU → 300%+ and RAM → GBs, every browser tab crashes | Read `docs/analytics-and-gtm.md`. Use native GA4 Event tags (`gaawe`), not Custom HTML |
+| Removing names from the gtag-shim recursion guard in `src/app/layout.tsx` | Homepage starts crashing again at t=30s | Those names are load-bearing. See `docs/analytics-and-gtm.md` § The gtag Shim |
 
 ## Browser Usage
 - Use `agent-browser` CLI for web browsing, screenshots, or page interaction tasks.
