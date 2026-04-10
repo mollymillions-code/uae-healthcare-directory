@@ -41,7 +41,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
               "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com https://*.facebook.com https://snap.licdn.com https://static.cloudflareinsights.com https://www.google.com https://www.google.co.in https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://px.ads.linkedin.com https://www.clarity.ms https://crm.zavis.ai https://clientops.zavisinternaltools.in",
-              "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://crm.zavis.ai",
+              "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://crm.zavis.ai https://www.google.com https://maps.google.com https://*.google.com",
               "media-src 'self' https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev",
               "object-src 'none'",
               "base-uri 'self'",

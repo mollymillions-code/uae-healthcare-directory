@@ -62,22 +62,18 @@ export function medicalOrganizationSchema(
   const ratingVal = Number(provider.googleRating);
   const hasValidRating = ratingVal > 0 && (provider.googleReviewCount ?? 0) > 0;
 
-  // Build image field: prefer photos array (up to 3), fall back to single cover/google image
+  // Build image field:
+  //   1. galleryPhotos (R2-hosted, from comprehensive Google Places enrichment) — best source
+  //   2. photos[] (legacy string array) — fallback
+  //   3. coverImageUrl — single-image fallback
+  // All URLs are R2-served; no runtime Google Places API dependency.
   const imageUrls: string[] = [];
-  if (provider.photos && provider.photos.length > 0) {
+  if (provider.galleryPhotos && provider.galleryPhotos.length > 0) {
+    imageUrls.push(...provider.galleryPhotos.slice(0, 6).map((p) => p.url));
+  } else if (provider.photos && provider.photos.length > 0) {
     imageUrls.push(...provider.photos.slice(0, 3));
   } else if (provider.coverImageUrl) {
     imageUrls.push(provider.coverImageUrl);
-  } else if (provider.googlePhotoUrl) {
-    // google_photo_url stores a bare photo_reference (not a full URL with API key).
-    // Wrap it with the server-side proxy so the API key is never exposed in HTML.
-    const photoRef = provider.googlePhotoUrl;
-    if (/^[A-Za-z0-9_-]+$/.test(photoRef)) {
-      imageUrls.push(`${base}/api/places/photo?ref=${encodeURIComponent(photoRef)}&w=800`);
-    } else if (photoRef.startsWith("http")) {
-      // Legacy data — full URL that should have been scrubbed. Skip it defensively
-      // rather than emit it (which could still leak a stale key).
-    }
   }
 
   return {
@@ -110,13 +106,45 @@ export function medicalOrganizationSchema(
     ...(imageUrls.length > 0 ? {
       image: imageUrls.length === 1 ? imageUrls[0] : imageUrls,
     } : {}),
-    ...(provider.amenities && provider.amenities.length > 0 ? {
-      amenityFeature: provider.amenities.map((a) => ({
-        "@type": "LocationFeatureSpecification",
-        name: a,
-        value: true,
-      })),
-    } : {}),
+    ...((() => {
+      // Combine legacy amenities with Google's accessibility options into a unified amenityFeature array
+      const features: Array<{ "@type": string; name: string; value: boolean }> = [];
+      if (provider.amenities && provider.amenities.length > 0) {
+        for (const a of provider.amenities) {
+          features.push({ "@type": "LocationFeatureSpecification", name: a, value: true });
+        }
+      }
+      const access = provider.accessibilityOptions;
+      if (access?.wheelchairAccessibleEntrance) {
+        features.push({
+          "@type": "LocationFeatureSpecification",
+          name: "Wheelchair-accessible entrance",
+          value: true,
+        });
+      }
+      if (access?.wheelchairAccessibleParking) {
+        features.push({
+          "@type": "LocationFeatureSpecification",
+          name: "Wheelchair-accessible parking",
+          value: true,
+        });
+      }
+      if (access?.wheelchairAccessibleRestroom) {
+        features.push({
+          "@type": "LocationFeatureSpecification",
+          name: "Wheelchair-accessible restroom",
+          value: true,
+        });
+      }
+      if (access?.wheelchairAccessibleSeating) {
+        features.push({
+          "@type": "LocationFeatureSpecification",
+          name: "Wheelchair-accessible seating",
+          value: true,
+        });
+      }
+      return features.length > 0 ? { amenityFeature: features } : {};
+    })()),
     ...(provider.phone ? {
       contactPoint: {
         "@type": "ContactPoint",
@@ -146,19 +174,48 @@ export function medicalOrganizationSchema(
           },
         }
       : {}),
-    ...(provider.operatingHours
-      ? {
-          // Filter partial entries — Google Rich Results Test fails on null opens/closes
-          openingHoursSpecification: Object.entries(provider.operatingHours)
-            .filter(([, hours]) => hours && hours.open && hours.close)
-            .map(([day, hours]) => ({
-              "@type": "OpeningHoursSpecification",
-              dayOfWeek: DAY_NAMES[day] || day,
-              opens: hours.open,
-              closes: hours.close,
-            })),
-        }
-      : {}),
+    ...((() => {
+      // Prefer rich Google structured periods (openingHoursPeriods) when available.
+      // Falls back to the legacy provider.operatingHours object.
+      // Both formats are filtered to drop incomplete entries — Google's Rich Results
+      // Test rejects entries with null opens/closes.
+      const dayOfWeekArr = [
+        "https://schema.org/Sunday",
+        "https://schema.org/Monday",
+        "https://schema.org/Tuesday",
+        "https://schema.org/Wednesday",
+        "https://schema.org/Thursday",
+        "https://schema.org/Friday",
+        "https://schema.org/Saturday",
+      ];
+      const fmt = (h: number, m: number) =>
+        `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      if (provider.openingHoursPeriods && provider.openingHoursPeriods.length > 0) {
+        const specs = provider.openingHoursPeriods
+          .filter((p) => p.open && (p.close || p.open.hour === 0))
+          .map((p) => ({
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: dayOfWeekArr[p.open.day] || dayOfWeekArr[0],
+            opens: fmt(p.open.hour, p.open.minute || 0),
+            closes: p.close
+              ? fmt(p.close.hour, p.close.minute || 0)
+              : "23:59",
+          }));
+        return specs.length > 0 ? { openingHoursSpecification: specs } : {};
+      }
+      if (provider.operatingHours) {
+        const specs = Object.entries(provider.operatingHours)
+          .filter(([, hours]) => hours && hours.open && hours.close)
+          .map(([day, hours]) => ({
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: DAY_NAMES[day] || day,
+            opens: hours.open,
+            closes: hours.close,
+          }));
+        return specs.length > 0 ? { openingHoursSpecification: specs } : {};
+      }
+      return {};
+    })()),
     availableService: (provider.services ?? []).map((s) => ({
       "@type": "MedicalProcedure",
       name: s,
@@ -878,6 +935,7 @@ export function insuranceAgencySchema(
       "@type": "Country",
       name: "United Arab Emirates",
     },
+    knowsLanguage: ["en", "ar"],
     address: {
       "@type": "PostalAddress",
       addressLocality: profile.headquarters,
@@ -887,6 +945,7 @@ export function insuranceAgencySchema(
       "@type": "ContactPoint",
       telephone: profile.claimsPhone,
       contactType: "claims",
+      availableLanguage: ["en", "ar"],
     },
     ...(stats && stats.totalProviders
       ? {
@@ -919,6 +978,141 @@ export function insuranceAgencySchema(
       },
     })),
   };
+}
+
+// ─── Insurance Landing Page layered schema ─────────────────────────────────
+//
+// Used by the insurance-facet programmatic routes (city × insurer, city ×
+// insurer × category, national insurer hub). Returns an array of JSON-LD
+// nodes rather than a single object so the page can emit each through a
+// separate <JsonLd /> mount without duplicating @context / wrapper noise.
+//
+// Nodes emitted:
+//   - CollectionPage (wrapper with @id = canonical URL)
+//   - ItemList of top providers (reuses itemListSchema)
+//   - InsuranceAgency / Organization stub for the payer
+//   - FAQPage
+//   - BreadcrumbList
+//
+// AggregateRating is still gated inside itemListSchema at reviewCount > 0
+// per-provider and is intentionally omitted at the CollectionPage level
+// (Google has discouraged rating aggregation at the list level).
+
+export interface InsuranceLandingPageInput {
+  city: { name: string; slug: string; nameAr?: string };
+  category?: { name: string; slug: string; nameAr?: string };
+  insurer: {
+    slug: string;
+    nameEn: string;
+    nameAr?: string;
+    type: "carrier" | "TPA" | "gov";
+    geoScope: string;
+    editorialCopyEn?: string;
+    website?: string;
+  };
+  providers: LocalProvider[];
+  faqs: { question: string; answer: string }[];
+  breadcrumbs: { name: string; url?: string }[];
+  url: string;
+  language?: "en" | "ar";
+}
+
+export function insuranceLandingPageSchema(
+  input: InsuranceLandingPageInput
+): Record<string, unknown>[] {
+  const base = getBaseUrl();
+  const { city, category, insurer, providers, faqs, breadcrumbs, url, language } = input;
+  const lang = language ?? "en";
+  const cityLabel = lang === "ar" && city.nameAr ? city.nameAr : city.name;
+  const insurerLabel = lang === "ar" && insurer.nameAr ? insurer.nameAr : insurer.nameEn;
+  const categoryLabel = category
+    ? lang === "ar" && category.nameAr
+      ? category.nameAr
+      : category.name
+    : null;
+
+  const collectionName = categoryLabel
+    ? `${categoryLabel} accepting ${insurerLabel} in ${cityLabel}`
+    : `Healthcare providers accepting ${insurerLabel} in ${cityLabel}`;
+
+  const listName = collectionName;
+
+  const nodes: Record<string, unknown>[] = [];
+
+  // 1. CollectionPage wrapper
+  nodes.push({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": url,
+    url,
+    name: collectionName,
+    inLanguage: lang === "ar" ? "ar-AE" : "en-AE",
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": `${base}/#website`,
+      url: base,
+      name: "Zavis — UAE Open Healthcare Directory",
+    },
+    about: {
+      "@type": "MedicalBusiness",
+      name: `Healthcare providers accepting ${insurerLabel}`,
+      // Non-standard but crawled: signal the payer relationship.
+      // Rich-results playback treats this as an entity link.
+      acceptsInsurance: insurerLabel,
+      areaServed: {
+        "@type": "City",
+        name: cityLabel,
+        containedInPlace: { "@type": "Country", name: "United Arab Emirates" },
+      },
+    },
+    breadcrumb: { "@id": `${url}#breadcrumb` },
+    mainEntity: { "@id": `${url}#itemlist` },
+  });
+
+  // 2. ItemList (reuse existing helper, then layer @id so CollectionPage
+  // can reference it).
+  if (providers.length > 0) {
+    const listSchema = itemListSchema(
+      listName,
+      providers.slice(0, 20),
+      city.name,
+      base,
+    ) as Record<string, unknown>;
+    nodes.push({ ...listSchema, "@id": `${url}#itemlist` });
+  }
+
+  // 3. InsuranceAgency stub — a minimal local node so the CollectionPage
+  // can link to an entity, without duplicating the full
+  // `insuranceAgencySchema()` used on the national hub.
+  nodes.push({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    additionalType: "https://schema.org/InsuranceAgency",
+    "@id": `${base}/insurance/${insurer.slug}#agency`,
+    name: insurer.nameEn,
+    ...(insurer.nameAr ? { alternateName: insurer.nameAr } : {}),
+    url: `${base}/insurance/${insurer.slug}`,
+    ...(insurer.website ? { sameAs: [insurer.website] } : {}),
+    description: insurer.editorialCopyEn
+      ? insurer.editorialCopyEn.slice(0, 500)
+      : `${insurer.nameEn} health insurance — accepted network in ${cityLabel}.`,
+    knowsLanguage: ["en", "ar"],
+    areaServed: {
+      "@type": "Country",
+      name: "United Arab Emirates",
+    },
+  });
+
+  // 4. FAQPage
+  if (faqs.length > 0) {
+    nodes.push(faqPageSchema(faqs));
+  }
+
+  // 5. BreadcrumbList with @id anchor
+  const bc = breadcrumbSchema(breadcrumbs) as Record<string, unknown>;
+  nodes.push({ ...bc, "@id": `${url}#breadcrumb` });
+
+  return nodes;
 }
 
 function getRegulator(citySlug: string): string {

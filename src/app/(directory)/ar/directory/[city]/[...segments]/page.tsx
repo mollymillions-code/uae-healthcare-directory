@@ -24,9 +24,11 @@ import {
   resolveSegments,
 } from "@/lib/directory-utils";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar, MessageSquareQuote,
+  Accessibility, Image as ImageIcon, Star, Quote,
 } from "lucide-react";
 
 // ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
@@ -525,9 +527,51 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               <p className="text-dark/80 leading-relaxed font-medium">{answerBlock}</p>
             </div>
 
+            {/* Photo gallery */}
+            {provider.galleryPhotos && provider.galleryPhotos.length > 1 && (
+              <div className="mb-6" data-section="gallery">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-semibold text-dark flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-accent" /> الصور
+                  </h2>
+                  <span className="text-xs text-muted">
+                    {provider.galleryPhotos.length} صور · عبر Google
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {provider.galleryPhotos.slice(0, 8).map((photo, idx) => (
+                    <div
+                      key={idx}
+                      className="relative aspect-square overflow-hidden border border-black/[0.06]"
+                    >
+                      <Image
+                        src={photo.url}
+                        alt={`${provider.name} — صورة ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        loading={idx < 4 ? "eager" : "lazy"}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {provider.galleryPhotos.some((p) => p.attributions?.length > 0) && (
+                  <p className="text-[11px] text-muted mt-2">
+                    الصور من {Array.from(new Set(provider.galleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join("، ")} عبر خرائط Google
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* About */}
             <div className="border border-black/[0.06] p-6 mb-6" data-section="about">
               <h2 className="font-semibold text-dark mb-3">{ar.aboutProvider} {provider.name}</h2>
+              {provider.editorialSummary && (
+                <div className="bg-light-50 border border-black/[0.04] p-3 mb-3">
+                  <p className="text-[10px] uppercase tracking-wider text-muted mb-1">ملخص Google</p>
+                  <p className="text-sm text-dark leading-relaxed">{provider.editorialSummary}</p>
+                </div>
+              )}
               {(provider.descriptionAr || provider.description) ? (
                 <div className="text-muted leading-relaxed whitespace-pre-line">{provider.descriptionAr || provider.description}</div>
               ) : (
@@ -535,6 +579,38 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               )}
               <p className="text-xs text-muted mt-3">المصدر: سجل هيئة الصحة الإماراتية الرسمي. آخر تحقق: {formatVerifiedDateAr(provider.lastVerified)}.</p>
             </div>
+
+            {/* Accessibility */}
+            {provider.accessibilityOptions &&
+              Object.values(provider.accessibilityOptions).some((v) => v === true) && (
+                <div className="border border-black/[0.06] p-6 mb-6" data-section="accessibility">
+                  <h2 className="font-semibold text-dark mb-3 flex items-center gap-2">
+                    <Accessibility className="h-5 w-5 text-accent" /> إمكانية الوصول
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {provider.accessibilityOptions.wheelchairAccessibleEntrance && (
+                      <span className="inline-flex items-center gap-1.5 bg-accent/[0.08] text-accent text-xs font-medium px-3 py-1.5">
+                        <CheckCircle className="h-3.5 w-3.5" /> مدخل مناسب للكراسي المتحركة
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleParking && (
+                      <span className="inline-flex items-center gap-1.5 bg-accent/[0.08] text-accent text-xs font-medium px-3 py-1.5">
+                        <CheckCircle className="h-3.5 w-3.5" /> موقف سيارات مناسب للكراسي المتحركة
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleRestroom && (
+                      <span className="inline-flex items-center gap-1.5 bg-accent/[0.08] text-accent text-xs font-medium px-3 py-1.5">
+                        <CheckCircle className="h-3.5 w-3.5" /> دورة مياه مناسبة للكراسي المتحركة
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleSeating && (
+                      <span className="inline-flex items-center gap-1.5 bg-accent/[0.08] text-accent text-xs font-medium px-3 py-1.5">
+                        <CheckCircle className="h-3.5 w-3.5" /> مقاعد مناسبة للكراسي المتحركة
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
 
             {/* Services */}
             {provider.services.length > 0 && (
@@ -545,20 +621,56 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Operating Hours */}
-            {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
-              <div className="border border-black/[0.06] p-6 mb-6" data-section="hours">
-                <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><Clock className="h-5 w-5 text-accent" /> {ar.operatingHours}</h2>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                  {Object.entries(provider.operatingHours).map(([d, h]) => (
-                    <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
-                      <span className="text-muted">{ar.days[d] || d}</span>
-                      <span className="font-medium text-dark">{h.open === "00:00" && h.close === "23:59" ? ar.hours24 : `${h.open} – ${h.close}`}</span>
+            {/* Operating Hours — prefer Google's rich weekday descriptions when available */}
+            {(() => {
+              const weekday = provider.currentOpeningHours?.weekdayDescriptions;
+              const hasWeekday = Array.isArray(weekday) && weekday.length > 0;
+              const hasLegacy =
+                provider.operatingHours &&
+                Object.keys(provider.operatingHours).length > 0;
+              if (!hasWeekday && !hasLegacy) return null;
+              return (
+                <div className="border border-black/[0.06] p-6 mb-6" data-section="hours">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="font-semibold text-dark flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-accent" /> {ar.operatingHours}
+                    </h2>
+                    {provider.currentOpeningHours?.openNow !== undefined && (
+                      <span
+                        className={`text-xs font-medium px-3 py-1 ${
+                          provider.currentOpeningHours.openNow
+                            ? "bg-accent/[0.08] text-accent"
+                            : "bg-light-100 text-muted"
+                        }`}
+                      >
+                        {provider.currentOpeningHours.openNow ? "مفتوح الآن" : "مغلق الآن"}
+                      </span>
+                    )}
+                  </div>
+                  {hasWeekday ? (
+                    <ul className="space-y-1">
+                      {weekday!.map((line, i) => (
+                        <li
+                          key={i}
+                          className="text-sm text-dark py-1 border-b border-black/[0.06] last:border-b-0"
+                        >
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                      {Object.entries(provider.operatingHours!).map(([d, h]) => (
+                        <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
+                          <span className="text-muted">{ar.days[d] || d}</span>
+                          <span className="font-medium text-dark">{h.open === "00:00" && h.close === "23:59" ? ar.hours24 : `${h.open} – ${h.close}`}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Insurance */}
             {provider.insurance.length > 0 && (
@@ -569,24 +681,61 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Review highlights */}
+            {/* What patients say — themed summary, never raw review text */}
             {(() => {
               const reviews = provider.reviewSummaryAr || provider.reviewSummary;
               if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
+              const validRating = provider.googleRating && Number(provider.googleRating) > 0;
               return (
                 <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
-                  <h2 className="font-semibold text-dark mb-3 flex items-center gap-2"><MessageSquareQuote className="h-5 w-5 text-accent" /> {ar.patientReviews}</h2>
-                  <ul className="space-y-2">
-                    {reviews.map((point: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-muted">
-                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {provider.googleRating && Number(provider.googleRating) > 0 && (
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-semibold text-dark flex items-center gap-2">
+                      <Quote className="h-5 w-5 text-accent" /> {ar.patientReviews}
+                    </h2>
+                    {validRating && (
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3.5 w-3.5 ${
+                                i < Math.round(Number(provider.googleRating))
+                                  ? "text-accent fill-accent"
+                                  : "text-black/15"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="font-medium text-dark">{provider.googleRating}</span>
+                        <span className="text-muted">({provider.googleReviewCount?.toLocaleString("ar-AE")})</span>
+                      </div>
+                    )}
+                  </div>
+                  {reviews.length === 1 ? (
+                    <p className="text-sm text-muted leading-relaxed">{reviews[0]}</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {reviews.map((point: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-muted">
+                          <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {validRating && (
                     <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
-                      بناءً على {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google. التقييم: {provider.googleRating}/5 نجوم.
+                      محاور مستخلصة من {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google.{" "}
+                      {provider.googleMapsUri && (
+                        <a
+                          href={provider.googleMapsUri}
+                          target="_blank"
+                          rel="nofollow noopener"
+                          className="text-accent hover:underline"
+                        >
+                          اقرأ التقييمات الأصلية على خرائط Google ←
+                        </a>
+                      )}
                     </p>
                   )}
                 </div>

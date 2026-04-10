@@ -136,9 +136,57 @@ export interface LocalProvider {
   reviewSummary?: string[];
   reviewSummaryAr?: string[];
   coverImageUrl?: string;
-  googlePhotoUrl?: string;
   photos?: string[];
   yearEstablished?: number;
+
+  // Comprehensive Google Places (New API) data — populated by
+  // scripts/comprehensive-enrich-places.mjs. Photos served from R2.
+  galleryPhotos?: Array<{
+    url: string;
+    widthPx: number;
+    heightPx: number;
+    attributions: Array<{ displayName: string; uri: string }>;
+  }>;
+  googleReviews?: Array<{
+    rating: number;
+    text?: { text: string; languageCode: string } | null;
+    originalText?: { text: string; languageCode: string } | null;
+    authorAttribution?: {
+      displayName: string;
+      uri?: string;
+      photoUri?: string;
+    } | null;
+    publishTime?: string | null;
+    relativePublishTimeDescription?: string | null;
+  }>;
+  editorialSummary?: string;
+  editorialSummaryLang?: string;
+  accessibilityOptions?: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  };
+  googleTypes?: string[];
+  plusCodeGlobal?: string;
+  plusCodeCompound?: string;
+  googleMapsUri?: string;
+  priceLevel?: string;
+  openingHoursPeriods?: Array<{
+    open: { day: number; hour: number; minute: number };
+    close?: { day: number; hour: number; minute: number };
+  }>;
+  currentOpeningHours?: {
+    openNow?: boolean;
+    weekdayDescriptions?: string[];
+  };
+  addressComponents?: Array<{
+    longText: string;
+    shortText: string;
+    types: string[];
+  }>;
+  googleFetchedAt?: string;
+  businessStatus?: string;
 }
 
 // ─── Query Cache (5-min TTL, bounded LRU, max 500 entries) ─────────────────────
@@ -215,9 +263,33 @@ function rowToProvider(row: any): LocalProvider {
     reviewSummary: row.reviewSummary ?? row.review_summary ?? undefined,
     reviewSummaryAr: row.reviewSummaryAr ?? row.review_summary_ar ?? undefined,
     coverImageUrl: row.coverImageUrl ?? row.cover_image_url ?? undefined,
-    googlePhotoUrl: row.googlePhotoUrl ?? row.google_photo_url ?? undefined,
     photos: row.photos?.length ? row.photos : undefined,
     yearEstablished: row.yearEstablished ?? row.year_established ?? undefined,
+    galleryPhotos: row.galleryPhotos ?? row.gallery_photos ?? undefined,
+    googleReviews: row.googleReviews ?? row.google_reviews ?? undefined,
+    editorialSummary: row.editorialSummary ?? row.editorial_summary ?? undefined,
+    editorialSummaryLang:
+      row.editorialSummaryLang ?? row.editorial_summary_lang ?? undefined,
+    accessibilityOptions:
+      row.accessibilityOptions ?? row.accessibility_options ?? undefined,
+    googleTypes: row.googleTypes ?? row.google_types ?? undefined,
+    plusCodeGlobal: row.plusCodeGlobal ?? row.plus_code_global ?? undefined,
+    plusCodeCompound:
+      row.plusCodeCompound ?? row.plus_code_compound ?? undefined,
+    googleMapsUri: row.googleMapsUri ?? row.google_maps_uri ?? undefined,
+    priceLevel: row.priceLevel ?? row.price_level ?? undefined,
+    openingHoursPeriods:
+      row.openingHoursPeriods ?? row.opening_hours_periods ?? undefined,
+    currentOpeningHours:
+      row.currentOpeningHours ?? row.current_opening_hours ?? undefined,
+    addressComponents:
+      row.addressComponents ?? row.address_components ?? undefined,
+    googleFetchedAt: row.googleFetchedAt
+      ? new Date(row.googleFetchedAt).toISOString()
+      : row.google_fetched_at
+        ? new Date(row.google_fetched_at).toISOString()
+        : undefined,
+    businessStatus: row.businessStatus ?? row.business_status ?? undefined,
   };
 }
 

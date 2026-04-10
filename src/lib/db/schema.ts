@@ -161,6 +161,8 @@ export const providers = pgTable(
     // Media
     logoUrl: text("logo_url"),
     coverImageUrl: text("cover_image_url"),
+    // Kept on the column list for Drizzle SELECT safety during deploy transitions.
+    // No longer read by any code path; slated for removal in a follow-up migration.
     googlePhotoUrl: text("google_photo_url"),
     photos: jsonb("photos").$type<string[]>().default([]),
 

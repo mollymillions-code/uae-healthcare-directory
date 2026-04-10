@@ -34,6 +34,7 @@ import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar, MessageSquareQuote, Activity, ArrowRight,
+  Accessibility, Image as ImageIcon, Star, Quote,
 } from "lucide-react";
 import {
   PROCEDURES,
@@ -893,6 +894,42 @@ export default async function CatchAllPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Photo gallery — shown above the fold when Google provided multiple images */}
+        {provider.galleryPhotos && provider.galleryPhotos.length > 1 && (
+          <div className="mb-8" data-section="gallery">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
+                <ImageIcon className="h-5 w-5 text-[#006828]" /> Photos
+              </h2>
+              <span className="font-['Geist',sans-serif] text-xs text-black/30">
+                {provider.galleryPhotos.length} photos · via Google
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              {provider.galleryPhotos.slice(0, 8).map((photo, idx) => (
+                <div
+                  key={idx}
+                  className="relative aspect-square overflow-hidden rounded-xl border border-black/[0.06]"
+                >
+                  <Image
+                    src={photo.url}
+                    alt={`${provider.name} — photo ${idx + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    loading={idx < 4 ? "eager" : "lazy"}
+                  />
+                </div>
+              ))}
+            </div>
+            {provider.galleryPhotos.some((p) => p.attributions?.length > 0) && (
+              <p className="font-['Geist',sans-serif] text-[11px] text-black/25 mt-2">
+                Photos by {Array.from(new Set(provider.galleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join(", ")} via Google Maps
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
 
@@ -904,6 +941,12 @@ export default async function CatchAllPage({ params }: Props) {
             {/* About */}
             <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="about">
               <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">About {provider.name}</h2>
+              {provider.editorialSummary && (
+                <div className="bg-[#f8f8f6] border border-black/[0.04] rounded-lg p-3 mb-3">
+                  <p className="font-['Geist',sans-serif] text-[10px] uppercase tracking-wider text-black/40 mb-1">Google summary</p>
+                  <p className="font-['Geist',sans-serif] text-sm text-[#1c1c1c] leading-relaxed">{provider.editorialSummary}</p>
+                </div>
+              )}
               {provider.description ? (
                 <>
                   <div className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed whitespace-pre-line">{provider.description}</div>
@@ -914,6 +957,38 @@ export default async function CatchAllPage({ params }: Props) {
               )}
               <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {formatVerifiedDate(provider.lastVerified)}.</p>
             </div>
+
+            {/* Accessibility */}
+            {provider.accessibilityOptions &&
+              Object.values(provider.accessibilityOptions).some((v) => v === true) && (
+                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="accessibility">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
+                    <Accessibility className="h-5 w-5 text-[#006828]" /> Accessibility
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {provider.accessibilityOptions.wheelchairAccessibleEntrance && (
+                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
+                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible entrance
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleParking && (
+                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
+                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible parking
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleRestroom && (
+                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
+                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible restroom
+                      </span>
+                    )}
+                    {provider.accessibilityOptions.wheelchairAccessibleSeating && (
+                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
+                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible seating
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
 
             {/* Services */}
             {provider.services.length > 0 && (
@@ -927,20 +1002,56 @@ export default async function CatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Hours */}
-            {provider.operatingHours && Object.keys(provider.operatingHours).length > 0 && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="hours">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Clock className="h-5 w-5 text-[#006828]" /> Operating Hours</h2>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                  {Object.entries(provider.operatingHours).map(([d, h]) => (
-                    <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
-                      <span className="font-['Geist',sans-serif] text-black/40">{DAY_NAMES[d]}</span>
-                      <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{h.open === "00:00" && h.close === "23:59" ? "24 Hours" : `${h.open} – ${h.close}`}</span>
+            {/* Hours — prefer Google's rich weekday descriptions when available */}
+            {(() => {
+              const weekday = provider.currentOpeningHours?.weekdayDescriptions;
+              const hasWeekday = Array.isArray(weekday) && weekday.length > 0;
+              const hasLegacy =
+                provider.operatingHours &&
+                Object.keys(provider.operatingHours).length > 0;
+              if (!hasWeekday && !hasLegacy) return null;
+              return (
+                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="hours">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
+                      <Clock className="h-5 w-5 text-[#006828]" /> Operating Hours
+                    </h2>
+                    {provider.currentOpeningHours?.openNow !== undefined && (
+                      <span
+                        className={`font-['Geist',sans-serif] text-xs font-medium px-3 py-1 rounded-full ${
+                          provider.currentOpeningHours.openNow
+                            ? "bg-[#006828]/[0.08] text-[#006828]"
+                            : "bg-black/[0.04] text-black/50"
+                        }`}
+                      >
+                        {provider.currentOpeningHours.openNow ? "Open now" : "Closed now"}
+                      </span>
+                    )}
+                  </div>
+                  {hasWeekday ? (
+                    <ul className="space-y-1">
+                      {weekday!.map((line, i) => (
+                        <li
+                          key={i}
+                          className="font-['Geist',sans-serif] text-sm text-[#1c1c1c] py-1 border-b border-black/[0.06] last:border-b-0"
+                        >
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                      {Object.entries(provider.operatingHours!).map(([d, h]) => (
+                        <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
+                          <span className="font-['Geist',sans-serif] text-black/40">{DAY_NAMES[d]}</span>
+                          <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{h.open === "00:00" && h.close === "23:59" ? "24 Hours" : `${h.open} – ${h.close}`}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Insurance */}
             {provider.insurance.length > 0 && (
@@ -958,25 +1069,68 @@ export default async function CatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Review highlights */}
-            {provider.reviewSummary && provider.reviewSummary.length > 0 && provider.reviewSummary[0] !== "No patient reviews available yet" && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say</h2>
-                <ul className="space-y-2">
-                  {provider.reviewSummary.map((point: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50">
-                      <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                {hasValidRating && (
-                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                    Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
-                  </p>
-                )}
-              </div>
-            )}
+            {/* Patient reviews — synthesized themed summary, never raw review text.
+                Avoids duplicate-content de-ranking + complies with Google TOS for review display.
+                Falls back to legacy reviewSummary bullets when synthesis hasn't run yet. */}
+            {provider.reviewSummary &&
+              provider.reviewSummary.length > 0 &&
+              provider.reviewSummary[0] !== "No patient reviews available yet" && (
+                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
+                      <Quote className="h-5 w-5 text-[#006828]" /> What patients say
+                    </h2>
+                    {hasValidRating && (
+                      <div className="flex items-center gap-1.5 font-['Geist',sans-serif] text-sm">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3.5 w-3.5 ${
+                                i < Math.round(Number(provider.googleRating))
+                                  ? "text-[#006828] fill-[#006828]"
+                                  : "text-black/15"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
+                        <span className="text-black/40">({provider.googleReviewCount?.toLocaleString()})</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* If reviewSummary is a single multi-sentence paragraph, render as prose; otherwise as bullets */}
+                  {provider.reviewSummary.length === 1 ? (
+                    <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+                      {provider.reviewSummary[0]}
+                    </p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {provider.reviewSummary.map((point: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50">
+                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {hasValidRating && (
+                    <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
+                      Themes synthesized from {provider.googleReviewCount?.toLocaleString()} Google reviews.{" "}
+                      {provider.googleMapsUri && (
+                        <a
+                          href={provider.googleMapsUri}
+                          target="_blank"
+                          rel="nofollow noopener"
+                          className="text-[#006828] hover:underline"
+                        >
+                          Read original reviews on Google Maps →
+                        </a>
+                      )}
+                    </p>
+                  )}
+                </div>
+              )}
 
             {/* Languages */}
             {provider.languages.length > 0 && (
