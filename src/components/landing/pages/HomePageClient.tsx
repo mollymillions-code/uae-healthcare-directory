@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ImageWithFallback } from "@/components/landing/ImageWithFallback";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/landing/AnimatedSection";
@@ -14,23 +14,54 @@ import { trackEvent } from "@/lib/gtag";
 
 export function HomePageClient() {
   const [activeTab, setActiveTab] = useState(0);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const marqueeContainerRef = useRef<HTMLDivElement>(null);
+  const tweenRef = useRef<{ kill: () => void; pause: () => void; play: () => void } | null>(null);
 
-  const clientLogos = useMemo(
-    () => [
+  const clientLogos = useMemo(() => {
+    const base = [
       { src: "/assets/clients/dental-nation-logo.webp", name: "Dental Nation" },
       { src: "/assets/clients/kent-healthcare.webp", name: "Kent Healthcare" },
       { src: "/assets/clients/flowspace-logo.webp", name: "Flow Space" },
       { src: "/assets/clients/gs-poly-clinic-logo.webp", name: "GS Poly Clinic" },
       { src: "/assets/clients/my-london-skin-clinic-logo.webp", name: "My London Skin Clinic" },
       { src: "/assets/clients/modern-aesthetics-logo.webp", name: "Modern Aesthetics" },
-    ],
-    []
-  );
+    ];
+    return [
+      ...base.map((logo, i) => ({ ...logo, key: `a-${i}` })),
+      ...base.map((logo, i) => ({ ...logo, key: `b-${i}` })),
+    ];
+  }, []);
 
   const integrationLogos = useMemo(
     () => [...channelPartners.slice(0, 5), ...emrPartners.slice(0, 3)],
     []
   );
+
+  useEffect(() => {
+    if (!marqueeRef.current) return;
+    const container = marqueeContainerRef.current;
+    const handleMouseEnter = () => tweenRef.current?.pause();
+    const handleMouseLeave = () => tweenRef.current?.play();
+
+    (async () => {
+      const { default: gsap } = await import("gsap");
+      tweenRef.current = gsap.to(marqueeRef.current, {
+        xPercent: -50,
+        duration: 35,
+        ease: "none",
+        repeat: -1,
+      });
+      container?.addEventListener("mouseenter", handleMouseEnter);
+      container?.addEventListener("mouseleave", handleMouseLeave);
+    })();
+
+    return () => {
+      tweenRef.current?.kill();
+      container?.removeEventListener("mouseenter", handleMouseEnter);
+      container?.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
 
   return (
     <div className="bg-[#f8f8f6] min-h-screen overflow-hidden">
@@ -98,16 +129,25 @@ export function HomePageClient() {
             <p className="text-center font-['Geist',sans-serif] text-xs text-black/40 mb-8">
               Dental chains, dermatology clinics, wellness centers, and multi-specialty hospitals
             </p>
-            <div className="max-w-[1100px] mx-auto flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 lg:gap-x-14 gap-y-6">
-              {clientLogos.map((logo) => (
-                <img
-                  key={logo.src}
-                  src={logo.src}
-                  alt={logo.name}
-                  className="h-9 sm:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
-                  draggable={false}
-                />
-              ))}
+            <div
+              ref={marqueeContainerRef}
+              className="relative overflow-hidden max-w-[760px] mx-auto"
+              style={{
+                maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+                WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+              }}
+            >
+              <div ref={marqueeRef} className="flex items-center gap-12 sm:gap-16 w-max">
+                {clientLogos.map((logo) => (
+                  <img
+                    key={logo.key}
+                    src={logo.src}
+                    alt={logo.name}
+                    className="h-9 sm:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
+                    draggable={false}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
