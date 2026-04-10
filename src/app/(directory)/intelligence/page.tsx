@@ -26,7 +26,7 @@ import { JOURNAL_CATEGORIES } from "@/lib/intelligence/categories";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Zavis Healthcare Industry Insights | UAE Healthcare News, Regulation & Market Data",
+  title: "Healthcare Industry Insights — UAE Healthcare News, Regulation & Market Data",
   description:
     "Real-time coverage of UAE healthcare: regulatory updates from DHA, DOH, MOHAP, new clinic openings, financial analysis, health tech, events, and workforce trends. The definitive source for healthcare professionals in the UAE and Middle East.",
   openGraph: {

@@ -20,7 +20,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const url = `${base}/best/doctors`;
   const title =
-    "Best Doctors in Dubai 2026 \u2014 Top DHA-Licensed Physicians by Specialty | Zavis";
+    "Best Doctors in Dubai 2026 \u2014 Top DHA-Licensed Physicians by Specialty";
   const description = `Find the best doctors in Dubai across ${DOCTOR_SPECIALTIES.length} medical specialties. ${TOTAL_DOCTORS.toLocaleString()} DHA-licensed physicians and dentists ranked by institutional capacity, sourced from the official Sheryan Medical Registry.`;
 
   return {

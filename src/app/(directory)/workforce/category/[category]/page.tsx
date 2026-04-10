@@ -40,7 +40,7 @@ export function generateMetadata({
   const label = titleMap[params.category] || profile.name;
 
   return {
-    title: `${label} Workforce in Dubai — ${profile.totalCount.toLocaleString()} Licensed Professionals | Zavis`,
+    title: `${label} Workforce in Dubai — ${profile.totalCount.toLocaleString()} Licensed Professionals`,
     description: `Labor market profile for ${profile.totalCount.toLocaleString()} ${label.toLowerCase()} licensed in Dubai. License breakdown, specialty distribution, top employers, geographic concentration. Sourced from DHA Sheryan Registry.`,
     alternates: {
       canonical: `${base}/workforce/category/${params.category}`,

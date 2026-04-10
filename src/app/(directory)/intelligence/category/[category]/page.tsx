@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const base = getBaseUrl();
 
   return {
-    title: `${cat.name} | Zavis Healthcare Industry Insights`,
+    title: `${cat.name} — Healthcare Industry Insights`,
     description: cat.description,
     alternates: {
       canonical: `${base}/intelligence/category/${cat.slug}`,

@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed | Zavis`,
+    title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
     description: `${count.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai. Consultants are the senior clinical grade, requiring 8+ years of post-specialty experience. Browse the full list with facility details.`,
     alternates: {
       canonical: `${base}/professionals/${params.category}/${spec.slug}/consultants`,

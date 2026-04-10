@@ -42,7 +42,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   const url = `${base}/ar/best/doctors/${spec.slug}`;
-  const title = `أفضل أطباء ${spec.nameAr} في دبي | Zavis`;
+  const title = `أفضل أطباء ${spec.nameAr} في دبي`;
   const description = `ابحث عن أفضل أطباء ${spec.nameAr} في دبي. أفضل 10 أطباء ${spec.nameAr} مرتّبون بحسب الطاقة الاستيعابية للمنشأة، إضافةً إلى أبرز المستشفيات والعيادات. ${spec.count.toLocaleString("ar-AE")} كادر مرخّص من هيئة الصحة بدبي.`;
 
   return {

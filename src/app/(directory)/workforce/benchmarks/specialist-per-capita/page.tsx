@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Specialists per 100K Population Dubai — Per-Capita Healthcare Rates | Zavis",
+      "Specialists per 100K Population Dubai — Per-Capita Healthcare Rates",
     description: `Per-capita specialist rates for Dubai: every medical specialty ranked by professionals per 100,000 population. WHO comparison benchmarks and category breakdowns across ${PROFESSIONAL_STATS.total.toLocaleString()} licensed professionals.`,
     alternates: {
       canonical: `${base}/workforce/benchmarks/specialist-per-capita`,

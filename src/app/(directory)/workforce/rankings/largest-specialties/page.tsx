@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const count = ALL_SPECIALTIES.filter((s) => s.count >= 10).length;
   return {
-    title: `All ${count} Medical Specialties in Dubai Ranked by Size | Zavis`,
+    title: `All ${count} Medical Specialties in Dubai Ranked by Size`,
     description: `Every DHA-tracked medical specialty in Dubai ranked by licensed professional count. From General Practitioners (${ALL_SPECIALTIES[0]?.count.toLocaleString()}) to niche subspecialties. Per-capita rates and category breakdown.`,
     alternates: { canonical: `${base}/workforce/rankings/largest-specialties` },
     openGraph: {

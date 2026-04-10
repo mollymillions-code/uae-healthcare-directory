@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Careers in Dubai — Workforce Intelligence & Career Guides | Zavis",
+      "Healthcare Careers in Dubai — Workforce Intelligence & Career Guides",
     description:
       "Career intelligence for healthcare professionals in Dubai. Workforce size by category, top specialties, employer landscape, and career guides for physicians, dentists, nurses, and allied health workers.",
     alternates: { canonical: `${base}/workforce/careers` },

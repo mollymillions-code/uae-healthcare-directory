@@ -50,7 +50,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `ابحث عن طبيب في دبي — أكثر من 99,000 كادر صحي مرخّص | Zavis`,
+    title: `ابحث عن طبيب في دبي — أكثر من 99,000 كادر صحي مرخّص`,
     description: `ابحث بين ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} كادراً صحياً مرخّصاً من هيئة الصحة بدبي عبر ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة في دبي. ابحث عن الأطباء وأطباء الأسنان والممرضين والمهنيين الصحيين المساندين حسب التخصص أو المنشأة.`,
     alternates: {
       canonical: `${base}/ar/find-a-doctor`,

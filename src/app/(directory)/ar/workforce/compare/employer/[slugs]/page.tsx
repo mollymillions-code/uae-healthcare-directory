@@ -46,7 +46,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${benchA.name} مقابل ${benchB.name} — مقارنة أصحاب العمل | Zavis`,
+    title: `${benchA.name} مقابل ${benchB.name} — مقارنة أصحاب العمل`,
     description: `قارن ${benchA.name} (${benchA.totalStaff.toLocaleString("ar-AE")} موظف) و${benchB.name} (${benchB.totalStaff.toLocaleString("ar-AE")} موظف) في دبي. حجم الكوادر ونسبة الممرضين إلى الأطباء ومعدل الترخيص الدائم واتساع التخصصات وتوزيع الفئات.`,
     alternates: {
       canonical: `${base}/ar/workforce/compare/employer/${params.slugs}`,

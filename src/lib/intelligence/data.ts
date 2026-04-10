@@ -42,8 +42,7 @@ async function getDbArticles(): Promise<JournalArticle[]> {
       })
       .from(journalArticles)
       .where(eq(journalArticles.status, "published"))
-      .orderBy(desc(journalArticles.publishedAt))
-      .limit(30);
+      .orderBy(desc(journalArticles.publishedAt));
 
     _dbArticles = rows.map((row) => ({
       id: row.id,

@@ -33,13 +33,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const cat = getCategoryMeta(params.category);
   if (!cat) {
     return {
-      title: "أكبر أصحاب العمل حسب الفئة | Zavis",
+      title: "أكبر أصحاب العمل حسب الفئة",
       description: "أكبر أصحاب العمل في الرعاية الصحية بدبي حسب الفئة المهنية.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `أكبر أصحاب عمل ${cat.nameAr} في دبي — ${cat.count.toLocaleString("ar-AE")} كادر مرخص | Zavis`,
+    title: `أكبر أصحاب عمل ${cat.nameAr} في دبي — ${cat.count.toLocaleString("ar-AE")} كادر مرخص`,
     description: `منشآت دبي مصنّفةً حسب عدد ${cat.nameAr} المرخصين. ${cat.count.toLocaleString("ar-AE")} كادر مهني عبر ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة.`,
     alternates: {
       canonical: `${base}/ar/workforce/rankings/top-employers/${cat.slug}`,

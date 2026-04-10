@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: truncateDescription(`Compare 12,500+ DHA/DOH/MOHAP-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`),
     openGraph: {
       type: "website",
-      title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals | Zavis",
+      title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals",
       description: "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
       locale: "en_AE",
       siteName: "UAE Open Healthcare Directory by Zavis",

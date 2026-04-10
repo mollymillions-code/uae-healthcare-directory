@@ -46,7 +46,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${areaA.name} vs ${areaB.name} — Workforce Comparison | Zavis`,
+    title: `${areaA.name} vs ${areaB.name} — Workforce Comparison`,
     description: `Compare healthcare workforce in ${areaA.name} and ${areaB.name}, Dubai. Professional counts, category mix, license types, top specialties, and employer rankings side by side.`,
     alternates: { canonical: `${base}/workforce/compare/area/${params.slugs}` },
     openGraph: {

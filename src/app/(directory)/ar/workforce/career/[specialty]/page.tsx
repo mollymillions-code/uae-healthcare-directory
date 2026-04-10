@@ -35,7 +35,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `مسار ${spec.nameAr} المهني في دبي — حجم القوى العاملة وأصحاب العمل والترخيص | Zavis`,
+    title: `مسار ${spec.nameAr} المهني في دبي — حجم القوى العاملة وأصحاب العمل والترخيص`,
     description: `معلومات مهنية عن ${spec.nameAr} في دبي. ${metrics?.totalCount.toLocaleString("ar-AE") || spec.count.toLocaleString("ar-AE")} كادر مرخص وأكبر أصحاب العمل والمناطق الأكثر نشاطاً ومعدل الترخيص الدائم مقابل المُسجَّل ومسار الاستشاري. بيانات سجل شريان DHA.`,
     alternates: {
       canonical: `${base}/ar/workforce/career/${spec.slug}`,

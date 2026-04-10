@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const spec = getSpecialtyBySlug(params.specialty);
   if (!profile || !spec) {
     return {
-      title: "تخصص في المنشأة — دليل الكوادر | Zavis",
+      title: "تخصص في المنشأة — دليل الكوادر",
       description: "استعرض الكوادر الصحية المرخّصة حسب التخصص في هذه المنشأة الصحية في دبي.",
     };
   }
@@ -40,7 +40,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const count = professionals.length;
   const base = getBaseUrl();
   return {
-    title: `${spec.name} في ${profile.name} — ${count.toLocaleString("ar-AE")} كادر مرخّص | Zavis`,
+    title: `${spec.name} في ${profile.name} — ${count.toLocaleString("ar-AE")} كادر مرخّص`,
     description: `${count.toLocaleString("ar-AE")} كادر صحي مرخّص من هيئة الصحة بدبي في تخصص ${spec.name} بـ ${profile.name}. قائمة كاملة بأنواع التراخيص، مصدرها السجل الطبي الرسمي شريان.`,
     alternates: {
       canonical: `${base}/ar/professionals/facility/${profile.slug}/${spec.slug}`,

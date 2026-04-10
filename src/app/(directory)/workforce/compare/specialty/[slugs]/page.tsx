@@ -51,7 +51,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${specA.name} vs ${specB.name} — Workforce Comparison | Zavis`,
+    title: `${specA.name} vs ${specB.name} — Workforce Comparison`,
     description: `Compare ${specA.name} (${specA.count.toLocaleString()}) and ${specB.name} (${specB.count.toLocaleString()}) workforce metrics in Dubai. Per-capita rates, FTL rates, consultant ratios, employer concentration, and geographic distribution.`,
     alternates: { canonical: `${base}/workforce/compare/specialty/${params.slugs}` },
     openGraph: {

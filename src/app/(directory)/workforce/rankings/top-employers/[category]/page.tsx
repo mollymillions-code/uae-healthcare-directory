@@ -31,13 +31,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const cat = getCategoryMeta(params.category);
   if (!cat) {
     return {
-      title: "Top Employers by Category | Zavis",
+      title: "Top Employers by Category",
       description: "Top healthcare employers in Dubai by professional category.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `Top ${cat.name} Employers in Dubai — ${cat.count.toLocaleString()} Licensed Professionals | Zavis`,
+    title: `Top ${cat.name} Employers in Dubai — ${cat.count.toLocaleString()} Licensed Professionals`,
     description: `Dubai facilities ranked by number of licensed ${cat.name.toLowerCase()}. ${cat.count.toLocaleString()} professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities. See which hospitals and clinics employ the most ${cat.name.toLowerCase()}.`,
     alternates: {
       canonical: `${base}/workforce/rankings/top-employers/${cat.slug}`,

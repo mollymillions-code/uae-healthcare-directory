@@ -33,7 +33,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
   const count = spec.count;
   return {
-    title: `ابحث عن ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} كادر مرخّص | Zavis`,
+    title: `ابحث عن ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} كادر مرخّص`,
     description: `يوجد ${count.toLocaleString("ar-AE")} كادر صحي مرخّص في تخصص ${spec.nameAr} يمارسون في دبي. تصفح القائمة الكاملة مع نوع الترخيص وتفاصيل المنشأة، مصدرها السجل الطبي شريان التابع لهيئة صحة دبي.`,
     alternates: {
       canonical: `${base}/ar/professionals/${params.category}/${spec.slug}`,

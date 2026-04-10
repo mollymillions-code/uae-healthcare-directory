@@ -51,7 +51,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `إحصائيات القوى العاملة الصحية في دبي | Zavis`,
+    title: `إحصائيات القوى العاملة الصحية في دبي`,
     description: `إحصائيات شاملة للقوى العاملة الصحية في دبي: ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} كادر صحي مرخّص عبر ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة. تفاصيل حسب الفئة والتخصص والمنشأة والمنطقة الجغرافية.`,
     alternates: {
       canonical: `${base}/ar/professionals/stats`,

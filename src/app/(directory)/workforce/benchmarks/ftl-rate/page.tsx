@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "FTL Rate Analysis Dubai — Independent Practice License by Specialty & Area | Zavis",
+      "FTL Rate Analysis Dubai — Independent Practice License by Specialty & Area",
     description: `FTL (Full Trade License) rate analysis for Dubai healthcare: which specialties and areas have the highest independent practice rates? Ranked tables across ${PROFESSIONAL_STATS.total.toLocaleString()} licensed professionals.`,
     alternates: {
       canonical: `${base}/workforce/benchmarks/ftl-rate`,

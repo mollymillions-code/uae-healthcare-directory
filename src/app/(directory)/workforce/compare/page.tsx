@@ -19,7 +19,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "Compare Healthcare Workforce in Dubai — Specialty, Area, Employer | Zavis",
+    title: "Compare Healthcare Workforce in Dubai — Specialty, Area, Employer",
     description: `Side-by-side workforce comparisons across Dubai's ${PROFESSIONAL_STATS.total.toLocaleString()} healthcare professionals. Compare specialties, areas, employers, and categories using DHA Sheryan Registry data.`,
     alternates: { canonical: `${base}/workforce/compare` },
     openGraph: {

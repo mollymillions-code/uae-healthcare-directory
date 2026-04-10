@@ -33,10 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = getJournalCategory(article.category);
   const base = getBaseUrl();
 
-  const titleSuffix = " | Zavis Insights";
-  const metaTitle = (article.title.length + titleSuffix.length) <= 65
-    ? `${article.title}${titleSuffix}`
-    : article.title;
+  // Title is passed through root layout template which appends " | Zavis"
+  const metaTitle = article.title;
   return {
     title: metaTitle,
     description: article.excerpt.length > 160 ? article.excerpt.slice(0, 157).replace(/\s+\S*$/, "") + "..." : article.excerpt,

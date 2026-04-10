@@ -50,7 +50,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `مقارنة ${specA.nameAr} مع ${specB.nameAr} في دبي | Zavis`,
+    title: `مقارنة ${specA.nameAr} مع ${specB.nameAr} في دبي`,
     description: `قارن بين ${specA.nameAr} (${specA.count.toLocaleString("ar-AE")} كادر) و${specB.nameAr} (${specB.count.toLocaleString("ar-AE")} كادر) في دبي. تحليل جنباً إلى جنب لحجم القوى العاملة وأنواع التراخيص وأبرز المنشآت ومستويات الأقدمية.`,
     alternates: {
       canonical: `${base}/ar/professionals/compare/${params.slugs}`,

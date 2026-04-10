@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const areaInfo = DUBAI_AREAS.find((a) => a.slug === params.area);
   if (!areaInfo) {
     return {
-      title: "Healthcare Professionals by Area | Zavis",
+      title: "Healthcare Professionals by Area",
       description:
         "Browse DHA-licensed healthcare professionals by area in Dubai.",
     };
@@ -41,7 +41,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const count = professionals.length;
   const base = getBaseUrl();
   return {
-    title: `Healthcare Professionals in ${areaInfo.name}, Dubai — ${count.toLocaleString()} Licensed Staff | Zavis`,
+    title: `Healthcare Professionals in ${areaInfo.name}, Dubai — ${count.toLocaleString()} Licensed Staff`,
     description: `Browse ${count.toLocaleString()} DHA-licensed healthcare professionals in ${areaInfo.name}, Dubai. Physicians, dentists, nurses, and allied health workers by specialty and facility. Sourced from the official Sheryan Medical Registry.`,
     alternates: {
       canonical: `${base}/professionals/area/${areaInfo.slug}`,

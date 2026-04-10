@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!report) return { title: 'Report Not Found' }
 
   return {
-    title: `${report.meta.title} | Zavis Research`,
+    title: `${report.meta.title} — Research`,
     description: report.meta.description,
     openGraph: {
       title: report.meta.title,

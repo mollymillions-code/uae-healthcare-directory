@@ -52,7 +52,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Dubai Healthcare Workforce Report 2026 — 99,520 Licensed Professionals | Zavis",
+      "Dubai Healthcare Workforce Report 2026 — 99,520 Licensed Professionals",
     description:
       "The definitive Dubai healthcare workforce report: 99,520 DHA-licensed professionals, population ratios, category breakdowns, license types, top facilities, specialist pipeline, and geographic distribution. Data from the Sheryan Medical Registry.",
     alternates: { canonical: `${base}/workforce/overview` },

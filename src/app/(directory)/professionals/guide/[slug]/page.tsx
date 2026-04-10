@@ -161,7 +161,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${guide.title} | Zavis`,
+    title: `${guide.title}`,
     description: guide.description,
     alternates: {
       canonical: `${base}/professionals/guide/${guide.slug}`,

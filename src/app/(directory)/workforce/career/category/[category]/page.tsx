@@ -31,7 +31,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${catInfo.name} Careers in Dubai — ${catInfo.count.toLocaleString()} Professionals | Zavis`,
+    title: `${catInfo.name} Careers in Dubai — ${catInfo.count.toLocaleString()} Professionals`,
     description: `Career overview for ${catInfo.name.toLowerCase()} in Dubai. ${catInfo.count.toLocaleString()} licensed professionals, top specialties, biggest employers, licensing overview, and geographic distribution.`,
     alternates: { canonical: `${base}/workforce/career/category/${catInfo.slug}` },
     openGraph: {

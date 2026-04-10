@@ -18,7 +18,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Dubai Healthcare Workforce Intelligence — Labor Market Data & Analysis | Zavis",
+      "Dubai Healthcare Workforce Intelligence — Labor Market Data & Analysis",
     description:
       "Explore Dubai's healthcare labor market: 99,520 DHA-licensed professionals across 5,505 facilities. Workforce ratios, employer rankings, specialty analysis, geographic distribution, and staffing benchmarks sourced from the DHA Sheryan Medical Registry.",
     alternates: { canonical: `${base}/workforce` },

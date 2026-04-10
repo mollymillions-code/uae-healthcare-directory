@@ -49,7 +49,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `Dubai Healthcare Workforce Statistics 2026 — ${PROFESSIONAL_STATS.total.toLocaleString()} Licensed Professionals | Zavis`,
+    title: `Dubai Healthcare Workforce Statistics 2026 — ${PROFESSIONAL_STATS.total.toLocaleString()} Licensed Professionals`,
     description: `Comprehensive Dubai healthcare workforce statistics: ${PROFESSIONAL_STATS.total.toLocaleString()} licensed professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities. Category breakdowns, top specialties, facility rankings, license distribution, and geographic analysis. Sourced from DHA Sheryan Registry.`,
     alternates: { canonical: `${base}/professionals/stats` },
     openGraph: {

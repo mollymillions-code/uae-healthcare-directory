@@ -21,7 +21,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Staffing Benchmarks Dubai — Ratios & Standards | Zavis",
+      "Healthcare Staffing Benchmarks Dubai — Ratios & Standards",
     description:
       "Staffing benchmarks for Dubai healthcare: nurse-to-doctor ratios, staff per facility, specialist per-capita rates, FTL license analysis, consultant pipeline metrics, and specialty geographic concentration. DHA Sheryan data.",
     alternates: { canonical: `${base}/workforce/benchmarks` },

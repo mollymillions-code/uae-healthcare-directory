@@ -43,7 +43,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const url = `${base}/best/doctors/${spec.slug}`;
   const isDentist = spec.category === "dentists";
   const doctorLabel = isDentist ? "Dentists" : "Doctors";
-  const title = `Best ${spec.name} in Dubai 2026 \u2014 Top 10 ${spec.name} ${doctorLabel} | Zavis`;
+  const title = `Best ${spec.name} in Dubai 2026 \u2014 Top 10 ${spec.name} ${doctorLabel}`;
   const description = `Find the best ${spec.name.toLowerCase()} in Dubai. Top 10 ${spec.name.toLowerCase()} ${doctorLabel.toLowerCase()} ranked by institutional capacity, plus the leading hospitals and clinics for ${spec.name.toLowerCase()} in Dubai. ${spec.count.toLocaleString()} DHA-licensed professionals. Data from the official Sheryan Medical Registry.`;
 
   return {

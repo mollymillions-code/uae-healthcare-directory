@@ -24,7 +24,7 @@ function getSupplyAssessment(per100K: number): { label: string; color: string } 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "Dubai Healthcare Supply Analysis — Specialty Adequacy Report | Zavis",
+    title: "Dubai Healthcare Supply Analysis — Specialty Adequacy Report",
     description: `Specialty supply analysis for Dubai's healthcare workforce. Per-capita rates, geographic coverage, employer concentration, and supply gaps across ${PHYSICIAN_SPECIALTIES.length} physician specialties. Sourced from DHA Sheryan Registry.`,
     alternates: { canonical: `${base}/workforce/supply` },
     openGraph: {

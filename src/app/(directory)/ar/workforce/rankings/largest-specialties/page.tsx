@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const count = ALL_SPECIALTIES.filter((s) => s.count >= 10).length;
   return {
-    title: `جميع التخصصات الطبية الـ ${count} في دبي مصنّفةً حسب الحجم | Zavis`,
+    title: `جميع التخصصات الطبية الـ ${count} في دبي مصنّفةً حسب الحجم`,
     description: `كل تخصص طبي تتابعه هيئة الصحة بدبي مصنّفاً حسب عدد الكوادر المرخصة. من الأطباء العامين (${ALL_SPECIALTIES[0]?.count.toLocaleString("ar-AE")}) إلى التخصصات الدقيقة. معدلات للفرد وتوزيع الفئات.`,
     alternates: {
       canonical: `${base}/ar/workforce/rankings/largest-specialties`,

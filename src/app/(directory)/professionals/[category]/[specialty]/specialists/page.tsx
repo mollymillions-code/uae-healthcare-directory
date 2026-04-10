@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed | Zavis`,
+    title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
     description: `${count.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai. Specialists have completed advanced specialty training and hold recognized qualifications. Browse the full list with facility details.`,
     alternates: {
       canonical: `${base}/professionals/${params.category}/${spec.slug}/specialists`,

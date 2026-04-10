@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cityNameAr = getArabicCityName(citySlug);
 
   return {
-    title: `أسعار ${procedureName} في ${cityNameAr} | Zavis`,
+    title: `أسعار ${procedureName} في ${cityNameAr}`,
     description: `كم تبلغ تكلفة ${procedureName} في ${cityNameAr}؟ السعر الاعتيادي: ${formatAed(pricing.typical)}. النطاق: ${formatAed(pricing.min)}–${formatAed(pricing.max)}. ابحث عن المزودين وقارن الأسعار وقدّر تكلفتك بعد خصم التأمين.`,
     alternates: {
       canonical: `${base}/ar/pricing/${procSlug}/${citySlug}`,
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `أسعار ${procedureName} في ${cityNameAr} | Zavis`,
+      title: `أسعار ${procedureName} في ${cityNameAr}`,
       description: `قارن أسعار ${procedureName} في ${cityNameAr}. النطاق: ${formatAed(pricing.min)}–${formatAed(pricing.max)}. تقدير التكلفة بعد خصم التأمين.`,
       url: `${base}/ar/pricing/${procSlug}/${citySlug}`,
       type: "website",

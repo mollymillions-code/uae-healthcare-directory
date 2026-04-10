@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Dubai Healthcare Professional Directory — 99,520 DHA-Licensed Professionals | Zavis",
+      "Dubai Healthcare Professional Directory — 99,520 DHA-Licensed Professionals",
     description:
       "Search 99,520 DHA-licensed healthcare professionals in Dubai. Physicians, dentists, nurses, and allied health workers sourced from the official Sheryan Medical Registry. Find any licensed doctor, specialist, or healthcare worker by name, specialty, or facility.",
     alternates: { canonical: `${base}/professionals` },

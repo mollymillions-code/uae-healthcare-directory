@@ -35,7 +35,7 @@ export function generateMetadata({
   const nameAr = cat?.nameAr || profile.name;
 
   return {
-    title: `القوى العاملة في فئة ${nameAr} — دبي | Zavis`,
+    title: `القوى العاملة في فئة ${nameAr} — دبي`,
     description: `ملف سوق العمل لـ ${profile.totalCount.toLocaleString("ar-AE")} من ${nameAr} المرخّصين في دبي. توزيع التراخيص، التخصصات، كبار أصحاب العمل، والتوزيع الجغرافي. مصدره سجل هيئة صحة دبي شريان.`,
     alternates: {
       canonical: `${base}/ar/workforce/category/${params.category}`,

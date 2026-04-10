@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Top 50 Healthcare Employers in Dubai by Staff Count | Zavis",
+      "Top 50 Healthcare Employers in Dubai by Staff Count",
     description: `The 50 largest healthcare employers in Dubai ranked by DHA-licensed staff count. From Rashid Hospital to private clinics — total staff, top specialty, and workforce profiles for each facility.`,
     alternates: { canonical: `${base}/workforce/rankings/top-employers` },
     openGraph: {

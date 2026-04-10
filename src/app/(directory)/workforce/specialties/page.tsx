@@ -21,7 +21,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Specialties in Dubai — Workforce Size Rankings | Zavis",
+      "Healthcare Specialties in Dubai — Workforce Size Rankings",
     description: `All ${ALL_SPECIALTIES.length} tracked healthcare specialties in Dubai ranked by workforce size. Per-capita rates, FTL license penetration, and category breakdowns from the DHA Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/workforce/specialties` },
     openGraph: {

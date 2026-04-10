@@ -187,7 +187,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const base = getBaseUrl();
 
   return {
-    title: `${guide.title} | Zavis`,
+    title: `${guide.title}`,
     description: guide.metaDescription,
     alternates: { canonical: `${base}/insurance/guide/${guide.slug}` },
     openGraph: {
@@ -410,7 +410,7 @@ function DomesticWorkerGuide() {
         The most affordable plans for domestic workers in Dubai start from approximately AED 750-1,200 per year. In Abu Dhabi, <Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link> offers specific domestic worker plans starting from approximately AED 600 per year. These plans meet minimum regulatory requirements but have limited networks and higher co-payments compared to enhanced plans.
       </p>
       <p>
-        Employers can purchase these plans online through insurer websites or through licensed brokers. Common providers offering domestic worker plans include Daman, <Link href="/insurance/orient" className="text-[#006828] hover:underline">Orient Insurance</Link>, <Link href="/insurance/oman-insurance" className="text-[#006828] hover:underline">Oman Insurance</Link>, and <Link href="/insurance/dubai-insurance-company" className="text-[#006828] hover:underline">Dubai Insurance Company</Link>. Comparison portals can help identify the cheapest option with an adequate network in your area.
+        Employers can purchase these plans online through insurer websites or through licensed brokers. Common providers offering domestic worker plans include Daman, <Link href="/insurance/orient" className="text-[#006828] hover:underline">Orient Insurance</Link>, <Link href="/insurance/oman-insurance" className="text-[#006828] hover:underline">Oman Insurance</Link>, and <Link href="/insurance/dic" className="text-[#006828] hover:underline">Dubai Insurance Company</Link>. Comparison portals can help identify the cheapest option with an adequate network in your area.
       </p>
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Penalties for Non-Compliance</h2>

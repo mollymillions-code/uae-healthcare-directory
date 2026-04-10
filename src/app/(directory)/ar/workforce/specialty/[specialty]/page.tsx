@@ -40,7 +40,7 @@ export function generateMetadata({
   const nameAr = spec?.nameAr || metrics.name;
 
   return {
-    title: `تحليل القوى العاملة — ${nameAr} في دبي | Zavis`,
+    title: `تحليل القوى العاملة — ${nameAr} في دبي`,
     description: `ملف سوق العمل لـ ${metrics.totalCount.toLocaleString("ar-AE")} من متخصصي ${nameAr} في دبي. معدل FTL ${metrics.license.ftlPercent}%، ${metrics.areaDistribution.length} منطقة، أبرز المنشآت والفجوات الجغرافية. بيانات DHA شريان.`,
     alternates: {
       canonical: `${base}/ar/workforce/specialty/${params.specialty}`,

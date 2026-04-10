@@ -46,7 +46,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `استشاريو ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} مرخّص من DHA | Zavis`,
+    title: `استشاريو ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} مرخّص من DHA`,
     description: `${count.toLocaleString("ar-AE")} استشاري في ${spec.nameAr} مرخّصون من هيئة صحة دبي. الاستشاريون هم أعلى درجة سريرية ويتطلب الوصول إليها أكثر من 8 سنوات من الخبرة بعد التخصص. تصفح القائمة الكاملة مع تفاصيل المنشأة.`,
     alternates: {
       canonical: `${base}/ar/professionals/${params.category}/${spec.slug}/consultants`,

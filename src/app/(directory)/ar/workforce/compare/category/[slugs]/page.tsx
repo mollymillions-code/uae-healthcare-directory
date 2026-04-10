@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const nameA = catA.nameAr || catA.name;
   const nameB = catB.nameAr || catB.name;
   return {
-    title: `${nameA} مقابل ${nameB} — مقارنة فئات القوى العاملة | Zavis`,
+    title: `${nameA} مقابل ${nameB} — مقارنة فئات القوى العاملة`,
     description: `قارن ${nameA} (${catA.count.toLocaleString("ar-AE")}) و${nameB} (${catB.count.toLocaleString("ar-AE")}) في دبي. المعدلات للفرد والترخيص وأكبر أصحاب العمل والتخصصات والتوزيع الجغرافي.`,
     alternates: {
       canonical: `${base}/ar/workforce/compare/category/${params.slugs}`,

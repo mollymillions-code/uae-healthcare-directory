@@ -24,7 +24,7 @@ const CATEGORY_DESCRIPTIONS_AR: Record<string, string> = {
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "دليل الكوادر الصحية في دبي — 99,520 كادر مرخّص من هيئة صحة دبي | Zavis",
+    title: "دليل الكوادر الصحية في دبي — 99,520 كادر مرخّص من هيئة صحة دبي",
     description:
       "ابحث بين 99,520 كادراً صحياً مرخّصاً من هيئة صحة دبي. أطباء وأطباء أسنان وممرضون ومهنيون صحيون مساندون من السجل الطبي الرسمي شريان.",
     alternates: {

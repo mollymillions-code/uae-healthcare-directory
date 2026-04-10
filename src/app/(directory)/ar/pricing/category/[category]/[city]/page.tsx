@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 
   return {
-    title: `أسعار ${catNameAr} في ${cityNameAr} | Zavis`,
+    title: `أسعار ${catNameAr} في ${cityNameAr}`,
     description: `كم تبلغ تكاليف ${catNameAr} في ${cityNameAr}؟ قارن ${procs.length} إجراءً من ${formatAed(minPrice)} إلى ${formatAed(maxPrice)}. تغطية التأمين وتقدير التكاليف وأبرز المزودين في ${cityNameAr}.`,
     alternates: {
       canonical: `${base}/ar/pricing/category/${catSlug}/${citySlug}`,
@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `أسعار ${catNameAr} في ${cityNameAr} — ${procs.length} إجراء | Zavis`,
+      title: `أسعار ${catNameAr} في ${cityNameAr} — ${procs.length} إجراء`,
       description: `قارن أسعار ${catNameAr} في ${cityNameAr}. النطاق: ${formatAed(minPrice)}–${formatAed(maxPrice)}.`,
       url: `${base}/ar/pricing/category/${catSlug}/${citySlug}`,
       type: "website",

@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 
   return {
-    title: `أسعار الإجراءات الطبية في ${cityNameAr} | Zavis`,
+    title: `أسعار الإجراءات الطبية في ${cityNameAr}`,
     description: `قارن ${procsInCity.length.toLocaleString("ar-AE")} إجراءً طبياً في ${cityNameAr}، الإمارات. من ${formatAed(cheapest)} إلى ${formatAed(mostExpensive)}. تغطية التأمين وتقدير التكاليف ودليل المزودين. مبني على بيانات التعرفة الرسمية.`,
     alternates: {
       canonical: `${base}/ar/pricing/city/${citySlug}`,
@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `أسعار الإجراءات الطبية في ${cityNameAr} | Zavis`,
+      title: `أسعار الإجراءات الطبية في ${cityNameAr}`,
       description: `${procsInCity.length.toLocaleString("ar-AE")} إجراء طبي مسعَّر في ${cityNameAr}. قارن الأسعار وتحقق من التغطية التأمينية وابحث عن المزودين.`,
       url: `${base}/ar/pricing/city/${citySlug}`,
       type: "website",

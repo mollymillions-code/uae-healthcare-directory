@@ -50,7 +50,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${specA.name} vs ${specB.name} in Dubai — Side-by-Side Comparison | Zavis`,
+    title: `${specA.name} vs ${specB.name} in Dubai — Side-by-Side Comparison`,
     description: `Compare ${specA.name} (${specA.count.toLocaleString()} professionals) and ${specB.name} (${specB.count.toLocaleString()} professionals) in Dubai. Side-by-side analysis of workforce size, license types, top facilities, and seniority levels. Sourced from DHA Sheryan Registry.`,
     alternates: { canonical: `${base}/professionals/compare/${params.slugs}` },
     openGraph: {

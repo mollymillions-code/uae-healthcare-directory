@@ -44,7 +44,7 @@ const GUIDES = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "Health Insurance Guides — UAE | Zavis",
+    title: "Health Insurance Guides — UAE",
     description:
       "In-depth guides to health insurance in the UAE. Learn about freelancer insurance, maternity coverage, filing claims, domestic worker requirements, and switching providers.",
     alternates: { canonical: `${base}/insurance/guide` },

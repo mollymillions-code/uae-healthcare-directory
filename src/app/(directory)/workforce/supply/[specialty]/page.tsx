@@ -41,7 +41,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `${spec.name} Supply Analysis — Dubai Healthcare | Zavis`,
+    title: `${spec.name} Supply Analysis — Dubai Healthcare`,
     description: `${spec.name} supply analysis for Dubai: ${supply?.totalCount.toLocaleString() || spec.count.toLocaleString()} licensed professionals, ${supply?.per100K || 0} per 100K population, ${supply?.facilityCount || 0} facilities, geographic coverage and gaps.`,
     alternates: { canonical: `${base}/workforce/supply/${spec.slug}` },
     openGraph: {

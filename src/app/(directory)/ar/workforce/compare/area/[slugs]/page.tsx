@@ -49,7 +49,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const nameA = getArabicAreaName(areaA.slug) || areaA.name;
   const nameB = getArabicAreaName(areaB.slug) || areaB.name;
   return {
-    title: `${nameA} مقابل ${nameB} — مقارنة القوى العاملة | Zavis`,
+    title: `${nameA} مقابل ${nameB} — مقارنة القوى العاملة`,
     description: `قارن القوى العاملة الصحية في ${nameA} و${nameB} بدبي. أعداد الكوادر وتوزيع الفئات وأنواع التراخيص وأبرز التخصصات وترتيب أصحاب العمل جنباً إلى جنب.`,
     alternates: {
       canonical: `${base}/ar/workforce/compare/area/${params.slugs}`,

@@ -15,7 +15,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `توزيع أحجام منشآت الرعاية الصحية في دبي — تحليل الموظفين لكل منشأة | Zavis`,
+    title: `توزيع أحجام منشآت الرعاية الصحية في دبي — تحليل الموظفين لكل منشأة`,
     description: `ما حجم منشآت الرعاية الصحية في دبي؟ تحليل توزيع أحجام ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة — من المستشفيات الكبرى (500+ موظف) إلى العيادات الصغرى (<5 موظفين). التوسط والمتوسط وتحليل الفئات.`,
     alternates: {
       canonical: `${base}/ar/workforce/benchmarks/staff-per-facility`,

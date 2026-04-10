@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `مسار ${catInfo.nameAr} المهني في دبي — ${catInfo.count.toLocaleString("ar-AE")} كادر | Zavis`,
+    title: `مسار ${catInfo.nameAr} المهني في دبي — ${catInfo.count.toLocaleString("ar-AE")} كادر`,
     description: `نظرة عامة على مسار ${catInfo.nameAr} المهني في دبي. ${catInfo.count.toLocaleString("ar-AE")} كادر مرخص وأبرز التخصصات وأكبر أصحاب العمل ونظرة عامة على الترخيص والتوزيع الجغرافي.`,
     alternates: {
       canonical: `${base}/ar/workforce/career/category/${catInfo.slug}`,

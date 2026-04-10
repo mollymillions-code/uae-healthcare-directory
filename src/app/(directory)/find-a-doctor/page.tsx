@@ -51,7 +51,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `Find a Doctor in Dubai — Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-Licensed Professionals | Zavis`,
+    title: `Find a Doctor in Dubai — Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-Licensed Professionals`,
     description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities in Dubai. Find physicians, dentists, nurses, and allied health professionals by specialty or facility. Sourced from the official Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/find-a-doctor` },
     openGraph: {

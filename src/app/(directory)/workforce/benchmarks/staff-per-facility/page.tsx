@@ -15,7 +15,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Facility Size Distribution Dubai — Staff per Facility Analysis | Zavis",
+      "Healthcare Facility Size Distribution Dubai — Staff per Facility Analysis",
     description: `How large are Dubai's healthcare facilities? Size distribution analysis of ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities — from mega-hospitals (500+ staff) to micro-clinics (<5 staff). Median, average, and tier breakdown.`,
     alternates: {
       canonical: `${base}/workforce/benchmarks/staff-per-facility`,

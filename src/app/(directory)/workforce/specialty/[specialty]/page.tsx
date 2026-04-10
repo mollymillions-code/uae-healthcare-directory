@@ -35,7 +35,7 @@ export function generateMetadata({
   const base = getBaseUrl();
 
   return {
-    title: `${metrics.name} Workforce in Dubai — ${metrics.totalCount.toLocaleString()} Licensed, ${metrics.per100K} per 100K | Zavis`,
+    title: `${metrics.name} Workforce in Dubai — ${metrics.totalCount.toLocaleString()} Licensed, ${metrics.per100K} per 100K`,
     description: `Labor market profile for ${metrics.totalCount.toLocaleString()} ${metrics.name.toLowerCase()} professionals in Dubai. FTL rate ${metrics.license.ftlPercent}%, ${metrics.areaDistribution.length} areas covered, top facilities, geographic gaps. DHA Sheryan data.`,
     alternates: {
       canonical: `${base}/workforce/specialty/${params.specialty}`,

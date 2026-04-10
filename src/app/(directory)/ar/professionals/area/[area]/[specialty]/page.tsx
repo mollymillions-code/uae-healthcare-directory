@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const spec = getSpecialtyBySlug(params.specialty);
   if (!areaInfo || !spec) {
     return {
-      title: "الكوادر الصحية حسب المنطقة والتخصص | Zavis",
+      title: "الكوادر الصحية حسب المنطقة والتخصص",
       description: "تصفح الكوادر الصحية المرخّصة من هيئة الصحة بدبي حسب المنطقة والتخصص.",
     };
   }
@@ -44,7 +44,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const count = professionals.length;
   const base = getBaseUrl();
   return {
-    title: `أفضل كوادر ${spec.name} في ${arabicAreaName}، دبي — ${count.toLocaleString("ar-AE")} كادر مرخّص | Zavis`,
+    title: `أفضل كوادر ${spec.name} في ${arabicAreaName}، دبي — ${count.toLocaleString("ar-AE")} كادر مرخّص`,
     description: `ابحث عن ${count.toLocaleString("ar-AE")} كادر صحي مرخّص من هيئة الصحة بدبي في تخصص ${spec.name} بمنطقة ${arabicAreaName}. القائمة الكاملة بأنواع التراخيص وتفاصيل المنشآت، مصدرها السجل الطبي الرسمي شريان.`,
     alternates: {
       canonical: `${base}/ar/professionals/area/${areaInfo.slug}/${spec.slug}`,

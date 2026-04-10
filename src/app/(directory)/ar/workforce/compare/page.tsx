@@ -20,7 +20,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `مقارنة القوى العاملة الصحية في دبي — التخصصات والمناطق وأصحاب العمل | Zavis`,
+    title: `مقارنة القوى العاملة الصحية في دبي — التخصصات والمناطق وأصحاب العمل`,
     description: `مقارنات جنباً إلى جنب عبر ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} كادر صحي في دبي. قارن التخصصات والمناطق وأصحاب العمل والفئات باستخدام بيانات سجل شريان DHA.`,
     alternates: {
       canonical: `${base}/ar/workforce/compare`,

@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `تحليل نسبة الممرضين إلى الأطباء في دبي — تصنيفات المنشآت ومعايير منظمة الصحة العالمية | Zavis`,
+    title: `تحليل نسبة الممرضين إلى الأطباء في دبي — تصنيفات المنشآت ومعايير منظمة الصحة العالمية`,
     description: `تحليل نسبة الممرضين إلى الأطباء في منشآت الرعاية الصحية بدبي. النسبة الإجمالية، مقارنة معايير منظمة الصحة العالمية، وتصنيفات المنشآت لـ ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة. مصدره سجل شريان DHA.`,
     alternates: {
       canonical: `${base}/ar/workforce/benchmarks/nurse-to-doctor`,

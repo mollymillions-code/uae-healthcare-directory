@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `الأخصائيون لكل 100,000 نسمة في دبي — معدلات الرعاية الصحية للفرد | Zavis`,
+    title: `الأخصائيون لكل 100,000 نسمة في دبي — معدلات الرعاية الصحية للفرد`,
     description: `معدلات الأخصائيين للفرد في دبي: كل تخصص طبي مصنّف حسب المهنيين لكل 100,000 نسمة. مقارنة معايير منظمة الصحة العالمية وتحليل الفئات عبر ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} كادر مرخص.`,
     alternates: {
       canonical: `${base}/ar/workforce/benchmarks/specialist-per-capita`,

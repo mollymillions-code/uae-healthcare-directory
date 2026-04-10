@@ -46,7 +46,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `أخصائيو ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} مرخّص من DHA | Zavis`,
+    title: `أخصائيو ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} مرخّص من DHA`,
     description: `${count.toLocaleString("ar-AE")} أخصائي في ${spec.nameAr} مرخّصون من هيئة صحة دبي. الأخصائيون أتمّوا تدريباً متقدماً في تخصصهم ويحملون مؤهلات معترفاً بها. تصفح القائمة الكاملة مع تفاصيل المنشأة.`,
     alternates: {
       canonical: `${base}/ar/professionals/${params.category}/${spec.slug}/specialists`,

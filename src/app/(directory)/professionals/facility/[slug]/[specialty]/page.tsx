@@ -30,7 +30,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const spec = getSpecialtyBySlug(params.specialty);
   if (!profile || !spec) {
     return {
-      title: "Facility Specialty — Staff Directory | Zavis",
+      title: "Facility Specialty — Staff Directory",
       description: "View licensed professionals by specialty at this healthcare facility in Dubai.",
     };
   }
@@ -38,7 +38,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const count = professionals.length;
   const base = getBaseUrl();
   return {
-    title: `${spec.name} at ${profile.name} — ${count.toLocaleString()} Licensed ${count === 1 ? "Professional" : "Professionals"} | Zavis`,
+    title: `${spec.name} at ${profile.name} — ${count.toLocaleString()} Licensed ${count === 1 ? "Professional" : "Professionals"}`,
     description: `${count.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai. Browse the full staff list with license types, sourced from the official Sheryan Medical Registry.`,
     alternates: {
       canonical: `${base}/professionals/facility/${profile.slug}/${spec.slug}`,

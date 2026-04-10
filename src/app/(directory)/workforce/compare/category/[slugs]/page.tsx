@@ -42,7 +42,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   return {
-    title: `${catA.name} vs ${catB.name} — Category Workforce Comparison | Zavis`,
+    title: `${catA.name} vs ${catB.name} — Category Workforce Comparison`,
     description: `Compare ${catA.name} (${catA.count.toLocaleString()}) and ${catB.name} (${catB.count.toLocaleString()}) in Dubai. Per-capita rates, licensing, top employers, specialties, and geographic distribution.`,
     alternates: { canonical: `${base}/workforce/compare/category/${params.slugs}` },
     openGraph: {

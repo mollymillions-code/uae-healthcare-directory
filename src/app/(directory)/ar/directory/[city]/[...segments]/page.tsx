@@ -134,7 +134,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
       // --- Arabic SEO title: hard 60-char cap, high-intent modifiers ---
       const arMaxTitleLen = 60;
-      const arSuffix = " | Zavis";
+      const arSuffix = "";
       const arIdealTitle = `${resolved.provider.name}، ${cityNameAr} — تقييمات وأطباء وتأمين`;
       let arSeoTitle: string;
       if ((arIdealTitle + arSuffix).length <= arMaxTitleLen) {
@@ -144,7 +144,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         if ((arShortTitle + arSuffix).length <= arMaxTitleLen) {
           arSeoTitle = arShortTitle + arSuffix;
         } else {
-          const arAvailable = arMaxTitleLen - " — تقييمات وتأمين | Zavis".length;
+          const arAvailable = arMaxTitleLen - " — تقييمات وتأمين".length;
           arSeoTitle = resolved.provider.name.slice(0, arAvailable).trim() + " — تقييمات وتأمين" + arSuffix;
         }
       }

@@ -25,7 +25,7 @@ function getSupplyAssessment(per100K: number): { label: string; labelAr: string;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `تحليل عرض الرعاية الصحية في دبي — تقرير كفاءة التخصصات | Zavis`,
+    title: `تحليل عرض الرعاية الصحية في دبي — تقرير كفاءة التخصصات`,
     description: `تحليل عرض التخصصات في القوى العاملة الصحية بدبي. المعدلات للفرد والتغطية الجغرافية وتركّز أصحاب العمل وفجوات العرض عبر ${PHYSICIAN_SPECIALTIES.length} تخصص طبي. مصدره سجل شريان DHA.`,
     alternates: {
       canonical: `${base}/ar/workforce/supply`,

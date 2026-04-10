@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Nurse-to-Doctor Ratio Analysis Dubai — Facility Rankings & WHO Benchmarks | Zavis",
+      "Nurse-to-Doctor Ratio Analysis Dubai — Facility Rankings & WHO Benchmarks",
     description: `Nurse-to-doctor ratio analysis for Dubai healthcare facilities. Overall ratio, WHO benchmark comparison, and facility-level rankings for ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities. Sourced from DHA Sheryan Registry.`,
     alternates: {
       canonical: `${base}/workforce/benchmarks/nurse-to-doctor`,

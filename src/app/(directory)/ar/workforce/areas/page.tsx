@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "القوى العاملة الصحية حسب المنطقة في دبي — التوزيع الجغرافي | Zavis",
+    title: "القوى العاملة الصحية حسب المنطقة في دبي — التوزيع الجغرافي",
     description:
       "التوزيع الجغرافي للمهنيين الصحيين عبر أحياء دبي ومناطقها الطبية. أعداد القوى العاملة على مستوى المناطق وتركّزات التخصصات وكثافة التوظيف من سجل شريان.",
     alternates: {

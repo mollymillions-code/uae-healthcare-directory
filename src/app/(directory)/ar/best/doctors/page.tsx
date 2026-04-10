@@ -20,7 +20,7 @@ const TOTAL_DOCTORS = PROFESSIONAL_STATS.physicians + PROFESSIONAL_STATS.dentist
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const url = `${base}/ar/best/doctors`;
-  const title = "أفضل الأطباء في دبي — مصنّفون حسب الخبرة والتخصص | Zavis";
+  const title = "أفضل الأطباء في دبي — مصنّفون حسب الخبرة والتخصص";
   const description = `ابحث عن أفضل الأطباء في دبي عبر ${DOCTOR_SPECIALTIES.length} تخصصاً طبياً. ${TOTAL_DOCTORS.toLocaleString("ar-AE")} طبيباً وطبيبة أسنان مرخّصاً من هيئة الصحة بدبي، مُصنَّفون بحسب الطاقة الاستيعابية للمنشأة من السجل الطبي الرسمي شريان.`;
 
   return {

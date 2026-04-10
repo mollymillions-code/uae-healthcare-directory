@@ -31,7 +31,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const profile = getFacilityProfile(params.slug);
   if (!profile) {
     return {
-      title: "Doctors at Healthcare Facility, Dubai | Zavis",
+      title: "Doctors at Healthcare Facility, Dubai",
       description:
         "Find doctors at this healthcare facility in Dubai. Licensed physicians and dentists sourced from the DHA Sheryan Medical Registry.",
     };
@@ -44,7 +44,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Doctors at ${profile.name}, Dubai — ${doctorCount.toLocaleString()} Licensed Professionals | Zavis`,
+    title: `Doctors at ${profile.name}, Dubai — ${doctorCount.toLocaleString()} Licensed Professionals`,
     description: `Find ${doctorCount.toLocaleString()} licensed doctors at ${profile.name} in Dubai. Browse physicians and dentists by specialty and license type. All data sourced from the DHA Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/doctors-at/${profile.slug}` },
     keywords: [

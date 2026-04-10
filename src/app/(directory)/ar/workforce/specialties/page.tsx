@@ -21,7 +21,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "التخصصات الصحية في دبي — تصنيف حجم القوى العاملة | Zavis",
+    title: "التخصصات الصحية في دبي — تصنيف حجم القوى العاملة",
     description: `جميع التخصصات الصحية الـ ${ALL_SPECIALTIES.length} المتابَعة في دبي مصنّفةً حسب حجم القوى العاملة. معدلات الفرد، ونسب تغلغل الترخيص الدائم، وتوزيع الفئات من سجل شريان الطبي.`,
     alternates: {
       canonical: `${base}/ar/workforce/specialties`,

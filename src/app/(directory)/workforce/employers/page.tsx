@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Top Healthcare Employers in Dubai — Facility Staff Rankings | Zavis",
+      "Top Healthcare Employers in Dubai — Facility Staff Rankings",
     description:
       "Ranked list of Dubai's largest healthcare employers by staff count. Hospital and clinic workforce data from the DHA Sheryan Medical Registry. Size tiers, category breakdowns, and specialty breadth for each facility.",
     alternates: { canonical: `${base}/workforce/employers` },

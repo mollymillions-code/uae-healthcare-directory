@@ -16,7 +16,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Workforce by Area in Dubai — Geographic Distribution | Zavis",
+      "Healthcare Workforce by Area in Dubai — Geographic Distribution",
     description:
       "Geographic distribution of healthcare professionals across Dubai's neighborhoods and medical districts. Area-level workforce counts, specialty concentrations, and staffing density from the DHA Sheryan Registry.",
     alternates: { canonical: `${base}/workforce/areas` },

@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `أكبر 50 صاحب عمل في قطاع الرعاية الصحية بدبي حسب عدد الموظفين | Zavis`,
+    title: `أكبر 50 صاحب عمل في قطاع الرعاية الصحية بدبي حسب عدد الموظفين`,
     description: `أكبر 50 صاحب عمل في قطاع الرعاية الصحية بدبي مصنّفين حسب عدد الموظفين المرخصين من هيئة الصحة بدبي. من مستشفى راشد إلى العيادات الخاصة — إجمالي الموظفين والتخصص الأبرز وبيانات القوى العاملة لكل منشأة.`,
     alternates: {
       canonical: `${base}/ar/workforce/rankings/top-employers`,

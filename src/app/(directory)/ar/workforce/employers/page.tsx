@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "أكبر أصحاب العمل في قطاع الصحة بدبي — تصنيف المنشآت | Zavis",
+    title: "أكبر أصحاب العمل في قطاع الصحة بدبي — تصنيف المنشآت",
     description:
       "قائمة مصنّفة بأكبر المنشآت الصحية في دبي حسب عدد العاملين. بيانات القوى العاملة من سجل شريان الطبي لهيئة الصحة بدبي. تصنيف الأحجام وتوزيع الفئات وعمق التخصصات.",
     alternates: {

@@ -28,13 +28,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const profile = getFacilityProfile(params.slug);
   if (!profile) {
     return {
-      title: "الكوادر الصحية في المنشأة | Zavis",
+      title: "الكوادر الصحية في المنشأة",
       description: "استعرض دليل الكوادر الصحية المرخّصة لهذه المنشأة الصحية في دبي.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `الكوادر الصحية في ${profile.name} — ${profile.totalStaff.toLocaleString("ar-AE")} كادر | Zavis`,
+    title: `الكوادر الصحية في ${profile.name} — ${profile.totalStaff.toLocaleString("ar-AE")} كادر`,
     description: `استعرض الدليل الكامل لكوادر ${profile.name} في دبي. ${profile.totalStaff.toLocaleString("ar-AE")} كادر صحي مرخّص من هيئة الصحة بدبي. مصدره السجل الطبي الرسمي شريان.`,
     alternates: {
       canonical: `${base}/ar/professionals/facility/${profile.slug}`,

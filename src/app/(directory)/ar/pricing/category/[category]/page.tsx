@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const catNameAr = CATEGORY_NAMES_AR[catSlug] || cat.name;
 
   return {
-    title: `أسعار ${catNameAr} في الإمارات | Zavis`,
+    title: `أسعار ${catNameAr} في الإمارات`,
     description: `كم تبلغ تكاليف ${catNameAr} في الإمارات؟ قارن ${procs.length} إجراءً من ${formatAed(minPrice)} إلى ${formatAed(maxPrice)} عبر دبي وأبوظبي والشارقة وجميع الإمارات. تفاصيل التغطية التأمينية وتقدير التكاليف.`,
     alternates: {
       canonical: `${base}/ar/pricing/category/${catSlug}`,
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `أسعار ${catNameAr} في الإمارات | Zavis`,
+      title: `أسعار ${catNameAr} في الإمارات`,
       description: `قارن ${procs.length} إجراءً من ${catNameAr} عبر 8 مدن إماراتية.`,
       url: `${base}/ar/pricing/category/${catSlug}`,
       type: "website",

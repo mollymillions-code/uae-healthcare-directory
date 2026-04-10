@@ -187,7 +187,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const base = getBaseUrl();
 
   return {
-    title: `${guide.title} | Zavis`,
+    title: `${guide.title}`,
     description: guide.metaDescription,
     alternates: {
       canonical: `${base}/ar/insurance/guide/${guide.slug}`,

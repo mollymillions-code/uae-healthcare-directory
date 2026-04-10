@@ -29,14 +29,14 @@ export function generateMetadata({ params }: Props): Metadata {
   const bench = getFacilityBenchmarks(params.slug);
   if (!bench) {
     return {
-      title: "Facility Workforce Profile | Zavis",
+      title: "Facility Workforce Profile",
       description:
         "Workforce profile for a Dubai healthcare facility. Licensed staff count, specialty breakdown, and staffing benchmarks.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `${bench.name} Workforce Profile — ${bench.totalStaff.toLocaleString()} Licensed Staff | Zavis`,
+    title: `${bench.name} Workforce Profile — ${bench.totalStaff.toLocaleString()} Licensed Staff`,
     description: `Workforce profile for ${bench.name}: ${bench.totalStaff.toLocaleString()} DHA-licensed staff, ${bench.specialtyBreadth} specialties, ${bench.nurseToDoctorRatio}:1 nurse-to-doctor ratio. Category breakdown, staffing benchmarks, and top specialties.`,
     alternates: { canonical: `${base}/workforce/employer/${bench.slug}` },
     openGraph: {

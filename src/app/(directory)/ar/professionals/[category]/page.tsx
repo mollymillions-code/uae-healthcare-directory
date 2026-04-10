@@ -38,7 +38,7 @@ export function generateMetadata({ params }: Props): Metadata {
   if (!cat) return {};
   const base = getBaseUrl();
   return {
-    title: `${cat.nameAr} في دبي — ${cat.count.toLocaleString("ar-AE")} كادر مرخّص من هيئة صحة دبي | Zavis`,
+    title: `${cat.nameAr} في دبي — ${cat.count.toLocaleString("ar-AE")} كادر مرخّص من هيئة صحة دبي`,
     description: `تصفح ${cat.count.toLocaleString("ar-AE")} من ${cat.nameAr} المرخّصين من هيئة صحة دبي. البيانات مصدرها السجل الطبي الرسمي شريان.`,
     alternates: {
       canonical: `${base}/ar/professionals/${cat.slug}`,

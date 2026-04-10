@@ -34,6 +34,7 @@ import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
   CheckCircle, ExternalLink, Calendar, MessageSquareQuote, Activity, ArrowRight,
+  Accessibility, Image as ImageIcon, Star, Quote,
 } from "lucide-react";
 import {
   PROCEDURES,
@@ -141,7 +142,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const { area } = resolved;
       const url = `${base}/directory/${city.slug}/${area.slug}/insurance`;
       return {
-        title: truncateTitle(`Insurance Coverage in ${area.name}, ${city.name} | Zavis`),
+        title: truncateTitle(`Insurance Coverage in ${area.name}, ${city.name}`),
         description: truncateDescription(`Find healthcare providers by insurance plan in ${area.name}, ${city.name}, UAE. Browse accepted insurers — Daman, Thiqa, AXA, Cigna, and more. Verified listings.`),
         alternates: { canonical: url },
         openGraph: {
@@ -170,20 +171,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const enrichmentScore = enrichmentFields.filter(Boolean).length;
       const isEnriched = enrichmentScore >= 2;
 
-      // --- SEO title: hard 60-char cap, high-intent modifiers ---
-      const maxTitleLen = 60;
-      const seoSuffix = " | Zavis";
-      const idealTitle = `${resolved.provider.name}, ${city.name} — Reviews, Doctors & Insurance`;
+      // --- SEO title: hard 52-char cap (leaves room for " | Zavis" appended by root layout template) ---
+      // Progressively trim by dropping legal/boilerplate tokens, then fall back to a
+      // word-boundary cut. Never slice mid-word.
+      const maxTitleLen = 52;
+      const cleanProviderName = (name: string): string =>
+        name
+          .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
+          .replace(/\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
+          .replace(/\s*\bFZ[- ]?LLC\b\s*$/i, "")
+          .replace(/\s*\bF[. ]?Z[. ]?E\.?\b\s*$/i, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      const providerDisplay = cleanProviderName(resolved.provider.name) || resolved.provider.name;
+      const idealTitle = `${providerDisplay}, ${city.name} — Reviews, Doctors & Insurance`;
       let seoTitle: string;
-      if ((idealTitle + seoSuffix).length <= maxTitleLen) {
-        seoTitle = idealTitle + seoSuffix;
+      if (idealTitle.length <= maxTitleLen) {
+        seoTitle = idealTitle;
       } else {
-        const shortTitle = `${resolved.provider.name} — Reviews & Insurance`;
-        if ((shortTitle + seoSuffix).length <= maxTitleLen) {
-          seoTitle = shortTitle + seoSuffix;
+        const shortTitle = `${providerDisplay} — Reviews & Insurance`;
+        if (shortTitle.length <= maxTitleLen) {
+          seoTitle = shortTitle;
         } else {
-          const available = maxTitleLen - " — Reviews & Insurance | Zavis".length;
-          seoTitle = resolved.provider.name.slice(0, available).trim() + " — Reviews & Insurance" + seoSuffix;
+          // Word-boundary trim on the provider name, then add the shortest suffix.
+          const tail = " — Reviews";
+          const nameBudget = maxTitleLen - tail.length;
+          let trimmedName = providerDisplay;
+          if (trimmedName.length > nameBudget) {
+            const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
+            trimmedName = (lastSpace > 0 ? trimmedName.slice(0, lastSpace) : trimmedName.slice(0, nameBudget)).trim();
+          }
+          seoTitle = `${trimmedName}${tail}`;
         }
       }
 

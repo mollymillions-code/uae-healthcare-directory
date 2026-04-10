@@ -44,7 +44,7 @@ const GUIDES = [
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "أدلة التأمين الصحي — الإمارات | Zavis",
+    title: "أدلة التأمين الصحي — الإمارات",
     description:
       "أدلة معمّقة حول التأمين الصحي في الإمارات العربية المتحدة. تعرّف على تأمين المستقلين وتغطية الأمومة وتقديم المطالبات ومتطلبات العمالة المنزلية وتغيير شركات التأمين.",
     alternates: {

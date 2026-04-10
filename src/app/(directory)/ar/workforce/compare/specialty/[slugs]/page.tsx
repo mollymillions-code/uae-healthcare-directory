@@ -54,7 +54,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const nameA = specA.nameAr || specA.name;
   const nameB = specB.nameAr || specB.name;
   return {
-    title: `${nameA} مقابل ${nameB} — مقارنة القوى العاملة | Zavis`,
+    title: `${nameA} مقابل ${nameB} — مقارنة القوى العاملة`,
     description: `قارن ${nameA} (${specA.count.toLocaleString("ar-AE")}) و${nameB} (${specB.count.toLocaleString("ar-AE")}) من مقاييس القوى العاملة في دبي. المعدلات للفرد ونسب الترخيص الدائم ونسب الاستشاريين وتركّز أصحاب العمل والتوزيع الجغرافي.`,
     alternates: {
       canonical: `${base}/ar/workforce/compare/specialty/${params.slugs}`,

@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
   if (!spec || spec.category !== params.category) return {};
   const base = getBaseUrl();
   return {
-    title: `Find a ${spec.name} in Dubai — ${spec.count.toLocaleString()} Licensed Professionals | Zavis`,
+    title: `Find a ${spec.name} in Dubai — ${spec.count.toLocaleString()} Licensed Professionals`,
     description: `There are ${spec.count.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals practicing in Dubai. Browse the full list with license type and facility details, sourced from the DHA Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/professionals/${params.category}/${spec.slug}` },
     openGraph: {

@@ -32,7 +32,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const profile = getFacilityProfile(params.slug);
   if (!profile) {
     return {
-      title: "الأطباء في منشأة صحية بدبي | Zavis",
+      title: "الأطباء في منشأة صحية بدبي",
       description:
         "اعثر على الأطباء في هذه المنشأة الصحية بدبي. أطباء وأطباء أسنان مرخّصون من سجل شريان لهيئة الصحة بدبي.",
     };
@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `الأطباء في ${profile.name} | Zavis`,
+    title: `الأطباء في ${profile.name}`,
     description: `اعثر على ${doctorCount.toLocaleString("ar-AE")} طبيباً مرخّصاً في ${profile.name} بدبي. تصفّح الأطباء والأسنان حسب التخصص ونوع الترخيص. البيانات من سجل شريان لهيئة الصحة بدبي.`,
     alternates: {
       canonical: `${base}/ar/doctors-at/${profile.slug}`,

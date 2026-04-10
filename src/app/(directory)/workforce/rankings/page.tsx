@@ -17,7 +17,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Healthcare Workforce Rankings Dubai — Top Employers, Specialties & More | Zavis",
+      "Healthcare Workforce Rankings Dubai — Top Employers, Specialties & More",
     description: `Rankings and league tables for Dubai's healthcare workforce: top employers by staff count, largest specialties, nurse-to-doctor ratios, FTL rates, and staffing benchmarks. ${PROFESSIONAL_STATS.total.toLocaleString()} professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities.`,
     alternates: { canonical: `${base}/workforce/rankings` },
     openGraph: {

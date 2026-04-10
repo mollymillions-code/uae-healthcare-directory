@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `تصنيفات القوى العاملة الصحية في دبي — أكبر أصحاب العمل والتخصصات | Zavis`,
+    title: `تصنيفات القوى العاملة الصحية في دبي — أكبر أصحاب العمل والتخصصات`,
     description: `تصنيفات وجداول ترتيب للقوى العاملة الصحية في دبي: أكبر أصحاب العمل، أكبر التخصصات، نسب الممرضين للأطباء، معدلات FTL. ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} مهنياً عبر ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString("ar-AE")} منشأة.`,
     alternates: {
       canonical: `${base}/ar/workforce/rankings`,

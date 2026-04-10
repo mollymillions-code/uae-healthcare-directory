@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const procedureName = proc.nameAr || proc.name;
 
   return {
-    title: `أسعار ${procedureName} في الإمارات | Zavis`,
+    title: `أسعار ${procedureName} في الإمارات`,
     description: `كم تبلغ تكلفة ${procedureName} في الإمارات؟ قارن الأسعار عبر دبي وأبوظبي والشارقة وجميع الإمارات. تغطية التأمين وتقدير التكلفة. مبني على بيانات التعرفة الإلزامية لدائرة الصحة.`,
     alternates: {
       canonical: `${base}/ar/pricing/${slug}`,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `أسعار ${procedureName} في الإمارات | Zavis`,
+      title: `أسعار ${procedureName} في الإمارات`,
       description: `قارن أسعار ${procedureName} عبر 8 مدن إماراتية. تقدير التكلفة بعد خصم التأمين.`,
       url: `${base}/ar/pricing/${slug}`,
       type: "website",

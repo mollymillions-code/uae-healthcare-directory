@@ -27,13 +27,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const profile = getFacilityProfile(params.slug);
   if (!profile) {
     return {
-      title: "Healthcare Facility — Staff Directory | Zavis",
+      title: "Healthcare Facility — Staff Directory",
       description: "View the full licensed staff directory for this healthcare facility in Dubai.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `${profile.name} — Healthcare Team Directory | ${profile.totalStaff.toLocaleString()} Licensed Staff | Zavis`,
+    title: `${profile.name} — Healthcare Team Directory | ${profile.totalStaff.toLocaleString()} Licensed Staff`,
     description: `View the full staff directory for ${profile.name} in Dubai. ${profile.totalStaff.toLocaleString()} DHA-licensed professionals including ${Object.entries(profile.categories).map(([slug, count]) => { const cat = PROFESSIONAL_CATEGORIES.find((c) => c.slug === slug); return `${count.toLocaleString()} ${cat?.name.toLowerCase() || slug}`; }).join(", ")}. Sourced from the official Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/professionals/facility/${profile.slug}` },
     openGraph: {

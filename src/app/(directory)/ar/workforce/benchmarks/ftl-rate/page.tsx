@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `تحليل معدل الترخيص الدائم FTL في دبي — الممارسة المستقلة حسب التخصص والمنطقة | Zavis`,
+    title: `تحليل معدل الترخيص الدائم FTL في دبي — الممارسة المستقلة حسب التخصص والمنطقة`,
     description: `تحليل معدل الترخيص الدائم (FTL) للرعاية الصحية في دبي: أي التخصصات والمناطق تسجّل أعلى معدلات ممارسة مستقلة؟ جداول مصنّفة عبر ${PROFESSIONAL_STATS.total.toLocaleString("ar-AE")} كادر مرخص.`,
     alternates: {
       canonical: `${base}/ar/workforce/benchmarks/ftl-rate`,

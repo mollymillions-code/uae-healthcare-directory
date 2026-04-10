@@ -12,7 +12,7 @@ import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const metadata: Metadata = {
-  title: "UAE Healthcare Guides — Costs, Best Providers & System Guides | Zavis",
+  title: "UAE Healthcare Guides — Costs, Best Providers & System Guides",
   description:
     "Comprehensive guides to UAE healthcare: procedure costs in Dubai and Abu Dhabi, best hospitals and clinics ranked by patient reviews, health insurance, and navigating the system. Data-driven and updated monthly.",
   alternates: {

@@ -58,7 +58,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `تحليل عرض ${spec.nameAr} في دبي | Zavis`,
+    title: `تحليل عرض ${spec.nameAr} في دبي`,
     description: `تحليل عرض ${spec.nameAr} في دبي: ${supply?.totalCount.toLocaleString("ar-AE") || spec.count.toLocaleString("ar-AE")} كادر مرخص، ${supply?.per100K || 0} لكل 100K نسمة، ${supply?.facilityCount || 0} منشأة، التغطية الجغرافية والفجوات.`,
     alternates: {
       canonical: `${base}/ar/workforce/supply/${spec.slug}`,

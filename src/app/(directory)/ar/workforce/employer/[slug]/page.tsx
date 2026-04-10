@@ -31,14 +31,14 @@ export function generateMetadata({ params }: Props): Metadata {
   const bench = getFacilityBenchmarks(params.slug);
   if (!bench) {
     return {
-      title: "ملف القوى العاملة في المنشأة | Zavis",
+      title: "ملف القوى العاملة في المنشأة",
       description:
         "ملف القوى العاملة لمنشأة صحية في دبي. عدد الموظفين المرخّصين، توزيع التخصصات، ومعايير التوظيف.",
     };
   }
   const base = getBaseUrl();
   return {
-    title: `القوى العاملة في ${bench.name} | Zavis`,
+    title: `القوى العاملة في ${bench.name}`,
     description: `ملف القوى العاملة لـ ${bench.name}: ${bench.totalStaff.toLocaleString("ar-AE")} موظفاً مرخّصاً من هيئة صحة دبي، ${bench.specialtyBreadth} تخصصاً، نسبة ممرض/طبيب ${bench.nurseToDoctorRatio}:1. توزيع الفئات ومعايير التوظيف.`,
     alternates: {
       canonical: `${base}/ar/workforce/employer/${bench.slug}`,
@@ -48,7 +48,7 @@ export function generateMetadata({ params }: Props): Metadata {
       },
     },
     openGraph: {
-      title: `القوى العاملة في ${bench.name} | Zavis`,
+      title: `القوى العاملة في ${bench.name}`,
       description: `${bench.totalStaff.toLocaleString("ar-AE")} كادر صحي مرخّص في ${bench.specialtyBreadth} تخصصاً. معايير التوظيف وتوزيع الفئات.`,
       url: `${base}/ar/workforce/employer/${bench.slug}`,
       type: "website",

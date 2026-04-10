@@ -48,7 +48,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const arabicAreaName = getArabicAreaName(params.area) || areaInfo.name;
 
   return {
-    title: `${catInfo.nameAr} في ${arabicAreaName}، دبي — ${pros.length.toLocaleString("ar-AE")} مهنياً | Zavis`,
+    title: `${catInfo.nameAr} في ${arabicAreaName}، دبي — ${pros.length.toLocaleString("ar-AE")} مهنياً`,
     description: `${pros.length.toLocaleString("ar-AE")} من ${catInfo.nameAr} المرخّصين من هيئة الصحة بدبي في ${arabicAreaName}. تحليل القوى العاملة يشمل توزيع التخصصات وأبرز المنشآت وتوزيع التراخيص.`,
     alternates: {
       canonical: `${base}/ar/workforce/area/${areaInfo.slug}/${catInfo.slug}`,
