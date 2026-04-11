@@ -12,7 +12,11 @@ export default function robots(): MetadataRoute.Robots {
       `${getBaseUrl()}/sitemap.xml`,
       `${getBaseUrl()}/sitemap-providers.xml`,
       `${getBaseUrl()}/sitemap-providers-ar.xml`,
-      `${getBaseUrl()}/sitemap-doctors.xml`,
+      // Item 0.75 — Doctor profile sitemaps are split by discipline to stay
+      // under Google's 50k-URL-per-sitemap cap. Matches the flat pattern
+      // used by every other sitemap route in this file.
+      `${getBaseUrl()}/sitemap-doctors-physicians.xml`,
+      `${getBaseUrl()}/sitemap-doctors-dentists.xml`,
       `${getBaseUrl()}/sitemap-intelligence.xml`,
       // Item 6 — Zavis Intelligence Reports ("What UAE Patients Want")
       `${getBaseUrl()}/sitemap-reports.xml`,
