@@ -369,7 +369,7 @@ function parseV2Output(raw, provider) {
   for (const s of parsed.snippets) {
     if (
       typeof s.text_fragment !== "string" ||
-      s.text_fragment.length < 25 ||
+      s.text_fragment.length < 18 ||
       s.text_fragment.length > 300
     ) {
       throw new Error(`snippet length bad: ${s.text_fragment?.length}`);

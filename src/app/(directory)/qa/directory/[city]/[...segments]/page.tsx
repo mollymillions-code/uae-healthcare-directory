@@ -3,10 +3,15 @@ import { GccSegmentsPage, generateGccSegmentsMetadata } from "@/components/direc
 export const revalidate = 21600;
 export const dynamicParams = true;
 
-export async function generateMetadata({ params }: { params: { city: string; segments: string[] } }) {
-  return generateGccSegmentsMetadata("qa", params);
+interface Props {
+  params: { city: string; segments: string[] };
+  searchParams?: { page?: string };
 }
 
-export default function Page({ params }: { params: { city: string; segments: string[] } }) {
-  return <GccSegmentsPage countryCode="qa" params={params} />;
+export async function generateMetadata({ params, searchParams }: Props) {
+  return generateGccSegmentsMetadata("qa", params, searchParams);
+}
+
+export default function Page({ params, searchParams }: Props) {
+  return <GccSegmentsPage countryCode="qa" params={params} searchParams={searchParams} />;
 }

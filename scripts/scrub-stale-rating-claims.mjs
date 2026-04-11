@@ -30,11 +30,13 @@ const SCRUB_OUT = path.join(ROOT, "data", "scrub-rating-claims.jsonl");
 
 // ── 1. Dump all UAE providers with a review_summary AND a google_rating ──
 // Write the dump command to a shell script, scp it over, run it, pull result.
+// Covers all 5 countries — UAE + all GCC — because Round 4 data integrity
+// audit found stale rating claims in BH/KW/SA too, not just UAE.
 const remoteScript = `#!/bin/bash
 sudo -u postgres psql zavis_landing -P format=unaligned -P tuples_only=on -P pager=off -P recordsep_zero <<'PSQL'
-SELECT json_build_object('id', id, 'name', name, 'google_rating', google_rating, 'review_summary', review_summary)::text
+SELECT json_build_object('id', id, 'name', name, 'country', country, 'google_rating', google_rating, 'review_summary', review_summary)::text
 FROM providers
-WHERE country = 'ae'
+WHERE country IN ('ae','bh','kw','qa','sa')
   AND status = 'active'
   AND review_summary IS NOT NULL
   AND jsonb_array_length(review_summary) > 0
@@ -69,10 +71,18 @@ console.error(`Loaded ${records.length} UAE providers`);
 // ── 2. For each provider, find bullets with numeric rating claims that
 //       don't match google_rating. Strip them. ──
 //
-// Match patterns like:
-//   "4.6-star", "4.6 star", "4.6/5", "4.6 out of 5", "rated 4.6"
-// Extract the number, compare to actual rating ± 0.15 tolerance.
-const RATING_RE = /(\d\.\d)(?:\s?[\/-]|\s*-?\s*star|\s+out of|\s+on\s+a)/gi;
+// Matches any of these phrasings (Round 3 regex was too narrow and
+// missed 1,552 UAE rows like "A 4.9-star rating from 39 reviews"):
+//   "4.6 star" / "4.6-star" / "4.6 stars"
+//   "4.6/5" / "4.6 / 5"
+//   "4.6 out of 5"
+//   "rating of 4.6" / "rated 4.6"
+//   "4.6 on Google" / "4.6 on a 5"
+// We capture the number (group 1) and compare against google_rating ± 0.15.
+const RATING_RE =
+  /(\d(?:\.\d)?)\s*(?:[-\u2013]\s*)?(?:stars?\b|\/\s*5|out\s*of\s*(?:5|five)|on\s*a?\s*5|\/\s*five)/gi;
+const RATED_RE =
+  /\b(?:rated|rating\s+of|scored|score\s+of)\s+(\d(?:\.\d)?)/gi;
 
 const updates = [];
 let bulletsScrubbed = 0;
@@ -98,13 +108,25 @@ for (const rec of records) {
       continue;
     }
     let badNumber = null;
+    // Check RATING_RE (main patterns: "4.6 stars", "4.6/5", "4.6 out of 5")
     RATING_RE.lastIndex = 0;
     let m;
     while ((m = RATING_RE.exec(bullet)) !== null) {
       const claimed = Number(m[1]);
-      if (isFinite(claimed) && Math.abs(claimed - actual) > 0.15) {
+      if (isFinite(claimed) && claimed >= 1 && claimed <= 5 && Math.abs(claimed - actual) > 0.15) {
         badNumber = claimed;
         break;
+      }
+    }
+    // Check RATED_RE (extra patterns: "rated 4.6", "rating of 4.6")
+    if (badNumber === null) {
+      RATED_RE.lastIndex = 0;
+      while ((m = RATED_RE.exec(bullet)) !== null) {
+        const claimed = Number(m[1]);
+        if (isFinite(claimed) && claimed >= 1 && claimed <= 5 && Math.abs(claimed - actual) > 0.15) {
+          badNumber = claimed;
+          break;
+        }
       }
     }
     if (badNumber !== null) {

@@ -2,12 +2,19 @@ import { MetadataRoute } from "next";
 import { getCities, getCategories, getAreasByCity } from "@/lib/data";
 import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
+import { getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import {
+  TRI_FACET_INSURER_ALLOW,
+  TRI_FACET_CATEGORY_ALLOW,
+  DEEP_PAGINATION_CITY_CATEGORY_ALLOW,
+  DEEP_PAGINATION_MAX_PAGE,
+} from "@/lib/seo/facet-rules";
 import { INSURER_PROFILES } from "@/lib/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import { CONDITIONS } from "@/lib/constants/conditions";
+import { getConditionDetail } from "@/lib/constants/condition-specialty-map";
 import { LAB_PROFILES, LAB_TESTS, LAB_TEST_PRICES, TEST_CATEGORIES } from "@/lib/constants/labs";
 import { getAllLabLists } from "@/lib/labs-lists";
-import { CITIES } from "@/lib/constants/cities";
 import { PROCEDURES, PROCEDURE_CATEGORIES } from "@/lib/constants/procedures";
 import { PRICING_LISTS } from "@/lib/constants/pricing-lists";
 import { PRICING_GUIDES } from "@/lib/constants/pricing-guides";
@@ -46,6 +53,15 @@ const RESULTS_SLUGS = [
   "testosterone", "amh", "psa", "hiv-test", "crp",
 ];
 
+// ─── Allow-lists — centralized in `src/lib/seo/facet-rules.ts` (Item 8) ──
+//
+// Previously this file defined `TRI_FACET_INSURER_ALLOW`,
+// `TRI_FACET_CATEGORY_ALLOW`, `DEEP_PAGINATION_CITY_CATEGORY_ALLOW`, and
+// `DEEP_PAGINATION_MAX_PAGE` inline. They now live in the facet-rules
+// module alongside the min-provider-count thresholds, so the runtime
+// gates (insurer/tri-facet pages) and the sitemap agree on one source
+// of truth. Do not redefine them here — import from `@/lib/seo/facet-rules`.
+
 // ISR: rebuild sitemap every hour. No heavy DB queries — uses only constants.
 export const revalidate = 3600;
 
@@ -54,6 +70,84 @@ export const revalidate = 3600;
 // modification times. new Date() changes on every request, which is misleading to
 // crawlers. UPDATE THIS DATE when content (constants, guides, categories) changes.
 const LAST_CONTENT_UPDATE = new Date('2026-04-10');
+
+// ─── Item 3 — Neighborhood hub allow-list ────────────────────────────────────
+// Curated list of the highest-volume UAE neighborhoods that should receive
+// boosted sitemap priority + crawlable top-specialty child pages. Mirrors
+// what the Item 3 ingestion scripts (Dubai Pulse, Abu Dhabi Open Data, OSM
+// Overpass) will populate into `areas.provider_count_cached` once seeded.
+// Sync-only because `sitemap()` itself is sync — a future DB-backed refactor
+// can replace this allowlist with a live SELECT.
+//
+// Every slug here MUST exist in `AREAS` in `src/lib/constants/cities.ts`.
+const NEIGHBORHOOD_HUB_ALLOW: { citySlug: string; areaSlugs: string[] }[] = [
+  {
+    citySlug: "dubai",
+    areaSlugs: [
+      "dubai-marina",
+      "downtown-dubai",
+      "business-bay",
+      "jumeirah",
+      "jlt",
+      "al-barsha",
+      "deira",
+      "bur-dubai",
+      "healthcare-city",
+      "palm-jumeirah",
+      "jvc",
+      "dubai-hills",
+      "mirdif",
+      "silicon-oasis",
+      "al-nahda",
+    ],
+  },
+  {
+    citySlug: "abu-dhabi",
+    areaSlugs: [
+      "al-reem-island",
+      "al-maryah-island",
+      "khalifa-city",
+      "corniche",
+      "al-bateen",
+      "al-khalidiya",
+      "al-mushrif",
+      "saadiyat-island",
+      "yas-island",
+      "mohammed-bin-zayed-city",
+    ],
+  },
+  {
+    citySlug: "sharjah",
+    areaSlugs: [
+      "al-nahda-sharjah",
+      "al-majaz",
+      "al-taawun",
+      "al-khan",
+      "muwaileh",
+      "al-qasimia",
+    ],
+  },
+  {
+    citySlug: "al-ain",
+    areaSlugs: ["al-jimi", "al-ain-central", "tawam"],
+  },
+];
+
+// Evergreen specialties that consistently have >= AREA_FACET_MIN_PROVIDERS
+// inventory across the high-volume neighborhoods above. Keep in sync with
+// `TRI_FACET_CATEGORY_ALLOW` in `src/lib/seo/facet-rules.ts`.
+const NEIGHBORHOOD_HUB_TOP_SPECIALTIES = [
+  "dental-clinic",
+  "hospital",
+  "clinic",
+  "dermatology",
+  "pediatrics",
+  "pharmacy",
+  "physiotherapy",
+  "laboratory",
+  "ophthalmology",
+  "gynecology",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();
@@ -70,8 +164,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Directory hub page
   entries.push({ url: `${baseUrl}/directory`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.95 });
 
-  // Search page
-  entries.push({ url: `${baseUrl}/search`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.8 });
+  // NOTE: `/search` intentionally NOT emitted. The page is robots-disallowed
+  // in `src/app/robots.ts` AND carries `robots: { index: false }` metadata
+  // in `src/app/(directory)/search/page.tsx` — submitting it here would
+  // create a crawl-vs-index contradiction that erodes GSC sitemap trust.
+  // See Item 0 of docs/zocdoc-plans-reconciled.md.
 
   // Directory: city pages + city×category + city×area structural pages (with hreflang)
   for (const city of cities) {
@@ -100,17 +197,66 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push({ url: `${baseUrl}/directory/${city.slug}/insurance`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     entries.push({ url: `${baseUrl}/directory/${city.slug}/language`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     entries.push({ url: `${baseUrl}/directory/${city.slug}/condition`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
-    // Insurance per city
+    // Insurance per city (2-facet: city × insurer) — geo-gated so we
+    // never emit e.g. /directory/dubai/insurance/thiqa/ (Thiqa is AD-only).
+    // Runtime `generateMetadata` still enforces the min-provider gate for
+    // indexing — the sitemap only decides which URLs Google should see.
+    const cityInsurancePlans = getInsurancePlansByGeo(city.slug);
     for (const insurer of INSURANCE_PROVIDERS) {
+      if (!cityInsurancePlans.some((p) => p.slug === insurer.slug)) continue;
       entries.push({ url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
+
+    // Insurance tri-facet (city × insurer × specialty) — gated at
+    // emission time via:
+    //   1. Geo scope (Thiqa → AD only, etc.)
+    //   2. Insurer allow-list (pinned to the payers that have real
+    //      long-form editorial copy — see module scope above)
+    //   3. Category allow-list (top 8 evergreen specialties)
+    // Runtime gate in
+    // `src/app/(directory)/directory/[city]/insurance/[insurer]/[category]/page.tsx`
+    // further enforces min-provider-count (≥ 5) via `isTriFacetEligible`,
+    // so low-coverage tuples noindex themselves even if listed here.
+    for (const insurer of INSURANCE_PROVIDERS) {
+      if (!TRI_FACET_INSURER_ALLOW.has(insurer.slug)) continue;
+      if (!cityInsurancePlans.some((p) => p.slug === insurer.slug)) continue;
+      for (const cat of categories) {
+        if (!TRI_FACET_CATEGORY_ALLOW.has(cat.slug)) continue;
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`,
+          lastModified: LAST_CONTENT_UPDATE,
+          changeFrequency: "weekly",
+          priority: 0.65,
+        });
+      }
     }
     // Language per city
     for (const lang of LANGUAGES) {
       entries.push({ url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     }
-    // Condition per city
+    // Condition per city — Item 4 Part D. The `ar-AE` alternate is ONLY
+    // emitted when a hand-authored Arabic intro exists in
+    // CONDITION_SPECIALTY_MAP. Without the gate, the AR mirror 404s
+    // (because the AR condition page `notFound()`s when `introAr` is
+    // missing) while the EN sitemap still advertises a broken hreflang.
     for (const condition of CONDITIONS) {
-      entries.push({ url: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+      const hasArabic = Boolean(getConditionDetail(condition.slug)?.introAr);
+      entries.push({
+        url: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
+        lastModified: LAST_CONTENT_UPDATE,
+        changeFrequency: "weekly",
+        priority: 0.7,
+        ...(hasArabic
+          ? {
+              alternates: {
+                languages: {
+                  en: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
+                  ar: `${baseUrl}/ar/directory/${city.slug}/condition/${condition.slug}`,
+                },
+              },
+            }
+          : {}),
+      });
     }
     // Procedure pages per city
     const procsInCity = PROCEDURES.filter((p) => p.cityPricing[city.slug]);
@@ -133,6 +279,84 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Top providers per city×category
     for (const cat of categories) {
       entries.push({ url: `${baseUrl}/directory/${city.slug}/top/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+    }
+
+    // ─── Item 3 — Neighborhood × top-specialty hubs ─────────────────────────
+    // Additive block. The existing area block above (line ~154) already emits
+    // every area-constant URL as /directory/[city]/[area] and every
+    // /[city]/[area]/[category] combo. That block is kept for backwards
+    // compatibility with the hand-curated `AREAS` constant in
+    // `src/lib/constants/cities.ts`.
+    //
+    // This block adds EXTRA-HIGH-PRIORITY neighborhood×specialty tuples for
+    // the highest-volume areas (Dubai Marina, Downtown Dubai, Al Reem Island,
+    // etc.) so Googlebot re-crawls them more frequently. It intentionally
+    // duplicates a subset of the URLs above at a higher priority — Google
+    // uses the highest priority it sees for a given URL.
+    //
+    // Gating: the curated allowlist below corresponds to the areas the Item 3
+    // ingestion scripts (Dubai Pulse, Abu Dhabi Open Data, OSM Overpass) seed
+    // with real polygons. Once `provider_count_cached` is populated by
+    // `scripts/neighborhoods/assign-providers-to-areas.mjs`, a future sitemap
+    // refactor can replace this allowlist with a live DB gate. Until then,
+    // this static list is the safe sync-compatible equivalent.
+    const neighborhoodHub = NEIGHBORHOOD_HUB_ALLOW.find(
+      (n) => n.citySlug === city.slug,
+    );
+    if (neighborhoodHub) {
+      for (const areaSlug of neighborhoodHub.areaSlugs) {
+        // Neighborhood hub page itself — boosted priority (vs 0.7 above).
+        entries.push({
+          url: `${baseUrl}/directory/${city.slug}/${areaSlug}`,
+          lastModified: LAST_CONTENT_UPDATE,
+          changeFrequency: "daily",
+          priority: 0.85,
+          alternates: {
+            languages: {
+              en: `${baseUrl}/directory/${city.slug}/${areaSlug}`,
+              ar: `${baseUrl}/ar/directory/${city.slug}/${areaSlug}`,
+            },
+          },
+        });
+        // Top-10 specialty × neighborhood — only the evergreen specialties,
+        // same allow-list used by the 3-facet block so the two stay in sync.
+        for (const catSlug of NEIGHBORHOOD_HUB_TOP_SPECIALTIES) {
+          if (!categories.some((c) => c.slug === catSlug)) continue;
+          entries.push({
+            url: `${baseUrl}/directory/${city.slug}/${areaSlug}/${catSlug}`,
+            lastModified: LAST_CONTENT_UPDATE,
+            changeFrequency: "weekly",
+            priority: 0.75,
+            alternates: {
+              languages: {
+                en: `${baseUrl}/directory/${city.slug}/${areaSlug}/${catSlug}`,
+                ar: `${baseUrl}/ar/directory/${city.slug}/${areaSlug}/${catSlug}`,
+              },
+            },
+          });
+        }
+      }
+    }
+
+    // ─── Deep pagination (Item 0.5) ─────────────────────────────────────────
+    // Emit ?page=2..5 for the highest-volume city × specialty tuples so
+    // Googlebot has a crawl path to long-tail providers. Runtime SSR 404s
+    // past-the-end pages, so this is safe against over-inclusion.
+    const cityDeepPag = DEEP_PAGINATION_CITY_CATEGORY_ALLOW.find(
+      (c) => c.citySlug === city.slug,
+    );
+    if (cityDeepPag) {
+      for (const catSlug of cityDeepPag.categorySlugs) {
+        if (!categories.some((c) => c.slug === catSlug)) continue;
+        for (let p = 2; p <= DEEP_PAGINATION_MAX_PAGE; p++) {
+          entries.push({
+            url: `${baseUrl}/directory/${city.slug}/${catSlug}?page=${p}`,
+            lastModified: LAST_CONTENT_UPDATE,
+            changeFrequency: "weekly",
+            priority: 0.55,
+          });
+        }
+      }
     }
   }
 
@@ -175,6 +399,154 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Intelligence individual articles are DB-driven — they cannot be enumerated in this
   // synchronous sitemap. If needed, add a dedicated /intelligence/sitemap.xml route.
 
+  // ─── Item 5 — Trust + masthead block (E-E-A-T leapfrog) ───────────────────
+  // Author and reviewer profile slugs are seeded from
+  // `scripts/seed-authors-reviewers.mjs`. We hard-code the active set here so
+  // sitemap.ts stays synchronous; reviewer placeholders seeded as inactive
+  // are deliberately excluded so they cannot leak to search engines until
+  // the editorial team flips them on with a real expert assignment.
+  const AUTHOR_SLUGS_ACTIVE = [
+    "zavis-intelligence-team",
+    "zavis-data-science",
+    "senior-healthcare-editor",
+    "policy-regulatory-editor",
+    "market-intelligence-editor",
+  ];
+  // Reviewer slugs are intentionally empty until real reviewers are assigned.
+  // When the editorial team flips a reviewer to is_active=true, also add
+  // their slug here so the sitemap submits the URL.
+  const REVIEWER_SLUGS_ACTIVE: string[] = [];
+
+  // Masthead index page (en + ar mirror)
+  entries.push({
+    url: `${baseUrl}/intelligence/author`,
+    lastModified: LAST_CONTENT_UPDATE,
+    changeFrequency: "weekly",
+    priority: 0.6,
+    alternates: {
+      languages: {
+        en: `${baseUrl}/intelligence/author`,
+        ar: `${baseUrl}/ar/intelligence/author`,
+      },
+    },
+  });
+  for (const slug of AUTHOR_SLUGS_ACTIVE) {
+    entries.push({
+      url: `${baseUrl}/intelligence/author/${slug}`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.55,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/intelligence/author/${slug}`,
+          ar: `${baseUrl}/ar/intelligence/author/${slug}`,
+        },
+      },
+    });
+  }
+  for (const slug of REVIEWER_SLUGS_ACTIVE) {
+    entries.push({
+      url: `${baseUrl}/intelligence/reviewer/${slug}`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.55,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/intelligence/reviewer/${slug}`,
+          ar: `${baseUrl}/ar/intelligence/reviewer/${slug}`,
+        },
+      },
+    });
+  }
+  // Trust + transparency pages — bilingual
+  entries.push(
+    {
+      url: `${baseUrl}/methodology`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.5,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/methodology`,
+          ar: `${baseUrl}/ar/methodology`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/data-sources`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.5,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/data-sources`,
+          ar: `${baseUrl}/ar/data-sources`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/about/corrections`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.4,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/about/corrections`,
+          ar: `${baseUrl}/ar/about/corrections`,
+        },
+      },
+    },
+    // Arabic mirrors of trust pages
+    {
+      url: `${baseUrl}/ar/methodology`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.45,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/methodology`,
+          ar: `${baseUrl}/ar/methodology`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/ar/data-sources`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.45,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/data-sources`,
+          ar: `${baseUrl}/ar/data-sources`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/ar/about/corrections`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.4,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/about/corrections`,
+          ar: `${baseUrl}/ar/about/corrections`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/ar/editorial-policy`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.4,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/editorial-policy`,
+          ar: `${baseUrl}/ar/editorial-policy`,
+        },
+      },
+    },
+  );
+
   // Labs
   entries.push({ url: `${baseUrl}/labs`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
   entries.push({ url: `${baseUrl}/labs/compare`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
@@ -183,7 +555,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   for (const test of LAB_TESTS) {
     entries.push({ url: `${baseUrl}/labs/test/${test.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/labs/test/${test.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     }
   }
@@ -194,7 +566,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/labs/home-collection`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/labs/packages`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 },
   );
-  for (const city of CITIES) {
+  for (const city of cities) {
     const hcLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug) && l.homeCollection);
     if (hcLabs.length > 0) {
       entries.push({ url: `${baseUrl}/labs/home-collection/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
@@ -210,7 +582,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Lab guides
   for (const guide of GUIDE_SLUGS_LABS) {
     entries.push({ url: `${baseUrl}/labs/guides/${guide}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.8 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
       if (cityLabs.length >= 2) {
         entries.push({ url: `${baseUrl}/labs/guides/${guide}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
@@ -220,7 +592,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Lab conditions
   for (const condition of CONDITION_SLUGS) {
     entries.push({ url: `${baseUrl}/labs/conditions/${condition}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.8 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/labs/conditions/${condition}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
     }
   }
@@ -250,7 +622,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
   // Lab city × test-category pages
-  for (const city of CITIES) {
+  for (const city of cities) {
     const labSlugsInCity = new Set(LAB_PROFILES.filter((l) => l.cities.includes(city.slug)).map((l) => l.slug));
     if (labSlugsInCity.size === 0) continue;
     for (const cat of TEST_CATEGORIES) {
@@ -261,7 +633,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
   // Lab home-collection city × test-category pages
-  for (const city of CITIES) {
+  for (const city of cities) {
     const homeLabSlugs = new Set(LAB_PROFILES.filter((l) => l.cities.includes(city.slug) && l.homeCollection).map((l) => l.slug));
     if (homeLabSlugs.size === 0) continue;
     for (const cat of TEST_CATEGORIES) {
@@ -295,7 +667,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push({ url: `${baseUrl}/pricing`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
   for (const proc of PROCEDURES) {
     entries.push({ url: `${baseUrl}/pricing/${proc.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       if (proc.cityPricing[city.slug]) {
         entries.push({ url: `${baseUrl}/pricing/${proc.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
       }
@@ -303,17 +675,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   for (const cat of PROCEDURE_CATEGORIES) {
     entries.push({ url: `${baseUrl}/pricing/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/pricing/category/${cat.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
     }
   }
-  for (const city of CITIES) {
+  for (const city of cities) {
     entries.push({ url: `${baseUrl}/pricing/city/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
   }
   // Pricing lists
   entries.push({ url: `${baseUrl}/pricing/lists`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
   for (const list of PRICING_LISTS) {
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/pricing/lists/${list.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     }
   }
@@ -321,7 +693,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push({ url: `${baseUrl}/pricing/guide`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   for (const guide of PRICING_GUIDES) {
     entries.push({ url: `${baseUrl}/pricing/guide/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/pricing/guide/${guide.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
     }
   }
@@ -329,7 +701,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push({ url: `${baseUrl}/pricing/journey`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   for (const journey of CARE_JOURNEYS) {
     entries.push({ url: `${baseUrl}/pricing/journey/${journey.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/pricing/journey/${journey.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
     }
   }
@@ -337,15 +709,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push({ url: `${baseUrl}/pricing/vs`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
   for (const comp of PROCEDURE_COMPARISONS) {
     entries.push({ url: `${baseUrl}/pricing/vs/${comp.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({ url: `${baseUrl}/pricing/vs/${comp.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
     }
   }
   // Price comparison tool + city-vs-city pages
   entries.push({ url: `${baseUrl}/pricing/compare`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
-  for (let i = 0; i < CITIES.length; i++) {
-    for (let j = i + 1; j < CITIES.length; j++) {
-      entries.push({ url: `${baseUrl}/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
+  // UAE-only: pair combinations use `cities` (UAE-filtered) not `CITIES`
+  // (which includes GCC rows) to prevent doha-vs-abu-dhabi leaks.
+  for (let i = 0; i < cities.length; i++) {
+    for (let j = i + 1; j < cities.length; j++) {
+      entries.push({ url: `${baseUrl}/pricing/compare/${cities[i].slug}-vs-${cities[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65 });
     }
   }
 
@@ -526,6 +900,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   entries.push(
     { url: `${baseUrl}/about`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.4 },
     { url: `${baseUrl}/editorial-policy`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.4 },
+    {
+      url: `${baseUrl}/verified-reviews`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.5,
+      alternates: { languages: { en: `${baseUrl}/verified-reviews`, ar: `${baseUrl}/ar/verified-reviews` } },
+    },
+    {
+      url: `${baseUrl}/ar/verified-reviews`,
+      lastModified: LAST_CONTENT_UPDATE,
+      changeFrequency: "monthly",
+      priority: 0.5,
+      alternates: { languages: { en: `${baseUrl}/verified-reviews`, ar: `${baseUrl}/ar/verified-reviews` } },
+    },
     { url: `${baseUrl}/privacy-policy`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.3 },
   );
@@ -561,20 +949,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/directory/${city.slug}/insurance`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
       alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/insurance`, ar: `${baseUrl}/ar/directory/${city.slug}/insurance` } },
     });
-    // Arabic — city × insurer pages
+    // Arabic — city × insurer pages (mirrors the English geo gate so
+    // we never emit e.g. /ar/directory/dubai/insurance/thiqa/).
+    const cityInsurancePlansAr = getInsurancePlansByGeo(city.slug);
     for (const insurer of INSURANCE_PROVIDERS) {
+      if (!cityInsurancePlansAr.some((p) => p.slug === insurer.slug)) continue;
       entries.push({
         url: `${baseUrl}/ar/directory/${city.slug}/insurance/${insurer.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
         alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/insurance/${insurer.slug}` } },
       });
     }
+
+    // Arabic — city × condition mirrors (Item 4 Part D). Gated on
+    // hand-authored Arabic detail: the AR condition route `notFound()`s
+    // when `introAr` is missing, so we must NOT submit those URLs.
+    for (const condition of CONDITIONS) {
+      if (!getConditionDetail(condition.slug)?.introAr) continue;
+      entries.push({
+        url: `${baseUrl}/ar/directory/${city.slug}/condition/${condition.slug}`,
+        lastModified: LAST_CONTENT_UPDATE,
+        changeFrequency: "weekly",
+        priority: 0.6,
+        alternates: {
+          languages: {
+            en: `${baseUrl}/directory/${city.slug}/condition/${condition.slug}`,
+            ar: `${baseUrl}/ar/directory/${city.slug}/condition/${condition.slug}`,
+          },
+        },
+      });
+    }
   }
 
-  // Arabic — search
-  entries.push({
-    url: `${baseUrl}/ar/search`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.7,
-    alternates: { languages: { en: `${baseUrl}/search`, ar: `${baseUrl}/ar/search` } },
-  });
+  // NOTE: `/ar/search` intentionally NOT emitted — same reason as `/search`:
+  // the Arabic search page is `robots: { index: false }` and `/search` is in
+  // the robots.txt disallow list. Submitting it here would be a contradiction.
 
   // Arabic — intelligence
   entries.push({
@@ -643,7 +1051,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: { languages: { en: `${baseUrl}/labs/test/${test.slug}`, ar: `${baseUrl}/ar/labs/test/${test.slug}` } },
     });
   }
-  for (const city of CITIES) {
+  for (const city of cities) {
     const cityLabs = LAB_PROFILES.filter((l) => l.cities.includes(city.slug));
     if (cityLabs.length > 0) {
       entries.push({
@@ -888,7 +1296,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/pricing/${proc.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7,
       alternates: { languages: { en: `${baseUrl}/pricing/${proc.slug}`, ar: `${baseUrl}/ar/pricing/${proc.slug}` } },
     });
-    for (const city of CITIES) {
+    for (const city of cities) {
       if (proc.cityPricing[city.slug]) {
         entries.push({
           url: `${baseUrl}/ar/pricing/${proc.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65,
@@ -902,14 +1310,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/pricing/category/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
       alternates: { languages: { en: `${baseUrl}/pricing/category/${cat.slug}`, ar: `${baseUrl}/ar/pricing/category/${cat.slug}` } },
     });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({
         url: `${baseUrl}/ar/pricing/category/${cat.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.55,
         alternates: { languages: { en: `${baseUrl}/pricing/category/${cat.slug}/${city.slug}`, ar: `${baseUrl}/ar/pricing/category/${cat.slug}/${city.slug}` } },
       });
     }
   }
-  for (const city of CITIES) {
+  for (const city of cities) {
     entries.push({
       url: `${baseUrl}/ar/pricing/city/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65,
       alternates: { languages: { en: `${baseUrl}/pricing/city/${city.slug}`, ar: `${baseUrl}/ar/pricing/city/${city.slug}` } },
@@ -919,11 +1327,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${baseUrl}/ar/pricing/compare`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
     alternates: { languages: { en: `${baseUrl}/pricing/compare`, ar: `${baseUrl}/ar/pricing/compare` } },
   });
-  for (let i = 0; i < CITIES.length; i++) {
-    for (let j = i + 1; j < CITIES.length; j++) {
+  // UAE-only mirror — same reason as the EN pair loop above
+  for (let i = 0; i < cities.length; i++) {
+    for (let j = i + 1; j < cities.length; j++) {
       entries.push({
-        url: `${baseUrl}/ar/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.55,
-        alternates: { languages: { en: `${baseUrl}/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}`, ar: `${baseUrl}/ar/pricing/compare/${CITIES[i].slug}-vs-${CITIES[j].slug}` } },
+        url: `${baseUrl}/ar/pricing/compare/${cities[i].slug}-vs-${cities[j].slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.55,
+        alternates: { languages: { en: `${baseUrl}/pricing/compare/${cities[i].slug}-vs-${cities[j].slug}`, ar: `${baseUrl}/ar/pricing/compare/${cities[i].slug}-vs-${cities[j].slug}` } },
       });
     }
   }
@@ -936,7 +1345,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/pricing/guide/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6,
       alternates: { languages: { en: `${baseUrl}/pricing/guide/${guide.slug}`, ar: `${baseUrl}/ar/pricing/guide/${guide.slug}` } },
     });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({
         url: `${baseUrl}/ar/pricing/guide/${guide.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.55,
         alternates: { languages: { en: `${baseUrl}/pricing/guide/${guide.slug}/${city.slug}`, ar: `${baseUrl}/ar/pricing/guide/${guide.slug}/${city.slug}` } },
@@ -952,7 +1361,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/pricing/journey/${journey.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6,
       alternates: { languages: { en: `${baseUrl}/pricing/journey/${journey.slug}`, ar: `${baseUrl}/ar/pricing/journey/${journey.slug}` } },
     });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({
         url: `${baseUrl}/ar/pricing/journey/${journey.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.55,
         alternates: { languages: { en: `${baseUrl}/pricing/journey/${journey.slug}/${city.slug}`, ar: `${baseUrl}/ar/pricing/journey/${journey.slug}/${city.slug}` } },
@@ -964,7 +1373,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     alternates: { languages: { en: `${baseUrl}/pricing/lists`, ar: `${baseUrl}/ar/pricing/lists` } },
   });
   for (const list of PRICING_LISTS) {
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({
         url: `${baseUrl}/ar/pricing/lists/${list.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.55,
         alternates: { languages: { en: `${baseUrl}/pricing/lists/${list.slug}/${city.slug}`, ar: `${baseUrl}/ar/pricing/lists/${list.slug}/${city.slug}` } },
@@ -980,7 +1389,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ar/pricing/vs/${comp.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
       alternates: { languages: { en: `${baseUrl}/pricing/vs/${comp.slug}`, ar: `${baseUrl}/ar/pricing/vs/${comp.slug}` } },
     });
-    for (const city of CITIES) {
+    for (const city of cities) {
       entries.push({
         url: `${baseUrl}/ar/pricing/vs/${comp.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.55,
         alternates: { languages: { en: `${baseUrl}/pricing/vs/${comp.slug}/${city.slug}`, ar: `${baseUrl}/ar/pricing/vs/${comp.slug}/${city.slug}` } },

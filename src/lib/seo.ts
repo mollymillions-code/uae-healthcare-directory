@@ -77,11 +77,17 @@ export function medicalOrganizationSchema(
   const base = getBaseUrl();
   const directoryRoot = countryPrefix ? `/${countryPrefix}/directory` : "/directory";
   const providerUrl = `${base}${directoryRoot}/${city.slug}/${category.slug}/${provider.slug}`;
+  // Stable @id anchor so other nodes in the JSON-LD graph (WebPage, Breadcrumb,
+  // FAQPage) can reference this entity without duplicating fields.
+  const providerNodeId = `${providerUrl}#provider`;
   const lat = parseFloat(provider.latitude);
   const lng = parseFloat(provider.longitude);
-  const hasValidCoords = lat !== 0 && lng !== 0;
+  const hasValidCoords = Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0;
   const ratingVal = Number(provider.googleRating);
-  const hasValidRating = ratingVal > 0 && (provider.googleReviewCount ?? 0) > 0;
+  // Item 2 / Item 0 discipline: only emit AggregateRating when we have
+  // at least 3 reviews. Google's Rich Results parser silently drops
+  // 1–2 review aggregates and flags them as "low quality".
+  const hasValidRating = ratingVal > 0 && (provider.googleReviewCount ?? 0) >= 3;
 
   // Build image field. Every entry must be a real absolute http(s) URL.
   // We REJECT bare Google photo_reference tokens (which leaked into GCC
@@ -91,37 +97,76 @@ export function medicalOrganizationSchema(
   const isValidImageUrl = (u: unknown): u is string =>
     typeof u === "string" && /^https?:\/\//i.test(u);
   const imageUrls: string[] = [];
+  if (isValidImageUrl(provider.logoUrl)) {
+    imageUrls.push(provider.logoUrl);
+  }
   if (provider.galleryPhotos && provider.galleryPhotos.length > 0) {
     for (const p of provider.galleryPhotos.slice(0, 6)) {
-      if (isValidImageUrl(p.url)) imageUrls.push(p.url);
+      if (isValidImageUrl(p.url) && !imageUrls.includes(p.url)) imageUrls.push(p.url);
     }
   } else if (provider.photos && provider.photos.length > 0) {
     for (const u of provider.photos.slice(0, 3)) {
-      if (isValidImageUrl(u)) imageUrls.push(u);
+      if (isValidImageUrl(u) && !imageUrls.includes(u)) imageUrls.push(u);
     }
-  } else if (isValidImageUrl(provider.coverImageUrl)) {
+  } else if (isValidImageUrl(provider.coverImageUrl) && !imageUrls.includes(provider.coverImageUrl)) {
     imageUrls.push(provider.coverImageUrl);
   }
+
+  // Build PostalAddress with only populated fields. Empty streetAddress /
+  // addressLocality is worse than an absent field — Google flags it.
+  const postalAddress: Record<string, string> = {
+    "@type": "PostalAddress",
+    addressCountry: countryCode.toUpperCase(),
+  };
+  if (provider.address) postalAddress.streetAddress = provider.address;
+  const locality = area?.name || city.name;
+  if (locality) postalAddress.addressLocality = locality;
+  if (city.emirate) postalAddress.addressRegion = city.emirate;
+
+  // Build sameAs array from every external profile we can confidently point at.
+  const sameAs: string[] = [];
+  if (provider.website && /^https?:\/\//i.test(provider.website)) sameAs.push(provider.website);
+  if (provider.googleMapsUri && /^https?:\/\//i.test(provider.googleMapsUri)) sameAs.push(provider.googleMapsUri);
+
+  // Regulator identifier: DHA / DOH / MOHAP license → PropertyValue
+  // (only when the license number is actually populated).
+  const regulatorPropertyId = getRegulatorPropertyId(resolvedCitySlug);
+  const identifierNode = provider.licenseNumber
+    ? [
+        {
+          "@type": "PropertyValue",
+          propertyID: regulatorPropertyId,
+          value: provider.licenseNumber,
+        },
+      ]
+    : null;
+
+  // Primary image as ImageObject when available.
+  const primaryImage = imageUrls[0];
+  const imageField = primaryImage
+    ? imageUrls.length === 1
+      ? {
+          "@type": "ImageObject",
+          url: primaryImage,
+          contentUrl: primaryImage,
+        }
+      : imageUrls
+    : null;
 
   return {
     "@context": "https://schema.org",
     "@type": schemaType,
-    "@id": providerUrl,
+    "@id": providerNodeId,
     name: provider.name,
+    ...(provider.nameAr ? { alternateName: provider.nameAr } : {}),
     url: providerUrl,
     // Omit empty fields — Google flags empty string description/telephone as low quality
     ...(provider.phone ? { telephone: provider.phone } : {}),
     ...(provider.email ? { email: provider.email } : {}),
     ...(provider.description ? { description: provider.description } : {}),
     medicalSpecialty: (provider.services && provider.services.length > 0) ? provider.services[0] : category.name,
-    isAcceptingNewPatients: true,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: provider.address,
-      addressLocality: area?.name || city.name,
-      addressRegion: city.emirate,
-      addressCountry: countryCode.toUpperCase(),
-    },
+    ...(identifierNode ? { identifier: identifierNode } : {}),
+    address: postalAddress,
     ...(hasValidCoords ? {
       geo: {
         "@type": "GeoCoordinates",
@@ -130,9 +175,7 @@ export function medicalOrganizationSchema(
       },
       hasMap: `https://www.google.com/maps?q=${lat},${lng}`,
     } : {}),
-    ...(imageUrls.length > 0 ? {
-      image: imageUrls.length === 1 ? imageUrls[0] : imageUrls,
-    } : {}),
+    ...(imageField ? { image: imageField } : {}),
     ...((() => {
       // Combine legacy amenities with Google's accessibility options into a unified amenityFeature array
       const features: Array<{ "@type": string; name: string; value: boolean }> = [];
@@ -197,6 +240,14 @@ export function medicalOrganizationSchema(
             ratingValue: provider.googleRating,
             bestRating: "5",
             worstRating: "1",
+            // ratingCount and reviewCount are distinct in schema.org:
+            //   ratingCount = total ratings (stars-only + text reviews)
+            //   reviewCount = subset that have written text
+            // Google Places returns a single `user_ratings_total` which
+            // maps to ratingCount. We do not currently cache separate
+            // text-review counts, so emit the same value on both to keep
+            // the parser happy while staying truthful.
+            ratingCount: provider.googleReviewCount,
             reviewCount: provider.googleReviewCount,
           },
         }
@@ -275,10 +326,14 @@ export function medicalOrganizationSchema(
       }
       return {};
     })()),
-    availableService: (provider.services ?? []).map((s) => ({
-      "@type": "MedicalProcedure",
-      name: s,
-    })),
+    ...(provider.services && provider.services.length > 0
+      ? {
+          availableService: provider.services.map((s) => ({
+            "@type": "MedicalProcedure",
+            name: s,
+          })),
+        }
+      : {}),
     ...(provider.insurance.length > 0
       ? {
           paymentAccepted: provider.insurance.join(", "),
@@ -293,28 +348,13 @@ export function medicalOrganizationSchema(
           knowsLanguage: provider.languages,
         }
       : {}),
-    ...(provider.website ? { sameAs: [provider.website] } : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {}),
     currenciesAccepted: currency,
-    priceRange: derivePriceRange(category.slug),
+    // priceRange intentionally omitted: we do not have per-provider price
+    // data. Emitting a hardcoded or category-derived symbol is a structured-
+    // data overstatement (Item 0 cleanup).
     dateModified: provider.lastVerified || new Date().toISOString().split("T")[0],
   };
-}
-
-/**
- * Derive a priceRange ($ to $$$$) from the provider category.
- * Previously hardcoded to "$$" for all 12,504 providers which Google flags as
- * a duplicate structured data signal.
- */
-function derivePriceRange(categorySlug: string): string {
-  const s = categorySlug.toLowerCase();
-  if (s.includes("hospital")) return "$$$";
-  if (s.includes("pharmacy") || s.includes("optical") || s.includes("optic")) return "$";
-  if (s.includes("medical-equipment") || s.includes("home-healthcare")) return "$$";
-  if (s.includes("aesthetic") || s.includes("cosmetic") || s.includes("plastic")) return "$$$$";
-  if (s.includes("dental") || s.includes("dermatology") || s.includes("ophthalm")) return "$$$";
-  if (s.includes("physio") || s.includes("diagnostic") || s.includes("lab")) return "$$";
-  if (s.includes("clinic") || s.includes("medical")) return "$$";
-  return "$$";
 }
 
 export function faqPageSchema(faqs: { question: string; answer: string }[]) {
@@ -366,24 +406,28 @@ export function itemListSchema(
     itemListOrder: "https://schema.org/ItemListOrderDescending",
     itemListElement: providers.map((p, i) => {
       const ratingVal = Number(p.googleRating);
-      const hasValidRating = ratingVal > 0 && (p.googleReviewCount ?? 0) > 0;
+      // Item 2: ≥3 review gate across every helper.
+      const hasValidRating = ratingVal > 0 && (p.googleReviewCount ?? 0) >= 3;
       const providerUrl = `${base}${directoryRoot}/${p.citySlug}/${p.categorySlug}/${p.slug}`;
+      const providerNodeId = `${providerUrl}#provider`;
+      const postalAddress: Record<string, string> = {
+        "@type": "PostalAddress",
+        addressCountry: cCode,
+      };
+      if (p.address) postalAddress.streetAddress = p.address;
+      if (cityName) postalAddress.addressLocality = cityName;
       return {
         "@type": "ListItem",
         position: i + 1,
         url: providerUrl,
         item: {
           "@type": "MedicalBusiness",
-          "@id": providerUrl,
+          "@id": providerNodeId,
           name: p.name,
+          ...(p.nameAr ? { alternateName: p.nameAr } : {}),
           url: providerUrl,
           ...(p.phone ? { telephone: p.phone } : {}),
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: p.address,
-            addressLocality: cityName,
-            addressCountry: cCode,
-          },
+          address: postalAddress,
           ...(hasValidRating
             ? {
                 aggregateRating: {
@@ -391,6 +435,7 @@ export function itemListSchema(
                   ratingValue: p.googleRating,
                   bestRating: "5",
                   worstRating: "1",
+                  ratingCount: p.googleReviewCount,
                   reviewCount: p.googleReviewCount,
                 },
               }
@@ -999,7 +1044,9 @@ export function insuranceAgencySchema(
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    knowsLanguage: ["en", "ar"],
+    // Root-level `knowsLanguage` removed — we cannot confirm the carrier's
+    // full linguistic reach. The `contactPoint.availableLanguage` below is
+    // defensible because UAE insurers publish bilingual claim lines.
     address: {
       "@type": "PostalAddress",
       addressLocality: profile.headquarters,
@@ -1120,9 +1167,9 @@ export function insuranceLandingPageSchema(
     about: {
       "@type": "MedicalBusiness",
       name: `Healthcare providers accepting ${insurerLabel}`,
-      // Non-standard but crawled: signal the payer relationship.
-      // Rich-results playback treats this as an entity link.
-      acceptsInsurance: insurerLabel,
+      // Payer relationship surfaces through the sibling InsuranceAgency node
+      // below and the mainEntity ItemList — no custom `acceptsInsurance`
+      // property here (not valid schema.org).
       areaServed: {
         "@type": "City",
         name: cityLabel,
@@ -1160,7 +1207,6 @@ export function insuranceLandingPageSchema(
     description: insurer.editorialCopyEn
       ? insurer.editorialCopyEn.slice(0, 500)
       : `${insurer.nameEn} health insurance — accepted network in ${cityLabel}.`,
-    knowsLanguage: ["en", "ar"],
     areaServed: {
       "@type": "Country",
       name: "United Arab Emirates",
@@ -1184,4 +1230,134 @@ function getRegulator(citySlug: string): string {
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
     return "Department of Health Abu Dhabi (DOH)";
   return "Ministry of Health and Prevention (MOHAP)";
+}
+
+/**
+ * Maps a UAE city slug → the regulator license identifier used in
+ * schema.org PropertyValue nodes. Zavis is the only UAE directory that
+ * can confidently cite DHA/DOH/MOHAP license numbers directly in JSON-LD,
+ * which is a structured-data moat over every US-originated competitor.
+ */
+function getRegulatorPropertyId(
+  citySlug: string
+): "DHA License" | "DOH License" | "MOHAP License" {
+  if (citySlug === "dubai") return "DHA License";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH License";
+  return "MOHAP License";
+}
+
+// ─── Full provider schema composer ─────────────────────────────────────────
+//
+// Single entry point for provider profile pages. Emits the full JSON-LD
+// graph as an array of nodes that callers can map over with <JsonLd />.
+//
+// Nodes emitted (in order):
+//   1. MedicalOrganization / Hospital / Dentist / ... (@id = url#provider)
+//   2. MedicalWebPage                                 (@id = url#webpage)
+//   3. BreadcrumbList                                 (@id = url#breadcrumb)
+//   4. FAQPage (conditional — only when faqs array is non-empty)
+//
+// AggregateRating is emitted INSIDE the provider node (not as a standalone
+// node) and is still gated on reviewCount ≥ 3. See Item 2 spec.
+
+export interface FullProviderSchemaInput {
+  provider: LocalProvider;
+  city: LocalCity;
+  category: LocalCategory;
+  area?: LocalArea | null;
+  breadcrumbs: { name: string; url?: string }[];
+  faqs?: { question: string; answer: string }[];
+  options?: {
+    countryCode?: string;
+    countryPrefix?: string;
+    currency?: string;
+    regulators?: string[];
+    /** Override the canonical URL (defaults to `${base}/directory/...`) */
+    canonicalUrl?: string;
+    /** Override the base URL (defaults to `getBaseUrl()`) */
+    baseUrl?: string;
+  };
+}
+
+export function generateFullProviderSchema(
+  input: FullProviderSchemaInput
+): Record<string, unknown>[] {
+  const { provider, city, category, area, breadcrumbs, faqs, options } = input;
+  const base = options?.baseUrl || getBaseUrl();
+  const directoryRoot = options?.countryPrefix
+    ? `/${options.countryPrefix}/directory`
+    : "/directory";
+  const url =
+    options?.canonicalUrl ||
+    `${base}${directoryRoot}/${city.slug}/${category.slug}/${provider.slug}`;
+  const providerId = `${url}#provider`;
+  const webpageId = `${url}#webpage`;
+  const breadcrumbId = `${url}#breadcrumb`;
+
+  const nodes: Record<string, unknown>[] = [];
+
+  // 1. Provider entity. Re-use existing helper (so upstream callers of
+  // medicalOrganizationSchema continue to get identical output) and then
+  // re-anchor its @id to `#provider`.
+  const providerNode = medicalOrganizationSchema(
+    provider,
+    city,
+    category,
+    area ?? null,
+    city.slug,
+    options
+      ? {
+          countryCode: options.countryCode,
+          countryPrefix: options.countryPrefix,
+          currency: options.currency,
+          regulators: options.regulators,
+        }
+      : undefined
+  ) as Record<string, unknown>;
+  providerNode["@id"] = providerId;
+  nodes.push(providerNode);
+
+  // 2. MedicalWebPage wrapper — declares language, links to the provider
+  // entity, and flags speakable regions.
+  const webpageLanguages: string[] = ["en-AE"];
+  if (provider.nameAr || provider.descriptionAr) webpageLanguages.push("ar-AE");
+  nodes.push({
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "@id": webpageId,
+    url,
+    name: `${provider.name} — ${category.name} in ${city.name}`,
+    inLanguage: webpageLanguages,
+    about: { "@id": providerId },
+    breadcrumb: { "@id": breadcrumbId },
+    lastReviewed:
+      provider.lastVerified || new Date().toISOString().split("T")[0],
+    reviewedBy: {
+      "@type": "Organization",
+      name: "Zavis",
+      url: base,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": `${base}/#website`,
+      name: "UAE Open Healthcare Directory by Zavis",
+      url: base,
+    },
+    audience: {
+      "@type": "MedicalAudience",
+      audienceType: "Patient",
+    },
+  });
+
+  // 3. BreadcrumbList (re-anchored so the webpage node can reference it).
+  const bc = breadcrumbSchema(breadcrumbs) as Record<string, unknown>;
+  bc["@id"] = breadcrumbId;
+  nodes.push(bc);
+
+  // 4. FAQPage — conditional.
+  if (faqs && faqs.length > 0) {
+    nodes.push(faqPageSchema(faqs));
+  }
+
+  return nodes;
 }

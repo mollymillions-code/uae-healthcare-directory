@@ -7,13 +7,14 @@ import { TagCloud } from "@/components/intelligence/TagCloud";
 import { ArticleBody } from "@/components/intelligence/SocialEmbed";
 import Image from "next/image";
 import { getArticleBySlug, getArticleBodyBySlug, getRelatedArticles, getAllTags, getArticles, loadDbArticles } from "@/lib/intelligence/data";
-import { articleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
+import { articleSchema, clinicalArticleSchema, generateArticleFaqs } from "@/lib/intelligence/seo";
+import { getBylineForArticle } from "@/lib/intelligence/authors";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import { getBaseUrl } from "@/lib/helpers";
 import { faqPageSchema, breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { FaqSection } from "@/components/seo/FaqSection";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { PageEvent } from "@/components/analytics/PageEvent";
 import { getProviders } from "@/lib/data";
 import { CITIES } from "@/lib/constants/cities";
@@ -68,9 +69,28 @@ export default async function ArticlePage({ params }: PageProps) {
   const tags = getAllTags();
   const articleFaqs = generateArticleFaqs(article);
 
+  // Item 5 — load rich byline (author + reviewer profiles) when the article
+  // has been bylined via author_slug / reviewer_slug. Falls back to null on
+  // legacy rows; the renderer downgrades to the legacy plain byline path.
+  const byline = await getBylineForArticle(
+    article.authorSlug,
+    article.reviewerSlug
+  );
+  const isClinical = article.isClinical === true;
+  const lastReviewedDate = article.lastReviewedAt
+    ? new Date(article.lastReviewedAt)
+    : null;
+  const citations = Array.isArray(article.citations) ? article.citations : [];
+
   return (
     <>
-      <JsonLd data={articleSchema(article)} />
+      {isClinical ? (
+        <JsonLd
+          data={clinicalArticleSchema(article, byline.author, byline.reviewer)}
+        />
+      ) : (
+        <JsonLd data={articleSchema(article)} />
+      )}
       <JsonLd data={breadcrumbSchema([
         { name: "Zavis", url: getBaseUrl() },
         { name: "Intelligence", url: `${getBaseUrl()}/intelligence` },
@@ -139,41 +159,152 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* Byline */}
             <div className="border-b-2 border-[#1c1c1c]" />
-            <div className="flex items-center justify-between py-3 mb-8">
-              <div className="flex items-center gap-3">
-                <span className="font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c]">
-                  {article.author.name}
-                </span>
-                {article.author.role && (
-                  <>
-                    <span className="text-black/30">·</span>
-                    <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{article.author.role}</span>
-                  </>
-                )}
+            <div className="flex flex-col gap-2 py-3 mb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {byline.author ? (
+                    <Link
+                      href={`/intelligence/author/${byline.author.slug}`}
+                      className="font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c] hover:text-[#006828] transition-colors"
+                    >
+                      {byline.author.name}
+                    </Link>
+                  ) : (
+                    <span className="font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c]">
+                      {article.author.name}
+                    </span>
+                  )}
+                  {(byline.author?.role || article.author.role) && (
+                    <>
+                      <span className="text-black/30">·</span>
+                      <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">
+                        {byline.author?.role || article.author.role}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{formatDate(article.publishedAt)}</span>
+                  <span className="text-black/30">·</span>
+                  <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{article.readTimeMinutes} min read</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{formatDate(article.publishedAt)}</span>
-                <span className="text-black/30">·</span>
-                <span className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-medium text-black/40">{article.readTimeMinutes} min read</span>
-              </div>
+              {byline.reviewer && (
+                <div className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-xs text-black/55">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[#006828]" />
+                  <span>
+                    {isClinical ? "Medically reviewed by" : "Reviewed by"}{" "}
+                    <Link
+                      href={`/intelligence/reviewer/${byline.reviewer.slug}`}
+                      className="font-semibold text-[#1c1c1c] hover:text-[#006828] transition-colors"
+                    >
+                      {byline.reviewer.name}
+                    </Link>
+                    {byline.reviewer.title ? `, ${byline.reviewer.title}` : ""}
+                    {lastReviewedDate
+                      ? ` · last reviewed ${formatDate(lastReviewedDate.toISOString())}`
+                      : ""}
+                  </span>
+                </div>
+              )}
             </div>
+            <div className="mb-8" />
 
             {/* Article body */}
             <ArticleBody html={fullArticle.body} />
 
-            {/* Author bio */}
-            <div className="border border-black/[0.06] rounded-2xl p-5 mt-10 flex items-center gap-4">
-              <div className="flex-shrink-0 h-11 w-11 rounded-full bg-[#006828] flex items-center justify-center text-white font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm">
-                {article.author.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+            {/* Sources / Citations — only when populated. Numbered footnotes
+                so the renderer can reference them inline in the body text. */}
+            {citations.length > 0 && (
+              <section className="mt-10 border-t border-black/[0.06] pt-6" id="sources">
+                <h2 className="font-['Geist',sans-serif] uppercase text-xs tracking-widest font-semibold text-[#006828] mb-4">
+                  Sources
+                </h2>
+                <ol className="space-y-3 list-decimal list-outside pl-5">
+                  {citations.map((c, i) => (
+                    <li
+                      key={c.id || `${c.url}-${i}`}
+                      className="font-['Geist',sans-serif] text-[13px] text-black/60 leading-relaxed"
+                    >
+                      <a
+                        href={c.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1c1c1c] font-medium hover:text-[#006828] hover:underline"
+                      >
+                        {c.label}
+                      </a>
+                      {c.publisher ? <span className="text-black/40"> — {c.publisher}</span> : null}
+                      {c.doi ? (
+                        <span className="text-black/40">
+                          {" "}
+                          ·{" "}
+                          <a
+                            href={`https://doi.org/${c.doi}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[#006828]"
+                          >
+                            doi:{c.doi}
+                          </a>
+                        </span>
+                      ) : null}
+                      {c.pubmedId ? (
+                        <span className="text-black/40">
+                          {" "}
+                          ·{" "}
+                          <a
+                            href={`https://pubmed.ncbi.nlm.nih.gov/${c.pubmedId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[#006828]"
+                          >
+                            PMID:{c.pubmedId}
+                          </a>
+                        </span>
+                      ) : null}
+                      {c.accessedAt ? (
+                        <span className="text-black/30"> · accessed {c.accessedAt}</span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* Author bio — links to rich author profile when present */}
+            {byline.author ? (
+              <Link
+                href={`/intelligence/author/${byline.author.slug}`}
+                className="border border-black/[0.06] rounded-2xl p-5 mt-10 flex items-center gap-4 hover:border-[#006828]/40 transition-colors"
+              >
+                <div className="flex-shrink-0 h-11 w-11 rounded-full bg-[#006828] flex items-center justify-center text-white font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm">
+                  {byline.author.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight">{byline.author.name}</p>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40">{byline.author.role}</p>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
+                    {byline.author.bio.length > 110
+                      ? `${byline.author.bio.slice(0, 107)}...`
+                      : byline.author.bio}
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <div className="border border-black/[0.06] rounded-2xl p-5 mt-10 flex items-center gap-4">
+                <div className="flex-shrink-0 h-11 w-11 rounded-full bg-[#006828] flex items-center justify-center text-white font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm">
+                  {article.author.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight">{article.author.name}</p>
+                  {article.author.role && (
+                    <p className="font-['Geist',sans-serif] text-xs text-black/40">{article.author.role}</p>
+                  )}
+                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">Contributing to UAE healthcare industry coverage</p>
+                </div>
               </div>
-              <div>
-                <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-sm text-[#1c1c1c] tracking-tight">{article.author.name}</p>
-                {article.author.role && (
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40">{article.author.role}</p>
-                )}
-                <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">Contributing to UAE healthcare industry coverage</p>
-              </div>
-            </div>
+            )}
 
             {/* Tags */}
             <div className="border-b border-black/[0.06] mt-10 pt-6">

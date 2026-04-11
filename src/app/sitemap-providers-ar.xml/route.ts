@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { providers } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 3600; // regenerate at most once per hour
@@ -23,6 +23,28 @@ function buildXml(entries: string[]) {
   );
 }
 
+// Keep this gate in sync with the listing page's `isEnriched` check in
+// `src/app/(directory)/directory/[city]/[...segments]/page.tsx` (case "listing")
+// and with `sitemap-providers.xml/route.ts`. Providers that fail this gate are
+// `robots: { index: false }` on their pages and must not be submitted here.
+// See Item 0 of docs/zocdoc-plans-reconciled.md.
+function isEnrichedForSitemap(row: {
+  googleRating: string | null;
+  phone: string | null;
+  website: string | null;
+  description: string | null;
+  operatingHours: Record<string, { open: string; close: string }> | null;
+}): boolean {
+  const fields = [
+    Boolean(row.googleRating && Number(row.googleRating) > 0),
+    Boolean(row.phone && row.phone.trim().length > 0),
+    Boolean(row.website && row.website.trim().length > 0),
+    Boolean(row.description && row.description.trim().length > 80),
+    Boolean(row.operatingHours && Object.keys(row.operatingHours).length > 0),
+  ];
+  return fields.filter(Boolean).length >= 2;
+}
+
 export async function GET() {
   const baseUrl = getBaseUrl().replace(/\/+$/, "");
   try {
@@ -32,14 +54,33 @@ export async function GET() {
         citySlug: providers.citySlug,
         categorySlug: providers.categorySlug,
         updatedAt: providers.updatedAt,
+        googleRating: providers.googleRating,
+        phone: providers.phone,
+        website: providers.website,
+        description: providers.description,
+        operatingHours: providers.operatingHours,
       })
       .from(providers)
-      .where(eq(providers.status, "active"));
+      .where(
+        and(
+          eq(providers.status, "active"),
+          // UAE-only: mirror of the English sitemap. GCC providers must not
+          // leak into /ar/directory/[city]/... URL space.
+          eq(providers.country, "ae"),
+        ),
+      );
 
     const entries: string[] = [];
+    let skippedThin = 0;
 
     for (const row of rows) {
       if (!row.slug || !row.citySlug || !row.categorySlug) continue;
+
+      if (!isEnrichedForSitemap(row)) {
+        skippedThin += 1;
+        continue;
+      }
+
       const path = `/directory/${row.citySlug}/${row.categorySlug}/${row.slug}`;
       const lastmod = (row.updatedAt ?? new Date()).toISOString().split("T")[0];
       const enUrl = escapeXml(`${baseUrl}${path}`);
@@ -60,10 +101,16 @@ export async function GET() {
     }
 
     if (entries.length === 0) {
-      console.error("[sitemap-providers-ar] Query returned 0 results — returning 500");
+      console.error(
+        `[sitemap-providers-ar] Query returned 0 indexable results ` +
+          `(skipped ${skippedThin} thin providers) — returning 500`
+      );
       return new Response(buildXml([]), { status: 500, headers: SITEMAP_HEADERS });
     }
 
+    console.log(
+      `[sitemap-providers-ar] emitted ${entries.length} urls, skipped ${skippedThin} thin providers`
+    );
     return new Response(buildXml(entries), { headers: SITEMAP_HEADERS });
   } catch (error) {
     console.error("[sitemap-providers-ar] Failed to generate:", error);

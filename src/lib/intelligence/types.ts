@@ -16,6 +16,20 @@ export type ContentSource =
   | "press-release"
   | "government";
 
+/**
+ * Numbered citation for clinical / policy articles.
+ * Rendered as a footnoted Sources section at the bottom of the article body.
+ */
+export interface ArticleCitation {
+  id?: string;
+  label: string;
+  url: string;
+  publisher?: string;
+  doi?: string;
+  pubmedId?: string;
+  accessedAt?: string;
+}
+
 export interface JournalArticle {
   id: string;
   slug: string;
@@ -39,6 +53,17 @@ export interface JournalArticle {
   isFeatured: boolean;
   isBreaking: boolean;
   readTimeMinutes: number;
+  // ─── Item 5 additions (E-E-A-T leapfrog) ────────────────────────────────
+  // Optional pointers to the canonical authors / reviewers tables. When
+  // populated, the article renderer swaps the legacy plain byline for a
+  // rich linked byline + "Medically reviewed by" line. When null, the
+  // renderer falls back to the legacy `author.name` / `author.role` pair.
+  authorSlug?: string;
+  reviewerSlug?: string;
+  reviewerType?: string;
+  lastReviewedAt?: string;
+  isClinical?: boolean;
+  citations?: ArticleCitation[];
 }
 
 export interface JournalCategoryMeta {

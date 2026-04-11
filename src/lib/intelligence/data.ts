@@ -18,31 +18,107 @@ async function getDbArticles(): Promise<JournalArticle[]> {
     const { journalArticles } = await import("@/lib/db/schema");
     const { desc, eq } = await import("drizzle-orm");
 
-    const rows = await db
-      .select({
-        id: journalArticles.id,
-        slug: journalArticles.slug,
-        title: journalArticles.title,
-        excerpt: journalArticles.excerpt,
-        category: journalArticles.category,
-        tags: journalArticles.tags,
-        source: journalArticles.source,
-        sourceUrl: journalArticles.sourceUrl,
-        sourceName: journalArticles.sourceName,
-        authorName: journalArticles.authorName,
-        authorRole: journalArticles.authorRole,
-        imageUrl: journalArticles.imageUrl,
-        imageCaption: journalArticles.imageCaption,
-        isFeatured: journalArticles.isFeatured,
-        isBreaking: journalArticles.isBreaking,
-        readTimeMinutes: journalArticles.readTimeMinutes,
-        publishedAt: journalArticles.publishedAt,
-        updatedAt: journalArticles.updatedAt,
-        status: journalArticles.status,
-      })
-      .from(journalArticles)
-      .where(eq(journalArticles.status, "published"))
-      .orderBy(desc(journalArticles.publishedAt));
+    // Two-pass fetch: try the full SELECT with the Item 5 byline columns
+    // first; if those columns don't yet exist on the target DB (i.e. the
+    // 2026-04-11-authors-reviewers migration hasn't been applied) fall
+    // back to the legacy SELECT so the intelligence section stays live.
+    type FullRow = {
+      id: string;
+      slug: string;
+      title: string;
+      excerpt: string;
+      category: string;
+      tags: string[] | null;
+      source: string;
+      sourceUrl: string | null;
+      sourceName: string | null;
+      authorName: string;
+      authorRole: string | null;
+      imageUrl: string | null;
+      imageCaption: string | null;
+      isFeatured: boolean | null;
+      isBreaking: boolean | null;
+      readTimeMinutes: number;
+      publishedAt: Date;
+      updatedAt: Date | null;
+      status: string;
+      authorSlug?: string | null;
+      reviewerSlug?: string | null;
+      reviewerType?: string | null;
+      lastReviewedAt?: Date | null;
+      isClinical?: boolean | null;
+      citations?: unknown;
+    };
+
+    let rows: FullRow[] = [];
+    try {
+      rows = (await db
+        .select({
+          id: journalArticles.id,
+          slug: journalArticles.slug,
+          title: journalArticles.title,
+          excerpt: journalArticles.excerpt,
+          category: journalArticles.category,
+          tags: journalArticles.tags,
+          source: journalArticles.source,
+          sourceUrl: journalArticles.sourceUrl,
+          sourceName: journalArticles.sourceName,
+          authorName: journalArticles.authorName,
+          authorRole: journalArticles.authorRole,
+          imageUrl: journalArticles.imageUrl,
+          imageCaption: journalArticles.imageCaption,
+          isFeatured: journalArticles.isFeatured,
+          isBreaking: journalArticles.isBreaking,
+          readTimeMinutes: journalArticles.readTimeMinutes,
+          publishedAt: journalArticles.publishedAt,
+          updatedAt: journalArticles.updatedAt,
+          status: journalArticles.status,
+          authorSlug: journalArticles.authorSlug,
+          reviewerSlug: journalArticles.reviewerSlug,
+          reviewerType: journalArticles.reviewerType,
+          lastReviewedAt: journalArticles.lastReviewedAt,
+          isClinical: journalArticles.isClinical,
+          citations: journalArticles.citations,
+        })
+        .from(journalArticles)
+        .where(eq(journalArticles.status, "published"))
+        .orderBy(desc(journalArticles.publishedAt))) as unknown as FullRow[];
+    } catch (innerErr: unknown) {
+      const msg = innerErr instanceof Error ? innerErr.message : String(innerErr);
+      // 42703 = undefined_column. Means migration not yet applied on this DB.
+      if (msg.includes("42703") || msg.includes("does not exist")) {
+        console.warn(
+          "[Journal] Item 5 byline columns missing, falling back to legacy SELECT"
+        );
+        rows = (await db
+          .select({
+            id: journalArticles.id,
+            slug: journalArticles.slug,
+            title: journalArticles.title,
+            excerpt: journalArticles.excerpt,
+            category: journalArticles.category,
+            tags: journalArticles.tags,
+            source: journalArticles.source,
+            sourceUrl: journalArticles.sourceUrl,
+            sourceName: journalArticles.sourceName,
+            authorName: journalArticles.authorName,
+            authorRole: journalArticles.authorRole,
+            imageUrl: journalArticles.imageUrl,
+            imageCaption: journalArticles.imageCaption,
+            isFeatured: journalArticles.isFeatured,
+            isBreaking: journalArticles.isBreaking,
+            readTimeMinutes: journalArticles.readTimeMinutes,
+            publishedAt: journalArticles.publishedAt,
+            updatedAt: journalArticles.updatedAt,
+            status: journalArticles.status,
+          })
+          .from(journalArticles)
+          .where(eq(journalArticles.status, "published"))
+          .orderBy(desc(journalArticles.publishedAt))) as unknown as FullRow[];
+      } else {
+        throw innerErr;
+      }
+    }
 
     _dbArticles = rows.map((row) => ({
       id: row.id,
@@ -66,6 +142,14 @@ async function getDbArticles(): Promise<JournalArticle[]> {
       readTimeMinutes: row.readTimeMinutes,
       publishedAt: row.publishedAt.toISOString(),
       updatedAt: row.updatedAt?.toISOString(),
+      authorSlug: row.authorSlug || undefined,
+      reviewerSlug: row.reviewerSlug || undefined,
+      reviewerType: row.reviewerType || undefined,
+      lastReviewedAt: row.lastReviewedAt?.toISOString(),
+      isClinical: row.isClinical || false,
+      citations: Array.isArray(row.citations)
+        ? (row.citations as JournalArticle["citations"])
+        : [],
     }));
 
     console.log(`[Journal] Loaded ${_dbArticles.length} articles from DB`);

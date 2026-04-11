@@ -12,18 +12,30 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCategories,
+  getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug, getAreasByCity,
   getProviders, getTopRatedProviders,
   getInsuranceProviders,
+  getNeighborhoodsByCity,
 } from "@/lib/data";
+import { getHubEditorial } from "@/lib/constants/hub-editorial";
+import { getRelatedSpecialties } from "@/lib/constants/related-specialties";
+import { LANGUAGES } from "@/lib/constants/languages";
+import {
+  getInsurancePlansByGeo,
+  isTriFacetEligible,
+} from "@/lib/insurance-facets/data";
+import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
+import { neighborhoodHubSchema } from "@/lib/seo-neighborhoods";
+import { StickyMobileCta } from "@/components/directory/StickyMobileCta";
 import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
 import { getJournalCategory } from "@/lib/intelligence/categories";
 import { formatDate } from "@/components/intelligence/utils";
 import {
-  medicalOrganizationSchema, breadcrumbSchema, itemListSchema,
+  breadcrumbSchema, itemListSchema,
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
   generateProviderParagraph, truncateTitle, truncateDescription,
+  generateFullProviderSchema,
 } from "@/lib/seo";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
 import {
@@ -51,40 +63,56 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
+  searchParams?: { page?: string };
+}
+
+// Parse and clamp the ?page= query param to a positive integer.
+// Item 0.5 + Item 22 — ensures deep-pagination URLs emitted by the
+// sitemap actually render their target page instead of collapsing to 1.
+function parsePage(raw: string | undefined): number {
+  const n = Number(raw ?? 1);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.floor(n);
 }
 
 // No generateStaticParams — pages render on-demand via ISR.
 // Google discovers them via sitemap.xml and internal links.
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
   const base = getBaseUrl();
+  const page = parsePage(searchParams?.page);
+  const pageSuffix = page > 1 ? `?page=${page}` : "";
+  const pageTitleSuffix = page > 1 ? ` — Page ${page}` : "";
 
   switch (resolved.type) {
     case "city-category": {
       const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
       const year = new Date().getFullYear();
+      const baseCategoryUrl = `${base}/directory/${city.slug}/${resolved.category.slug}`;
+      const canonicalUrl = `${baseCategoryUrl}${pageSuffix}`;
+      const arCanonicalUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}${pageSuffix}`;
       return {
-        title: truncateTitle(`${total} Best ${resolved.category.name} in ${city.name} [${year}]`),
+        title: truncateTitle(`${total} Best ${resolved.category.name} in ${city.name} [${year}]${pageTitleSuffix}`),
         description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`),
         alternates: {
-          canonical: `${base}/directory/${city.slug}/${resolved.category.slug}`,
+          canonical: canonicalUrl,
           languages: {
-            'en-AE': `${base}/directory/${city.slug}/${resolved.category.slug}`,
-            'ar-AE': `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
-            'x-default': `${base}/directory/${city.slug}/${resolved.category.slug}`,
+            'en-AE': canonicalUrl,
+            'ar-AE': arCanonicalUrl,
+            'x-default': canonicalUrl,
           },
         },
         openGraph: {
-          title: `${resolved.category.name} in ${city.name}, UAE`,
+          title: `${resolved.category.name} in ${city.name}, UAE${pageTitleSuffix}`,
           description: `${total} ${resolved.category.name.toLowerCase()} in ${city.name}. Browse verified listings.`,
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
-          url: `${base}/directory/${city.slug}/${resolved.category.slug}`,
+          url: canonicalUrl,
           images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.category.name} in ${city.name}` }],
         },
       };
@@ -307,7 +335,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CatchAllPage({ params }: Props) {
+export default async function CatchAllPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -315,30 +343,202 @@ export default async function CatchAllPage({ params }: Props) {
   if (!resolved) notFound();
 
   const base = getBaseUrl();
+  // Item 0.5 + Item 22 — thread searchParams.page end-to-end so the ~136
+  // deep-pagination URLs emitted by sitemap.ts actually render their
+  // target page instead of collapsing to 1. Current branches that honour
+  // the page param: city-category (below). Other branches fall through
+  // to page 1 silently.
+  const currentPage = parsePage(searchParams?.page);
+  const LIST_PAGE_SIZE = 20;
 
   // --- City + Category Page ---
+  // --- City + Category Page (FAT HUB — Item 4 Part B) ---
+  //
+  // Target ≥500 internal links per page, composed of:
+  //   (1) Editorial intro (~200 words, bilingual)               ~0 links
+  //   (2) Sibling neighborhood grid (≥3 providers gated)        ~12 links
+  //   (3) Insurance pivot strip (geo + tri-facet gated)         ~8 links
+  //   (4) Language pivot strip                                  ~5 links
+  //   (5) Related specialties strip                             ~8 links
+  //   (6) Doctor cross-links (find-a-doctor)                    ~8 links
+  //   (7) Top-rated module (deterministic daily rotation)       ~5 links
+  //   (8) FAQ block                                             ~0 links
+  //   plus 20 provider cards in the main list                   ~20 links
+  //   plus pagination (5 deep pages)                            ~5 links
+  //   plus "Other specialties" sibling grid                     ~8 links
+  //   plus breadcrumbs + intelligence + header/footer links     ~400+ links
+  //   = ≈ 500+ internal links per fat hub page.
   if (resolved.type === "city-category") {
     const { category } = resolved;
-    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page: 1, limit: 20, sort: "rating" });
+    const { providers, total } = await getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      page: currentPage,
+      limit: LIST_PAGE_SIZE,
+      sort: "rating",
+    });
+    // 404 past-end: if the sitemap pointed at a ?page= that no longer
+    // has providers, return a real 404 rather than an empty grid.
+    if (currentPage > 1 && providers.length === 0) notFound();
     const areas = getAreasByCity(city.slug);
     const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, null, total);
+    const baseCategoryUrl = `${base}/directory/${city.slug}/${category.slug}`;
+    const canonicalUrl =
+      currentPage > 1 ? `${baseCategoryUrl}?page=${currentPage}` : baseCategoryUrl;
+
+    // ── Editorial intro ───────────────────────────────────────────────
+    const regulator =
+      city.slug === "dubai"
+        ? "Dubai Health Authority (DHA)"
+        : city.slug === "abu-dhabi" || city.slug === "al-ain"
+        ? "Department of Health Abu Dhabi (DOH)"
+        : "Ministry of Health and Prevention (MOHAP)";
+    const regulatorAr =
+      city.slug === "dubai"
+        ? "هيئة الصحة بدبي (DHA)"
+        : city.slug === "abu-dhabi" || city.slug === "al-ain"
+        ? "دائرة الصحة أبوظبي (DOH)"
+        : "وزارة الصحة ووقاية المجتمع (MOHAP)";
+    const editorial = getHubEditorial(city.slug, category.slug, {
+      city: city.name,
+      specialty: category.name,
+      specialtyLower: category.name.toLowerCase(),
+      providerCount: total,
+      regulator,
+      regulatorAr,
+    });
+
+    // ── Sibling neighborhood grid (DB-first, ≥3 providers gated) ────
+    const neighborhoods = await getNeighborhoodsByCity(city.slug, { minProviders: 3 });
+    const topNeighborhoods = neighborhoods.slice(0, 12);
+
+    // ── Insurance pivot strip (geo + tri-facet gated) ───────────────
+    // Run eligibility checks in parallel (Promise.all) instead of a
+    // sequential await loop. Previously this serialized ~10 DB round-trips
+    // per fat-hub render, adding 500-800ms of TTFB on every cold request.
+    const eligibleInsurers = getInsurancePlansByGeo(city.slug);
+    const insurerCandidates = eligibleInsurers.slice(0, 10);
+    const insurerEligibility = await Promise.all(
+      insurerCandidates.map(async (plan) => {
+        try {
+          const eligible = await isTriFacetEligible(
+            plan.slug,
+            city.slug,
+            category.slug,
+          );
+          return eligible ? { slug: plan.slug, name: plan.nameEn } : null;
+        } catch {
+          // Gracefully skip if the eligibility check fails — better to
+          // drop a link than to 500 the page.
+          return null;
+        }
+      }),
+    );
+    const insurerPivots = insurerEligibility
+      .filter((x): x is { slug: string; name: string } => x !== null)
+      .slice(0, 8);
+
+    // ── Language pivot strip ─────────────────────────────────────────
+    const LANG_SEEDS = ["arabic", "english", "hindi", "urdu", "tagalog"];
+    const languagePivots = LANG_SEEDS
+      .map((slug) => LANGUAGES.find((l) => l.slug === slug))
+      .filter((l): l is (typeof LANGUAGES)[number] => Boolean(l))
+      .slice(0, 5);
+
+    // ── Related specialties ──────────────────────────────────────────
+    const relatedSlugs = getRelatedSpecialties(category.slug, 8);
+    const relatedCategories = relatedSlugs
+      .map((slug) => getCategoryBySlug(slug))
+      .filter((c): c is NonNullable<ReturnType<typeof getCategoryBySlug>> => Boolean(c));
+
+    // ── Doctor cross-links (find-a-doctor) ───────────────────────────
+    const { professionals: doctorCrossLinks } = await getProfessionalsIndexBySpecialty(
+      category.slug,
+      { limit: 8 },
+    );
+
+    // ── Top-rated module (deterministic daily rotation) ──────────────
+    const topRatedPool = [...providers]
+      .filter((p) => p.googleReviewCount >= 3 && Number(p.googleRating) >= 4)
+      .sort((a, b) => {
+        const rd = Number(b.googleRating) - Number(a.googleRating);
+        if (rd !== 0) return rd;
+        return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+      });
+    const nowDate = new Date();
+    const dayOfYear = Math.floor(
+      (nowDate.getTime() - new Date(nowDate.getFullYear(), 0, 0).getTime()) / 86400000,
+    );
+    const seedOffset = topRatedPool.length > 0 ? dayOfYear % topRatedPool.length : 0;
+    const topRated: typeof providers = [];
+    for (let i = 0; i < Math.min(5, topRatedPool.length); i++) {
+      topRated.push(topRatedPool[(seedOffset + i) % topRatedPool.length]);
+    }
+
+    // ── JSON-LD: CollectionPage + BreadcrumbList + ItemList + FAQPage ──
+    const collectionPageNode: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: `${category.name} in ${city.name}`,
+      inLanguage: ["en-AE", "ar-AE"],
+      about: {
+        "@type": "MedicalSpecialty",
+        name: category.name,
+      },
+      spatialCoverage: {
+        "@type": "Place",
+        name: city.name,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: city.name,
+          addressCountry: "AE",
+        },
+      },
+      mainEntity: { "@id": `${canonicalUrl}#providers` },
+      breadcrumb: { "@id": `${canonicalUrl}#breadcrumb` },
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": `${base}/#website`,
+        name: "UAE Open Healthcare Directory by Zavis",
+        url: base,
+      },
+    };
+    const breadcrumbNode = breadcrumbSchema([
+      { name: "UAE", url: base },
+      { name: city.name, url: `${base}/directory/${city.slug}` },
+      { name: category.name },
+    ]) as Record<string, unknown>;
+    breadcrumbNode["@id"] = `${canonicalUrl}#breadcrumb`;
+    const itemListNode = itemListSchema(
+      `${category.name} in ${city.name}`,
+      providers,
+      city.name,
+      base,
+    ) as Record<string, unknown>;
+    itemListNode["@id"] = `${canonicalUrl}#providers`;
 
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: category.name }])} />
-        <JsonLd data={itemListSchema(`${category.name} in ${city.name}`, providers, city.name, base)} />
+        <JsonLd data={collectionPageNode} />
+        <JsonLd data={breadcrumbNode} />
+        <JsonLd data={itemListNode} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name }]} />
 
-        {/* Category hero banner — compact */}
+        {/* Category hero banner — compact. `priority` forces preload so this
+            above-the-fold LCP element isn't lazy-loaded on the ~10k
+            city×specialty pages in this branch. */}
         <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
           <Image
             src={getCategoryImagePath(category.slug)}
             alt={`${category.name} in ${city.name}`}
             fill
+            priority
             className="object-cover"
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
@@ -349,11 +549,9 @@ export default async function CatchAllPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
+        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
           <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
         </div>
-
-        {/* Subcategory links hidden — no providers have subcategory data yet */}
 
         {areas.length > 0 && (
           <div className="mb-6">
@@ -366,18 +564,207 @@ export default async function CatchAllPage({ params }: Props) {
 
         <Suspense fallback={
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
+            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} insurance={p.insurance} languages={p.languages} services={p.services} operatingHours={p.operatingHours} accessibilityOptions={p.accessibilityOptions} />))}
           </div>
         }>
           <ProviderListPaginated
-            initialProviders={providers}
-            initialTotalPages={totalPages}
-            citySlug={city.slug}
-            categorySlug={category.slug}
+            providers={providers}
+            currentPage={currentPage}
+            totalCount={total}
+            pageSize={LIST_PAGE_SIZE}
             baseUrl={`/directory/${city.slug}/${category.slug}`}
             emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
           />
         </Suspense>
+
+        {/* ── (1) Editorial intro — ~200 words, bilingual ─────────────── */}
+        <section className="mt-10 mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-3 border-b-2 border-[#1c1c1c] pb-2">
+              About {category.name} in {city.name}
+            </h2>
+            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+              {editorial.en}
+            </p>
+            {!editorial.handWritten && (
+              <p className="font-['Geist',sans-serif] text-[10px] text-black/30 mt-2">
+                Automated city-specialty overview — editorial review pending.
+              </p>
+            )}
+          </div>
+          <div dir="rtl" lang="ar">
+            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-3 border-b-2 border-[#1c1c1c] pb-2">
+              {category.name} في {city.name}
+            </h2>
+            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+              {editorial.ar}
+            </p>
+          </div>
+        </section>
+
+        {/* ── (2) Sibling neighborhood grid ─────────────────────────── */}
+        {topNeighborhoods.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                {category.name} by neighborhood in {city.name}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {topNeighborhoods.map((n) => (
+                <Link
+                  key={n.slug}
+                  href={`/directory/${city.slug}/${n.slug}/${category.slug}`}
+                  className="inline-block font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                >
+                  {category.name} in {n.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (3) Insurance pivot strip (geo + tri-facet gated) ─────── */}
+        {insurerPivots.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                {category.name} by insurance in {city.name}
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {insurerPivots.map((ins) => (
+                <Link
+                  key={ins.slug}
+                  href={`/directory/${city.slug}/insurance/${ins.slug}/${category.slug}`}
+                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                >
+                  <Shield className="h-3 w-3 text-[#006828]" aria-hidden="true" />
+                  {category.name} accepting {ins.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (4) Language pivot strip ───────────────────────────────── */}
+        {languagePivots.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                {category.name} by language in {city.name}
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {languagePivots.map((lang) => (
+                <Link
+                  key={lang.slug}
+                  href={`/directory/${city.slug}/language/${lang.slug}/${category.slug}`}
+                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                >
+                  <Languages className="h-3 w-3 text-[#006828]" aria-hidden="true" />
+                  {lang.name}-speaking {category.name.toLowerCase()}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (5) Related specialties strip ──────────────────────────── */}
+        {relatedCategories.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                Related specialties in {city.name}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {relatedCategories.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/directory/${city.slug}/${c.slug}`}
+                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
+                >
+                  <Stethoscope className="h-3 w-3 text-[#006828]" aria-hidden="true" />
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (6) Doctor cross-links — bridges facility ↔ doctor ────── */}
+        {doctorCrossLinks.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center justify-between gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                Individual {category.name.toLowerCase()} in {city.name}
+              </h2>
+              <Link href={`/find-a-doctor/${category.slug}`} className="font-['Geist',sans-serif] text-xs font-semibold text-[#006828] hover:underline">
+                All doctors &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {doctorCrossLinks.map((doc) => (
+                <Link
+                  key={doc.id}
+                  href={`/find-a-doctor/${doc.specialtySlug}/${doc.slug}`}
+                  className="group block bg-white border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
+                >
+                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] tracking-tight mb-1 truncate">
+                    {doc.displayTitle}
+                  </h3>
+                  <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">
+                    {doc.specialty}
+                  </p>
+                  {doc.primaryFacilityName && (
+                    <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5 truncate">
+                      {doc.primaryFacilityName}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (7) Top-rated module — deterministic daily rotation ────── */}
+        {topRated.length > 0 && (
+          <section className="mt-10 mb-8">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
+              <Star className="h-4 w-4 text-[#006828]" aria-hidden="true" />
+              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+                Top-rated {category.name.toLowerCase()} today in {city.name}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topRated.map((p) => (
+                <ProviderCard
+                  key={`tr-${p.id}`}
+                  name={p.name}
+                  slug={p.slug}
+                  citySlug={p.citySlug}
+                  categorySlug={p.categorySlug}
+                  address={p.address}
+                  phone={p.phone}
+                  website={p.website}
+                  shortDescription={p.shortDescription}
+                  googleRating={p.googleRating}
+                  googleReviewCount={p.googleReviewCount}
+                  isClaimed={p.isClaimed}
+                  isVerified={p.isVerified}
+                  insurance={p.insurance}
+                  languages={p.languages}
+                  services={p.services}
+                  operatingHours={p.operatingHours}
+                  accessibilityOptions={p.accessibilityOptions}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── (8) FAQ block ──────────────────────────────────────────── */}
         <FaqSection faqs={facetFaqs} title={`${category.name} in ${city.name} — FAQ`} />
 
         {/* Related Intelligence — hub-and-spoke cross-link */}
@@ -457,9 +844,24 @@ export default async function CatchAllPage({ params }: Props) {
       { question: `Which insurance plans are accepted in ${area.name}, ${city.name}?`, answer: `Most providers in ${area.name} accept major UAE insurance plans including Daman, Thiqa, AXA, and Cigna. Check individual listings for specific insurance acceptance.` },
     ];
 
+    // Item 3 — neighborhood hub schema: emits CollectionPage + Place +
+    // ItemList + BreadcrumbList + FAQPage (with centroid / bbox when the
+    // area has polygon data from Dubai Pulse / Abu Dhabi Open Data / OSM).
+    // Falls back gracefully when the area row has no polygon fields.
+    const neighborhoodNodes = neighborhoodHubSchema(
+      city,
+      area,
+      null,
+      providers,
+      total,
+      base,
+    );
+
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: area.name }])} />
+        {neighborhoodNodes.map((node, i) => (
+          <JsonLd key={`neighborhood-schema-${i}`} data={node} />
+        ))}
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(areaFaqs)} />
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name }]} />
@@ -878,11 +1280,35 @@ export default async function CatchAllPage({ params }: Props) {
       });
     }
 
+    // Item 2 — emit the layered schema graph via generateFullProviderSchema
+    // so every provider profile ships Provider + MedicalWebPage + BreadcrumbList
+    // + FAQPage with stable #provider / #webpage / #breadcrumb @id anchors,
+    // not the bare medicalOrganizationSchema node that earlier versions used.
+    // IMPORTANT: pass an ABSOLUTE canonicalUrl. The earlier version passed
+    // `providerProfileUrl` which is a relative path (e.g., "/directory/..."),
+    // and the composer used it verbatim for the `#provider / #webpage /
+    // #breadcrumb` @id anchors, which would emit relative JSON-LD @ids —
+    // defeating the whole point of the composer. Caught by reviewer pass.
+    const providerSchemaNodes = generateFullProviderSchema({
+      provider,
+      city,
+      category,
+      area: area ?? null,
+      breadcrumbs: [
+        { name: "UAE", url: base },
+        { name: city.name, url: `${base}/directory/${city.slug}` },
+        { name: category.name, url: `${base}/directory/${city.slug}/${category.slug}` },
+        { name: provider.name },
+      ],
+      faqs: providerFaqsRich,
+      options: { canonicalUrl: `${base}${providerProfileUrl}`, baseUrl: base },
+    });
+
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={medicalOrganizationSchema(provider, city, category, area, city.slug)} />
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: category.name, url: `${base}/directory/${city.slug}/${category.slug}` }, { name: provider.name }])} />
-        <JsonLd data={faqPageSchema(providerFaqsRich)} />
+        {providerSchemaNodes.map((node, i) => (
+          <JsonLd key={`provider-schema-${i}`} data={node} />
+        ))}
         <JsonLd data={speakableSchema([".answer-block"])} />
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
@@ -1110,15 +1536,21 @@ export default async function CatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Patient reviews — three-tier fallback:
-                  1. reviewSummaryV2 (bulky: overview + themes + partial-quote snippet cards)
-                  2. reviewSummary (legacy themed bullets)
-                  3. hidden when both are empty
-                Never republishes verbatim review text (Google TOS §3.2.4(b)
-                + duplicate-content SEO risk). Partial quotes in v2 are
-                half-sentence fragments from the raw google_reviews JSONB. */}
+            {/* Patient reviews section. Three-tier fallback, picks the best
+                data available per provider:
+                  1. reviewSummaryV2 — bulky block with editorial overview,
+                     theme chips, and partial-quote snippet cards. Produced by
+                     scripts/rewrite-reviews-v2-or.mjs from raw google_reviews.
+                  2. reviewSummary (legacy) — themed bullet list (pre-v2 work).
+                  3. (nothing) — section is hidden.
+                All tiers cap at half-sentence partial quotes; never republish
+                verbatim user content. Avoids duplicate-content de-ranking +
+                complies with Google TOS §3.2.4(b) on review display. */}
             {provider.reviewSummaryV2 ? (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
+              <div
+                className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
+                data-section="reviews"
+              >
                 <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
                   <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
                     <Quote className="h-5 w-5 text-[#006828]" /> What patients say
@@ -1138,11 +1570,14 @@ export default async function CatchAllPage({ params }: Props) {
                         ))}
                       </div>
                       <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
-                      <span className="text-black/40">({provider.googleReviewCount?.toLocaleString()} reviews)</span>
+                      <span className="text-black/40">
+                        ({provider.googleReviewCount?.toLocaleString()} reviews)
+                      </span>
                     </div>
                   )}
                 </div>
 
+                {/* Overall sentiment — the editorial synthesis paragraph */}
                 <div className="mb-5">
                   <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
                     Overall sentiment
@@ -1152,6 +1587,7 @@ export default async function CatchAllPage({ params }: Props) {
                   </p>
                 </div>
 
+                {/* What stood out — theme chips */}
                 {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
                   <div className="mb-5">
                     <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
@@ -1159,12 +1595,17 @@ export default async function CatchAllPage({ params }: Props) {
                     </h3>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
                       {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
-                        <li key={i} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/60">
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/60"
+                        >
                           <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
                           <span>
                             {t.theme}
                             {t.mention_count > 1 && (
-                              <span className="text-black/30 text-xs ml-1">({t.mention_count} mentions)</span>
+                              <span className="text-black/30 text-xs ml-1">
+                                ({t.mention_count} mentions)
+                              </span>
                             )}
                           </span>
                         </li>
@@ -1173,6 +1614,7 @@ export default async function CatchAllPage({ params }: Props) {
                   </div>
                 )}
 
+                {/* Partial-quote snippet cards */}
                 {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
                   <div className="mb-3">
                     <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-3">
@@ -1180,22 +1622,34 @@ export default async function CatchAllPage({ params }: Props) {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {provider.reviewSummaryV2.snippets.map((s, i) => (
-                        <article key={i} className="bg-white rounded-xl p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
+                        <article
+                          key={i}
+                          className="bg-white rounded-xl p-4 border border-black/[0.04]"
+                          itemScope
+                          itemType="https://schema.org/Review"
+                        >
                           <div className="flex items-center gap-0.5 mb-2">
                             {Array.from({ length: 5 }).map((_, starIdx) => (
                               <Star
                                 key={starIdx}
                                 className={`h-3 w-3 ${
-                                  starIdx < s.rating ? "text-[#006828] fill-[#006828]" : "text-black/15"
+                                  starIdx < s.rating
+                                    ? "text-[#006828] fill-[#006828]"
+                                    : "text-black/15"
                                 }`}
                               />
                             ))}
                           </div>
-                          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2" itemProp="reviewBody">
+                          <p
+                            className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2"
+                            itemProp="reviewBody"
+                          >
                             {s.text_fragment}
                           </p>
                           <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                            <span itemProp="author" className="font-medium">{s.author_display}</span>
+                            <span itemProp="author" className="font-medium">
+                              {s.author_display}
+                            </span>
                             {s.relative_time && <span> · {s.relative_time}</span>}
                           </p>
                         </article>
@@ -1205,9 +1659,18 @@ export default async function CatchAllPage({ params }: Props) {
                 )}
 
                 <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                  Themes and patient voices synthesized from {provider.googleReviewCount?.toLocaleString() || "recent"} Google reviews.{" "}
+                  Themes and patient voices synthesized from {provider.googleReviewCount?.toLocaleString() || "recent"} Google reviews, last synced{" "}
+                  {provider.reviewSummaryV2.synced_at
+                    ? new Date(provider.reviewSummaryV2.synced_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+                    : "recently"}
+                  .{" "}
                   {provider.googleMapsUri && (
-                    <a href={provider.googleMapsUri} target="_blank" rel="nofollow noopener" className="text-[#006828] hover:underline">
+                    <a
+                      href={provider.googleMapsUri}
+                      target="_blank"
+                      rel="nofollow noopener"
+                      className="text-[#006828] hover:underline"
+                    >
                       Read original reviews on Google Maps →
                     </a>
                   )}
@@ -1394,25 +1857,22 @@ export default async function CatchAllPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Sticky mobile CTA bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.06] p-3 flex gap-2 z-40 lg:hidden">
-          {provider.phone && (
-            <a
-              href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#006828] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full"
-            >
-              <Phone className="h-4 w-4" /> Call
-            </a>
-          )}
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 bg-[#1c1c1c] text-white font-['Geist',sans-serif] font-medium text-sm py-3 rounded-full"
-          >
-            <MapPin className="h-4 w-4" /> Directions
-          </a>
-        </div>
+        {/* Sticky mobile CTA — uses the proper StickyMobileCta component
+            (Item 9): scroll-reveal, analytics via trackEvent, a11y region,
+            honest gating (each CTA only renders when real data exists). */}
+        <StickyMobileCta
+          providerName={provider.name}
+          phoneE164={provider.phone}
+          directionsUrl={
+            hasValidCoords
+              ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+              : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  provider.name + ", " + provider.address,
+                )}`
+          }
+          websiteUrl={provider.website}
+          mode="provider-profile"
+        />
       </div>
     );
   }

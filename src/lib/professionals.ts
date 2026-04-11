@@ -1,9 +1,17 @@
 /**
  * Professional Directory — Data Access Layer
  *
- * Loads 99,520 DHA-licensed healthcare professionals from JSON.
- * Builds in-memory indexes for fast lookups.
- * All functions are synchronous (data loaded at module init).
+ * Legacy path (synchronous): loads 99,520 DHA-licensed healthcare professionals
+ * from JSON and builds in-memory indexes. Powers the existing /find-a-doctor
+ * and /professionals pages.
+ *
+ * New path (asynchronous, DB-backed, Item 0.75): reads from the
+ * `professionals_index` table — populated by
+ * `scripts/build-professionals-index.mjs`. Powers the new
+ * /find-a-doctor/[specialty]/[doctor]-[id] route class.
+ *
+ * Both paths coexist intentionally so the legacy pages keep rendering even if
+ * the new table is empty (graceful fallback everywhere).
  */
 
 import fs from "fs";
@@ -14,6 +22,12 @@ import {
   getSpecialtyBySlug,
   PROFESSIONAL_CATEGORIES,
 } from "@/lib/constants/professionals";
+
+// ─── DHA data verification constant ─────────────────────────────────────────
+// Update this on every full re-pull of the DHA Sheryan register.
+// Referenced by the DoctorProfileFacts component to render a "last verified"
+// date line so users know how fresh the data is.
+export const DHA_DATA_VERIFIED_AT = "April 2026";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -540,6 +554,456 @@ export function searchProfessionals(query: string, limit = 50): ParsedProfession
     }
   }
   return results;
+}
+
+// ─── DB-backed async API (Item 0.75 — professionals_index table) ────────────
+//
+// These helpers query the new `professionals_index` table that backs the
+// /find-a-doctor/[specialty]/[doctor]-[id] route class. They are fully
+// independent of the legacy JSON path above and return empty arrays when the
+// table is empty so the new route class renders graceful zero-states
+// immediately after schema apply.
+//
+// Lazy-loaded Drizzle modules: mirrors the pattern in `src/lib/data.ts`, so we
+// never touch `pg` on the build path that doesn't need the DB.
+
+type ProfessionalDiscipline =
+  | "physician"
+  | "dentist"
+  | "nurse"
+  | "pharmacist"
+  | "allied-health"
+  | "other";
+
+export interface ProfessionalIndexRecord {
+  id: number;
+  dhaUniqueId: string;
+  slug: string;
+  name: string;
+  nameAr: string | null;
+  displayTitle: string;
+  discipline: ProfessionalDiscipline;
+  level: string;
+  specialty: string;
+  specialtySlug: string;
+  categorySlug: string | null;
+  primaryFacilityName: string | null;
+  primaryFacilitySlug: string | null;
+  primaryCitySlug: string | null;
+  licenseType: "REG" | "FTL";
+  licenseCount: number;
+  photoUrl: string | null;
+  photoConsent: boolean;
+  searchTerms: string[];
+  relatedConditions: string[];
+  status: "active" | "inactive";
+}
+
+const DISCIPLINE_VALUES: ProfessionalDiscipline[] = [
+  "physician",
+  "dentist",
+  "nurse",
+  "pharmacist",
+  "allied-health",
+  "other",
+];
+
+function coerceDiscipline(raw: unknown): ProfessionalDiscipline {
+  if (typeof raw !== "string") return "other";
+  const v = raw as ProfessionalDiscipline;
+  return DISCIPLINE_VALUES.includes(v) ? v : "other";
+}
+
+function coerceLicenseType(raw: unknown): "REG" | "FTL" {
+  return raw === "FTL" ? "FTL" : "REG";
+}
+
+function coerceStatus(raw: unknown): "active" | "inactive" {
+  return raw === "inactive" ? "inactive" : "active";
+}
+
+function coerceStringArray(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((x): x is string => typeof x === "string");
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToProfessionalIndexRecord(row: any): ProfessionalIndexRecord {
+  return {
+    id: Number(row.id),
+    dhaUniqueId: String(row.dhaUniqueId ?? row.dha_unique_id ?? ""),
+    slug: String(row.slug ?? ""),
+    name: String(row.name ?? ""),
+    nameAr: (row.nameAr ?? row.name_ar ?? null) as string | null,
+    displayTitle: String(row.displayTitle ?? row.display_title ?? ""),
+    discipline: coerceDiscipline(row.discipline),
+    level: String(row.level ?? "unknown"),
+    specialty: String(row.specialty ?? ""),
+    specialtySlug: String(row.specialtySlug ?? row.specialty_slug ?? ""),
+    categorySlug:
+      (row.categorySlug ?? row.category_slug ?? null) as string | null,
+    primaryFacilityName:
+      (row.primaryFacilityName ?? row.primary_facility_name ?? null) as
+        | string
+        | null,
+    primaryFacilitySlug:
+      (row.primaryFacilitySlug ?? row.primary_facility_slug ?? null) as
+        | string
+        | null,
+    primaryCitySlug:
+      (row.primaryCitySlug ?? row.primary_city_slug ?? null) as string | null,
+    licenseType: coerceLicenseType(row.licenseType ?? row.license_type),
+    licenseCount: Number(row.licenseCount ?? row.license_count ?? 1),
+    photoUrl: (row.photoUrl ?? row.photo_url ?? null) as string | null,
+    photoConsent: Boolean(row.photoConsent ?? row.photo_consent ?? false),
+    searchTerms: coerceStringArray(row.searchTerms ?? row.search_terms),
+    relatedConditions: coerceStringArray(
+      row.relatedConditions ?? row.related_conditions
+    ),
+    status: coerceStatus(row.status),
+  };
+}
+
+// Lazy-loaded Drizzle handles — only imported when the caller actually runs a
+// DB query. Mirrors the pattern in `src/lib/data.ts`.
+let _dbMod:
+  | (typeof import("@/lib/db"))
+  | null = null;
+let _schemaMod:
+  | (typeof import("@/lib/db/schema"))
+  | null = null;
+let _ormMod: (typeof import("drizzle-orm")) | null = null;
+
+async function loadDbModules() {
+  if (_dbMod && _schemaMod && _ormMod) return;
+  const [dbMod, schemaMod, ormMod] = await Promise.all([
+    import("@/lib/db"),
+    import("@/lib/db/schema"),
+    import("drizzle-orm"),
+  ]);
+  _dbMod = dbMod;
+  _schemaMod = schemaMod;
+  _ormMod = ormMod;
+}
+
+function hasDb(): boolean {
+  return Boolean(process.env.DATABASE_URL);
+}
+
+/** Look up a single professional by its slug. Returns null on miss or DB error. */
+export async function getProfessionalBySlug(
+  slug: string
+): Promise<ProfessionalIndexRecord | null> {
+  if (!hasDb() || !slug) return null;
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, eq } = _ormMod!;
+    const rows = await db
+      .select()
+      .from(professionalsIndex)
+      .where(
+        and(eq(professionalsIndex.slug, slug), eq(professionalsIndex.status, "active"))
+      )
+      .limit(1);
+    if (rows.length === 0) return null;
+    return rowToProfessionalIndexRecord(rows[0]);
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalBySlug failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return null;
+  }
+}
+
+/** List professionals for a given specialty slug, with pagination + total. */
+export async function getProfessionalsIndexBySpecialty(
+  specialtySlug: string,
+  opts: { limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb() || !specialtySlug) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, count } = _ormMod!;
+    const where = and(
+      eq(professionalsIndex.specialtySlug, specialtySlug),
+      eq(professionalsIndex.status, "active")
+    );
+    const [countRows, rows] = await Promise.all([
+      db
+        .select({ total: count() })
+        .from(professionalsIndex)
+        .where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    const total = Number(countRows[0]?.total ?? 0);
+    return {
+      total,
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexBySpecialty failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
+/** List professionals at a given facility (soft slug ref). */
+export async function getProfessionalsIndexByFacility(
+  facilitySlug: string,
+  opts: { limit?: number } = {}
+): Promise<ProfessionalIndexRecord[]> {
+  if (!hasDb() || !facilitySlug) return [];
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq } = _ormMod!;
+    const rows = await db
+      .select()
+      .from(professionalsIndex)
+      .where(
+        and(
+          eq(professionalsIndex.primaryFacilitySlug, facilitySlug),
+          eq(professionalsIndex.status, "active")
+        )
+      )
+      .orderBy(asc(professionalsIndex.name))
+      .limit(limit);
+    return rows.map(rowToProfessionalIndexRecord);
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexByFacility failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return [];
+  }
+}
+
+/** List professionals in a given city (derived from facility match). */
+export async function getProfessionalsIndexByCity(
+  citySlug: string,
+  opts: { limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb() || !citySlug) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, count } = _ormMod!;
+    const where = and(
+      eq(professionalsIndex.primaryCitySlug, citySlug),
+      eq(professionalsIndex.status, "active")
+    );
+    const [countRows, rows] = await Promise.all([
+      db.select({ total: count() }).from(professionalsIndex).where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    const total = Number(countRows[0]?.total ?? 0);
+    return {
+      total,
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexByCity failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
+/** Cheap count used by hub + metadata titles. */
+export async function getProfessionalCountBySpecialty(
+  specialtySlug: string
+): Promise<number> {
+  if (!hasDb() || !specialtySlug) return 0;
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, eq, count } = _ormMod!;
+    const rows = await db
+      .select({ total: count() })
+      .from(professionalsIndex)
+      .where(
+        and(
+          eq(professionalsIndex.specialtySlug, specialtySlug),
+          eq(professionalsIndex.status, "active")
+        )
+      );
+    return Number(rows[0]?.total ?? 0);
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalCountBySpecialty failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return 0;
+  }
+}
+
+/** Distinct specialty slugs present in the index — powers sitemap + static params. */
+export async function getAllSpecialtySlugs(): Promise<string[]> {
+  if (!hasDb()) return [];
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { eq, sql } = _ormMod!;
+    const rows = await db
+      .selectDistinct({ slug: professionalsIndex.specialtySlug })
+      .from(professionalsIndex)
+      .where(eq(professionalsIndex.status, "active"))
+      .orderBy(sql`${professionalsIndex.specialtySlug}`);
+    return rows.map((r) => r.slug).filter(Boolean) as string[];
+  } catch (err) {
+    console.error(
+      `[professionals] getAllSpecialtySlugs failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return [];
+  }
+}
+
+/** Doctor slugs for a given specialty — powers `generateStaticParams`. */
+export async function getProfessionalSlugsBySpecialty(
+  specialtySlug: string,
+  opts: { limit?: number; requireFacility?: boolean } = {}
+): Promise<string[]> {
+  if (!hasDb() || !specialtySlug) return [];
+  const limit = Math.max(1, Math.min(opts.limit ?? 1000, 5000));
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, isNotNull } = _ormMod!;
+    const conditions = [
+      eq(professionalsIndex.specialtySlug, specialtySlug),
+      eq(professionalsIndex.status, "active"),
+    ];
+    if (opts.requireFacility) {
+      conditions.push(isNotNull(professionalsIndex.primaryFacilitySlug));
+    }
+    const rows = await db
+      .select({ slug: professionalsIndex.slug })
+      .from(professionalsIndex)
+      .where(and(...conditions))
+      .orderBy(asc(professionalsIndex.name))
+      .limit(limit);
+    return rows.map((r) => r.slug).filter(Boolean) as string[];
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalSlugsBySpecialty failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return [];
+  }
+}
+
+/** Related professionals for the profile page: same specialty, same city preferred. */
+export async function getRelatedProfessionalsFromIndex(
+  doctor: ProfessionalIndexRecord,
+  limit = 6
+): Promise<ProfessionalIndexRecord[]> {
+  if (!hasDb()) return [];
+  const cap = Math.max(1, Math.min(limit, 24));
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, ne } = _ormMod!;
+    const conditions = [
+      eq(professionalsIndex.specialtySlug, doctor.specialtySlug),
+      eq(professionalsIndex.status, "active"),
+      ne(professionalsIndex.id, doctor.id),
+    ];
+    if (doctor.primaryCitySlug) {
+      conditions.push(eq(professionalsIndex.primaryCitySlug, doctor.primaryCitySlug));
+    }
+    const rows = await db
+      .select()
+      .from(professionalsIndex)
+      .where(and(...conditions))
+      .orderBy(asc(professionalsIndex.name))
+      .limit(cap);
+    return rows.map(rowToProfessionalIndexRecord);
+  } catch (err) {
+    console.error(
+      `[professionals] getRelatedProfessionalsFromIndex failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return [];
+  }
+}
+
+/**
+ * Dentists in a given city — helper for later integration by the
+ * /directory/[city]/dental-clinic hub route (Item 4). Not called yet from any
+ * page to avoid conflict with that item's owner.
+ */
+export async function getDentistsByCity(
+  citySlug: string,
+  opts: { limit?: number } = {}
+): Promise<ProfessionalIndexRecord[]> {
+  if (!hasDb() || !citySlug) return [];
+  const limit = Math.max(1, Math.min(opts.limit ?? 24, 100));
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq } = _ormMod!;
+    const rows = await db
+      .select()
+      .from(professionalsIndex)
+      .where(
+        and(
+          eq(professionalsIndex.discipline, "dentist"),
+          eq(professionalsIndex.primaryCitySlug, citySlug),
+          eq(professionalsIndex.status, "active")
+        )
+      )
+      .orderBy(asc(professionalsIndex.name))
+      .limit(limit);
+    return rows.map(rowToProfessionalIndexRecord);
+  } catch (err) {
+    console.error(
+      `[professionals] getDentistsByCity failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return [];
+  }
 }
 
 /** Get aggregate stats across all professionals */

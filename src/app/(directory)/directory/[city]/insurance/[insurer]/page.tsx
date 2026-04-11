@@ -5,19 +5,37 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Pagination } from "@/components/shared/Pagination";
 import {
   getCityBySlug, getCities, getCategories,
   getInsuranceProviders, getProvidersByInsurance, getProviderCountByInsurance,
 } from "@/lib/data";
 import {
   breadcrumbSchema, faqPageSchema, itemListSchema, speakableSchema,
+  truncateTitle, truncateDescription,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import {
+  DUO_FACET_MIN_PROVIDERS,
+  getInsurancePlansByGeo,
+  INSURANCE_DATA_VERIFIED_AT,
+} from "@/lib/insurance-facets/data";
 
 export const revalidate = 21600;
 
+// SSR pagination (Item 0.5). `getProvidersByInsurance` returns the full
+// in-scope list, so we slice in-memory per page.
+const INSURANCE_PAGE_SIZE = 30;
+
+function parsePage(searchParams?: { page?: string }): number {
+  const raw = Number(searchParams?.page ?? "1");
+  if (!Number.isFinite(raw) || raw < 1) return 1;
+  return Math.floor(raw);
+}
+
 interface Props {
   params: { city: string; insurer: string };
+  searchParams?: { page?: string };
 }
 
 // ─── Regulator helpers ────────────────────────────────────────────────────────
@@ -27,12 +45,6 @@ function getRegulatorName(citySlug: string): string {
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
     return "Department of Health Abu Dhabi (DOH)";
   return "Ministry of Health and Prevention (MOHAP)";
-}
-
-function getRegulatorSlug(citySlug: string): "dha" | "doh" | "mohap" {
-  if (citySlug === "dubai") return "dha";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "doh";
-  return "mohap";
 }
 
 function getMandatoryNote(citySlug: string): string {
@@ -56,7 +68,7 @@ export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
@@ -64,18 +76,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const count = await getProviderCountByInsurance(insurer.slug, city.slug);
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const url = `${base}/directory/${city.slug}/insurance/${insurer.slug}`;
+  const page = parsePage(searchParams);
+  const pageSuffix = page > 1 ? `?page=${page}` : "";
+  const titlePageSuffix = page > 1 ? ` | Page ${page}` : "";
+  const urlBase = `${base}/directory/${city.slug}/insurance/${insurer.slug}`;
+  const url = `${urlBase}${pageSuffix}`;
 
-  const title = `Clinics Accepting ${insurer.name} Insurance in ${city.name} | ${count} ${count === 1 ? "Provider" : "Providers"}`;
-  const description = `Find ${count} ${regulator}-licensed healthcare providers in ${city.name} that accept ${insurer.name} insurance. Includes hospitals, clinics, dental, dermatology & more. Verified listings with ratings, reviews, and contact details. Last verified March 2026.`;
+  // Geo gate — Thiqa & other geo-scoped plans never index outside their scope.
+  const geoEligible = getInsurancePlansByGeo(city.slug).some((p) => p.slug === insurer.slug);
+  // Content gate — below min provider count, keep the URL live but noindex.
+  const contentEligible = count >= DUO_FACET_MIN_PROVIDERS;
+  const isIndexable = geoEligible && contentEligible;
+
+  const rawTitle = `Clinics Accepting ${insurer.name} Insurance in ${city.name} | ${count} ${count === 1 ? "Provider" : "Providers"}${titlePageSuffix}`;
+  const rawDescription = `Find ${count} ${regulator}-licensed healthcare providers in ${city.name} that accept ${insurer.name} insurance. Includes hospitals, clinics, dental, dermatology & more. Verified listings with ratings, reviews, and contact details. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
+  const title = truncateTitle(rawTitle, 58);
+  const description = truncateDescription(rawDescription, 155);
 
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      // Self-canonical per paginated page (Item 0.5). Below-gate pages still
+      // canonical to the 2-facet parent without ?page=N.
+      canonical: isIndexable ? url : `${base}/insurance/${insurer.slug}`,
+    },
+    robots: isIndexable ? undefined : { index: false, follow: true },
     openGraph: {
-      title: `${insurer.name} Insurance — ${count} Providers in ${city.name}`,
-      description: `${count} ${regulator}-regulated providers in ${city.name} accept ${insurer.name}. Browse hospitals, clinics, dental & specialists — all verified March 2026.`,
+      title: truncateTitle(`${insurer.name} Insurance — ${count} Providers in ${city.name}${titlePageSuffix}`, 58),
+      description: truncateDescription(`${count} ${regulator}-regulated providers in ${city.name} accept ${insurer.name}. Browse hospitals, clinics, dental & specialists — last verified ${INSURANCE_DATA_VERIFIED_AT}.`, 155),
       url,
       type: "website",
     },
@@ -84,7 +113,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function InsuranceProviderPage({ params }: Props) {
+export default async function InsuranceProviderPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -96,8 +125,17 @@ export default async function InsuranceProviderPage({ params }: Props) {
   const count = providers.length;
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const regulatorSlug = getRegulatorSlug(city.slug);
   const mandatoryNote = getMandatoryNote(city.slug);
+
+  // ─── SSR pagination (Item 0.5) ─────────────────────────────────────────────
+  // Slice the in-memory list so `?page=N` is server-rendered rather than
+  // hidden behind client fetch. Past-last-page → 404 so Googlebot doesn't
+  // index empty shells.
+  const currentPage = parsePage(searchParams);
+  const totalPages = Math.max(1, Math.ceil(count / INSURANCE_PAGE_SIZE));
+  if (count > 0 && currentPage > totalPages) notFound();
+  const pageStart = (currentPage - 1) * INSURANCE_PAGE_SIZE;
+  const pagedProviders = providers.slice(pageStart, pageStart + INSURANCE_PAGE_SIZE);
 
   // ─── Category breakdown ─────────────────────────────────────────────────────
   const categories = getCategories();
@@ -152,7 +190,7 @@ export default async function InsuranceProviderPage({ params }: Props) {
       : `${insurer.name} is a ${getInsurerTypeLabel(insurer.type).toLowerCase()} insurer widely accepted across the UAE.`;
 
   const answerParagraph = count > 0
-    ? `According to the UAE Open Healthcare Directory, ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} accept ${insurer.name} insurance. ${mandatoryNote} ${coverageNote}${topCategory ? ` The majority of ${insurer.name} providers in ${city.name} fall under the ${topCategory.name} category (${topCategory.insurerCount} ${topCategory.insurerCount === 1 ? "provider" : "providers"}).` : ""} All listings are cross-referenced with official ${regulatorSlug.toUpperCase()} registers, last verified March 2026.`
+    ? `According to the UAE Open Healthcare Directory, ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} accept ${insurer.name} insurance. ${mandatoryNote} ${coverageNote}${topCategory ? ` The majority of ${insurer.name} providers in ${city.name} fall under the ${topCategory.name} category (${topCategory.insurerCount} ${topCategory.insurerCount === 1 ? "provider" : "providers"}).` : ""} Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`
     : `${insurer.name} insurance data for ${city.name} is currently being compiled. ${mandatoryNote} ${coverageNote} Check back soon, or browse the full ${city.name} provider directory below.`;
 
   // ─── FAQs ────────────────────────────────────────────────────────────────────
@@ -163,7 +201,7 @@ export default async function InsuranceProviderPage({ params }: Props) {
     },
     {
       question: `How many providers accept ${insurer.name} in ${city.name}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, dental practices, specialist centers, and diagnostics labs. Data last verified March 2026.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, dental practices, specialist centers, and diagnostics labs. Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`,
     },
     {
       question: `What is the co-pay for ${insurer.name} in ${city.name}?`,
@@ -215,7 +253,7 @@ export default async function InsuranceProviderPage({ params }: Props) {
           <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
         </div>
         <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated March 2026
+          {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated {INSURANCE_DATA_VERIFIED_AT}
         </p>
       </div>
 
@@ -309,16 +347,16 @@ export default async function InsuranceProviderPage({ params }: Props) {
         </section>
       )}
 
-      {/* All providers grid */}
+      {/* All providers grid — SSR-paginated (Item 0.5) */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
           <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {insurer.name} Providers in {city.name}</h2>
         </div>
 
-        {providers.length > 0 ? (
+        {pagedProviders.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {providers.slice(0, 60).map((p) => (
+              {pagedProviders.map((p) => (
                 <ProviderCard
                   key={p.id}
                   name={p.name}
@@ -336,14 +374,15 @@ export default async function InsuranceProviderPage({ params }: Props) {
                 />
               ))}
             </div>
-            {providers.length > 60 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              baseUrl={`/directory/${city.slug}/insurance/${insurer.slug}`}
+            />
+            {count > INSURANCE_PAGE_SIZE && (
               <div className="mt-4 text-center">
                 <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                  Showing 60 of {count.toLocaleString()} providers. Use the{" "}
-                  <Link href={`/search?city=${city.slug}&q=${encodeURIComponent(insurer.name)}`} className="text-[#006828] font-bold">
-                    search tool
-                  </Link>{" "}
-                  to browse all {insurer.name} providers in {city.name}.
+                  Page {currentPage} of {totalPages} · {count.toLocaleString()} {insurer.name}-accepting {count === 1 ? "provider" : "providers"} in {city.name}.
                 </p>
               </div>
             )}
@@ -429,9 +468,9 @@ export default async function InsuranceProviderPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Provider network data is sourced from official {regulator} registers and the UAE Open Healthcare Directory, last verified March 2026.
-          Insurance acceptance can change — always confirm with the provider&apos;s insurance desk before your visit.
-          For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker.
+          <strong>Disclaimer:</strong> Provider licenses are sourced from the official {regulator} register.
+          Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit.
+          For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker. Last verified {INSURANCE_DATA_VERIFIED_AT}.
         </p>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 import { StarRating } from "@/components/shared/StarRating";
@@ -37,41 +36,57 @@ export const dynamicParams = true;
 
 interface Props {
   params: { city: string; segments: string[] };
+  searchParams?: { page?: string };
+}
+
+// Matches the English LIST_PAGE_SIZE so pagination stays symmetric across locales.
+const LIST_PAGE_SIZE = 20;
+
+function parsePage(searchParams: Props["searchParams"]): number {
+  const raw = Number(searchParams?.page ?? "1");
+  if (!Number.isFinite(raw) || raw < 1) return 1;
+  return Math.floor(raw);
 }
 
 // No generateStaticParams — pages render on-demand via ISR.
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
+  const page = parsePage(searchParams);
+  const pageSuffix = page > 1 ? `?page=${page}` : "";
+  const titlePageSuffix = page > 1 ? ` | صفحة ${page}` : "";
 
   switch (resolved.type) {
     case "city-category": {
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
       const year = new Date().getFullYear();
+      const enBase = `${base}/directory/${city.slug}/${resolved.category.slug}`;
+      const arBase = `${base}/ar/directory/${city.slug}/${resolved.category.slug}`;
+      const arCanonical = `${arBase}${pageSuffix}`;
       return {
-        title: truncateTitle(`${total} أفضل ${catNameAr} في ${cityNameAr} [${year}]`, 50),
+        title: truncateTitle(`${total} أفضل ${catNameAr} في ${cityNameAr} [${year}]${titlePageSuffix}`, 50),
         description: truncateDescription(`قارن ${total} ${catNameAr} في ${cityNameAr}. تقييمات، مراجعات، تأمين مقبول، مواعيد واتجاهات. مرخص. دليل مجاني.`, 145),
         alternates: {
-          canonical: `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+          canonical: arCanonical,
           languages: {
-            "en-AE": `${base}/directory/${city.slug}/${resolved.category.slug}`,
-            "ar-AE": `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
-            "x-default": `${base}/directory/${city.slug}/${resolved.category.slug}`,
+            "en-AE": `${enBase}${pageSuffix}`,
+            "ar-AE": arCanonical,
+            "x-default": `${enBase}${pageSuffix}`,
           },
         },
         openGraph: {
-          title: `${catNameAr} في ${cityNameAr}`,
+          title: `${catNameAr} في ${cityNameAr}${titlePageSuffix}`,
           description: `${total} ${catNameAr} في ${cityNameAr}. تصفح القوائم المعتمدة.`,
           type: 'website',
           locale: 'ar_AE',
           siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
-          url: `${base}/ar/directory/${city.slug}/${resolved.category.slug}`,
+          url: arCanonical,
           images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${catNameAr} في ${cityNameAr}` }],
         },
       };
@@ -197,7 +212,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ArabicCatchAllPage({ params }: Props) {
+export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -206,12 +221,21 @@ export default async function ArabicCatchAllPage({ params }: Props) {
 
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
+  const currentPage = parsePage(searchParams);
 
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
     const { category } = resolved;
     const catNameAr = getArabicCategoryName(category.slug);
-    const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, page: 1, limit: 20, sort: "rating" });
+    // SSR pagination (Item 0.5) — mirrors the English catch-all.
+    const { providers, total, totalPages } = await getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      page: currentPage,
+      limit: LIST_PAGE_SIZE,
+      sort: "rating",
+    });
+    if (total > 0 && currentPage > totalPages) notFound();
     const areas = getAreasByCity(city.slug);
     const regulator = getArabicRegulator(city.slug);
 
@@ -260,38 +284,15 @@ export default async function ArabicCatchAllPage({ params }: Props) {
           </div>
         )}
 
-        <Suspense fallback={
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (
-              <ProviderCard
-                key={p.id}
-                name={p.name}
-                slug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                address={p.address}
-                phone={p.phone}
-                website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating}
-                googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed}
-                isVerified={p.isVerified}
-                basePath="/ar/directory"
-              />
-            ))}
-          </div>
-        }>
-          <ProviderListPaginated
-            initialProviders={providers}
-            initialTotalPages={totalPages}
-            citySlug={city.slug}
-            categorySlug={category.slug}
-            baseUrl={`/ar/directory/${city.slug}/${category.slug}`}
-            emptyMessage={`${ar.noProvidersFound} ${catNameAr} في ${cityNameAr}.`}
-            basePath="/ar/directory"
-          />
-        </Suspense>
+        <ProviderListPaginated
+          providers={providers}
+          currentPage={currentPage}
+          totalCount={total}
+          pageSize={LIST_PAGE_SIZE}
+          baseUrl={`/ar/directory/${city.slug}/${category.slug}`}
+          emptyMessage={`${ar.noProvidersFound} ${catNameAr} في ${cityNameAr}.`}
+          basePath="/ar/directory"
+        />
 
         {/* Cross-link: Other specialties in this city */}
         {(() => {
@@ -681,7 +682,10 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* What patients say — v2 bulky block when available, else legacy bullets */}
+            {/* What patients say — three-tier fallback:
+                  1. reviewSummaryV2 (bulky block with overview + themes + snippets)
+                  2. reviewSummaryAr / reviewSummary (legacy themed bullets)
+                  3. hidden */}
             {provider.reviewSummaryV2 ? (
               <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
                 <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
@@ -707,37 +711,67 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                     </div>
                   )}
                 </div>
+
+                {/* Overall sentiment */}
                 <div className="mb-5">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">التقييم العام</h3>
-                  <p className="text-sm text-dark/70 leading-relaxed">{provider.reviewSummaryV2.overall_sentiment}</p>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
+                    التقييم العام
+                  </h3>
+                  <p className="text-sm text-dark/70 leading-relaxed">
+                    {provider.reviewSummaryV2.overall_sentiment}
+                  </p>
                 </div>
+
+                {/* What stood out */}
                 {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">أبرز ما ذكره المرضى</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
+                      أبرز ما ذكره المرضى
+                    </h3>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
                       {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-muted">
                           <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                          <span>{t.theme}{t.mention_count > 1 && <span className="text-black/30 text-xs mr-1">({t.mention_count} إشارات)</span>}</span>
+                          <span>
+                            {t.theme}
+                            {t.mention_count > 1 && (
+                              <span className="text-black/30 text-xs mr-1">
+                                ({t.mention_count} إشارات)
+                              </span>
+                            )}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
+
+                {/* Partial-quote snippet cards */}
                 {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
                   <div className="mb-3">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">أصوات المرضى الحديثة</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">
+                      أصوات المرضى الحديثة
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {provider.reviewSummaryV2.snippets.map((s, i) => (
                         <article key={i} className="bg-white p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
                           <div className="flex items-center gap-0.5 mb-2">
                             {Array.from({ length: 5 }).map((_, starIdx) => (
-                              <Star key={starIdx} className={`h-3 w-3 ${starIdx < s.rating ? "text-accent fill-accent" : "text-black/15"}`} />
+                              <Star
+                                key={starIdx}
+                                className={`h-3 w-3 ${
+                                  starIdx < s.rating ? "text-accent fill-accent" : "text-black/15"
+                                }`}
+                              />
                             ))}
                           </div>
-                          <p className="text-sm text-muted leading-relaxed italic mb-2" itemProp="reviewBody">{s.text_fragment}</p>
+                          <p className="text-sm text-muted leading-relaxed italic mb-2" itemProp="reviewBody">
+                            {s.text_fragment}
+                          </p>
                           <p className="text-xs text-muted/80">
-                            <span itemProp="author" className="font-medium">{s.author_display}</span>
+                            <span itemProp="author" className="font-medium">
+                              {s.author_display}
+                            </span>
                             {s.relative_time && <span> · {s.relative_time}</span>}
                           </p>
                         </article>
@@ -745,74 +779,82 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                     </div>
                   </div>
                 )}
+
                 <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
                   محاور مستخلصة من {provider.googleReviewCount?.toLocaleString("ar-AE") || "تقييمات حديثة"} تقييم على Google.{" "}
                   {provider.googleMapsUri && (
-                    <a href={provider.googleMapsUri} target="_blank" rel="nofollow noopener" className="text-accent hover:underline">
+                    <a
+                      href={provider.googleMapsUri}
+                      target="_blank"
+                      rel="nofollow noopener"
+                      className="text-accent hover:underline"
+                    >
                       اقرأ التقييمات الأصلية على خرائط Google ←
                     </a>
                   )}
                 </p>
               </div>
-            ) : ((() => {
-              const reviews = provider.reviewSummaryAr || provider.reviewSummary;
-              if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
-              const validRating = provider.googleRating && Number(provider.googleRating) > 0;
-              return (
-                <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-semibold text-dark flex items-center gap-2">
-                      <Quote className="h-5 w-5 text-accent" /> {ar.patientReviews}
-                    </h2>
-                    {validRating && (
-                      <div className="flex items-center gap-1.5 text-sm">
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3.5 w-3.5 ${
-                                i < Math.round(Number(provider.googleRating))
-                                  ? "text-accent fill-accent"
-                                  : "text-black/15"
-                              }`}
-                            />
-                          ))}
+            ) : (
+              (() => {
+                const reviews = provider.reviewSummaryAr || provider.reviewSummary;
+                if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
+                const validRating = provider.googleRating && Number(provider.googleRating) > 0;
+                return (
+                  <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="font-semibold text-dark flex items-center gap-2">
+                        <Quote className="h-5 w-5 text-accent" /> {ar.patientReviews}
+                      </h2>
+                      {validRating && (
+                        <div className="flex items-center gap-1.5 text-sm">
+                          <div className="flex items-center gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3.5 w-3.5 ${
+                                  i < Math.round(Number(provider.googleRating))
+                                    ? "text-accent fill-accent"
+                                    : "text-black/15"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="font-medium text-dark">{provider.googleRating}</span>
+                          <span className="text-muted">({provider.googleReviewCount?.toLocaleString("ar-AE")})</span>
                         </div>
-                        <span className="font-medium text-dark">{provider.googleRating}</span>
-                        <span className="text-muted">({provider.googleReviewCount?.toLocaleString("ar-AE")})</span>
-                      </div>
+                      )}
+                    </div>
+                    {reviews.length === 1 ? (
+                      <p className="text-sm text-muted leading-relaxed">{reviews[0]}</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {reviews.map((point: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-muted">
+                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {validRating && (
+                      <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
+                        محاور مستخلصة من {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google.{" "}
+                        {provider.googleMapsUri && (
+                          <a
+                            href={provider.googleMapsUri}
+                            target="_blank"
+                            rel="nofollow noopener"
+                            className="text-accent hover:underline"
+                          >
+                            اقرأ التقييمات الأصلية على خرائط Google ←
+                          </a>
+                        )}
+                      </p>
                     )}
                   </div>
-                  {reviews.length === 1 ? (
-                    <p className="text-sm text-muted leading-relaxed">{reviews[0]}</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {reviews.map((point: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-muted">
-                          <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {validRating && (
-                    <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
-                      محاور مستخلصة من {provider.googleReviewCount?.toLocaleString("ar-AE")} تقييم على Google.{" "}
-                      {provider.googleMapsUri && (
-                        <a
-                          href={provider.googleMapsUri}
-                          target="_blank"
-                          rel="nofollow noopener"
-                          className="text-accent hover:underline"
-                        >
-                          اقرأ التقييمات الأصلية على خرائط Google ←
-                        </a>
-                      )}
-                    </p>
-                  )}
-                </div>
-              );
-            })())}
+                );
+              })()
+            )}
 
             {/* Languages */}
             {provider.languages.length > 0 && (

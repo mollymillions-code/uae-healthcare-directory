@@ -36,8 +36,9 @@ const getArg = (name, def) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.split("=")[1] : def;
 };
-const LIMIT = parseInt(getArg("limit", TEST_MODE ? "3" : "100000"), 10);
-const CONCURRENCY = parseInt(getArg("concurrency", "5"), 10);
+const LIMIT = parseInt(getArg("limit", TEST_MODE ? "10" : "100000"), 10);
+const CONCURRENCY = parseInt(getArg("concurrency", "6"), 10);
+const BATCH_SIZE = parseInt(getArg("batch-size", "8"), 10); // providers per claude call
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,8 +99,27 @@ OUTPUT JSON SHAPE (exactly this structure, with one entry per provider above):
 }`;
 }
 
-// ─── Spawn claude CLI ──────────────────────────────────────────────────────
-function callClaude(prompt) {
+// ─── Spawn claude CLI with retry on timeout/transient failures ────────────
+async function callClaude(prompt, attempt = 1, maxAttempts = 3) {
+  try {
+    return await callClaudeOnce(prompt);
+  } catch (err) {
+    const msg = err.message || String(err);
+    const retryable =
+      msg.includes("timeout") ||
+      msg.includes("exit 1") ||
+      msg.includes("ECONNRESET") ||
+      msg.includes("rate");
+    if (retryable && attempt < maxAttempts) {
+      const backoff = 2000 * attempt + Math.random() * 1000;
+      await new Promise((r) => setTimeout(r, backoff));
+      return callClaude(prompt, attempt + 1, maxAttempts);
+    }
+    throw err;
+  }
+}
+
+function callClaudeOnce(prompt) {
   return new Promise((resolve, reject) => {
     const child = spawn(
       "claude",
@@ -119,8 +139,8 @@ function callClaude(prompt) {
     let stderr = "";
     const timer = setTimeout(() => {
       child.kill("SIGKILL");
-      reject(new Error("claude timeout (180s)"));
-    }, 180000);
+      reject(new Error("claude timeout (240s)"));
+    }, 240000);
 
     child.stdout.on("data", (d) => (stdout += d.toString()));
     child.stderr.on("data", (d) => (stderr += d.toString()));
@@ -131,7 +151,7 @@ function callClaude(prompt) {
     child.on("close", (code) => {
       clearTimeout(timer);
       if (code !== 0) {
-        reject(new Error(`claude exit ${code}: ${stderr.slice(0, 200)}`));
+        reject(new Error(`claude exit ${code}: ${stderr.slice(0, 300)}`));
       } else {
         resolve(stdout.trim());
       }
@@ -217,6 +237,15 @@ async function processBatch(batch, stats, outStream) {
   }
 }
 
+// Chunk an array into batches of size N
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
 async function runPool(items, worker, concurrency) {
   const queue = [...items];
   const workers = Array.from({ length: concurrency }, async () => {
@@ -266,6 +295,7 @@ async function main() {
 
   const todo = allProviders.filter((p) => !alreadyDone.has(p.id)).slice(0, LIMIT);
   log(`To process: ${todo.length}`);
+  log(`Batch size: ${BATCH_SIZE} providers per claude call`);
 
   const outStream = fs.createWriteStream(OUTPUT_JSONL, { flags: "a" });
 
@@ -277,7 +307,10 @@ async function main() {
     startedAt: Date.now(),
   };
 
-  await runPool(todo, (row) => processOne(row, stats, outStream), CONCURRENCY);
+  const batches = chunk(todo, BATCH_SIZE);
+  log(`Total batches: ${batches.length}`);
+
+  await runPool(batches, (batch) => processBatch(batch, stats, outStream), CONCURRENCY);
 
   outStream.end();
 

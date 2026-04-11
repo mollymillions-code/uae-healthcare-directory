@@ -9,8 +9,12 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
     <nav aria-label="Breadcrumb" className="mb-6">
       <ol className="flex items-center gap-1.5 font-['Geist',sans-serif] text-xs text-black/40 flex-wrap">
         <li>
-          <Link href="/" className="flex items-center gap-1 hover:text-[#006828] transition-colors">
-            <Home className="h-3.5 w-3.5" />
+          <Link
+            href="/"
+            aria-label="Home"
+            className="flex items-center gap-1 hover:text-[#006828] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm transition-colors"
+          >
+            <Home aria-hidden="true" className="h-3.5 w-3.5" />
           </Link>
         </li>
         {items.map((item, index) => (

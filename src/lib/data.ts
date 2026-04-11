@@ -44,6 +44,8 @@ async function verifyDbHasData(): Promise<boolean> {
 // Lazy-load DB modules so the JSON fallback path never touches pg
 let _db: typeof import("@/lib/db")["db"] | null = null;
 let _providersTable: typeof import("@/lib/db/schema")["providers"] | null = null;
+let _areasTable: typeof import("@/lib/db/schema")["areas"] | null = null;
+let _citiesTable: typeof import("@/lib/db/schema")["cities"] | null = null;
 let _eq: typeof import("drizzle-orm")["eq"] | null = null;
 let _and: typeof import("drizzle-orm")["and"] | null = null;
 let _desc: typeof import("drizzle-orm")["desc"] | null = null;
@@ -64,6 +66,8 @@ async function ensureDbModules() {
   ]);
   _db = dbMod.db;
   _providersTable = schemaMod.providers;
+  _areasTable = schemaMod.areas;
+  _citiesTable = schemaMod.cities;
   _eq = ormMod.eq;
   _and = ormMod.and;
   _desc = ormMod.desc;
@@ -96,6 +100,20 @@ export interface LocalArea {
   latitude: string;
   longitude: string;
   citySlug: string;
+  // ─── Item 3 additive fields (optional, populated when row comes from DB) ───
+  // Constants-backed rows do not set these, so every consumer must treat them
+  // as optional. They are surfaced so sitemap + seo helpers can gate on the
+  // real provider count / publish flag without re-querying the DB.
+  id?: string;
+  aliases?: string[];
+  level?: number;
+  source?: string;
+  sourceId?: string;
+  bbox?: [number, number, number, number];
+  isPublished?: boolean;
+  providerCountCached?: number;
+  minProviderCount?: number;
+  description?: string;
 }
 
 export interface LocalCategory {
@@ -108,17 +126,21 @@ export interface LocalCategory {
 export interface LocalProvider {
   id: string;
   name: string;
+  nameAr?: string;
   slug: string;
   citySlug: string;
   areaSlug?: string;
   categorySlug: string;
   subcategorySlug?: string;
   address: string;
+  addressAr?: string;
   phone?: string;
   website?: string;
   description: string;
   shortDescription: string;
   descriptionAr?: string;
+  licenseNumber?: string;
+  logoUrl?: string;
   googleRating: string;
   googleReviewCount: number;
   latitude: string;
@@ -252,17 +274,21 @@ function rowToProvider(row: any): LocalProvider {
   return {
     id: row.id,
     name: row.name,
+    nameAr: row.nameAr ?? row.name_ar ?? undefined,
     slug: row.slug,
     citySlug: row.citySlug ?? row.city_slug ?? "",
     areaSlug: row.areaSlug ?? row.area_slug ?? undefined,
     categorySlug: row.categorySlug ?? row.category_slug ?? "",
     subcategorySlug: row.subcategorySlug ?? row.subcategory_slug ?? undefined,
     address: row.address ?? "",
+    addressAr: row.addressAr ?? row.address_ar ?? undefined,
     phone: row.phone ?? undefined,
     website: row.website ?? undefined,
     description: row.description ?? "",
     shortDescription: row.shortDescription ?? row.short_description ?? "",
     descriptionAr: row.descriptionAr ?? row.description_ar ?? undefined,
+    licenseNumber: row.licenseNumber ?? row.license_number ?? undefined,
+    logoUrl: row.logoUrl ?? row.logo_url ?? undefined,
     googleRating: String(row.googleRating ?? row.google_rating ?? "0"),
     googleReviewCount: Number(row.googleReviewCount ?? row.google_review_count ?? 0),
     latitude: String(row.latitude ?? "0"),
@@ -417,6 +443,231 @@ export function getAreaBySlug(citySlug: string, areaSlug: string): LocalArea | u
   const cityAreas = AREAS[citySlug] || [];
   const area = cityAreas.find((a) => a.slug === areaSlug);
   return area ? { ...area, citySlug } : undefined;
+}
+
+// ─── Item 3 — Neighborhood helpers (async, DB-first, const-fallback) ─────────
+//
+// These are NEW helpers added by the Zocdoc roadmap Item 3 (UAE neighborhood
+// taxonomy upgrade). They read from the `areas` DB table when it has rows and
+// fall back to the hand-curated `AREAS` constant when the table is empty.
+//
+// The legacy sync helpers `getAreasByCity` + `getAreaBySlug` above are still
+// used by `resolveSegments` in `src/lib/directory-utils.ts` (which is itself
+// async) and by catch-all page rendering. DO NOT replace them here — the new
+// helpers are additive.
+
+/** Convert a DB `areas` row to LocalArea, respecting bbox/centroid fields. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToArea(row: any, citySlug: string): LocalArea {
+  const centroidLat = row.centroidLat ?? row.centroid_lat;
+  const centroidLng = row.centroidLng ?? row.centroid_lng;
+  const fallbackLat = row.latitude;
+  const fallbackLng = row.longitude;
+  const bbox = row.bbox as [number, number, number, number] | undefined;
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    nameAr: row.nameAr ?? row.name_ar ?? undefined,
+    latitude: String(centroidLat ?? fallbackLat ?? "0"),
+    longitude: String(centroidLng ?? fallbackLng ?? "0"),
+    citySlug,
+    aliases: (row.aliases ?? []) as string[],
+    level: row.level ?? 3,
+    source: row.source ?? undefined,
+    sourceId: row.sourceId ?? row.source_id ?? undefined,
+    bbox: bbox && bbox.length === 4 ? bbox : undefined,
+    isPublished: row.isPublished ?? row.is_published ?? true,
+    providerCountCached:
+      row.providerCountCached ?? row.provider_count_cached ?? undefined,
+    minProviderCount:
+      row.minProviderCount ?? row.min_provider_count ?? undefined,
+    description: row.description ?? undefined,
+  };
+}
+
+/**
+ * Return all published neighborhoods for a city. DB-first; falls back to the
+ * sync `AREAS` constant when the DB has no polygon rows yet (zero-state). The
+ * optional `minProviders` gate hides thin areas from hub pages.
+ */
+export async function getNeighborhoodsByCity(
+  citySlug: string,
+  opts?: { minProviders?: number }
+): Promise<LocalArea[]> {
+  const minProviders = opts?.minProviders ?? 0;
+
+  const cacheKey = `neighborhoods:${citySlug}:${minProviders}`;
+  const cached = getCached<LocalArea[]>(cacheKey);
+  if (cached) return cached;
+
+  await verifyDbHasData();
+
+  // Try DB first — but gracefully fall back to constants on any error
+  // (e.g. the new columns haven't been migrated yet, or the table is empty).
+  if (HAS_DB) {
+    try {
+      await ensureDbModules();
+      const c = _citiesTable!;
+      const a = _areasTable!;
+      const cityRows = await _db!
+        .select({ id: c.id })
+        .from(c)
+        .where(_eq!(c.slug, citySlug))
+        .limit(1);
+      if (cityRows.length > 0) {
+        const rows = await _db!
+          .select()
+          .from(a)
+          .where(
+            _and!(_eq!(a.cityId, cityRows[0].id), _eq!(a.isPublished, true))
+          );
+        if (rows && rows.length > 0) {
+          const mapped = rows
+            .map((r) => rowToArea(r, citySlug))
+            .filter(
+              (area) =>
+                (area.providerCountCached ?? 0) >=
+                Math.max(minProviders, area.minProviderCount ?? 0)
+            )
+            .sort((x, y) => {
+              const xc = x.providerCountCached ?? 0;
+              const yc = y.providerCountCached ?? 0;
+              if (xc !== yc) return yc - xc;
+              return x.name.localeCompare(y.name);
+            });
+          setCache(cacheKey, mapped);
+          return mapped;
+        }
+      }
+    } catch (e) {
+      console.warn(
+        "[data.ts] getNeighborhoodsByCity DB query failed — falling back to constants:",
+        e instanceof Error ? e.message : e
+      );
+    }
+  }
+
+  // Zero-state fallback: hand-curated AREAS constant.
+  const fallback = getAreasByCity(citySlug);
+  setCache(cacheKey, fallback);
+  return fallback;
+}
+
+/** Single-neighborhood lookup. DB-first, constant fallback. */
+export async function getNeighborhoodBySlug(
+  citySlug: string,
+  areaSlug: string
+): Promise<LocalArea | null> {
+  const cacheKey = `neighborhood:${citySlug}:${areaSlug}`;
+  const cached = getCached<LocalArea>(cacheKey);
+  if (cached) return cached;
+
+  await verifyDbHasData();
+
+  if (HAS_DB) {
+    try {
+      await ensureDbModules();
+      const c = _citiesTable!;
+      const a = _areasTable!;
+      const cityRows = await _db!
+        .select({ id: c.id })
+        .from(c)
+        .where(_eq!(c.slug, citySlug))
+        .limit(1);
+      if (cityRows.length > 0) {
+        const rows = await _db!
+          .select()
+          .from(a)
+          .where(
+            _and!(
+              _eq!(a.cityId, cityRows[0].id),
+              _eq!(a.slug, areaSlug),
+              _eq!(a.isPublished, true)
+            )
+          )
+          .limit(1);
+        if (rows && rows.length > 0) {
+          const area = rowToArea(rows[0], citySlug);
+          setCache(cacheKey, area);
+          return area;
+        }
+      }
+    } catch (e) {
+      console.warn(
+        "[data.ts] getNeighborhoodBySlug DB query failed — falling back to constants:",
+        e instanceof Error ? e.message : e
+      );
+    }
+  }
+
+  const fallback = getAreaBySlug(citySlug, areaSlug);
+  if (!fallback) return null;
+  setCache(cacheKey, fallback);
+  return fallback;
+}
+
+/**
+ * Providers within a neighborhood, optionally filtered by category. Uses the
+ * existing `getProviders()` pipeline so it respects the DB/JSON fallback +
+ * country gating + pagination that the rest of the app relies on.
+ */
+export async function getProvidersByNeighborhood(
+  citySlug: string,
+  areaSlug: string,
+  opts?: {
+    categorySlug?: string;
+    limit?: number;
+    offset?: number;
+    page?: number;
+  }
+): Promise<{ total: number; providers: LocalProvider[] }> {
+  const limit = opts?.limit ?? 50;
+  const page =
+    opts?.page ??
+    (opts?.offset !== undefined ? Math.floor(opts.offset / limit) + 1 : 1);
+
+  const res = await getProviders({
+    citySlug,
+    areaSlug,
+    categorySlug: opts?.categorySlug,
+    limit,
+    page,
+    sort: "rating",
+  });
+
+  return { total: res.total, providers: res.providers };
+}
+
+/**
+ * Provider count in a neighborhood (optionally category-gated). Uses
+ * `provider_count_cached` when available for speed; otherwise delegates to
+ * the existing count helpers so zero-state still returns a sane number.
+ */
+export async function getProviderCountByNeighborhood(
+  citySlug: string,
+  areaSlug: string,
+  opts?: { categorySlug?: string }
+): Promise<number> {
+  // When no category filter is set, prefer the cached count on the area row.
+  if (!opts?.categorySlug) {
+    const area = await getNeighborhoodBySlug(citySlug, areaSlug);
+    if (area && typeof area.providerCountCached === "number") {
+      return area.providerCountCached;
+    }
+    // Fallback: live count via existing helper (uses providers.area_slug).
+    return getProviderCountByAreaAndCity(areaSlug, citySlug);
+  }
+
+  // Category-gated count: use the existing getProviders() count path.
+  const { total } = await getProviders({
+    citySlug,
+    areaSlug,
+    categorySlug: opts.categorySlug,
+    limit: 1,
+    page: 1,
+  });
+  return total;
 }
 
 export function getCategories(): LocalCategory[] {

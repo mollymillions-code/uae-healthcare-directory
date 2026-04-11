@@ -35,7 +35,7 @@ function useCountryContext(pathname: string) {
 }
 
 const SECTION_LINKS = [
-  { label: "Search", href: "/search" },
+  { label: "Find a Doctor", href: "/find-a-doctor" },
   { label: "Professionals", href: "/professionals" },
   { label: "Labs", href: "/labs" },
   { label: "Insights", href: "/intelligence" },
@@ -120,14 +120,14 @@ export function Header() {
               >
                 Claim Listing
               </Link>
-              <Link href="/search" className="p-2 text-white/60 hover:text-white transition-colors">
+              <Link href="/find-a-doctor" aria-label="Find a doctor" className="p-2 text-white/60 hover:text-white transition-colors">
                 <Search className="h-5 w-5" />
               </Link>
             </div>
 
             {/* Mobile controls */}
             <div className="flex items-center gap-2 lg:hidden">
-              <Link href="/search" className="p-2 text-white/60 hover:text-white transition-colors">
+              <Link href="/find-a-doctor" aria-label="Find a doctor" className="p-2 text-white/60 hover:text-white transition-colors">
                 <Search className="h-5 w-5" />
               </Link>
               <button
@@ -203,7 +203,7 @@ export function Header() {
               ))}
             </div>
             <div className="border-t border-white/10 pt-3 flex flex-wrap gap-4">
-              <Link href="/search" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Search</Link>
+              <Link href="/find-a-doctor" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Find a Doctor</Link>
               <Link href="/professionals" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Professionals</Link>
               <Link href="/labs" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Labs</Link>
               <Link href="/intelligence" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Insights</Link>

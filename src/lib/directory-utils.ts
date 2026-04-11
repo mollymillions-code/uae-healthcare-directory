@@ -85,9 +85,62 @@ export function formatVerifiedDateAr(iso: string): string {
   }
 }
 
+// ── Hours Formatting Helpers ──────────────────────────────────────
+//
+// Provider operating_hours data in the DB comes from multiple legacy scrapers
+// and is inconsistent. Values observed in the wild:
+//   - 24-hour:        "00:00" / "23:59"
+//   - 12-hour w/ sp:  "12:00 AM" / "11:59 PM"
+//   - range in open:  "9:00 AM – 1:00 PM"  (broken scrape, whole range in one field)
+//   - missing:        null / undefined / ""
+// This helper accepts any of those and returns a clean display string.
+
+/**
+ * Returns `true` if the open/close pair represents 24-hour operation.
+ * Handles both 24-hour ("00:00" / "23:59") and 12-hour ("12:00 AM" / "11:59 PM")
+ * representations, which both exist in the DB.
+ */
+export function isTwentyFourHours(
+  open: string | undefined,
+  close: string | undefined
+): boolean {
+  if (!open || !close) return false;
+  const o = open.trim().toLowerCase().replace(/\s+/g, " ");
+  const c = close.trim().toLowerCase().replace(/\s+/g, " ");
+  if (o === "00:00" && (c === "23:59" || c === "24:00")) return true;
+  if (o === "12:00 am" && (c === "11:59 pm" || c === "12:00 am")) return true;
+  if (o === "0:00" && c === "23:59") return true;
+  return false;
+}
+
+/**
+ * Format a day's open/close pair as a short display string.
+ * "24 hours" if round-the-clock, otherwise "{open}–{close}".
+ * Returns empty string if either side is missing or invalid.
+ */
+export function formatHoursRange(
+  open: string | undefined,
+  close: string | undefined
+): string {
+  if (!open || !close) return "";
+  if (isTwentyFourHours(open, close)) return "24 hours";
+  return `${open}–${close}`;
+}
+
 // ── Day Name Constants ──────────────────────────────────────────────
+//
+// Provider `operating_hours` keys in the DB are inconsistent — the legacy
+// scrape stored them as full English names ("Monday", "Tuesday", ...), while
+// newer enrichment paths use 3-letter lowercase ("mon", "tue", ...). The
+// lookup below must cover both forms because `DAY_NAMES[rawKey]` is used
+// directly in JSON-LD FAQPage answer strings. If the lookup returns
+// undefined we ship the literal word "undefined" into Google's rich results
+// (seen in QA Round 3 on al-yalayis-fitness-medical-center-dip-dubai where
+// the schedule answer read "undefined: 12:00 AM–11:59 PM" seven times).
+// Keep this map exhaustive.
 
 export const DAY_NAMES_EN: Record<string, string> = {
+  // 3-letter lowercase (current pipeline)
   mon: "Monday",
   tue: "Tuesday",
   wed: "Wednesday",
@@ -95,6 +148,22 @@ export const DAY_NAMES_EN: Record<string, string> = {
   fri: "Friday",
   sat: "Saturday",
   sun: "Sunday",
+  // Full English (legacy scrape output)
+  Monday: "Monday",
+  Tuesday: "Tuesday",
+  Wednesday: "Wednesday",
+  Thursday: "Thursday",
+  Friday: "Friday",
+  Saturday: "Saturday",
+  Sunday: "Sunday",
+  // Lowercase full English (defensive)
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday",
 };
 
 // ── Segment Resolution ──────────────────────────────────────────────

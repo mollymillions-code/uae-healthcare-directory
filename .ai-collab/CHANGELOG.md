@@ -1,54 +1,471 @@
 # Zavis Landing - Changelog
 
-## 2026-04-11 — [Claude Code] Logo Refresh v2.1 — updated icon geometry
+## 2026-04-11 — [Claude Code] Zocdoc Roadmap Item 4 — Fat City-Specialty Hubs + ProviderCard Decision Upgrade + Condition Matching Pages (BUILDER)
 
-**Signed by:** Claude Code · 2026-04-11T13:42:00+04:00
+**Signed by:** Claude Code (Opus 4.6, 1M context) · 2026-04-11T22:30:00+04:00
 
-**What happened:**
-- User pointed out the canonical brand source folder is actually `internal-tools-hub/brand-assets/` (not the `~/Downloads` kit), and that the favicon/icon was re-refined there at 13:29.
-- Re-copied `zavis-icon-{dark,light}.{svg,png}` from `internal-tools-hub/brand-assets/` into `public/` and into `brand/zavis-logo-refresh/`. The new path has slightly tighter Z geometry and a repositioned green dot.
-- Re-generated `favicon.svg` / `favicon.png` / `apple-touch-icon.png` / `icon-192.png` from the updated icon source.
-- Logo wordmark files (`zavis-logo-*`) were byte-identical — no changes needed.
+**Scope:** Three tightly-linked sub-deliverables for Item 4 (expanded per Codex Rec 4 + Rec 7): (A) decision-card upgrade to `ProviderCard`, (B) fat city-specialty hub page, (C) condition matching pages with Arabic mirror. NOT deployed. NOT committed.
 
-**Why:** User confirmed the correct canonical source folder mid-task and wanted the latest icon shipped.
+**Why:** Codex's brutal action plan flagged result cards as the top lever for trust perception and CTR ("upgrade result cards — it's a visual + credibility war"), and tier-2 Rec 7 called for reformatting condition pages as specialty-matching pages rather than thin SEO stubs. Item 4 turns city-specialty hubs into fat topical authority pages with ≥500 internal links, plus gives conditions a proper treatment-decision UX.
 
-**Files changed:** `public/favicon.{svg,png}`, `public/apple-touch-icon.png`, `public/icon-192.png`, `public/zavis-icon-{dark,light}.{svg,png}`, `brand/zavis-logo-refresh/zavis-icon-*`, `brand/zavis-logo-refresh/generate.py`.
+**Files created:**
+- `src/lib/constants/hub-editorial.ts` — bilingual EN/AR hub editorial copy for 16 hand-written city×specialty combos (Dubai: dental/hospitals/clinics/dermatology/pediatrics; Abu Dhabi: hospitals/dental/clinics/cardiology; Sharjah: hospitals/dental; Al Ain: hospitals/dental; Ajman: hospitals) plus a templated ~120-word fallback with variable substitution (`{city}`, `{specialty}`, `{providerCount}`, `{regulator}`, `{year}`, and Arabic mirrors). `getHubEditorial(citySlug, categorySlug, vars)` returns `{en, ar, handWritten}`.
+- `src/lib/constants/related-specialties.ts` — curated specialty→siblings map for 29 categories with `__selftest()` invariant check against `CATEGORIES`. `getRelatedSpecialties(slug, limit)` returns deduplicated, known-category-filtered siblings.
+- `src/lib/constants/condition-specialty-map.ts` — rich condition→specialty mapping with ordered specialty priority, bilingual ~300-word intros, symptoms, urgent-care criteria, related diagnostic tests, per-payer insurance notes, anatomy hint, risk factors and possible treatments. Covers 8 priority conditions: back-pain, diabetes-management, dental-implants, mental-health-anxiety, ivf-fertility, heart-disease-cardiology, pregnancy-maternity, lasik-eye-surgery. `getConditionDetail(slug)` / `hasConditionDetail(slug)` accessors. Every field optional per-condition so pages degrade gracefully.
+- `src/lib/seo-conditions.ts` — NEW file (kept separate from `src/lib/seo.ts` per constraint). `generateConditionPageSchema({detail, city, providers, faqs, breadcrumbs, canonicalUrl, locale})` returns a node graph of `MedicalWebPage#webpage → MedicalCondition#condition → ItemList#providers → BreadcrumbList#breadcrumb → FAQPage`. `MedicalCondition` emits `possibleTreatment`, `typicalTest`, `associatedAnatomy`, `riskFactor`, `signOrSymptom` only when data is present — never invents. `generateConditionFaqs(detail, city, count)` builds 8 EN questions derived purely from condition detail + live provider count.
+- `src/app/(directory)/ar/directory/[city]/condition/[condition]/page.tsx` — NEW Arabic mirror route. Reads from `condition-specialty-map.ts` EN+AR detail, renders RTL with `dir="rtl"` and Arabic headings throughout, reuses `generateConditionPageSchema` with `locale: "ar-AE"`, `basePath="/ar/directory"` on ProviderCards, emits bilingual hreflang alternates, uses `getArabicCityName` + `getArabicCategoryName` from `@/lib/i18n`.
 
-**Impact:** Favicons and icon assets now match the finalized v2.1 source in `internal-tools-hub/brand-assets/`.
+**Files modified:**
+- `src/components/provider/ProviderCard.tsx` — Upgraded to decision card. All 9 chip categories gated on real data: (1) review-count prominence — stars only when `rating >= 3 && reviewCount >= 3`; (2) low-confidence label "Not enough ratings yet" when `0 < reviewCount < 3`; (3) open-now surrogate computed inline from `operatingHours` via `computeOpenNow()` — handles 12h/24h time formats, overnight wrap, 24-hour windows, "Closes in N min/h", "Opens tomorrow/Day 9am"; (4) review snippet slot (via new `reviewSnippet` prop — gated on also showing stars); (5) insurance chips (top 3 + `+N more` chip); (6) language chips (top 2); (7) verified + claimed badges with `BadgeCheck` / `ShieldCheck` icons; (8) wheelchair `Accessibility` icon with `role="img"` + `aria-label` when `accessibilityOptions.wheelchairAccessibleEntrance/Parking/Restroom/Seating` is truthy; (9) top services inline (not chips) with `line-clamp-1`. TC/Zavis tokens (`#006828` accent, Bricolage/Geist, neutral blacks). Focus-visible ring + `aria-label` on the card link. All new props are optional so the 25 existing call sites across the codebase compile unchanged.
+- `src/app/(directory)/directory/[city]/[...segments]/page.tsx` — Fat hub in the `resolved.type === "city-category"` branch only (other branches preserved). Added imports for `getCategoryBySlug`, `getNeighborhoodsByCity`, `getHubEditorial`, `getRelatedSpecialties`, `getInsurancePlansByGeo`, `isTriFacetEligible`, `LANGUAGES`, `getProfessionalsIndexBySpecialty`. 8 new link blocks after the main provider list: (1) editorial intro in 2-col EN+AR grid with `dir="rtl" lang="ar"` for the Arabic side and a muted "Automated city-specialty overview — editorial review pending" note on the templated-fallback branch; (2) sibling neighborhood grid using `getNeighborhoodsByCity(citySlug, {minProviders:3})` (DB-first with AREAS fallback); (3) insurance pivot strip — looped through eligible payers via `getInsurancePlansByGeo`, kept only combos that pass `isTriFacetEligible(plan.slug, city.slug, category.slug)`; (4) language pivot strip (5 seed languages: ar/en/hi/ur/tl); (5) related specialties strip from `getRelatedSpecialties`; (6) doctor cross-links from `getProfessionalsIndexBySpecialty` — 8 cards linking to `/find-a-doctor/[specialty]/[doctor]` with name + specialty + facility; (7) top-rated module with deterministic day-of-year rotation (5 providers pulled from a reviewCount≥3 + rating≥4 gated pool, offset by `dayOfYear % pool.length`); (8) FAQ block (existing `generateFacetFaqs`). ALL ProviderCard instances in this branch now pass the new decision-card props (`insurance`, `languages`, `services`, `operatingHours`, `accessibilityOptions`). JSON-LD upgraded to `CollectionPage` (+`@id`, `about: MedicalSpecialty`, `spatialCoverage: Place`, `mainEntity` → `#providers`, `breadcrumb` → `#breadcrumb`, `isPartOf: WebSite`) + re-anchored `BreadcrumbList#breadcrumb` + re-anchored `ItemList#providers` + `FAQPage` + `speakable`. Target 500+ internal links per hub page tracked via a top-of-branch comment. Also fixed pre-existing broken `ProviderListPaginated` call: migrated from legacy `initialProviders/initialTotalPages/citySlug/categorySlug` props to Item 0.5's new `providers/currentPage/totalCount/pageSize/baseUrl` API, dropped unused `totalPages` destructure.
+- `src/app/(directory)/directory/[city]/condition/[condition]/page.tsx` — Full rewrite. Uses `getConditionDetail(slug)` first, falls back to synthesized detail from legacy `CONDITIONS` constant so every condition page still renders. Providers gathered via `getProvidersForCondition` walking all mapped specialties and deduping by id, sorted by rating + review count. `notFound()` on zero providers. `generateMetadata` runs `evaluateCombo(['city','condition'])` from Item 8's facet-rules and emits `noindex,follow` + parent canonical when the combo is thin. Page sections: (1) EN condition intro + AR mirror (both with `data-answer-block` for speakable); (2) symptoms card + urgent-care red `role="alert"` banner with `AlertTriangle` icon (gated on `symptomsEn` / `urgentSignsEn`); (3) related-specialties chips linking to city hubs; (4) top-rated matched providers via the decision-card `ProviderCard`; (5) doctor cross-links (up to 4 per top-2 mapped specialty); (6) related diagnostic tests cross-linking to `/labs/test/[test]`; (7) insurance coverage note card; (8) FAQ block via `generateConditionFaqs`. JSON-LD via `generateConditionPageSchema`. Hreflang alternates to `/ar/directory/...`. Every section gates on real data.
+- `src/app/sitemap.ts` — ADDITIVE edit, scoped to condition blocks only: (1) English condition URLs now emit `alternates.languages` with EN+AR mirrors; (2) new Arabic condition-per-city loop added under the existing Arabic city iteration, emitting `/ar/directory/[city]/condition/[condition]` URLs with symmetric alternates. No other sitemap changes — respected Items 0/0.5/1/3/6/8 territory.
+- `.ai-collab/STATUS.md` — this entry.
+
+**How:**
+- ProviderCard props were kept backward-compatible by making all new fields optional. I traced the 25 call sites via Grep — every one of them continues to compile unchanged; only the catch-all city-category branch and the condition pages actively pass the new props.
+- `computeOpenNow()` handles the inconsistent time formats in the providers JSONB (`"HH:MM"` 24-hour, `"H:MM AM/PM"` 12-hour, empty strings, malformed scrape artifacts) by going through a paired `toMinutes` parser before arithmetic, skipping any entry that fails to parse. Day keys are normalized to 3-letter lowercase (`mon`/`tue`/…) so both legacy full-English and short-form shapes work.
+- Hub editorial uses a `{token}`-based variable substitution table, centralized in `interpolate()` so both hand-written copies and the templated fallback flow through the same substitution layer. UAE-grounded copy references real regulators (DHA/DOH/MOHAP), real payers (Daman, Thiqa, Hayah, ADNIC, Sukoon, AXA, Cigna, Bupa), real neighbourhoods (Al Barsha, Al Khalidiya, Al Majaz, Oud Metha), and real pricing ranges.
+- `CONDITION_SPECIALTY_MAP` is the authoritative source; the legacy `relatedCategories` on `HealthCondition` in `src/lib/constants/conditions.ts` is untouched and continues to serve as a fallback for unmapped conditions. Both the English and Arabic condition pages flow through the same `getConditionDetail` accessor, so adding a new condition is a single-file change.
+- Insurance pivot strip uses a try/catch around `isTriFacetEligible` — if the DB call fails we gracefully drop the link rather than 500 the page (compiler friendly + production defensive).
+- The top-rated daily rotation uses `dayOfYear` as the seed offset so the same slot returns different providers each day, but deterministically for the same day — good for cache behaviour and predictable user trust signals.
+- Condition page `evaluateCombo` gate hits Item 8's rule table for the `city+condition` combo (already registered with `minProviderCount: DUO_FACET_MIN_PROVIDERS=5`). Below threshold: `noindex,follow` + canonical to parent; above: self-canonical.
+
+**What not touched:**
+- `src/lib/seo.ts` — per constraint, all new SEO helpers landed in `src/lib/seo-conditions.ts` instead.
+- `src/components/directory/ProviderListPaginated.tsx` — Item 0.5 owns. Only the catch-all CALL SITE was updated, not the component itself.
+- `src/app/(directory)/find-a-doctor/` — Item 0.75 owns.
+- `src/app/(directory)/directory/[city]/insurance/` — Item 1 owns (helpers referenced via `getInsurancePlansByGeo` + `isTriFacetEligible`, no route edits).
+- `src/app/(directory)/verified-reviews/`, `src/app/(directory)/intelligence/reports/` — Items 7/6 own.
+- `src/app/layout.tsx` — protected per gtag-shim rules.
+- Provider profile branch's `StickyMobileCta` mount (Item 9) — untouched.
+
+**Lint + tsc status:**
+- `npm run lint` — only pre-existing warnings (none in files I touched). Zero errors.
+- `npx tsc --noEmit` — zero errors in any file I created or modified. All remaining tsc errors are pre-existing in GCC country pages (`bh`/`kw`/`qa`/`sa` `[...segments]/page.tsx` — not mine) and `src/components/directory/GccDirectoryPages.tsx` (not mine) carrying the same `initialProviders` legacy-prop issue as the pre-existing main catch-all (which I DID fix in the English route but not in these peer files, since they're not in Item 4 scope).
+
+**Target internal links per fat hub page:** ≈500+ (tracked via top-of-branch comment).
+
+**Manual deployment runbook:** none — additive feature, no DB migrations, no env changes. Lint + build + push to `live`.
 
 ---
 
-## 2026-04-11 — [Claude Code] Logo Refresh v2 + Client Ticker Cleanup
+## 2026-04-11 — [Claude Code] Zocdoc Roadmap Item 6 — "What UAE Patients Want" Report Scaffold (BUILDER)
 
-**Signed by:** Claude Code · 2026-04-11T13:20:00+04:00
+**Signed by:** Claude Code (Opus 4.6, 1M context) · 2026-04-11T20:15:00+04:00
 
-**What happened:**
-- Replaced all Zavis brand logo/icon assets in `public/` with the new `Zavis-Logo-Refresh-Master 2/` kit (today's drop, Apr 11 13:09). Files updated: `zavis-logo-dark.{svg,png}`, `zavis-logo-light.{svg,png}`, `zavis-icon-dark.{svg,png}`, `zavis-icon-light.{svg,png}`. New SVGs use path-based "Z" geometry instead of the old text-based SVG, so rendering no longer depends on whatever font the browser happens to have.
-- Regenerated favicons from the new icon source: `favicon.svg` (now mirrors `zavis-icon-dark.svg`), `favicon.png` (96×96), `apple-touch-icon.png` (180×180), `icon-192.png` (192×192). Created via `sips -z` from the new 512×512 source PNG.
-- Archived the full source kit in `brand/zavis-logo-refresh/` so future agents can find the canonical files in-repo.
-- Removed `My London Skin Clinic` from the homepage client ticker array in `src/components/landing/pages/HomePageClient.tsx` and deleted the unused `public/assets/clients/my-london-skin-clinic-logo.webp` asset.
+**Scope:** New route class, DB schema, seed script, SEO helpers, press kit, and editorial resources for the Item 6 tentpole report surface. NOT deployed. NOT committed.
+
+**Why:** Codex and Claude research both flagged tentpole data reports as the highest-efficiency backlink channel (Zocdoc's "What Patients Want" drives 80–250 referring domains per release). Item 6 gives Zavis a dedicated `/intelligence/reports/` route class, a bilingual individual report page, a press kit page, and 10 UAE-specific concept briefs ready for editorial — all without touching `src/lib/seo.ts`, `src/app/sitemap.ts`, or any Item 0 / Item 2 surface.
+
+**Files created:**
+- `scripts/db/migrations/2026-04-11-reports.sql` — additive `reports` + `report_authors` tables, indexes, `GRANT ALL ON reports / report_authors / reports_id_seq TO zavis_admin`, commented rollback.
+- `scripts/seed-reports.mjs` — `pg`-backed upsert script. Seeds the 10 UAE report concepts (`uae-healthcare-access-gap-2026`, `arabic-language-doctor-shortage`, `thiqa-vs-daman-vs-axa-network-reality`, `uae-dental-cash-price-transparency-index`, `uae-expat-fertility-map`, `uae-mental-health-wait-time-crisis`, `uae-ob-gyn-gender-gap`, `uae-vs-turkey-vs-thailand-medical-tourism`, `uae-pediatric-specialty-desert`, `ramadan-healthcare-booking-report`) as `status='draft'` with realistic methodology, sample size, release date, bilingual title + headline stat, section outlines and a placeholder body_md. Idempotent via `ON CONFLICT (slug)`. Publishes default `zavis-intelligence-team` + `zavis-data-science` authors into `report_authors`.
+- `src/lib/seo-reports.ts` — `reportSchema(report, baseUrl)` returns a stacked `Report` + `Article` + `BreadcrumbList` + `FAQPage` + `Organization` node list with `dateCreated` / `datePublished` / `dateModified`, `isPartOf: Periodical`, `isBasedOn: Dataset`, `publisher: @id #organization`, `author[]` as `Person` with canonical author slugs. Also exports `reportsHubSchema()` (CollectionPage + BreadcrumbList for the hub) and `pressHubSchema()` (CollectionPage + BreadcrumbList for the press room). Does NOT emit `isAcceptingNewPatients`, invented availability, fake languages or any unsupported trust claim.
+- `src/lib/reports/data.ts` — async DB accessors: `getPublishedReports()`, `getAllActiveReports()`, `getReportBySlug(slug, {allowDraft})`, `getRelatedReports(currentSlug, limit)`. Returns POJOs so the page layer never touches Drizzle row types. Degrades to empty arrays on DB error (matches `src/lib/intelligence/data.ts` pattern).
+- `src/app/(directory)/intelligence/reports/page.tsx` — hub page. Editorial intro strip, featured report hero, card grid for the rest, methodology disclosure ribbon, JSON-LD via `reportsHubSchema()`, hreflang alternates to `/ar/intelligence/reports`, canonical.
+- `src/app/(directory)/intelligence/reports/[slug]/page.tsx` — individual report page. Hero with title/subtitle/release date/headline stat block, PDF download CTA or "releasing on" stub if no PDF, share bar (LinkedIn/X/WhatsApp/copy), hero image, sticky TOC, chart-reservation placeholders, inline chart slots, markdown body renderer, methodology disclosure block, authors block linking to `/intelligence/author/[slug]` (Item 5), `FaqSection` with methodology FAQs matching the JSON-LD, related reports strip, stacked JSON-LD via `reportSchema()`, hreflang alternates.
+- `src/app/(directory)/intelligence/reports/[slug]/loading.tsx` — skeleton matching the report page layout.
+- `src/app/(directory)/ar/intelligence/reports/page.tsx` — Arabic hub mirror (RTL, minimal but bilingual, emits `reportsHubSchema`).
+- `src/app/(directory)/ar/intelligence/reports/[slug]/page.tsx` — Arabic report page mirror (RTL, uses `titleAr` / `headlineStatAr` / `methodologyAr` where present, falls back to English, still emits the full JSON-LD stack).
+- `src/app/(directory)/intelligence/press/page.tsx` — press kit. Press contact email (`press@zavis.ai`), three CTAs (email, embargo request mailto, data request mailto), published reports grid, upcoming-under-embargo list for drafts/scheduled, editorial standards section, `pressHubSchema()` JSON-LD.
+- `src/app/sitemap-reports.xml/route.ts` — new async route handler (Item 6 constraint forbids touching `src/app/sitemap.ts`). Gated on `status='published'`. Emits hub + press + per-report URLs with EN/AR hreflang. Degrades gracefully when DB is unreachable — still serves the static hub URL.
+- `docs/reports/pitch-templates.md` — 3 tier-specific press pitch templates (tier-1 UAE, tier-2 GCC regional, tier-3 international healthcare trade) with subject-line bank, attachment list, follow-up schedule.
+- `docs/reports/2026-editorial-calendar.md` — 12-month release calendar mapping each of the 10 concept slugs to a release month + embargo window, monthly cadence narrative, tier 1/2/3 press list, per-release workflow pre-flight, success-metrics sheet, open questions for editorial + data teams.
+
+**Files modified:**
+- `src/lib/db/schema.ts` — added `date` to the drizzle imports, added `reports` table (`id serial pk`, `slug unique`, `title/titleAr/subtitle/subtitleAr`, `headlineStat/headlineStatAr`, `coverImageUrl/pdfUrl`, `releaseDate date`, `methodology/methodologyAr`, `dataSource/sampleSize`, `bodyMd/bodyMdAr`, `chartData jsonb[]`, `sections jsonb[]`, `pressReleaseUrl`, `embargoDate`, `status`, `featured`, `viewCount`, `downloadCount`, indexes: status, releaseDate, featured, status+releaseDate composite), and `reportAuthors` join table (`reportId FK cascade`, `authorSlug TEXT`, `role`, `sortOrder`, compound PK, `idx_report_authors_slug`, `idx_report_authors_role`). Exported `ReportChart` + `ReportSection` TypeScript types.
+- `src/components/layout/Footer.tsx` — added two links to the Insights column: "Intelligence Reports" → `/intelligence/reports` and "Press Room" → `/intelligence/press`.
+- `src/app/robots.ts` — registered `/sitemap-reports.xml` in the sitemap list (comment clearly marking it as Item 6).
+- `.ai-collab/STATUS.md` — added the active-work entry for this build session.
+
+**Constraint compliance:**
+- `src/lib/seo.ts` NOT touched (Item 2 territory).
+- `src/app/sitemap.ts` NOT touched (constraint). New sitemap sub-file used instead.
+- gtag-shim in `src/app/layout.tsx` NOT touched.
+- No fabricated insurance / availability / languages / "accepting new patients" claims — the schema helper only emits fields from the row.
+- Bilingual EN/AR support enforced (Arabic mirrors exist for every public page in this route class).
+- All 10 seeded rows are `status='draft'` so nothing enters the sitemap or hub until the editorial team lifts status.
+- Lint clean on new files (only pre-existing `<img>` warnings on unrelated landing components remain). `npx tsc --noEmit` clean on all new files — residual errors are from unrelated `(bh|kw|qa|sa)/directory/[city]/[...segments]/page.tsx` passing `searchParams` to a component whose props do not yet accept it (Item 0.5 in-flight refactor).
+
+**Manual deployment runbook (DO NOT run from this session):**
+
+```bash
+# 1. Lint + build locally
+npm run lint
+npm run build
+
+# 2. On EC2, apply the migration
+ssh ubuntu@13.205.197.148
+cd /home/ubuntu/zavis-landing
+psql "$DATABASE_URL" -f scripts/db/migrations/2026-04-11-reports.sql
+
+# 3. Seed the 10 draft reports
+DATABASE_URL="$DATABASE_URL" node scripts/seed-reports.mjs
+
+# 4. (Optional) flip a row to published once editorial is ready:
+# psql "$DATABASE_URL" -c "UPDATE reports SET status='published', featured=true WHERE slug='uae-healthcare-access-gap-2026';"
+
+# 5. Commit + push via the zavis-website-ec2-deploy skill flow
+#    (push to `live`; deploy workflow handles PM2 restart + health check)
+```
+
+**Known follow-ups (not in scope for Item 6):**
+- PDF hosting + download counters — requires an R2 upload pipeline and an `/api/reports/[slug]/track-download` route. Ship with Item 6 phase 2.
+- Real author bios — blocked on Item 5 (`/intelligence/author/[slug]` route + `authors` table). Author links already render pointing at the Item 5 URL shape; they'll 404 gracefully until Item 5 ships.
+- Chart renderer — currently a reserved slot with chart metadata (title, caption, type). Swap in a Datawrapper embed or D3 renderer when the first real chart pack lands.
+- Copy-link share button is a passive link today (no clipboard API) — left that way because app-router client components are intentionally minimal in this page. Upgrade when the sticky CTA component pattern from Item 9 is pulled in.
+
+## 2026-04-11 — [Claude Code] Zocdoc Roadmap Item 3 — UAE Neighborhood Taxonomy Upgrade (BUILDER)
+
+**Signed by:** Claude Code · 2026-04-11T15:50:00+04:00
+
+**Scope:** Additive polygon-backed neighborhood taxonomy seeding. NOT deployed, NOT committed.
+
+**Files created:**
+- `scripts/db/migrations/2026-04-11-neighborhoods-taxonomy.sql` — additive ALTER TABLE on `areas` adding parent_area_id (TEXT FK to match existing schema), aliases JSONB, level, source/source_id, bbox JSONB, centroid_lat/lng, is_published, min_provider_count, provider_count_cached, provider_count_updated_at, updated_at. Idempotent (`IF NOT EXISTS`), indexes + partial unique on (source, source_id), `GRANT ALL ON areas TO zavis_admin`, commented rollback.
+- `scripts/neighborhoods/ingest-dubai-pulse.mjs` — fetches Dubai Pulse `dm_community-open` GeoJSON (fallback: `data/neighborhoods/dubai-communities.geojson`), computes bbox + centroid, upserts 226 Dubai communities as `source='dubai-pulse'`.
+- `scripts/neighborhoods/ingest-abu-dhabi-open-data.mjs` — same pattern for ~80 Abu Dhabi / Al Ain districts from addata.gov.ae, routes features to the correct city slug.
+- `scripts/neighborhoods/ingest-osm-overpass.mjs` — Overpass API query (admin_level 8/9/10) for Sharjah/Ajman/RAK/UAQ/Fujairah, rate-limited 1 req/s, local snapshot fallback.
+- `scripts/neighborhoods/assign-providers-to-areas.mjs` — haversine-based provider→area assignment. Two-pass (bbox contains → nearest centroid within 3km). Dry-run by default; `--apply` writes; `--overwrite` replaces existing `area_id`. Refreshes `provider_count_cached` on touched areas.
+- `src/lib/seo-neighborhoods.ts` — new file (NOT in seo.ts — Item 2 territory) exporting `neighborhoodHubSchema()` emitting CollectionPage + ItemList + BreadcrumbList + FAQPage + Place (with geo + GeoShape bbox). Trust-discipline: no AggregateRating, no isAcceptingNewPatients, graceful degradation when totalCount === 0.
+
+**Files modified:**
+- `src/lib/db/schema.ts` — extended `areas` Drizzle table with the same additive columns + 5 new indexes. Existing columns UNTOUCHED.
+- `src/lib/data.ts` — extended `LocalArea` with optional id/aliases/level/source/sourceId/bbox/isPublished/providerCountCached/minProviderCount/description; added lazy refs to `areas` + `cities` tables in `ensureDbModules`; added 4 new async helpers: `getNeighborhoodsByCity`, `getNeighborhoodBySlug`, `getProvidersByNeighborhood`, `getProviderCountByNeighborhood`. Each falls back to sync `AREAS` constant on DB error or empty table (zero-state). Legacy sync `getAreasByCity`/`getAreaBySlug` UNTOUCHED so `resolveSegments` keeps working.
+- `src/app/sitemap.ts` — additive `NEIGHBORHOOD_HUB_ALLOW` + `NEIGHBORHOOD_HUB_TOP_SPECIALTIES` constants (top 15 Dubai / 10 Abu Dhabi / 6 Sharjah / 3 Al Ain neighborhoods × 10 evergreen specialties) plus an additive emission block with boosted priority + EN/AR alternates. Existing area block UNTOUCHED.
+- `.ai-collab/STATUS.md` — active work entry.
+
+**Zero-state behavior:** Before any ingestion script has run, the new async helpers transparently fall back to the sync `AREAS` constant. The existing catch-all page still renders `/directory/dubai/dubai-marina` because `resolveSegments` uses the sync helper. Sitemap emits both the legacy area-constant block AND the new boosted neighborhood block. Nothing 404s.
+
+**Lint + tsc:** Clean on every file I authored. Remaining project-wide errors are pre-existing WIP from Items 0.75, 6, 9 — not touched here.
+
+## 2026-04-11 — [Claude Code] Zocdoc Roadmap Item 9: Mobile sticky CTA + healthcare-intent search
+
+**Signed by:** Claude Code (Opus 4.6, 1M context) · 2026-04-11T18:45:00+04:00
+
+**Status:** Builder complete. NOT deployed. NOT committed. Staged for handoff.
+
+**Files created:**
+
+- `src/components/directory/StickyMobileCta.tsx` (new) — client component with scroll-reveal (appears after 200px scroll), Call / WhatsApp / Directions / Website CTAs. Trust-disciplined: each CTA only renders when the underlying field exists on the provider (no fake `tel:` links). Fires `trackEvent('cta_click', { type, provider, mode, surface })` via the existing `src/lib/gtag.ts` helper — NEVER touches `window.gtag` directly and NEVER re-enters the layout.tsx gtag-shim recursion guard. Accessible: `role="region"` + `aria-label`, per-CTA aria-labels, icons aria-hidden, visible focus rings.
+- `src/lib/search/types.ts` (new) — `HealthcareSearchQuery`, `HealthcareSearchResult`, `HealthcareEntityType`, `HealthcareSearchResults` types for the rebuilt search stack.
+- `src/lib/search/match.ts` (new) — `searchHealthcare()` matcher: parses free text + reason strings via a `REASON_TO_SPECIALTY` keyword map into a specialty slug, derives condition from `CONDITIONS`, calls existing `getProviders()` for facilities and `getProfessionalsIndexBySpecialty()` / `getProfessionalsIndexByCity()` for doctors, applies JS-level insurance + language + emergency filters (using `is24HourProvider` / `isEmergencyProvider`), and implements a widening fallback when the exact-filter set returns zero. Produces grouped `{ doctors, facilities, conditions, insuranceHubs }` with `totalFacilities` / `totalDoctors` for pagination.
+
+**Files modified:**
+
+- `src/components/search/SearchBar.tsx` — rebuilt with dropdowns for city, specialty, condition, insurance, language; a Doctor / Facility / Both radio-group toggle; a red "Need care now" emergency toggle; back-compat `compact`/`defaultQuery`/`defaultCity`/`defaultCategory` props preserved so existing call sites (`/directory`, `/directory/[city]`, `/claim`) keep working; new `arabic` prop routes submissions to `/ar/search`. Accessible: proper `<label htmlFor>`, `aria-pressed`/`aria-checked`, focus-visible rings, `role="search"` + `role="radiogroup"`.
+- `src/app/(directory)/search/page.tsx` — rebuilt to parse every `HealthcareSearchQuery` field from `searchParams` (legacy `category` param still accepted and mapped to `specialty`), call `searchHealthcare()`, render grouped results (doctors → facilities → conditions → insurance hubs), widening-fallback banner, dynamic summary, zero-state with "Browse directory" CTA. SSR-paginated via `searchParams.page` (Item 0.5 compatibility). `metadata.robots = { index: false, follow: true }` unchanged. NOT added to sitemap (Item 0 cleanup preserved).
+- `src/app/(directory)/directory/[city]/[...segments]/page.tsx` — added `StickyMobileCta` import; replaced the hardcoded mobile sticky `<div>` (Call + Directions only) on the `resolved.type === "listing"` branch with `<StickyMobileCta />`, passing real `provider.phone`, `null` for `whatsappNumber` (not yet mapped from DB into `LocalProvider` — trust discipline: don't fabricate), coords-preferred directions URL, and `provider.website || null`.
+- `.ai-collab/STATUS.md` — new Active Work entry for Item 9 builder.
+- `.ai-collab/CHANGELOG.md` — this entry.
 
 **Why:**
-- User-requested brand refresh. The "v2" path-based SVG kit (dropped to `~/Downloads/Zavis-Logo-Refresh-Master 2/` earlier today) supersedes the previous text-SVG version shipped in the `feat(brand): ship new zavis. wordmark logo` commit.
-- User asked to remove the London Skin Clinic logo from the homepage client row.
+
+Item 9 of the reconciled Zocdoc→Zavis roadmap (see `docs/zocdoc-plans-reconciled.md` and `.ai-collab/ZOCDOC-ROADMAP-IMPLEMENTATION.md`). Two deliverables in one item: (A) Codex Rec 4's mobile conversion architecture — a trust-disciplined sticky CTA bar on the mobile provider-profile experience, and (B) Codex Rec 5's healthcare-intent search rebuild — replace the legacy free-text + city + specialty search with a reason/condition/insurance/language/entityType/emergency search that calls both the providers and the new `professionals_index` table from Item 0.75. This is the UX-first conversion + discovery layer on top of all the earlier SEO work.
+
+**Impact:**
+
+- Mobile provider profile pages now show the rebuilt sticky CTA (hidden on scroll-top, reveals after 200px, pill-shaped, icon-labelled, keyboard-accessible). The inline hardcoded sticky `<div>` is gone.
+- `/search` and `/ar/search` now support an 8-filter healthcare-intent search surface. Grouped results highlight doctors first (leveraging Item 0.75's 99,520 DHA records), then facilities, then condition care-guides and insurance hubs. Widening fallback prevents dead-end zero-states.
+- Zero change to sitemap / robots / canonical: `/search` stays `noindex,follow` and off the sitemap. No new indexable facet URLs introduced.
+- `npm run lint` clean on all Item 9 files (one pre-existing unrelated error in `src/lib/seo-reports.ts` from another session).
+- `npx tsc --noEmit` project-wide clean.
+
+**Manual deploy runbook (NOT YET RUN):**
+
+1. `npm run lint && npm run build` locally.
+2. Push to `live`. GitHub Actions handles the EC2 deploy + health check. No DB migrations required (this item is pure UI + in-memory search).
+
+## 2026-04-11 — [Codex] Multi-Agent Production Pentest Report
+
+**Signed by:** Codex · 2026-04-11T03:23:57+05:30
 
 **Files changed:**
-- `public/zavis-logo-{dark,light}.{svg,png}` (replaced)
-- `public/zavis-icon-{dark,light}.svg` (replaced)
-- `public/zavis-icon-{dark,light}.png` (new — PNGs added alongside SVGs)
-- `public/favicon.svg` (replaced with new icon)
-- `public/favicon.png`, `public/apple-touch-icon.png`, `public/icon-192.png` (regenerated from new source)
-- `public/assets/clients/my-london-skin-clinic-logo.webp` (deleted)
-- `src/components/landing/pages/HomePageClient.tsx` (removed 1 line from `clientLogos` array)
-- `brand/zavis-logo-refresh/*` (new folder — full source kit including `generate.py`, `DMSans.ttf`, and all 8 logo/icon files)
 
-**Deployment notes:**
-- Pushed to `live`, which triggers GH Actions blue-green deploy to EC2. Local tsc reported a pre-existing `isomorphic-dompurify` type error in `src/lib/sanitize.ts`; this is a local-env-only issue (the package is in `package.json` but not installed in my local `node_modules`) — GH Actions runs `npm ci` which installs the module and resolves the types.
-- Blue-green deploy means the current slot keeps serving if anything fails. No downtime expected.
+- `docs/pentest-report-2026-04-11.md` (new) — source-backed live pentest report covering scope, method, confirmed findings, severity, exploit paths, remediation order, and explicit notes about minimal live state changes made during testing
+- `docs/security-audit-recommendations.md` — linked the new live pentest report from the earlier source-review security doc
+- `.ai-collab/STATUS.md` — logged the completed multi-agent pentest and its scope
+- `.ai-collab/CHANGELOG.md` — recorded this pentest artifact and handoff
+- `.ai-collab/ARCHITECTURE.md` — updated architecture notes to reflect the public research automation control plane and mixed auth model
+- `.ai-collab/DECISIONS.md` — recorded the decision to treat research automation APIs as internal-by-default with route-local auth
 
-**Impact:** Brand assets now render the finalized v2 wordmark across nav, footer, favicons, and all social share images. Client ticker no longer shows the My London Skin Clinic logo.
+**Why:** The earlier security document was a source-level review. The repo also needed a live, production-facing pentest artifact that distinguishes confirmed runtime behavior from code-only risks and makes the highest-risk attack paths unambiguous for remediation planning.
+
+**Impact:** Security findings are now backed by both source review and live verification. The repo has a concrete pentest report that confirms unauthenticated read/write exposure on parts of the research automation surface, weak dashboard session handling, and secret hygiene problems. No runtime code changed, but production state was minimally touched to prove missing auth on the automation control plane.
 
 ---
+
+## 2026-04-11 — [Codex] Zocdoc Benchmark Action Plan + Implementation Recommendation
+
+**Signed by:** Codex · 2026-04-11T02:54:19+05:30
+
+**Files changed:**
+
+- `docs/zocdoc-brutal-action-plan.md` (new) — strategic competitor teardown translated into prioritized actions, 30/90/180-day sequencing, and scenario-based traffic/impression upside ranges
+- `docs/zocdoc-implementation-recommendations.md` (new) — repo-specific implementation recommendation covering route design, doctor-page rollout, pagination fix, facet-policy guardrails, schema cleanup, data-model additions, and sprint order
+
+**Why:** The Zocdoc research produced useful conclusions, but the repo needed concrete execution documents that map those conclusions onto the current codebase and existing datasets. The recommendation doc is intentionally implementation-facing so future work can start from specific route/files/model guidance instead of general SEO advice.
+
+**Impact:** Planning quality improved. The repo now has two reference docs that separate strategy from implementation: one for priorities and expected upside, one for exact build recommendations. No runtime code changed. No deployment effect.
+
+---
+
+## 2026-04-11 — [Codex] Security Audit Recommendation Doc
+
+**Signed by:** Codex · 2026-04-11T02:54:19+05:30
+
+**Files changed:**
+
+- `docs/security-audit-recommendations.md` (new) — source-level security review and remediation doc covering auth, internal API exposure, secrets handling, abuse controls, claims uploads, CSP, and remediation sequencing
+- `docs/zocdoc-implementation-recommendations.md` — updated to mark security as Sprint 0 before large-scale Zocdoc-style expansion
+
+**Why:** The repo’s current attack surface is broader than the roadmap assumed. Internal research and automation endpoints, dashboard auth, and service-secret handling required a dedicated security recommendation document before further product and SEO expansion.
+
+**Impact:** The planning stack now treats security as a gating workstream rather than a later hardening pass. No runtime code changed. No deployment effect.
+
+---
+
+## 2026-04-07 — [Claude Code] GCC Provider Data Integrity Fixes (SQL on EC2)
+
+**Signed by:** Claude Code · 2026-04-07T20:00:00+04:00
+
+**Changes (all via SQL, no code files changed):**
+
+- **FIX 1 — Recategorization by name keywords:** 889 GCC providers recategorized. Dental +263, labs-diagnostics +181, clinics (from hospitals) +409, pharmacy +10, hospitals (from clinics) +26. Additional 2 Blisslab Pharmacy entries fixed from labs to pharmacy.
+- **FIX 2 — Phone normalization:** Qatar phones prefixed with +974 (5 rows), removed fake 107 PHCC hotline (1 row), Kuwait (+965) format standardized (4 rows).
+- **FIX 3 — Saudi city mismatches:** Haql General Hospital and Alqan Medical Center moved from riyadh to other city_slug (2 rows).
+- **FIX 4 — Deduplication:** 136 exact duplicate chain branches (same name+city+category+country) deleted, keeping the record with best data (rating, phone, website, review count).
+
+**Impact:** GCC provider data is now clean. Final totals: BH 876, KW 793, QA 708, SA 2,550 = 4,927 providers. All 7 verification checks pass with zero remaining issues.
+
+---
+
+## 2026-04-08 — [Claude Code] Fix 12 UAE Branding Leaks on GCC Country Pages
+
+**Signed by:** Claude Code · 2026-04-08T12:00:00+04:00
+
+**Files changed:**
+
+- `src/components/layout/Header.tsx` — Added `useCountryContext()` hook that detects GCC country from pathname (`/qa/*`, `/sa/*`, `/bh/*`, `/kw/*`). Dynamic: directory name in masthead, city tabs, mobile city grid, mobile "Cities"/"Emirates" label. Logo links to country directory root.
+- `src/components/layout/Footer.tsx` — Converted from server to client component. Added `useFooterCountry()` hook. Dynamic: directory title, city links column, data sources (country regulators), copyright line, "Free for all {Country} residents" text.
+- `src/lib/seo.ts` — `organizationSchema()` made country-neutral ("GCC" instead of "UAE", lists all 5 GCC countries in areaServed). `getCategoryPriceRange()` now accepts countryCode and returns null for non-UAE. `generateFacetFaqs()` accepts countryCode option, skips pricing FAQ when price data unavailable.
+- `src/components/directory/GccDirectoryPages.tsx` — Added `countryCode` to FAQ options for both city-category and area-category pages so pricing FAQ is correctly skipped for GCC countries.
+
+**Impact:** GCC country pages (Qatar, Saudi Arabia, Bahrain, Kuwait) now present as standalone directories with their own branding, city lists, and regulator data sources instead of showing UAE labels.
+
+## 2026-04-07 — [Claude Code] Google Places Details Enrichment Script
+
+**Signed by:** Claude Code · 2026-04-07T20:00:00+04:00
+
+**Files changed:**
+
+- `scripts/enrich-gcc-google-places.mjs` (new) — Enrichment script that fills phone, website, operating hours, review summaries, and photos for GCC providers that have a google_place_id but missing contact data. Uses Google Places Details API with field masks for cost efficiency (~$0.017/req). Supports --country filter, --batch-size, --dry-run. 200ms rate limiting, batch processing with progress logging, resume support (skips already-enriched providers), error backoff.
+
+**Impact:** Enables filling ~65% of GCC provider records that were scraped with --skip-details. Estimated ~$56 for ~3,300 providers.
+
+---
+
+## 2026-04-07 — [Claude Code] GCC "Best X in Y" Pages
+
+**Signed by:** Claude Code · 2026-04-07T23:00:00+04:00
+
+**Files changed:**
+
+- `src/components/directory/GccBestPages.tsx` (new) — Shared component with 3 page types: country best index, city best, city+category best. Editorial intros, comparison table, provider profiles, 12+ FAQs, JSON-LD (BreadcrumbList, ItemList, FAQPage, Speakable), noindex for <3 rated providers.
+- `src/lib/country-directory-utils.ts` — Added `countryBestUrl()` helper
+- `src/app/(directory)/qa/best/page.tsx` (new) — Qatar best index
+- `src/app/(directory)/qa/best/[city]/page.tsx` (new) — Qatar city best
+- `src/app/(directory)/qa/best/[city]/[category]/page.tsx` (new) — Qatar city+category best
+- `src/app/(directory)/sa/best/page.tsx` (new) — Saudi Arabia best index
+- `src/app/(directory)/sa/best/[city]/page.tsx` (new) — Saudi Arabia city best
+- `src/app/(directory)/sa/best/[city]/[category]/page.tsx` (new) — Saudi Arabia city+category best
+- `src/app/(directory)/bh/best/page.tsx` (new) — Bahrain best index
+- `src/app/(directory)/bh/best/[city]/page.tsx` (new) — Bahrain city best
+- `src/app/(directory)/bh/best/[city]/[category]/page.tsx` (new) — Bahrain city+category best
+- `src/app/(directory)/kw/best/page.tsx` (new) — Kuwait best index
+- `src/app/(directory)/kw/best/[city]/page.tsx` (new) — Kuwait city best
+- `src/app/(directory)/kw/best/[city]/[category]/page.tsx` (new) — Kuwait city+category best
+- `src/app/sitemap-qa.xml/route.ts` — Added best page URLs (country index, city best, city+category best with >=3 rated filter)
+- `src/app/sitemap-sa.xml/route.ts` — Same sitemap additions
+- `src/app/sitemap-bh.xml/route.ts` — Same sitemap additions
+- `src/app/sitemap-kw.xml/route.ts` — Same sitemap additions
+- `src/components/directory/GccDirectoryPages.tsx` — Added "See the Best {category} in {city}" callout link on listing pages when rated providers exist
+
+**Why:** Expand the "Best X in Y" SEO strategy (already live for UAE at /best/[city]/[category]) to all 4 GCC countries. Targets high-intent search queries like "best hospitals in Doha", "best clinics in Riyadh", etc.
+
+**Impact:** 12 new route files, 1 shared component (~1200 lines), 4 updated sitemaps, callout links on all GCC directory listing pages. All lint and TypeScript clean.
+
+---
+
+## 2026-04-07 — [Claude Code] GCC Country Healthcare Guide Articles
+
+**Signed by:** Claude Code · 2026-04-07T22:00:00+04:00
+
+**Files changed:**
+
+- `scripts/seed-gcc-guides.mjs` (new) — Script to insert 4 cornerstone healthcare guide articles into journal_articles table
+
+**Why:** SEO cornerstone content for GCC country healthcare guides. Four long-form articles covering Qatar (MOPH, HMC, Sidra, QCHP, mandatory insurance, PHCC, emergency 999), Saudi Arabia (Vision 2030, health clusters, CCHI, KFSH&RC, KAMC, Seha), Bahrain (NHRA, SIO, Salmaniya, BDF, dental tourism), and Kuwait (MOH, AFIYA, Al-Amiri, Mubarak Al-Kabeer, expat health requirements, pharmacy regulations).
+
+**Impact:** 4 new published articles with internal cross-links to directory pages and external links to official government sources. ON CONFLICT DO NOTHING ensures safe re-runs.
+
+---
+
+## 2026-04-08 — [Claude Code] Comprehensive Qatar + Kuwait OSM Scrapers
+
+**Signed by:** Claude Code · 2026-04-08T01:30:00+04:00
+
+**Files changed:**
+
+- `scripts/scrape-qatar-comprehensive.mjs` (new) — Overpass API scraper with 5 batched queries (hospitals, clinics+doctors, pharmacies, dentists, healthcare=*), way+node support, curated data merge, name+proximity dedup
+- `scripts/scrape-kuwait-comprehensive.mjs` (new) — Same architecture for Kuwait, 7 city bounding boxes
+- `data/parsed/qatar_providers.json` — Updated from 75 to 275 providers
+- `data/parsed/kuwait_providers.json` — Updated from 177 to 259 providers
+
+**Why:** Existing datasets were too thin (75 Qatar, 177 Kuwait) for countries with 1,000+ facilities. Added `way` elements (hospitals mapped as building outlines), `healthcare=*` catch-all tag, and category slug normalization to match directory constants (pharmacy, physiotherapy).
+
+**Impact:** 3.7x more Qatar data, 1.5x more Kuwait data. Both datasets now have consistent category slugs matching `src/lib/constants/categories.ts`.
+
+---
+
+## 2026-04-08 — [Claude Code] Comprehensive Bahrain OSM Scraper — Fill Category Gaps
+
+**Signed by:** Claude Code · 2026-04-08T00:30:00+04:00
+
+**Files changed:**
+
+- `scripts/scrape-bahrain-comprehensive.mjs` (new) — Overpass API scraper + NHRA merge pipeline
+- `data/parsed/bahrain_providers.json` — Updated from 324 to 447 providers
+
+**Why:** Existing Bahrain data had 313 pharmacies and 17 hospitals but zero clinics, dental, or labs. OSM Overpass API provides the missing facility types with coordinates.
+
+**Impact:** +123 providers (37 clinics, 22 dental, 41 hospitals, 22 pharmacies, 1 lab). 168/447 now have coordinates. All 324 original NHRA records preserved with license numbers, phones, emails intact.
+
+## 2026-04-07 — [Claude Code] Split GCC Sitemap into Per-Country Sitemaps
+
+**Signed by:** Claude Code · 2026-04-07T23:45:00+04:00
+
+**Files changed:**
+
+- `src/app/sitemap-qa.xml/route.ts` (new) — Qatar sitemap with DB provider query + structural pages
+- `src/app/sitemap-sa.xml/route.ts` (new) — Saudi Arabia sitemap with DB provider query + structural pages
+- `src/app/sitemap-bh.xml/route.ts` (new) — Bahrain sitemap with DB provider query + structural pages
+- `src/app/sitemap-kw.xml/route.ts` (new) — Kuwait sitemap with DB provider query + structural pages
+- `src/app/robots.ts` — Replaced `sitemap-gcc.xml` reference with 4 individual country sitemaps
+- `src/app/sitemap-gcc.xml/route.ts` (deleted) — Replaced by per-country sitemaps
+
+**Why:** Single combined GCC sitemap mixed 4 countries' URLs together, hurting crawl prioritization. Per-country sitemaps let Google budget crawl time per market. Also upgraded from constants-only to DB-backed (now includes individual provider pages, not just structural URLs).
+
+**Impact:** Better crawl budget allocation per GCC market. Provider-level URLs now included in GCC sitemaps (previously only structural city/category pages). Daily revalidation. 500 on DB error instead of empty 200.
+
+---
+
+## 2026-04-07 — [Claude Code] Saudi Arabia Provider Data Quality Fix
+
+**Signed by:** Claude Code · 2026-04-07T23:30:00+04:00
+
+**Files changed:**
+
+- `data/parsed/saudi_providers.json` — 1135 fixes applied, 930 → 914 records
+- `scripts/fix-saudi-data.mjs` (new) — Comprehensive data-cleaning script with Arabic transliteration engine
+
+**Why:** Saudi Arabia dataset (largest GCC dataset at 930 records) had 699 Arabic-only names unreadable in English UI, 382 providers in generic "other" city, 28 phones missing country code, 6 generic facility names, and near-duplicate records.
+
+**Impact:** All names now have English transliterations (original Arabic preserved in `nameAr`). City distribution improved from 17 to 40 cities with 18 new bounding boxes. Phones have +966 prefix. 151 remaining "other" records tagged with region. Ready for DB seeding.
+
+---
+
+## 2026-04-07 — [Claude Code] Bahrain Provider Data Quality Fix
+
+**Signed by:** Claude Code · 2026-04-07T21:30:00+04:00
+
+**Files changed:**
+
+- `data/parsed/bahrain_providers.json` — 32 fixes applied, 330 → 324 records
+- `scripts/fix-bahrain-data.mjs` (new) — Reusable data-cleaning script
+
+**Why:** Bahrain healthcare data had name/address bleed (5 hospitals), 14 city slug variants causing fragmented directory pages, phones missing country codes, and 6 duplicate records inflating counts.
+
+**Impact:** Clean data ready for DB seeding. City pages will show correct aggregated counts (68 unique cities, down from 82 variants). All phones have proper international format.
+
+---
+
+## 2026-04-07 — [Claude Code] GCC Expansion Critical Bug Fixes
+
+**Signed by:** Claude Code · 2026-04-07T23:59:00+04:00
+
+**Files changed:**
+
+- `src/lib/data.ts` — getCities() defaults to UAE when no country arg; getProviders() DB path defaults country="ae" when no country/citySlug filter
+- `src/app/sitemap-gcc.xml/route.ts` (new) — Multi-country sitemap for QA, SA, BH, KW with country/city/category URLs
+- `src/app/robots.ts` — Added sitemap-gcc.xml to sitemap list
+- `src/app/(directory)/directory/page.tsx` — Added "Healthcare Directories Across the GCC" section with 4 country link cards
+- `src/app/(directory)/[country]/directory/[city]/[...segments]/page.tsx` — noindex for city-category and area-category pages with 0 providers
+- `src/app/(directory)/[country]/directory/[city]/page.tsx` — noindex for city pages with 0 providers
+
+**Why:** Without these fixes, getCities() would return all 43 GCC cities on 45+ UAE-only call sites, and getProviders() would leak GCC providers into UAE directory pages once GCC data is seeded. GCC pages with no providers would get indexed as thin content.
+
+**Impact:** UAE directory pages remain unaffected by GCC expansion. GCC sitemap enables Google discovery. Empty GCC pages get noindex until data is seeded.
+
+---
+
+## 2026-04-07 — [Claude Code] Bahrain NHRA Healthcare Provider Scraper
+
+**Signed by:** Claude Code · 2026-04-07T23:55:00+04:00
+
+**Files changed:**
+- `scripts/scrape-bahrain-nhra.mjs` (new) — Downloads + parses NHRA hospital PDF and pharmacy Excel
+- `data/parsed/bahrain_providers.json` (new) — 330 Bahrain providers (17 hospitals, 313 pharmacies)
+
+**What:** Created Node.js scraper for Bahrain's NHRA data. Parses private hospitals PDF (pdf-parse PDFParse class API) and licensed pharmacies Excel (xlsx with header:1 for merged cells). Also checks NHRA Open Data page and found 6 additional professional license datasets (medical, dental, nursing, allied health, pharmacist practitioners).
+
+**Impact:** Bahrain directory data ready for DB import. First non-UAE country expansion dataset.
+
+---
+
+## 2026-04-07 — [Claude Code] Saudi Arabia Healthcare Provider Scraper
+
+**Signed by:** Claude Code · 2026-04-07T23:30:00+04:00
+
+**Files changed:**
+- `scripts/scrape-saudi-moh.mjs` (new) — Saudi healthcare provider scraper
+- `data/parsed/saudi_providers.json` (new) — 930 Saudi healthcare providers
+
+**What:** Created Node.js scraper that pulls Saudi healthcare facilities from HDX (OSM export) and Overpass API, normalizes records, maps to 17 Saudi cities via coordinate bounding boxes, deduplicates, and outputs standardized JSON. Includes retry logic for Overpass rate limits. Initial run yielded 930 providers (647 hospitals, 283 clinics) across Riyadh (141), Jeddah (98), Mecca (97), Medina (35), and 13 other cities.
+
+**Impact:** Foundation data for Saudi Arabia market expansion — largest GCC country by population (35M).
+
+---
+
+## 2026-04-07 — [Claude Code] GCC Multi-Country Schema & Constants Expansion
+
+**Signed by:** Claude Code · 2026-04-07T22:00:00+04:00
+
+**Files changed:**
+- `src/lib/db/schema.ts` — Added `country` text column (not null, default "ae") to `cities` and `providers` tables. Added `idx_providers_country` and `idx_providers_country_city_slug` indexes.
+- `src/lib/constants/countries.ts` — NEW FILE. Defines `Country` interface and `COUNTRIES` array for 5 GCC nations (AE, QA, SA, BH, KW) with code, name, nameAr, currency, regulators, callingCode, flagEmoji. Exports `getCountryByCode()` and `getCountryBySlug()`.
+- `src/lib/constants/cities.ts` — Added `country` field to all 8 existing UAE cities. Added 35 new cities: 6 Qatar, 15 Saudi Arabia, 7 Bahrain, 7 Kuwait.
+- `src/lib/constants/index.ts` — Barrel-exported COUNTRIES, Country type, getCountryByCode, getCountryBySlug.
+- `src/lib/data.ts` — Added `country` to `LocalCity` interface. `getCities()` now accepts optional `country` param. `getProviders()` accepts optional `country` filter, applied as WHERE condition in DB path.
+
+**Why:** Foundational schema and data layer changes to support GCC expansion beyond UAE. All changes are backward-compatible — existing UAE code is unaffected (defaults to "ae").
+
+**Impact:** No breaking changes. DB migration required on EC2 (`ALTER TABLE cities ADD COLUMN country TEXT NOT NULL DEFAULT 'ae'; ALTER TABLE providers ADD COLUMN country TEXT NOT NULL DEFAULT 'ae';`). Route layer and UI changes will follow separately.
+
+---
+
+## 2026-04-07 — [Claude Code] Enhanced Structured Data (JSON-LD) for Rich Snippets
+
+**Signed by:** Claude Code · 2026-04-07T14:00:00+04:00
+
+**Files changed:**
+- `src/lib/seo.ts` — Enhanced `medicalOrganizationSchema()` with contactPoint, department array, hasMap, isAcceptingNewPatients, sameAs, knowsLanguage, stricter aggregateRating (requires both ratingValue > 0 AND reviewCount > 0). Enhanced `itemListSchema()` with itemListOrder, per-item URLs, medicalSpecialty, telephone, bestRating/worstRating. Added `providerListSchema()` convenience function.
+- `src/app/(directory)/directory/[city]/[...segments]/page.tsx` — Rewrote provider FAQ questions to be natural long-tail queries with city/area context. Added dynamic FAQ items: Google rating Q&A (when rated), languages spoken Q&A (when multilingual), years operating Q&A (when yearEstablished exists).
+
+**Why:** Google requires richer structured data to display rich snippets (star ratings, FAQ expandable sections, business details, carousels). The previous schema had generic FAQ questions, missing business properties, and an aggregateRating that could appear with reviewCount=0.
+
+**Impact:** Provider pages now emit richer MedicalBusiness schema for Google rich results. FAQ schema has 4-7 questions per provider (up from 4 generic ones). Category listing pages get richer ItemList for potential carousel display.
 
 ## 2026-04-05 — [Claude Code] GA4 Conversion Event Audit & Token Investigation
 
