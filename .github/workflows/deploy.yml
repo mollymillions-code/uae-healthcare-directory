@@ -31,12 +31,34 @@ jobs:
     timeout-minutes: 45
     if: github.repository == 'zavis-support/zavis-landing'
     steps:
+      - uses: actions/checkout@v4
+
       - name: Write SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
           chmod 600 ~/.ssh/ec2.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync deploy infra to EC2 (drift prevention)
+        # Copies the canonical versions of deploy.sh, rollback.sh, and
+        # ecosystem.config.cjs from `scripts/ec2-deploy-infra/` in this
+        # repo onto /home/ubuntu/zavis-deploy/ on EC2 BEFORE running
+        # deploy.sh. This makes the repo the source of truth and
+        # eliminates the drift problem documented in
+        # docs/ops/blue-green-deploy-oom-runbook.md and
+        # .claude/skills/zavis-website-ec2-deploy/SKILL.md.
+        #
+        # Fail-closed: if scp fails, the deploy step never runs and the
+        # live site stays untouched.
+        run: |
+          scp -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o StrictHostKeyChecking=no \
+            scripts/ec2-deploy-infra/deploy.sh \
+            scripts/ec2-deploy-infra/rollback.sh \
+            scripts/ec2-deploy-infra/ecosystem.config.cjs \
+            ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/zavis-deploy/
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 ubuntu@${{ secrets.EC2_HOST }} \
+            'chmod +x /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/rollback.sh && md5sum /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/rollback.sh /home/ubuntu/zavis-deploy/ecosystem.config.cjs'
 
       - name: Deploy via SSH
         run: |
