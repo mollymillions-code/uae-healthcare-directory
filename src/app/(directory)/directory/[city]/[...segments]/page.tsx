@@ -409,32 +409,53 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       regulatorAr,
     });
 
+    // ── Fat-hub optional blocks — run in parallel via Promise.allSettled ──
+    //
+    // DEFENSE IN DEPTH: every one of these blocks enriches the page but is
+    // non-essential. If any single query times out (pool pressure, slow
+    // index, cold cache), we gracefully drop that block and still serve the
+    // page. Previously an `await X` throw here would propagate up to the
+    // server component and trip error.tsx — user saw "Something went wrong"
+    // on 2026-04-11 when the PM2 worker was being SIGTERM'd mid-render.
+    //
+    // Running these in parallel also shaves ~2-3 round-trips of latency vs.
+    // the prior sequential awaits (neighborhood → insurer → doctor-xlinks).
+    const eligibleInsurers = getInsurancePlansByGeo(city.slug);
+    const insurerCandidates = eligibleInsurers.slice(0, 10);
+
+    const [
+      neighborhoodsRes,
+      insurerEligibilityRes,
+      doctorCrossLinksRes,
+    ] = await Promise.allSettled([
+      getNeighborhoodsByCity(city.slug, { minProviders: 3 }),
+      Promise.all(
+        insurerCandidates.map(async (plan) => {
+          try {
+            const eligible = await isTriFacetEligible(
+              plan.slug,
+              city.slug,
+              category.slug,
+            );
+            return eligible ? { slug: plan.slug, name: plan.nameEn } : null;
+          } catch {
+            return null;
+          }
+        }),
+      ),
+      getProfessionalsIndexBySpecialty(category.slug, { limit: 8 }),
+    ]);
+
     // ── Sibling neighborhood grid (DB-first, ≥3 providers gated) ────
-    const neighborhoods = await getNeighborhoodsByCity(city.slug, { minProviders: 3 });
+    const neighborhoods =
+      neighborhoodsRes.status === "fulfilled" ? neighborhoodsRes.value : [];
     const topNeighborhoods = neighborhoods.slice(0, 12);
 
     // ── Insurance pivot strip (geo + tri-facet gated) ───────────────
-    // Run eligibility checks in parallel (Promise.all) instead of a
-    // sequential await loop. Previously this serialized ~10 DB round-trips
-    // per fat-hub render, adding 500-800ms of TTFB on every cold request.
-    const eligibleInsurers = getInsurancePlansByGeo(city.slug);
-    const insurerCandidates = eligibleInsurers.slice(0, 10);
-    const insurerEligibility = await Promise.all(
-      insurerCandidates.map(async (plan) => {
-        try {
-          const eligible = await isTriFacetEligible(
-            plan.slug,
-            city.slug,
-            category.slug,
-          );
-          return eligible ? { slug: plan.slug, name: plan.nameEn } : null;
-        } catch {
-          // Gracefully skip if the eligibility check fails — better to
-          // drop a link than to 500 the page.
-          return null;
-        }
-      }),
-    );
+    const insurerEligibility =
+      insurerEligibilityRes.status === "fulfilled"
+        ? insurerEligibilityRes.value
+        : [];
     const insurerPivots = insurerEligibility
       .filter((x): x is { slug: string; name: string } => x !== null)
       .slice(0, 8);
@@ -453,10 +474,11 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       .filter((c): c is NonNullable<ReturnType<typeof getCategoryBySlug>> => Boolean(c));
 
     // ── Doctor cross-links (find-a-doctor) ───────────────────────────
-    const { professionals: doctorCrossLinks } = await getProfessionalsIndexBySpecialty(
-      category.slug,
-      { limit: 8 },
-    );
+    // Pulled from the Promise.allSettled above — gracefully empty on failure.
+    const doctorCrossLinks =
+      doctorCrossLinksRes.status === "fulfilled"
+        ? doctorCrossLinksRes.value.professionals
+        : [];
 
     // ── Top-rated module (deterministic daily rotation) ──────────────
     const topRatedPool = [...providers]
@@ -769,8 +791,15 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
         {/* Related Intelligence — hub-and-spoke cross-link */}
         {await (async () => {
-          await loadDbArticles();
-          const relatedArticles = getArticlesByDirectoryContext(city.name, category.slug, category.name, 4);
+          // Gracefully skip this block if article loading fails — page must
+          // still render even if the intelligence DB is slow or unreachable.
+          let relatedArticles: ReturnType<typeof getArticlesByDirectoryContext> = [];
+          try {
+            await loadDbArticles();
+            relatedArticles = getArticlesByDirectoryContext(city.name, category.slug, category.name, 4);
+          } catch {
+            return null;
+          }
           if (relatedArticles.length === 0) return null;
           return (
             <section className="mt-10 mb-4">
