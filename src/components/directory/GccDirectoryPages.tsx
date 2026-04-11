@@ -1884,41 +1884,125 @@ export async function GccSegmentsPage({
               </div>
             )}
 
-            {/* Review highlights */}
-            {provider.reviewSummary &&
+            {/* Patient reviews — v2 bulky block when available, else legacy bullets */}
+            {provider.reviewSummaryV2 ? (
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
+                    <MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say
+                  </h2>
+                  {hasValidRating && (
+                    <div className="flex items-center gap-1.5 font-['Geist',sans-serif] text-sm">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span
+                            key={i}
+                            className={`text-sm leading-none ${
+                              i < Math.round(Number(provider.googleRating))
+                                ? "text-[#006828]"
+                                : "text-black/15"
+                            }`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
+                      <span className="text-black/40">({provider.googleReviewCount?.toLocaleString()} reviews)</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mb-5">
+                  <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
+                    Overall sentiment
+                  </h3>
+                  <p className="font-['Geist',sans-serif] text-sm text-black/70 leading-relaxed">
+                    {provider.reviewSummaryV2.overall_sentiment}
+                  </p>
+                </div>
+                {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
+                  <div className="mb-5">
+                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
+                      What stood out
+                    </h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                      {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
+                        <li key={i} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/60">
+                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                          <span>
+                            {t.theme}
+                            {t.mention_count > 1 && <span className="text-black/30 text-xs ml-1">({t.mention_count} mentions)</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
+                  <div className="mb-3">
+                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-3">
+                      Recent patient voices
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {provider.reviewSummaryV2.snippets.map((s, i) => (
+                        <article key={i} className="bg-white rounded-xl p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {Array.from({ length: 5 }).map((_, starIdx) => (
+                              <span
+                                key={starIdx}
+                                className={`text-sm leading-none ${
+                                  starIdx < s.rating ? "text-[#006828]" : "text-black/15"
+                                }`}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2" itemProp="reviewBody">
+                            {s.text_fragment}
+                          </p>
+                          <p className="font-['Geist',sans-serif] text-xs text-black/40">
+                            <span itemProp="author" className="font-medium">{s.author_display}</span>
+                            {s.relative_time && <span> · {s.relative_time}</span>}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
+                  Themes and patient voices synthesized from {provider.googleReviewCount?.toLocaleString() || "recent"} Google reviews.{" "}
+                  {provider.googleMapsUri && (
+                    <a href={provider.googleMapsUri} target="_blank" rel="nofollow noopener" className="text-[#006828] hover:underline">
+                      Read original reviews on Google Maps →
+                    </a>
+                  )}
+                </p>
+              </div>
+            ) : (
+              provider.reviewSummary &&
               provider.reviewSummary.length > 0 &&
-              provider.reviewSummary[0] !==
-                "No patient reviews available yet" && (
-                <div
-                  className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
-                  data-section="reviews"
-                >
+              provider.reviewSummary[0] !== "No patient reviews available yet" && (
+                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
                   <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
-                    <MessageSquareQuote className="h-5 w-5 text-[#006828]" />{" "}
-                    What patients say
+                    <MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say
                   </h2>
                   <ul className="space-y-2">
-                    {provider.reviewSummary.map(
-                      (point: string, idx: number) => (
-                        <li
-                          key={idx}
-                          className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50"
-                        >
-                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
-                          <span>{point}</span>
-                        </li>
-                      )
-                    )}
+                    {provider.reviewSummary.map((point: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50">
+                        <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
                   </ul>
                   {hasValidRating && (
                     <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                      Based on{" "}
-                      {provider.googleReviewCount?.toLocaleString()} Google
-                      reviews. Rating: {provider.googleRating}/5 stars.
+                      Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
                     </p>
                   )}
                 </div>
-              )}
+              )
+            )}
 
             {/* Languages */}
             {provider.languages.length > 0 && (

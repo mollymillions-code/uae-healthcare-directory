@@ -12,11 +12,10 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCategories, getCategoryBySlug,
-  getAreaBySlug, getAreasByCity, getNeighborhoodsByCity,
+  getCityBySlug, getCategories,
+  getAreaBySlug, getAreasByCity,
   getProviders, getTopRatedProviders,
   getInsuranceProviders,
-  getProviderCountByCategoryAndCity,
 } from "@/lib/data";
 import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
 import { getJournalCategory } from "@/lib/intelligence/categories";
@@ -26,11 +25,6 @@ import {
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
   generateProviderParagraph, truncateTitle, truncateDescription,
 } from "@/lib/seo";
-import { getHubEditorial } from "@/lib/constants/hub-editorial";
-import { getRelatedSpecialties } from "@/lib/constants/related-specialties";
-import { getInsurancePlansByGeo, isTriFacetEligible } from "@/lib/insurance-facets/data";
-import { LANGUAGES } from "@/lib/constants/languages";
-import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
 import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDate,
@@ -1116,10 +1110,111 @@ export default async function CatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* Patient reviews — synthesized themed summary, never raw review text.
-                Avoids duplicate-content de-ranking + complies with Google TOS for review display.
-                Falls back to legacy reviewSummary bullets when synthesis hasn't run yet. */}
-            {provider.reviewSummary &&
+            {/* Patient reviews — three-tier fallback:
+                  1. reviewSummaryV2 (bulky: overview + themes + partial-quote snippet cards)
+                  2. reviewSummary (legacy themed bullets)
+                  3. hidden when both are empty
+                Never republishes verbatim review text (Google TOS §3.2.4(b)
+                + duplicate-content SEO risk). Partial quotes in v2 are
+                half-sentence fragments from the raw google_reviews JSONB. */}
+            {provider.reviewSummaryV2 ? (
+              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
+                    <Quote className="h-5 w-5 text-[#006828]" /> What patients say
+                  </h2>
+                  {hasValidRating && (
+                    <div className="flex items-center gap-1.5 font-['Geist',sans-serif] text-sm">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${
+                              i < Math.round(Number(provider.googleRating))
+                                ? "text-[#006828] fill-[#006828]"
+                                : "text-black/15"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
+                      <span className="text-black/40">({provider.googleReviewCount?.toLocaleString()} reviews)</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-5">
+                  <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
+                    Overall sentiment
+                  </h3>
+                  <p className="font-['Geist',sans-serif] text-sm text-black/70 leading-relaxed">
+                    {provider.reviewSummaryV2.overall_sentiment}
+                  </p>
+                </div>
+
+                {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
+                  <div className="mb-5">
+                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
+                      What stood out
+                    </h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                      {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
+                        <li key={i} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/60">
+                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                          <span>
+                            {t.theme}
+                            {t.mention_count > 1 && (
+                              <span className="text-black/30 text-xs ml-1">({t.mention_count} mentions)</span>
+                            )}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
+                  <div className="mb-3">
+                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-3">
+                      Recent patient voices
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {provider.reviewSummaryV2.snippets.map((s, i) => (
+                        <article key={i} className="bg-white rounded-xl p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {Array.from({ length: 5 }).map((_, starIdx) => (
+                              <Star
+                                key={starIdx}
+                                className={`h-3 w-3 ${
+                                  starIdx < s.rating ? "text-[#006828] fill-[#006828]" : "text-black/15"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2" itemProp="reviewBody">
+                            {s.text_fragment}
+                          </p>
+                          <p className="font-['Geist',sans-serif] text-xs text-black/40">
+                            <span itemProp="author" className="font-medium">{s.author_display}</span>
+                            {s.relative_time && <span> · {s.relative_time}</span>}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
+                  Themes and patient voices synthesized from {provider.googleReviewCount?.toLocaleString() || "recent"} Google reviews.{" "}
+                  {provider.googleMapsUri && (
+                    <a href={provider.googleMapsUri} target="_blank" rel="nofollow noopener" className="text-[#006828] hover:underline">
+                      Read original reviews on Google Maps →
+                    </a>
+                  )}
+                </p>
+              </div>
+            ) : (
+              provider.reviewSummary &&
               provider.reviewSummary.length > 0 &&
               provider.reviewSummary[0] !== "No patient reviews available yet" && (
                 <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
@@ -1146,7 +1241,6 @@ export default async function CatchAllPage({ params }: Props) {
                       </div>
                     )}
                   </div>
-                  {/* If reviewSummary is a single multi-sentence paragraph, render as prose; otherwise as bullets */}
                   {provider.reviewSummary.length === 1 ? (
                     <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
                       {provider.reviewSummary[0]}
@@ -1177,7 +1271,8 @@ export default async function CatchAllPage({ params }: Props) {
                     </p>
                   )}
                 </div>
-              )}
+              )
+            )}
 
             {/* Languages */}
             {provider.languages.length > 0 && (

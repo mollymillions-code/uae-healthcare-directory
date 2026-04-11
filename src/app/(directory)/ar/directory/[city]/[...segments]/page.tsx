@@ -681,8 +681,80 @@ export default async function ArabicCatchAllPage({ params }: Props) {
               </div>
             )}
 
-            {/* What patients say — themed summary, never raw review text */}
-            {(() => {
+            {/* What patients say — v2 bulky block when available, else legacy bullets */}
+            {provider.reviewSummaryV2 ? (
+              <div className="border border-black/[0.06] p-6 mb-6 bg-light-50" data-section="reviews">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                  <h2 className="font-semibold text-dark flex items-center gap-2">
+                    <Quote className="h-5 w-5 text-accent" /> {ar.patientReviews}
+                  </h2>
+                  {provider.googleRating && Number(provider.googleRating) > 0 && (
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${
+                              i < Math.round(Number(provider.googleRating))
+                                ? "text-accent fill-accent"
+                                : "text-black/15"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="font-medium text-dark">{provider.googleRating}</span>
+                      <span className="text-muted">({provider.googleReviewCount?.toLocaleString("ar-AE")})</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mb-5">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">التقييم العام</h3>
+                  <p className="text-sm text-dark/70 leading-relaxed">{provider.reviewSummaryV2.overall_sentiment}</p>
+                </div>
+                {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
+                  <div className="mb-5">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">أبرز ما ذكره المرضى</h3>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                      {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted">
+                          <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span>{t.theme}{t.mention_count > 1 && <span className="text-black/30 text-xs mr-1">({t.mention_count} إشارات)</span>}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
+                  <div className="mb-3">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">أصوات المرضى الحديثة</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {provider.reviewSummaryV2.snippets.map((s, i) => (
+                        <article key={i} className="bg-white p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {Array.from({ length: 5 }).map((_, starIdx) => (
+                              <Star key={starIdx} className={`h-3 w-3 ${starIdx < s.rating ? "text-accent fill-accent" : "text-black/15"}`} />
+                            ))}
+                          </div>
+                          <p className="text-sm text-muted leading-relaxed italic mb-2" itemProp="reviewBody">{s.text_fragment}</p>
+                          <p className="text-xs text-muted/80">
+                            <span itemProp="author" className="font-medium">{s.author_display}</span>
+                            {s.relative_time && <span> · {s.relative_time}</span>}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="text-xs text-muted mt-4 pt-3 border-t border-black/[0.06]">
+                  محاور مستخلصة من {provider.googleReviewCount?.toLocaleString("ar-AE") || "تقييمات حديثة"} تقييم على Google.{" "}
+                  {provider.googleMapsUri && (
+                    <a href={provider.googleMapsUri} target="_blank" rel="nofollow noopener" className="text-accent hover:underline">
+                      اقرأ التقييمات الأصلية على خرائط Google ←
+                    </a>
+                  )}
+                </p>
+              </div>
+            ) : ((() => {
               const reviews = provider.reviewSummaryAr || provider.reviewSummary;
               if (!reviews || reviews.length === 0 || reviews[0] === "No patient reviews available yet") return null;
               const validRating = provider.googleRating && Number(provider.googleRating) > 0;
@@ -740,7 +812,7 @@ export default async function ArabicCatchAllPage({ params }: Props) {
                   )}
                 </div>
               );
-            })()}
+            })())}
 
             {/* Languages */}
             {provider.languages.length > 0 && (

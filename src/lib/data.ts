@@ -135,6 +135,27 @@ export interface LocalProvider {
   facilityType?: string;
   reviewSummary?: string[];
   reviewSummaryAr?: string[];
+  /**
+   * v2 review section — the bulky "What patients say" block.
+   * When present, the frontend renders this instead of the legacy
+   * `reviewSummary` string[] bullets. Produced by
+   * `scripts/rewrite-reviews-v2-or.mjs` and stored in
+   * `providers.review_summary_v2` JSONB on live DB.
+   */
+  reviewSummaryV2?: {
+    version: 2;
+    overall_sentiment: string;
+    what_stood_out: Array<{ theme: string; mention_count: number }>;
+    snippets: Array<{
+      text_fragment: string;
+      author_display: string;
+      rating: number;
+      relative_time?: string;
+    }>;
+    source: string;
+    synced_at: string;
+    google_maps_url?: string;
+  };
   coverImageUrl?: string;
   photos?: string[];
   yearEstablished?: number;
@@ -262,6 +283,7 @@ function rowToProvider(row: any): LocalProvider {
     facilityType: row.facilityType ?? row.facility_type ?? undefined,
     reviewSummary: row.reviewSummary ?? row.review_summary ?? undefined,
     reviewSummaryAr: row.reviewSummaryAr ?? row.review_summary_ar ?? undefined,
+    reviewSummaryV2: row.reviewSummaryV2 ?? row.review_summary_v2 ?? undefined,
     coverImageUrl: row.coverImageUrl ?? row.cover_image_url ?? undefined,
     photos: row.photos?.length ? row.photos : undefined,
     yearEstablished: row.yearEstablished ?? row.year_established ?? undefined,
