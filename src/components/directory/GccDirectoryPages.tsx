@@ -805,23 +805,42 @@ export async function generateGccSegmentsMetadata(
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.category.slug, resolved.provider.slug)}`;
       const prov = resolved.provider;
 
-      const maxTitleLen = 60;
-      const seoSuffix = " | Zavis";
-      const idealTitle = `${prov.name}, ${city.name} — Reviews, Doctors & Insurance`;
+      // Clean legal/branch suffixes before title construction — matches UAE pattern.
+      const cleanName = (name: string): string =>
+        name
+          .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
+          .replace(/\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
+          .replace(/\s*\bW\.?\s*L\.?\s*L\.?\b\s*$/i, "")
+          .replace(/\s*\bFZ[- ]?LLC\b\s*$/i, "")
+          .replace(/\s*\bF[. ]?Z[. ]?E\.?\b\s*$/i, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      const providerDisplay = cleanName(prov.name) || prov.name;
+
+      // Root layout template will append " | Zavis" — DO NOT include it inline
+      // or we get "{title} | Zavis | Zavis". Budget 52 chars for the inner title.
+      const maxTitleLen = 52;
+      const idealTitle = `${providerDisplay}, ${city.name} — Reviews, Doctors & Insurance`;
       let seoTitle: string;
-      if ((idealTitle + seoSuffix).length <= maxTitleLen) {
-        seoTitle = idealTitle + seoSuffix;
+      if (idealTitle.length <= maxTitleLen) {
+        seoTitle = idealTitle;
       } else {
-        const shortTitle = `${prov.name} — Reviews & Insurance`;
-        if ((shortTitle + seoSuffix).length <= maxTitleLen) {
-          seoTitle = shortTitle + seoSuffix;
+        const shortTitle = `${providerDisplay} — Reviews & Insurance`;
+        if (shortTitle.length <= maxTitleLen) {
+          seoTitle = shortTitle;
         } else {
-          const available =
-            maxTitleLen - " — Reviews & Insurance | Zavis".length;
-          seoTitle =
-            prov.name.slice(0, available).trim() +
-            " — Reviews & Insurance" +
-            seoSuffix;
+          // Word-boundary trim on the provider name — never slice mid-word
+          // (especially important for Arabic provider names).
+          const tail = " — Reviews";
+          const nameBudget = maxTitleLen - tail.length;
+          let trimmedName = providerDisplay;
+          if (trimmedName.length > nameBudget) {
+            const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
+            trimmedName = (lastSpace > 0
+              ? trimmedName.slice(0, lastSpace)
+              : trimmedName.slice(0, nameBudget)).trim();
+          }
+          seoTitle = `${trimmedName}${tail}`;
         }
       }
 

@@ -62,17 +62,23 @@ export function medicalOrganizationSchema(
   const ratingVal = Number(provider.googleRating);
   const hasValidRating = ratingVal > 0 && (provider.googleReviewCount ?? 0) > 0;
 
-  // Build image field:
-  //   1. galleryPhotos (R2-hosted, from comprehensive Google Places enrichment) — best source
-  //   2. photos[] (legacy string array) — fallback
-  //   3. coverImageUrl — single-image fallback
-  // All URLs are R2-served; no runtime Google Places API dependency.
+  // Build image field. Every entry must be a real absolute http(s) URL.
+  // We REJECT bare Google photo_reference tokens (which leaked into GCC
+  // coverImageUrl from the legacy enrichment pipeline) because they are
+  // not dereferenceable by Google's structured-data crawler and produce
+  // invalid `image` fields in JSON-LD.
+  const isValidImageUrl = (u: unknown): u is string =>
+    typeof u === "string" && /^https?:\/\//i.test(u);
   const imageUrls: string[] = [];
   if (provider.galleryPhotos && provider.galleryPhotos.length > 0) {
-    imageUrls.push(...provider.galleryPhotos.slice(0, 6).map((p) => p.url));
+    for (const p of provider.galleryPhotos.slice(0, 6)) {
+      if (isValidImageUrl(p.url)) imageUrls.push(p.url);
+    }
   } else if (provider.photos && provider.photos.length > 0) {
-    imageUrls.push(...provider.photos.slice(0, 3));
-  } else if (provider.coverImageUrl) {
+    for (const u of provider.photos.slice(0, 3)) {
+      if (isValidImageUrl(u)) imageUrls.push(u);
+    }
+  } else if (isValidImageUrl(provider.coverImageUrl)) {
     imageUrls.push(provider.coverImageUrl);
   }
 
