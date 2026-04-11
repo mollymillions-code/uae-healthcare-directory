@@ -151,8 +151,8 @@ def build_icon(bg_hex, bg_rgba, text_hex, text_rgba, out_base, size=512):
     font_size = size * 0.625  # 320/512 — cap size
     scale = font_size / upm
 
-    z_d, _ = glyph_path("Z")
-    z_xmin, z_ymin, z_xmax, z_ymax = glyph_bounds("Z")
+    z_d, _ = glyph_path("z")
+    z_xmin, z_ymin, z_xmax, z_ymax = glyph_bounds("z")
     ink_w = (z_xmax - z_xmin) * scale
     cap_h = (z_ymax - z_ymin) * scale
 
@@ -205,7 +205,7 @@ def build_icon(bg_hex, bg_rgba, text_hex, text_rgba, out_base, size=512):
     draw = ImageDraw.Draw(img)
 
     # anchor="ls" → PIL's x is the advance-left; z_tx already accounts for lsb
-    draw.text((z_tx * ss, baseline_y * ss), "Z", fill=text_rgba, font=pil_font, anchor="ls")
+    draw.text((z_tx * ss, baseline_y * ss), "z", fill=text_rgba, font=pil_font, anchor="ls")
 
     cx, cy, r = dot_cx * ss, dot_cy * ss, dot_r * ss
     draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=GREEN_RGBA)
