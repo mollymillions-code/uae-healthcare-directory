@@ -12,11 +12,15 @@ export default function robots(): MetadataRoute.Robots {
       `${getBaseUrl()}/sitemap.xml`,
       `${getBaseUrl()}/sitemap-providers.xml`,
       `${getBaseUrl()}/sitemap-providers-ar.xml`,
-      // Item 0.75 — Doctor profile sitemaps are split by discipline to stay
-      // under Google's 50k-URL-per-sitemap cap. Matches the flat pattern
-      // used by every other sitemap route in this file.
-      `${getBaseUrl()}/sitemap-doctors-physicians.xml`,
-      `${getBaseUrl()}/sitemap-doctors-dentists.xml`,
+      // Item 0.75 — Doctor profile sitemaps use a HIERARCHICAL structure:
+      //   /sitemap-doctors.xml   = sitemap-index listing per-physician-
+      //                            specialty children at /sitemap-doctors/[specialty]
+      //   /sitemap-dentists.xml  = sitemap-index listing per-dentist-
+      //                            specialty children at /sitemap-dentists/[specialty]
+      // GSC auto-discovers the per-specialty children via the indices,
+      // so we only register the two top-level indices here.
+      `${getBaseUrl()}/sitemap-doctors.xml`,
+      `${getBaseUrl()}/sitemap-dentists.xml`,
       `${getBaseUrl()}/sitemap-intelligence.xml`,
       // Item 6 — Zavis Intelligence Reports ("What UAE Patients Want")
       `${getBaseUrl()}/sitemap-reports.xml`,
