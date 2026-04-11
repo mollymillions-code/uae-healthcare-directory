@@ -1,5 +1,23 @@
 # Zavis Landing - Changelog
 
+## 2026-04-11 — [Claude Code] Logo Refresh v2.1 — updated icon geometry
+
+**Signed by:** Claude Code · 2026-04-11T13:42:00+04:00
+
+**What happened:**
+- User pointed out the canonical brand source folder is actually `internal-tools-hub/brand-assets/` (not the `~/Downloads` kit), and that the favicon/icon was re-refined there at 13:29.
+- Re-copied `zavis-icon-{dark,light}.{svg,png}` from `internal-tools-hub/brand-assets/` into `public/` and into `brand/zavis-logo-refresh/`. The new path has slightly tighter Z geometry and a repositioned green dot.
+- Re-generated `favicon.svg` / `favicon.png` / `apple-touch-icon.png` / `icon-192.png` from the updated icon source.
+- Logo wordmark files (`zavis-logo-*`) were byte-identical — no changes needed.
+
+**Why:** User confirmed the correct canonical source folder mid-task and wanted the latest icon shipped.
+
+**Files changed:** `public/favicon.{svg,png}`, `public/apple-touch-icon.png`, `public/icon-192.png`, `public/zavis-icon-{dark,light}.{svg,png}`, `brand/zavis-logo-refresh/zavis-icon-*`, `brand/zavis-logo-refresh/generate.py`.
+
+**Impact:** Favicons and icon assets now match the finalized v2.1 source in `internal-tools-hub/brand-assets/`.
+
+---
+
 ## 2026-04-11 — [Claude Code] Logo Refresh v2 + Client Ticker Cleanup
 
 **Signed by:** Claude Code · 2026-04-11T13:20:00+04:00
