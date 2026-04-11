@@ -26,6 +26,7 @@ import {
   isTriFacetEligible,
 } from "@/lib/insurance-facets/data";
 import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
+import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 import { neighborhoodHubSchema } from "@/lib/seo-neighborhoods";
 import { StickyMobileCta } from "@/components/directory/StickyMobileCta";
 import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
@@ -187,18 +188,14 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     }
     case "listing": {
       const listingCanonical = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
-      // Thin-content guard: a provider is "enriched" only if it has at least 2 of the
-      // key fields. This prevents Google from flagging pages with only a name+address
-      // as thin content and hurting overall site quality signals.
-      const enrichmentFields = [
-        Boolean(resolved.provider.googleRating && Number(resolved.provider.googleRating) > 0),
-        Boolean(resolved.provider.phone),
-        Boolean(resolved.provider.website),
-        Boolean(resolved.provider.description && resolved.provider.description.length > 80),
-        Boolean(resolved.provider.operatingHours && Object.keys(resolved.provider.operatingHours).length > 0),
-      ];
-      const enrichmentScore = enrichmentFields.filter(Boolean).length;
-      const isEnriched = enrichmentScore >= 2;
+      // Thin-content guard: a provider is "enriched" only if it has at least 2 of
+      // the key fields. This decision MUST agree with sitemap inclusion — see
+      // docs/seo/static-provider-sitemap-architecture-spec.md §8.2 for the drift
+      // risk if these two gates diverge. We import the canonical gate from
+      // src/lib/sitemap-gating.ts so the page-level `robots: { index: false }`
+      // and the offline sitemap generator (`scripts/generate-provider-sitemaps.mjs`)
+      // both reference identical inclusion logic.
+      const isEnriched = isEnrichedForSitemap(resolved.provider);
 
       // --- SEO title: hard 52-char cap (leaves room for " | Zavis" appended by root layout template) ---
       // Progressively trim by dropping legal/boilerplate tokens, then fall back to a

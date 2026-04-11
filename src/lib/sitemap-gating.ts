@@ -29,11 +29,18 @@
  */
 
 export interface ProviderGatingInput {
-  googleRating: string | number | null;
-  phone: string | null;
-  website: string | null;
-  description: string | null;
-  operatingHours: Record<string, unknown> | null;
+  // All fields are optional + nullable so this interface accepts both
+  // the on-disk JSONB shape (where missing fields come back as null) and
+  // the in-memory `LocalProvider` shape from `src/lib/data.ts` (where
+  // missing fields are `string | undefined` due to optional `?:`
+  // declarations). Both `null` and `undefined` evaluate falsy in the
+  // gate's `Boolean(x && ...)` checks below, so this widening is purely
+  // a type accommodation — the runtime gate logic is unchanged.
+  googleRating?: string | number | null;
+  phone?: string | null;
+  website?: string | null;
+  description?: string | null;
+  operatingHours?: Record<string, unknown> | null;
 }
 
 /**
