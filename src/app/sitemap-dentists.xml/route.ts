@@ -83,9 +83,14 @@ export async function GET() {
       const loc = escapeXml(
         `${baseUrl}/sitemap-dentists/${row.specialtySlug}`,
       );
-      const lastmod = (row.lastUpdated ?? new Date())
-        .toISOString()
-        .split("T")[0];
+      // Drizzle's `sql<Date>` type annotation is a lie — postgres `max()`
+      // aggregates come back as strings, not Date objects. Wrap in `new
+      // Date(...)` to get an actual Date regardless of what the driver
+      // returned.
+      const lastmodSource = row.lastUpdated
+        ? new Date(row.lastUpdated as unknown as string)
+        : new Date();
+      const lastmod = lastmodSource.toISOString().split("T")[0];
       entries.push(
         `  <sitemap>` +
           `<loc>${loc}</loc>` +
