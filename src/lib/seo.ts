@@ -47,7 +47,28 @@ export function medicalOrganizationSchema(
     "labs-diagnostics": "DiagnosticLab",
     "medical-equipment": "MedicalBusiness",
   };
-  const schemaType = schemaTypeMap[category.slug] || "MedicalBusiness";
+  // Category-based map sometimes misfires: a clinic that's actually a dental
+  // clinic gets classified as category=clinics in our DB but should emit
+  // schema.org/Dentist for Google rich results. QA Round 3 caught
+  // "Dent Care Clinic" in Saudi typed as MedicalClinic when the name + Arabic
+  // "طب الأسنان" clearly indicate dentistry. Override the category map when
+  // the provider name contains unambiguous type keywords. Case-insensitive,
+  // works on both English and transliterated-Arabic names.
+  const nameLower = (provider.name || "").toLowerCase();
+  let schemaType = schemaTypeMap[category.slug] || "MedicalBusiness";
+  if (
+    /\bdent(al|ist|istry)?\b|\bortho(dont|dontic)\b|\bperiodont|\bendodont|\bطب الأسنان|\bأسنان\b/i.test(
+      provider.name || ""
+    )
+  ) {
+    schemaType = "Dentist";
+  } else if (/\boptic(al|ian|s)?\b|\beye\b|\boptometr/i.test(nameLower)) {
+    schemaType = schemaType === "Hospital" ? "Hospital" : "MedicalClinic";
+  } else if (/\bpharma(cy|ceutical)/i.test(nameLower)) {
+    schemaType = "Pharmacy";
+  } else if (/\bphysio(therapy)?|\brehab\b/i.test(nameLower)) {
+    schemaType = "MedicalClinic";
+  }
 
   const resolvedCitySlug = citySlug || city.slug;
   const countryCode = options?.countryCode ?? "AE";
@@ -407,6 +428,11 @@ export function organizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    // Stable @id so other JSON-LD nodes across the site (WebSite, WebPage,
+    // MedicalBusiness publisher refs, BreadcrumbList, ItemList) can
+    // reference this entity without duplicating the full object graph.
+    // QA Round 3 / Round 4 SEO findings flagged missing @id sitewide.
+    "@id": `${base}/#organization`,
     name: "Zavis",
     url: base,
     description:
