@@ -214,6 +214,8 @@ data/
 
 ## Recently Completed (last 48h)
 
+- **[Claude Code] 2026-04-11T13:20:00+04:00** — Logo refresh v2 + client ticker cleanup: replaced all `zavis-logo-*` and `zavis-icon-*` assets in `public/` with new path-based SVGs from `Zavis-Logo-Refresh-Master 2/` (true vector, no font dependency). Regenerated `favicon.svg`/`favicon.png`/`apple-touch-icon.png`/`icon-192.png` from the new icon source. Removed `My London Skin Clinic` from the homepage client ticker (`HomePageClient.tsx`) and deleted the unused `my-london-skin-clinic-logo.webp` asset. Added source kit at `brand/zavis-logo-refresh/`. COMPLETE.
+
 - **[Claude Code] 2026-03-28T00:00:00+04:00** — Created Arabic insurer detail page at `src/app/(directory)/ar/insurance/[insurer]/page.tsx` — full MSA translation, 6 FAQs, coverage table, claims block, "other insurers" section, compare CTA, hreflang alternates, ISR 43200. Zero tsc/eslint errors. COMPLETE.
 
 - **[Claude Code] 2026-03-28T00:00:00+04:00** — Created Arabic insurance page at `src/app/(directory)/ar/insurance/page.tsx` — full MSA translation of the UAE Health Insurance Navigator. 399 lines. All 8 FAQs translated, all sections translated, PlanBrowser + InsuranceQuiz kept as-is (interactive), hreflang alternates set (en-AE/ar-AE), ISR revalidate=43200, zero lint errors.

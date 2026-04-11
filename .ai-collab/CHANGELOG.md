@@ -1,5 +1,37 @@
 # Zavis Landing - Changelog
 
+## 2026-04-11 — [Claude Code] Logo Refresh v2 + Client Ticker Cleanup
+
+**Signed by:** Claude Code · 2026-04-11T13:20:00+04:00
+
+**What happened:**
+- Replaced all Zavis brand logo/icon assets in `public/` with the new `Zavis-Logo-Refresh-Master 2/` kit (today's drop, Apr 11 13:09). Files updated: `zavis-logo-dark.{svg,png}`, `zavis-logo-light.{svg,png}`, `zavis-icon-dark.{svg,png}`, `zavis-icon-light.{svg,png}`. New SVGs use path-based "Z" geometry instead of the old text-based SVG, so rendering no longer depends on whatever font the browser happens to have.
+- Regenerated favicons from the new icon source: `favicon.svg` (now mirrors `zavis-icon-dark.svg`), `favicon.png` (96×96), `apple-touch-icon.png` (180×180), `icon-192.png` (192×192). Created via `sips -z` from the new 512×512 source PNG.
+- Archived the full source kit in `brand/zavis-logo-refresh/` so future agents can find the canonical files in-repo.
+- Removed `My London Skin Clinic` from the homepage client ticker array in `src/components/landing/pages/HomePageClient.tsx` and deleted the unused `public/assets/clients/my-london-skin-clinic-logo.webp` asset.
+
+**Why:**
+- User-requested brand refresh. The "v2" path-based SVG kit (dropped to `~/Downloads/Zavis-Logo-Refresh-Master 2/` earlier today) supersedes the previous text-SVG version shipped in the `feat(brand): ship new zavis. wordmark logo` commit.
+- User asked to remove the London Skin Clinic logo from the homepage client row.
+
+**Files changed:**
+- `public/zavis-logo-{dark,light}.{svg,png}` (replaced)
+- `public/zavis-icon-{dark,light}.svg` (replaced)
+- `public/zavis-icon-{dark,light}.png` (new — PNGs added alongside SVGs)
+- `public/favicon.svg` (replaced with new icon)
+- `public/favicon.png`, `public/apple-touch-icon.png`, `public/icon-192.png` (regenerated from new source)
+- `public/assets/clients/my-london-skin-clinic-logo.webp` (deleted)
+- `src/components/landing/pages/HomePageClient.tsx` (removed 1 line from `clientLogos` array)
+- `brand/zavis-logo-refresh/*` (new folder — full source kit including `generate.py`, `DMSans.ttf`, and all 8 logo/icon files)
+
+**Deployment notes:**
+- Pushed to `live`, which triggers GH Actions blue-green deploy to EC2. Local tsc reported a pre-existing `isomorphic-dompurify` type error in `src/lib/sanitize.ts`; this is a local-env-only issue (the package is in `package.json` but not installed in my local `node_modules`) — GH Actions runs `npm ci` which installs the module and resolves the types.
+- Blue-green deploy means the current slot keeps serving if anything fails. No downtime expected.
+
+**Impact:** Brand assets now render the finalized v2 wordmark across nav, footer, favicons, and all social share images. Client ticker no longer shows the My London Skin Clinic logo.
+
+---
+
 ## 2026-04-05 — [Claude Code] GA4 Conversion Event Audit & Token Investigation
 
 **Signed by:** Claude Code · 2026-04-05T18:15:00+04:00

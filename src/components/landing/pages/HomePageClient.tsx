@@ -24,7 +24,6 @@ export function HomePageClient() {
       { src: "/assets/clients/kent-healthcare.webp", name: "Kent Healthcare" },
       { src: "/assets/clients/flowspace-logo.webp", name: "Flow Space" },
       { src: "/assets/clients/gs-poly-clinic-logo.webp", name: "GS Poly Clinic" },
-      { src: "/assets/clients/my-london-skin-clinic-logo.webp", name: "My London Skin Clinic" },
       { src: "/assets/clients/modern-aesthetics-logo.webp", name: "Modern Aesthetics" },
     ];
     return [
