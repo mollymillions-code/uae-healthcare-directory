@@ -2,24 +2,33 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-// Pool sizing: the process is a Next.js App Router SSR worker. Heavy routes
-// (insurance-facet pages, provider listing with EXISTS jsonb queries) do 6-12
-// DB roundtrips per render, so at peak concurrent SSR requests the old max=10
-// would saturate. QA Round 4 (2026-04-11) caught cold-start 500/502s on
-// provider detail pages traced to `timeout exceeded when trying to connect`
-// in the pg pool. PostgreSQL on EC2 has max_connections=100, so a single
-// PM2 worker can safely take 30 with plenty of headroom for scripts,
-// psql sessions, and the other Node apps on the box.
+// Pool sizing math (re-derived after QA Round 4 pool fix blew up the build
+// with "too many clients already" at 2026-04-11 10:21 UTC):
+//
+// - PostgreSQL on EC2 has max_connections = 100
+// - At rest we observed ~57 active+idle connections across everything
+//   (PM2 runtime workers + psql sessions + background scripts)
+// - That leaves ~43 connections of headroom in steady state
+// - BUT `next build` spawns ~6-8 static-render workers in parallel, each
+//   importing this module and creating its own Pool. With `max: 30` each,
+//   that's ~240 potential slots — overwhelmingly over budget.
+//
+// Safe per-process cap so build + runtime both fit under 100 total:
+//   max=12. Build phase: ~8 workers × 12 = 96 (safely under 100).
+//   Runtime phase: ~2-4 PM2 workers × 12 = 24-48 (plenty of headroom).
+//
+// Still 20% more than the original max=10 for runtime, so the cold-start
+// 500/502 finding from QA Round 4 still benefits. connectionTimeoutMillis
+// bumped from 5s to 10s independently so fresh JIT warmup doesn't trip it.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
-  max: 30,
-  min: 4,
+  max: 12,
+  min: 2,
   // Short idleTimeoutMillis reclaims connections after 30s of idle so we
-  // don't hold 30 open forever when traffic dips.
+  // don't hold 12 open forever when traffic dips.
   idleTimeoutMillis: 30000,
-  // Bumped from 5s to 10s so a slow cold-start query (fresh PM2 process
-  // JITing + first DB handshake) doesn't blow up with a 500 on the first
-  // request after deploy. Still short enough to fail fast when the DB is
+  // Fresh PM2 processes need a bit more grace on first DB handshake
+  // during JIT warmup. Still short enough to fail fast when the DB is
   // actually unreachable.
   connectionTimeoutMillis: 10000,
 });
