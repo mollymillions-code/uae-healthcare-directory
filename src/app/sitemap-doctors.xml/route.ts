@@ -41,6 +41,13 @@ import { professionalsIndex } from "@/lib/db/schema";
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 import { getBaseUrl } from "@/lib/helpers";
 
+// force-dynamic is REQUIRED — without it Next.js tries to statically
+// prerender this route at build time, triggers DYNAMIC_SERVER_USAGE on
+// the DB query, and ships an empty <sitemapindex/> to production.
+// The per-specialty children at /sitemap-doctors/[specialty] don't need
+// this because their dynamic segment auto-opts them into dynamic
+// rendering; this static-path route does not have that escape hatch.
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 const SITEMAP_HEADERS = {
