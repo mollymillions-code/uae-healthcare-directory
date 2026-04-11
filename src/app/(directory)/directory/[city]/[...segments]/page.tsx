@@ -30,7 +30,7 @@ import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDate,
   resolveSegments, DAY_NAMES_EN,
 } from "@/lib/directory-utils";
-import { buildFaqDayLine } from "@/lib/hours-utils";
+import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import Image from "next/image";
 import {
   MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
@@ -1064,14 +1064,33 @@ export default async function CatchAllPage({ params }: Props) {
                       ))}
                     </ul>
                   ) : (
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                      {Object.entries(provider.operatingHours!).map(([d, h]) => (
-                        <div key={d} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
-                          <span className="font-['Geist',sans-serif] text-black/40">{DAY_NAMES[d]}</span>
-                          <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{h.open === "00:00" && h.close === "23:59" ? "24 Hours" : `${h.open} – ${h.close}`}</span>
+                    (() => {
+                      // Normalize legacy operatingHours shapes (full English
+                      // day names, 12-hour AM/PM, etc.) — drop rows whose
+                      // day key or time range can't be resolved instead of
+                      // rendering "undefined – undefined".
+                      const rows = Object.entries(provider.operatingHours!)
+                        .map(([d, h]) => {
+                          const day = normalizeDayName(d);
+                          const range = formatHoursRange(h?.open, h?.close);
+                          if (!day || !range) return null;
+                          return { key: d, day, range };
+                        })
+                        .filter(
+                          (row): row is { key: string; day: string; range: string } => row !== null
+                        );
+                      if (rows.length === 0) return null;
+                      return (
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                          {rows.map((row) => (
+                            <div key={row.key} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
+                              <span className="font-['Geist',sans-serif] text-black/40">{row.day}</span>
+                              <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{row.range}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()
                   )}
                 </div>
               );

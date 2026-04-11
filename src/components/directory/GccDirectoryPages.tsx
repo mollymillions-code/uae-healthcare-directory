@@ -61,7 +61,7 @@ import {
   resolveSegments,
   DAY_NAMES_EN,
 } from "@/lib/directory-utils";
-import { buildFaqDayLine } from "@/lib/hours-utils";
+import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import {
   ChevronRight,
   MapPin,
@@ -1794,9 +1794,34 @@ export async function GccSegmentsPage({
               </div>
             )}
 
-            {/* Hours */}
-            {provider.operatingHours &&
-              Object.keys(provider.operatingHours).length > 0 && (
+            {/* Hours — normalizeDayName + formatHoursRange handle all legacy
+                 key/value shapes in operating_hours JSONB (full English day
+                 names, 3-letter lowercase, 12-hour AM/PM, 24-hour, broken
+                 scrape artifacts). Rows with unknown day keys or malformed
+                 times are silently dropped instead of rendering "undefined".
+                 Same fix pattern as src/lib/hours-utils.ts#buildFaqDayLine. */}
+            {(() => {
+              if (
+                !provider.operatingHours ||
+                Object.keys(provider.operatingHours).length === 0
+              ) {
+                return null;
+              }
+              const rows = Object.entries(provider.operatingHours)
+                .map(([d, h]) => {
+                  const day = normalizeDayName(d);
+                  const range = formatHoursRange(h?.open, h?.close);
+                  if (!day || !range) return null;
+                  return { key: d, day, range };
+                })
+                .filter(
+                  (
+                    row
+                  ): row is { key: string; day: string; range: string } =>
+                    row !== null
+                );
+              if (rows.length === 0) return null;
+              return (
                 <div
                   className="border border-black/[0.06] rounded-2xl p-6 mb-5"
                   data-section="hours"
@@ -1806,24 +1831,23 @@ export async function GccSegmentsPage({
                     Hours
                   </h2>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                    {Object.entries(provider.operatingHours).map(([d, h]) => (
+                    {rows.map((row) => (
                       <div
-                        key={d}
+                        key={row.key}
                         className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0"
                       >
                         <span className="font-['Geist',sans-serif] text-black/40">
-                          {DAY_NAMES[d]}
+                          {row.day}
                         </span>
                         <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">
-                          {h.open === "00:00" && h.close === "23:59"
-                            ? "24 Hours"
-                            : `${h.open} \u2013 ${h.close}`}
+                          {row.range}
                         </span>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
+              );
+            })()}
 
             {/* Insurance */}
             {provider.insurance.length > 0 && (
