@@ -61,6 +61,7 @@ import {
   resolveSegments,
   DAY_NAMES_EN,
 } from "@/lib/directory-utils";
+import { buildFaqDayLine } from "@/lib/hours-utils";
 import {
   ChevronRight,
   MapPin,
@@ -1477,9 +1478,18 @@ export async function GccSegmentsPage({
     const providerFaqs: { question: string; answer: string }[] = [
       {
         question: `What are the opening hours of ${provider.name} in ${city.name}?`,
-        answer: hasValidHours(provider.operatingHours)
-          ? `${provider.name} in ${city.name} operates on the following schedule: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24 hours" : `${h.open}\u2013${h.close}`}`).join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}.`
-          : `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}.`,
+        answer: (() => {
+          if (!hasValidHours(provider.operatingHours)) {
+            return `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}.`;
+          }
+          const dayLines = Object.entries(provider.operatingHours)
+            .map(([d, h]) => buildFaqDayLine(d, h?.open, h?.close))
+            .filter(Boolean);
+          if (dayLines.length === 0) {
+            return `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}.`;
+          }
+          return `${provider.name} in ${city.name} operates on the following schedule: ${dayLines.join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}.`;
+        })(),
       },
       {
         question: `Which insurance plans does ${provider.name} accept?`,
@@ -1537,9 +1547,18 @@ export async function GccSegmentsPage({
     const providerFaqsRich: { question: string; answer: string }[] = [
       {
         question: `What are the opening hours of ${provider.name} in ${city.name}?`,
-        answer: hasValidHours(provider.operatingHours)
-          ? `${provider.name} in ${city.name} operates on the following schedule: ${Object.entries(provider.operatingHours).filter(([, h]) => h && h.open && h.close).map(([d, h]) => `${DAY_NAMES[d]}: ${h.open === "00:00" && h.close === "23:59" ? "24 hours" : `${h.open}\u2013${h.close}`}`).join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}. <a href="${providerProfileUrl}">View full profile</a>`
-          : `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}. <a href="${providerProfileUrl}">View full profile</a>`,
+        answer: (() => {
+          if (!hasValidHours(provider.operatingHours)) {
+            return `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}. <a href="${providerProfileUrl}">View full profile</a>`;
+          }
+          const dayLines = Object.entries(provider.operatingHours)
+            .map(([d, h]) => buildFaqDayLine(d, h?.open, h?.close))
+            .filter(Boolean);
+          if (dayLines.length === 0) {
+            return `Contact ${provider.name} directly for current opening hours. Phone: ${provider.phone || "see listing"}. <a href="${providerProfileUrl}">View full profile</a>`;
+          }
+          return `${provider.name} in ${city.name} operates on the following schedule: ${dayLines.join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}. <a href="${providerProfileUrl}">View full profile</a>`;
+        })(),
       },
       {
         question: `Which insurance plans does ${provider.name} accept?`,
