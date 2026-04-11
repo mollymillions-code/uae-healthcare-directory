@@ -12,10 +12,11 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCategories,
-  getAreaBySlug, getAreasByCity,
+  getCityBySlug, getCategories, getCategoryBySlug,
+  getAreaBySlug, getAreasByCity, getNeighborhoodsByCity,
   getProviders, getTopRatedProviders,
   getInsuranceProviders,
+  getProviderCountByCategoryAndCity,
 } from "@/lib/data";
 import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
 import { getJournalCategory } from "@/lib/intelligence/categories";
@@ -25,10 +26,15 @@ import {
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
   generateProviderParagraph, truncateTitle, truncateDescription,
 } from "@/lib/seo";
+import { getHubEditorial } from "@/lib/constants/hub-editorial";
+import { getRelatedSpecialties } from "@/lib/constants/related-specialties";
+import { getInsurancePlansByGeo, isTriFacetEligible } from "@/lib/insurance-facets/data";
+import { LANGUAGES } from "@/lib/constants/languages";
+import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
 import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
 import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDate,
-  resolveSegments, DAY_NAMES_EN,
+  resolveSegments,
 } from "@/lib/directory-utils";
 import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import Image from "next/image";
@@ -315,8 +321,6 @@ export default async function CatchAllPage({ params }: Props) {
   if (!resolved) notFound();
 
   const base = getBaseUrl();
-
-  const DAY_NAMES = DAY_NAMES_EN;
 
   // --- City + Category Page ---
   if (resolved.type === "city-category") {

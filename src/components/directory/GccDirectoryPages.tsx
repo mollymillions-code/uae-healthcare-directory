@@ -59,7 +59,6 @@ import {
   hasValidHours,
   formatVerifiedDate,
   resolveSegments,
-  DAY_NAMES_EN,
 } from "@/lib/directory-utils";
 import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import {
@@ -925,7 +924,6 @@ export async function GccSegmentsPage({
   if (!resolved) notFound();
 
   const base = getBaseUrl();
-  const DAY_NAMES = DAY_NAMES_EN;
 
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
