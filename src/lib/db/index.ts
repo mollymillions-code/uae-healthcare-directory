@@ -44,9 +44,11 @@ pool.on("error", (err) => {
 export const db = drizzle(pool, { schema });
 export type DB = typeof db;
 
-// Graceful shutdown — close pool on process termination
-if (typeof process !== "undefined") {
-  const shutdown = () => { pool.end().catch(() => {}); };
-  process.once("SIGTERM", shutdown);
-  process.once("SIGINT", shutdown);
-}
+// NOTE: No manual SIGTERM/SIGINT shutdown handler here.
+// PM2 runs this app in cluster_mode and sends SIGINT to workers during
+// normal operation (reloads, scale events). A handler that calls
+// `pool.end()` and swallows errors leaves the pool dead while the worker
+// keeps serving — causing "Cannot use a pool after calling end on the
+// pool" on every subsequent request until PM2 restarts the worker.
+// pg's connections are released when the OS reaps the process, which is
+// fine for our use case.
