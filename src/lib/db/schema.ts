@@ -143,6 +143,27 @@ export const providers = pgTable(
     shortDescription: text("short_description"),
     reviewSummary: jsonb("review_summary").$type<string[]>().default([]),
     reviewSummaryAr: jsonb("review_summary_ar").$type<string[]>().default([]),
+    // v2 bulky review block: { version, overall_sentiment, what_stood_out,
+    // snippets, source, synced_at }. Produced by
+    // scripts/rewrite-reviews-v2-or.mjs. See src/lib/data.ts LocalProvider
+    // type for the full shape. Drizzle must declare this column so the
+    // default SELECT includes it — otherwise rowToProvider silently drops
+    // it at runtime (which was the bug that kept v2 from rendering after
+    // commit a795db8 landed).
+    reviewSummaryV2: jsonb("review_summary_v2").$type<{
+      version: 2;
+      overall_sentiment: string;
+      what_stood_out: Array<{ theme: string; mention_count: number }>;
+      snippets: Array<{
+        text_fragment: string;
+        author_display: string;
+        rating: number;
+        relative_time?: string;
+      }>;
+      source: string;
+      synced_at: string;
+      google_maps_url?: string;
+    }>(),
     services: jsonb("services").$type<string[]>().default([]),
     languages: jsonb("languages").$type<string[]>().default([]),
     insurance: jsonb("insurance").$type<string[]>().default([]),
