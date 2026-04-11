@@ -4,20 +4,17 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCities, getCityBySlug, getCategories, getCategoryBySlug, getProviders, getProviderCountByCategoryAndCity } from "@/lib/data";
+import { getCityBySlug, getCategoryBySlug, getProviders, getProviderCountByCategoryAndCity } from "@/lib/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
+// ISR only — no generateStaticParams. Prerendering ~54 city × category combos
+// fired 54 DB count queries during build which exhausted the pg pool
+// (Deploy 6 failure, 2026-04-11). ISR renders on first visit and caches 12h.
+export const dynamicParams = true;
 interface Props { params: { city: string; category: string } }
 const WALK_IN_CATEGORY_SLUGS = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
-
-export async function generateStaticParams() {
-  const cities = getCities(); const categories = getCategories();
-  const params: { city: string; category: string }[] = [];
-  for (const city of cities) { for (const cat of categories) { if (!WALK_IN_CATEGORY_SLUGS.includes(cat.slug)) continue; if (await getProviderCountByCategoryAndCity(cat.slug, city.slug) > 0) params.push({ city: city.slug, category: cat.slug }); } }
-  return params;
-}
 
 function getRegulatorName(s: string): string { if (s === "dubai") return "the Dubai Health Authority (DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)"; return "the Ministry of Health and Prevention (MOHAP)"; }
 function getGPFeeRange(s: string): string { if (s === "dubai") return "AED 150-300"; if (s === "abu-dhabi" || s === "al-ain") return "AED 100-250"; if (s === "sharjah") return "AED 100-200"; return "AED 80-200"; }

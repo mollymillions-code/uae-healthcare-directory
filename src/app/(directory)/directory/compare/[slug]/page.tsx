@@ -8,7 +8,6 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import {
-  getAllComparisonSlugs,
   parseComparisonSlug,
   getCityComparison,
   getCategoryComparison,
@@ -17,10 +16,11 @@ import {
 } from "@/lib/compare";
 
 export const revalidate = 43200;
-
-export function generateStaticParams() {
-  return getAllComparisonSlugs().map((slug) => ({ slug }));
-}
+// ISR only — no generateStaticParams. Comparison pages call getCityComparison
+// and getCategoryComparison which each fire multiple DB queries per slug.
+// Prerendering all combinations in parallel exhausted the pg pool
+// (Deploy 6 failure, 2026-04-11). Pages render on first visit and cache 12h.
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,

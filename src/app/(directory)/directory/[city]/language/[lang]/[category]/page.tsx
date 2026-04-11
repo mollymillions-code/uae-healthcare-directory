@@ -6,7 +6,7 @@ import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCities, getCategories, getCategoryBySlug,
+  getCityBySlug, getCategories, getCategoryBySlug,
   getLanguagesList, getProvidersByLanguage,
   getProviderCountByCategoryAndCity,
 } from "@/lib/data";
@@ -16,32 +16,15 @@ import {
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
+// ISR: pages render on first visit and cache for 12h. No generateStaticParams —
+// prerendering city × language × category combinations serialized hundreds of DB
+// queries during `next build` and exhausted the pg pool (Deploy 6 build failure,
+// 2026-04-11). Googlebot discovers these URLs via sitemap.xml and internal links;
+// first-visit rendering populates the ISR cache.
+export const dynamicParams = true;
 
 interface Props {
   params: { city: string; lang: string; category: string };
-}
-
-/* ─── Static params: city × language × category where filtered count >= 2 ─── */
-
-export async function generateStaticParams() {
-  const cities = getCities();
-  const languages = getLanguagesList();
-  const categories = getCategories();
-  const params: { city: string; lang: string; category: string }[] = [];
-
-  for (const city of cities) {
-    for (const language of languages) {
-      const langProviders = await getProvidersByLanguage(language.slug, city.slug);
-      for (const cat of categories) {
-        const count = langProviders.filter((p) => p.categorySlug === cat.slug).length;
-        if (count >= 2) {
-          params.push({ city: city.slug, lang: language.slug, category: cat.slug });
-        }
-      }
-    }
-  }
-
-  return params;
 }
 
 /* ─── Metadata ─── */

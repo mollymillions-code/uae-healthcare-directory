@@ -4,20 +4,21 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCities, getCityBySlug, getCategories, getProviders, getProviderCountByCategoryAndCity } from "@/lib/data";
+import { getCityBySlug, getCategories, getProviders, getProviderCountByCategoryAndCity } from "@/lib/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
+// ISR only — no generateStaticParams. The page does a heavy
+// getProviders({ limit: 99999 }) during render; prerendering all cities at
+// build time in parallel blew the pg pool (Deploy 6 failure, 2026-04-11).
+// Pages render on first visit and cache for 12 hours.
+export const dynamicParams = true;
 interface Props { params: { city: string } }
 
 async function getWalkInProviders(citySlug: string) {
   const { providers } = await getProviders({ citySlug, categorySlug: "clinics", limit: 99999 });
   return providers;
-}
-
-export function generateStaticParams() {
-  return getCities().map((c) => ({ city: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
