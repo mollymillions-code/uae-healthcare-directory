@@ -20,9 +20,17 @@
 Submit **both** sitemaps in GSC → **Sitemaps** (left sidebar):
 
 1. `https://www.zavis.ai/sitemap.xml` — structural pages (city/category/area/labs/insurance/intelligence), ~5,000+ URLs with hreflang alternates
-2. `https://www.zavis.ai/sitemap-providers.xml` — all 12,500+ individual provider profile pages (English + Arabic mirrors), regenerated every hour via ISR
+2. `https://www.zavis.ai/sitemap-providers.xml` — English top-level sitemap index for all 12,000+ individual provider profile pages
+3. `https://www.zavis.ai/sitemap-providers-ar.xml` — Arabic top-level sitemap index for the Arabic mirrors
 
-Both are also declared in `robots.txt` so crawlers discover them automatically.
+**About the provider sitemaps:** these are **generated offline and served statically by Nginx**, NOT built by Next.js on request. The generator script (`scripts/generate-provider-sitemaps.mjs`) runs hourly via cron on EC2, writes city-sharded XML files to `/home/ubuntu/zavis-shared/sitemaps/`, and Nginx serves them directly. Each top-level URL above is a **sitemap index** listing per-city child shards:
+
+- `/sitemaps/providers/dubai-1.xml`, `/sitemaps/providers/abu-dhabi-1.xml`, etc.
+- `/sitemaps/providers-ar/dubai-1.xml`, `/sitemaps/providers-ar/abu-dhabi-1.xml`, etc.
+
+**You only submit the two top-level index URLs to GSC.** Google auto-discovers the per-city children via the index. Do not manually submit child shard URLs. The architecture is documented in [docs/seo/static-provider-sitemap-architecture-spec.md](seo/static-provider-sitemap-architecture-spec.md) with the full rationale for why static generation replaced the earlier request-time ISR approach.
+
+Both top-level URLs are also declared in `robots.txt` so crawlers discover them automatically.
 
 ## 3. Request Indexing for Key Pages
 

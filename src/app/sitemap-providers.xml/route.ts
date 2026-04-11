@@ -1,9 +1,35 @@
+// ─── RETIRED (as of 2026-04-12) — Nginx serves /sitemap-providers.xml statically ───
+//
+// This handler still exists in code as a safety fallback in case the
+// Nginx `location = /sitemap-providers.xml` block is ever removed or the
+// static artifact at /home/ubuntu/zavis-shared/sitemaps/providers-index.xml
+// is missing. In steady state, requests never reach this route because
+// Nginx intercepts them before they hit Next.js.
+//
+// The permanent architecture lives in:
+//   - docs/seo/static-provider-sitemap-architecture-spec.md (design)
+//   - scripts/generate-provider-sitemaps.mjs                (generator)
+//
+// Per spec §11.3 the preferred end state is to delete this file entirely,
+// but the spec also allows leaving it in place for one deploy with a
+// retirement comment — which is what this comment is. Once the next
+// deploy completes cleanly and the Nginx static path is confirmed in
+// production, this file and its Arabic twin should be removed in a
+// follow-up commit.
+//
+// NOTE: the thin-content gate now lives in src/lib/sitemap-gating.ts so
+// this handler, the Arabic handler, the generator script, and the
+// listing-page `robots: { index: false }` decision all agree on one
+// source of truth. See spec §8.2.
+//
+// ────────────────────────────────────────────────────────────────────────
 import { db } from "@/lib/db";
 import { providers } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { getBaseUrl } from "@/lib/helpers";
+import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 
-export const revalidate = 3600; // regenerate at most once per hour
+export const revalidate = 3600; // regenerate at most once per hour (fallback only)
 
 function escapeXml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -21,30 +47,6 @@ function buildXml(entries: string[]) {
     entries.join("\n") +
     `\n</urlset>`
   );
-}
-
-// Keep this gate in sync with the listing page's `isEnriched` check in
-// `src/app/(directory)/directory/[city]/[...segments]/page.tsx` (case "listing").
-// A provider must hit at least 2 of these signals to be considered non-thin
-// and included in the sitemap. Providers that fail this gate are already
-// `robots: { index: false }` on their page; emitting their URL here would be
-// a crawl-vs-index contradiction that erodes GSC sitemap trust.
-// See Item 0 of docs/zocdoc-plans-reconciled.md.
-function isEnrichedForSitemap(row: {
-  googleRating: string | null;
-  phone: string | null;
-  website: string | null;
-  description: string | null;
-  operatingHours: Record<string, { open: string; close: string }> | null;
-}): boolean {
-  const fields = [
-    Boolean(row.googleRating && Number(row.googleRating) > 0),
-    Boolean(row.phone && row.phone.trim().length > 0),
-    Boolean(row.website && row.website.trim().length > 0),
-    Boolean(row.description && row.description.trim().length > 80),
-    Boolean(row.operatingHours && Object.keys(row.operatingHours).length > 0),
-  ];
-  return fields.filter(Boolean).length >= 2;
 }
 
 export async function GET() {
