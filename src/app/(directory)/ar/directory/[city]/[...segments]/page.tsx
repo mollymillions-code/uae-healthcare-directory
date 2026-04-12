@@ -123,8 +123,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
       const year = new Date().getFullYear();
       return {
-        title: truncateTitle(`${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr} [${year}]`, 50),
-        description: truncateDescription(`قارن ${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr}. تقييمات، مراجعات، تأمين ومواعيد. دليل مجاني معتمد.`, 145),
+        title: total > 0
+          ? truncateTitle(`${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr} [${year}]`, 50)
+          : truncateTitle(`${catNameAr} في ${areaNameAr}، ${cityNameAr}`, 50),
+        description: total > 0
+          ? truncateDescription(`قارن ${total} ${catNameAr} في ${areaNameAr}، ${cityNameAr}. تقييمات، مراجعات، تأمين ومواعيد. دليل مجاني معتمد.`, 145)
+          : truncateDescription(`تبحث عن ${catNameAr} في ${areaNameAr}، ${cityNameAr}؟ تصفح جميع ${catNameAr} في ${cityNameAr} بدلاً من ذلك.`, 145),
+        ...(total === 0 ? { robots: { index: false, follow: true } } : {}),
         alternates: {
           canonical: `${base}/ar/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           languages: {
@@ -410,7 +415,8 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
     const catNameAr = getArabicCategoryName(category.slug);
     const areaNameAr = area.nameAr || area.name;
     const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
-    if (total === 0) notFound();
+    // Empty area+category combos show an empty state with a link to the
+    // city-level category page, instead of a hard 404.
     const regulator = getArabicRegulator(city.slug);
 
     return (

@@ -147,8 +147,15 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       const { total } = await getProviders({ citySlug: city.slug, areaSlug: resolved.area.slug, categorySlug: resolved.category.slug, limit: 1 });
       const year = new Date().getFullYear();
       return {
-        title: truncateTitle(`${total} ${resolved.category.name} in ${resolved.area.name}, ${city.name} [${year}]`),
-        description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Ratings, reviews, insurance & hours. Verified, free directory.`),
+        title: total > 0
+          ? truncateTitle(`${total} ${resolved.category.name} in ${resolved.area.name}, ${city.name} [${year}]`)
+          : truncateTitle(`${resolved.category.name} in ${resolved.area.name}, ${city.name}`),
+        description: total > 0
+          ? truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Ratings, reviews, insurance & hours. Verified, free directory.`)
+          : truncateDescription(`Looking for ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}? Browse all ${resolved.category.name.toLowerCase()} across ${city.name} instead.`),
+        // Empty area+category combos get noindex to prevent thin-content
+        // pollution while preserving link equity via follow:true.
+        ...(total === 0 ? { robots: { index: false, follow: true } } : {}),
         alternates: {
           canonical: `${base}/directory/${city.slug}/${resolved.area.slug}/${resolved.category.slug}`,
           languages: {
@@ -159,7 +166,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         },
         openGraph: {
           title: `${resolved.category.name} in ${resolved.area.name}, ${city.name}`,
-          description: `${total} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Browse verified listings.`,
+          description: `${total > 0 ? total : "Find"} ${resolved.category.name.toLowerCase()} in ${resolved.area.name}, ${city.name}. Browse verified listings.`,
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
@@ -921,9 +928,11 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "area-category") {
     const { area, category } = resolved;
     const { providers, total } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, categorySlug: category.slug, sort: "rating", limit: 50 });
-    if (total === 0) notFound();
-    const topProvider = providers[0];
-    const facetFaqs = generateFacetFaqs(city, category, area, total);
+    // Empty area+category combos show an empty state instead of a hard
+    // 404 — preserves link equity and guides users to the city-level
+    // category page. noindex prevents thin-content pollution.
+    const topProvider = providers[0] ?? null;
+    const facetFaqs = total > 0 ? generateFacetFaqs(city, category, area, total) : [];
 
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -951,7 +960,11 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
         </div>
 
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{generateFacetAnswerBlock(city, category, area, total, topProvider)}</p>
+          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+            {total > 0 && topProvider
+              ? generateFacetAnswerBlock(city, category, area, total, topProvider)
+              : `There are currently no registered ${category.name.toLowerCase()} providers in ${area.name}, ${city.name}. Browse all ${category.name.toLowerCase()} across ${city.name} instead.`}
+          </p>
         </div>
 
         {providers.length > 0 ? (
