@@ -693,6 +693,12 @@ export const professionalsIndex = pgTable(
     // Populated later by image scraper. UI MUST check photoConsent before rendering.
     photoUrl: text("photo_url"),
     photoConsent: boolean("photo_consent").notNull().default(false),
+    // Education institution name (cleaned from DHA register).
+    education: text("education"),
+    // AI-generated one-liner about the institution (e.g. "Top-ranked
+    // medical school in Syria, founded 1903."). NULL when the
+    // institution is unknown or too generic to describe.
+    educationDescription: text("education_description"),
     searchTerms: jsonb("search_terms").$type<string[]>().notNull().default([]),
     relatedConditions: jsonb("related_conditions").$type<string[]>().notNull().default([]),
     dataSource: text("data_source").notNull().default("dha"),

@@ -594,6 +594,8 @@ export interface ProfessionalIndexRecord {
   licenseCount: number;
   photoUrl: string | null;
   photoConsent: boolean;
+  education: string | null;
+  educationDescription: string | null;
   searchTerms: string[];
   relatedConditions: string[];
   status: "active" | "inactive";
@@ -656,6 +658,8 @@ function rowToProfessionalIndexRecord(row: any): ProfessionalIndexRecord {
     licenseCount: Number(row.licenseCount ?? row.license_count ?? 1),
     photoUrl: (row.photoUrl ?? row.photo_url ?? null) as string | null,
     photoConsent: Boolean(row.photoConsent ?? row.photo_consent ?? false),
+    education: (row.education ?? null) as string | null,
+    educationDescription: (row.educationDescription ?? row.education_description ?? null) as string | null,
     searchTerms: coerceStringArray(row.searchTerms ?? row.search_terms),
     relatedConditions: coerceStringArray(
       row.relatedConditions ?? row.related_conditions

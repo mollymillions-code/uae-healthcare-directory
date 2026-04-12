@@ -48,6 +48,24 @@ export function DoctorProfileFacts({ doctor }: DoctorProfileFactsProps) {
       label: "License Count",
       value: String(doctor.licenseCount),
     },
+    // Education — from DHA register, only shown when non-null
+    ...(doctor.education
+      ? [
+          {
+            label: "Education",
+            value: (
+              <span>
+                {doctor.education}
+                {doctor.educationDescription && (
+                  <span className="block mt-0.5 text-xs text-black/40 font-normal">
+                    {doctor.educationDescription}
+                  </span>
+                )}
+              </span>
+            ),
+          },
+        ]
+      : []),
     {
       label: "Data Source",
       value: (
