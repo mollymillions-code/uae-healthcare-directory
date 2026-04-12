@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const base = getBaseUrl();
   const { total } = await getProviders({ citySlug: city.slug, categorySlug: "pharmacy", limit: 1 });
   return {
-    title: `Pharmacy Delivery in ${city.name} — Home Delivery Pharmacies [${new Date().getFullYear()}]`,
-    description: `Find pharmacies offering home delivery in ${city.name}, UAE. Browse ${total} pharmacies with delivery options, operating hours, and contact details.`,
+    title: `Pharmacy Delivery Guide for ${city.name} — How to Get Medications Delivered`,
+    description: `Guide to pharmacy delivery services in ${city.name}, UAE. ${total} pharmacies in the area — contact them to ask about home delivery options.`,
     alternates: { canonical: `${base}/directory/${city.slug}/pharmacy/delivery` },
   };
 }
@@ -62,8 +62,9 @@ export default async function CityPharmacyDeliveryPage({ params }: Props) {
         </div>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
           <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {city.name} has {total} registered pharmacies. Many offer home delivery for both prescription and over-the-counter medications.
-            Delivery availability, hours, and coverage area vary by pharmacy. Contact individual pharmacies to confirm delivery options.
+            {city.name} has {total} registered pharmacies. Many UAE pharmacies offer home delivery — however,
+            we do not currently have structured delivery capability data per pharmacy. Contact individual pharmacies
+            below to ask about their delivery options, coverage area, and hours.
             Prescription medications require a valid UAE prescription for delivery.
           </p>
         </div>
@@ -81,7 +82,7 @@ export default async function CityPharmacyDeliveryPage({ params }: Props) {
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
           <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            Top-Rated Pharmacies in {city.name}
+            Pharmacies in {city.name} — Ask About Delivery
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

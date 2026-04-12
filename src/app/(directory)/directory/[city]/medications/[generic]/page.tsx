@@ -95,8 +95,8 @@ export default async function CityMedicationPage({ params }: Props) {
 
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
           <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {med.genericName}{brandNames ? ` (sold as ${brandNames})` : ""} is available at pharmacies in {city.name}.
-            {" "}{city.name} has {pharmacyCount} registered pharmacies.
+            {med.genericName}{brandNames ? ` (sold as ${brandNames})` : ""} is a medication that may be stocked at pharmacies in {city.name}.
+            {" "}{city.name} has {pharmacyCount} registered pharmacies — contact them to confirm availability.
             {med.isPrescriptionRequired
               ? " This medication requires a prescription from a licensed UAE physician."
               : " This medication is available over the counter without a prescription."}
@@ -111,7 +111,7 @@ export default async function CityMedicationPage({ params }: Props) {
           {brands.length > 0 && (
             <section className="rounded-2xl border border-black/[0.06] bg-white p-6">
               <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-4 border-b-2 border-[#1c1c1c] pb-3">
-                Available Brands in {city.name}
+                Brand Names (UAE-wide)
               </h2>
               <div className="space-y-2">
                 {brands.map((brand) => (

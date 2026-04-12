@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${meds.length} Medications Prescribed by ${specName} Specialists — UAE Guide`,
     description: `Browse ${meds.length} medications commonly prescribed by ${specName.toLowerCase()} specialists in the UAE. Generic names, uses, and pharmacy access.`,
+    ...(meds.length < 2 ? { robots: { index: false, follow: true } } : {}),
     alternates: { canonical: `${base}/specialties/${params.specialty}/medications` },
   };
 }

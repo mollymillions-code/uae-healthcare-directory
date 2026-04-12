@@ -164,7 +164,7 @@ export default async function MedicationClassPage({ params }: Props) {
           Browse UAE pharmacies to check availability of {cls.name.toLowerCase()}.
         </p>
         <Link
-          href="/directory/dubai/pharmacy"
+          href="/pharmacy"
           className="inline-flex items-center gap-2 bg-[#006828] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#005520] transition-colors font-['Geist',sans-serif]"
         >
           Browse Pharmacies <ArrowRight className="h-4 w-4" />

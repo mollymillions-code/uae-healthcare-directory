@@ -30,6 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${meds.length} Medications for ${conditionName} — UAE Prescribing Guide`,
     description: `Browse ${meds.length} medications commonly prescribed for ${conditionName.toLowerCase()} in the UAE. Generic names, brand equivalents, and pharmacy access.`,
+    // noindex 1-item pages — not enough unique value vs the medication's own page
+    ...(meds.length < 2 ? { robots: { index: false, follow: true } } : {}),
     alternates: { canonical: `${base}/conditions/${params.condition}/medications` },
   };
 }
