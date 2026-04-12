@@ -330,3 +330,92 @@ export async function getMedicationWithBrands(slug: string): Promise<{
 
   return { medication, brands, medicationClass };
 }
+
+// ─── Bridge helpers (Phase 3) ───────────────────────────────────────────────
+
+/**
+ * Get all unique conditions across all active medications, with counts.
+ * Derived from the commonConditions JSONB array on each medication.
+ */
+export async function getAllConditionsWithMedications(): Promise<
+  { condition: string; slug: string; medications: Medication[] }[]
+> {
+  const allMeds = await getAllMedications();
+  const condMap = new Map<string, Medication[]>();
+
+  for (const med of allMeds) {
+    for (const condition of med.commonConditions) {
+      if (!condMap.has(condition)) condMap.set(condition, []);
+      condMap.get(condition)!.push(med);
+    }
+  }
+
+  return Array.from(condMap.entries())
+    .map(([condition, meds]) => ({
+      condition: condition.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+      slug: condition,
+      medications: meds,
+    }))
+    .sort((a, b) => b.medications.length - a.medications.length);
+}
+
+/**
+ * Get medications for a specific condition slug.
+ */
+export async function getMedicationsByCondition(conditionSlug: string): Promise<Medication[]> {
+  const allMeds = await getAllMedications();
+  return allMeds.filter(m => m.commonConditions.includes(conditionSlug));
+}
+
+/**
+ * Get all unique specialties across all active medications, with counts.
+ */
+export async function getAllSpecialtiesWithMedications(): Promise<
+  { specialty: string; slug: string; medications: Medication[] }[]
+> {
+  const allMeds = await getAllMedications();
+  const specMap = new Map<string, Medication[]>();
+
+  for (const med of allMeds) {
+    for (const spec of med.commonSpecialties) {
+      if (!specMap.has(spec)) specMap.set(spec, []);
+      specMap.get(spec)!.push(med);
+    }
+  }
+
+  return Array.from(specMap.entries())
+    .map(([specialty, meds]) => ({
+      specialty: specialty.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+      slug: specialty,
+      medications: meds,
+    }))
+    .sort((a, b) => b.medications.length - a.medications.length);
+}
+
+/**
+ * Get medications commonly prescribed by a specific specialty.
+ */
+export async function getMedicationsBySpecialty(specialtySlug: string): Promise<Medication[]> {
+  const allMeds = await getAllMedications();
+  return allMeds.filter(m => m.commonSpecialties.includes(specialtySlug));
+}
+
+/**
+ * Get alternative medications (same class, different generic).
+ */
+export async function getAlternativeMedications(slug: string): Promise<{
+  medication: Medication;
+  alternatives: Medication[];
+  medicationClass: MedicationClass | null;
+} | null> {
+  const medication = await getMedicationBySlug(slug);
+  if (!medication || !medication.classSlug) return null;
+
+  const [classMeds, medicationClass] = await Promise.all([
+    getMedicationsByClass(medication.classSlug),
+    getMedicationClassBySlug(medication.classSlug),
+  ]);
+
+  const alternatives = classMeds.filter(m => m.slug !== medication.slug);
+  return { medication, alternatives, medicationClass };
+}
