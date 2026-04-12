@@ -104,7 +104,16 @@ export async function getInsurerNetworkStats(insurerSlug: string): Promise<Insur
 }
 
 export async function getAllInsurerNetworkStats(): Promise<InsurerNetworkStats[]> {
-  const results = await Promise.all(INSURER_PROFILES.map((p) => getInsurerNetworkStats(p.slug)));
+  // Process insurers in batches of 4 to avoid overwhelming the DB pool.
+  // Each insurer stat makes ~9 queries (8 cities + 1 full scan), so
+  // 4 × 9 = 36 concurrent queries is safe for a pool of 12 connections.
+  const results: (InsurerNetworkStats | undefined)[] = [];
+  const batchSize = 4;
+  for (let i = 0; i < INSURER_PROFILES.length; i += batchSize) {
+    const batch = INSURER_PROFILES.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch.map((p) => getInsurerNetworkStats(p.slug)));
+    results.push(...batchResults);
+  }
   return results.filter(Boolean) as InsurerNetworkStats[];
 }
 

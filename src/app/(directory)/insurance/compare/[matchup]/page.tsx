@@ -23,12 +23,17 @@ export const revalidate = 43200;
 // ─── Top 10 insurers by network size (for generating matchups) ──────────────
 
 async function getTop10Insurers(): Promise<{ slug: string; name: string; networkSize: number }[]> {
-  return (await Promise.all(INSURER_PROFILES.map(async (p) => {
-    const stats = await getInsurerNetworkStats(p.slug);
-    return { slug: p.slug, name: p.name, networkSize: stats?.totalProviders ?? 0 };
-  })))
-    .sort((a, b) => b.networkSize - a.networkSize)
-    .slice(0, 10);
+  try {
+    const { getAllInsurerNetworkStats } = await import("@/lib/insurance");
+    const allStats = await getAllInsurerNetworkStats();
+    return allStats
+      .map((s) => ({ slug: s.slug, name: s.name, networkSize: s.totalProviders }))
+      .sort((a, b) => b.networkSize - a.networkSize)
+      .slice(0, 10);
+  } catch (e) {
+    console.error("[insurance/compare] Failed to load insurer stats:", e instanceof Error ? e.message : e);
+    return INSURER_PROFILES.slice(0, 10).map((p) => ({ slug: p.slug, name: p.name, networkSize: 0 }));
+  }
 }
 
 async function getAllMatchups(): Promise<{ slug: string; slugA: string; slugB: string }[]> {
@@ -83,8 +88,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const profileA = getInsurerProfile(parsed.slugA)!;
   const profileB = getInsurerProfile(parsed.slugB)!;
-  const statsA = await getInsurerNetworkStats(parsed.slugA);
-  const statsB = await getInsurerNetworkStats(parsed.slugB);
+  let statsA: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  let statsB: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  try {
+    [statsA, statsB] = await Promise.all([
+      getInsurerNetworkStats(parsed.slugA),
+      getInsurerNetworkStats(parsed.slugB),
+    ]);
+  } catch {
+    // Graceful degradation
+  }
   const base = getBaseUrl();
 
   const title = `${profileA.name} vs ${profileB.name} — UAE Health Insurance Comparison 2026`;
@@ -216,8 +229,16 @@ export default async function MatchupPage({ params }: Props) {
   const profileB = getInsurerProfile(parsed.slugB);
   if (!profileA || !profileB) notFound();
 
-  const statsA = await getInsurerNetworkStats(parsed.slugA);
-  const statsB = await getInsurerNetworkStats(parsed.slugB);
+  let statsA: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  let statsB: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  try {
+    [statsA, statsB] = await Promise.all([
+      getInsurerNetworkStats(parsed.slugA),
+      getInsurerNetworkStats(parsed.slugB),
+    ]);
+  } catch (e) {
+    console.error(`[insurance/compare/${params.matchup}] Failed to load stats:`, e instanceof Error ? e.message : e);
+  }
   const base = getBaseUrl();
   const cities = getCities();
 

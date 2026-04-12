@@ -41,7 +41,13 @@ export function generateMetadata(): Metadata {
 
 export default async function ArabicInsuranceNavigatorPage() {
   const base = getBaseUrl();
-  const allStats = await getAllInsurerNetworkStats();
+  let allStats: Awaited<ReturnType<typeof getAllInsurerNetworkStats>>;
+  try {
+    allStats = await getAllInsurerNetworkStats();
+  } catch (e) {
+    console.error("[ar/insurance] Failed to load insurer network stats:", e instanceof Error ? e.message : e);
+    allStats = [];
+  }
   const totalPlans = INSURER_PROFILES.reduce((sum, p) => sum + p.plans.length, 0);
   const totalProviders = allStats.reduce((sum, s) => sum + s.totalProviders, 0);
 

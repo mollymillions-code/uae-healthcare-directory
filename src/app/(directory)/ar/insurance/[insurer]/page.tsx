@@ -31,7 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) return {};
   const base = getBaseUrl();
-  const stats = await getInsurerNetworkStats(params.insurer);
+  let stats: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  try {
+    stats = await getInsurerNetworkStats(params.insurer);
+  } catch {
+    // Graceful degradation — metadata still works without network stats
+  }
 
   return {
     title: `${profile.name} للتأمين الصحي في الإمارات — الخطط والتغطية وشبكة ${stats?.totalProviders.toLocaleString() || ""} مقدم خدمة`,
@@ -56,7 +61,12 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) notFound();
 
-  const stats = await getInsurerNetworkStats(params.insurer);
+  let stats: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
+  try {
+    stats = await getInsurerNetworkStats(params.insurer);
+  } catch (e) {
+    console.error(`[ar/insurance/${params.insurer}] Failed to load network stats:`, e instanceof Error ? e.message : e);
+  }
   const base = getBaseUrl();
 
   const cheapestPlan = [...profile.plans].sort(
@@ -288,7 +298,13 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
 
       {/* شركات تأمين أخرى للنظر فيها */}
       {await (async () => {
-        const allStats = await getAllInsurerNetworkStats();
+        let allStats: Awaited<ReturnType<typeof getAllInsurerNetworkStats>>;
+        try {
+          allStats = await getAllInsurerNetworkStats();
+        } catch (e) {
+          console.error(`[ar/insurance/${params.insurer}] Failed to load all insurer stats:`, e instanceof Error ? e.message : e);
+          return null;
+        }
         const others = allStats
           .filter((s) => s.slug !== profile.slug && s.totalProviders > 0)
           .sort((a, b) => {
