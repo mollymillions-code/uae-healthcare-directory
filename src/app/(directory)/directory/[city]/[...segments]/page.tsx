@@ -204,10 +204,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       // both reference identical inclusion logic.
       const isEnriched = isEnrichedForSitemap(resolved.provider);
 
-      // --- SEO title: hard 52-char cap (leaves room for " | Zavis" appended by root layout template) ---
-      // Progressively trim by dropping legal/boilerplate tokens, then fall back to a
-      // word-boundary cut. Never slice mid-word.
-      const maxTitleLen = 52;
+      // --- SEO title: CTR-optimized for position 3-8 SERPs ---
+      // Goal: differentiate from generic directory titles. Include rating
+      // stars (eye-catching in SERP), category name (matches intent), and
+      // review count (social proof). Hard 55-char cap leaves room for
+      // " | Zavis" appended by root layout.
+      const maxTitleLen = 55;
       const cleanProviderName = (name: string): string =>
         name
           .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
@@ -217,53 +219,68 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           .replace(/\s+/g, " ")
           .trim();
       const providerDisplay = cleanProviderName(resolved.provider.name) || resolved.provider.name;
-      const idealTitle = `${providerDisplay}, ${city.name} — Reviews, Doctors & Insurance`;
+      const prov = resolved.provider;
+      const hasRating = prov.googleRating && Number(prov.googleRating) > 0;
+      const ratingBit = hasRating ? `★${prov.googleRating}` : "";
+      const reviewBit = prov.googleReviewCount && prov.googleReviewCount > 0
+        ? `${prov.googleReviewCount.toLocaleString()} Reviews`
+        : "";
+      const catShort = resolved.category.name;
+
+      // Build title from most CTR-impactful parts, progressively trimming
+      // Format priority: "Name City — ★4.5 · Category · 123 Reviews"
+      const titleParts = [ratingBit, catShort, reviewBit].filter(Boolean);
+      const titleTail = titleParts.length > 0 ? ` — ${titleParts.join(" · ")}` : "";
+      const idealTitle = `${providerDisplay} ${city.name}${titleTail}`;
+
       let seoTitle: string;
       if (idealTitle.length <= maxTitleLen) {
         seoTitle = idealTitle;
       } else {
-        const shortTitle = `${providerDisplay} — Reviews & Insurance`;
-        if (shortTitle.length <= maxTitleLen) {
-          seoTitle = shortTitle;
+        // Drop review count first
+        const medParts = [ratingBit, catShort].filter(Boolean);
+        const medTitle = `${providerDisplay} ${city.name} — ${medParts.join(" · ")}`;
+        if (medTitle.length <= maxTitleLen) {
+          seoTitle = medTitle;
         } else {
-          // Word-boundary trim on the provider name, then add the shortest suffix.
-          const tail = " — Reviews";
-          const nameBudget = maxTitleLen - tail.length;
-          let trimmedName = providerDisplay;
-          if (trimmedName.length > nameBudget) {
-            const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
-            trimmedName = (lastSpace > 0 ? trimmedName.slice(0, lastSpace) : trimmedName.slice(0, nameBudget)).trim();
+          // Drop city, keep rating + category
+          const shortParts = [ratingBit, catShort].filter(Boolean);
+          const shortTitle = `${providerDisplay} — ${shortParts.join(" · ")}`;
+          if (shortTitle.length <= maxTitleLen) {
+            seoTitle = shortTitle;
+          } else {
+            // Word-boundary trim on name + rating only
+            const tail = hasRating ? ` — ${ratingBit}` : "";
+            const nameBudget = maxTitleLen - tail.length;
+            let trimmedName = providerDisplay;
+            if (trimmedName.length > nameBudget) {
+              const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
+              trimmedName = (lastSpace > 0 ? trimmedName.slice(0, lastSpace) : trimmedName.slice(0, nameBudget)).trim();
+            }
+            seoTitle = `${trimmedName}${tail}`;
           }
-          seoTitle = `${trimmedName}${tail}`;
         }
       }
 
-      // --- SEO description: max ~155 chars, packed with structured data ---
-      // Build only from non-empty parts; fall back to a proper sentence for cleared providers.
+      // --- SEO description: CTR-optimized, max ~155 chars ---
+      // Lead with rating (eye-catching), then insurance names (matches
+      // insurance-intent queries), then services, end with CTA.
       const descParts: string[] = [];
-      const prov = resolved.provider;
-      if (prov.googleRating && Number(prov.googleRating) > 0) {
-        const reviewBit = prov.googleReviewCount ? ` (${prov.googleReviewCount} reviews)` : "";
-        descParts.push(`★ ${prov.googleRating}/5${reviewBit}`);
-      }
-      if (prov.services && prov.services.length > 0) {
-        descParts.push(`Services: ${prov.services.slice(0, 3).join(", ")}`);
+      if (hasRating && prov.googleReviewCount) {
+        descParts.push(`Rated ${prov.googleRating}/5 from ${prov.googleReviewCount.toLocaleString()} patient reviews`);
       }
       if (prov.insurance && prov.insurance.length > 0) {
-        descParts.push(`Insurance: ${prov.insurance.slice(0, 3).join(", ")}`);
+        descParts.push(`Accepts ${prov.insurance.slice(0, 3).join(", ")}${prov.insurance.length > 3 ? ` +${prov.insurance.length - 3} more` : ""}`);
       }
-      if (prov.phone) {
-        descParts.push("☎ Contact info available");
+      if (prov.services && prov.services.length > 0) {
+        descParts.push(prov.services.slice(0, 3).join(", "));
       }
       let seoDesc: string;
       if (descParts.length > 0) {
-        // Enriched provider: structured description
-        seoDesc = truncateDescription(`${prov.name}: ${descParts.join(". ")}. Hours & directions on Zavis.`);
+        seoDesc = truncateDescription(`${providerDisplay}: ${descParts.join(". ")}. View hours, directions & contact.`);
       } else if (prov.shortDescription) {
-        // Has a pre-written description
-        seoDesc = truncateDescription(`${prov.name}: ${prov.shortDescription}`);
+        seoDesc = truncateDescription(`${providerDisplay}: ${prov.shortDescription}. View hours, directions & contact.`);
       } else {
-        // Cleared provider: build a proper full-sentence fallback (prevents malformed "Name: . Hours...")
         const areaBit = resolved.area?.name ? `${resolved.area.name}, ` : "";
         seoDesc = truncateDescription(
           `${prov.name} is a ${resolved.category.name.toLowerCase()} in ${areaBit}${city.name}, UAE. Address, hours & directions on the UAE Open Healthcare Directory by Zavis.`
