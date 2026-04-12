@@ -219,10 +219,10 @@ export function DesktopNav({
                   : "opacity-0 scale-[0.98] pointer-events-none"
               }`}
             >
-              <div
-                className="fixed inset-0 top-16 bg-black/5 -z-10 transition-opacity duration-200"
-                style={{ opacity: isOpen ? 1 : 0 }}
-              />
+              {/* Scrim removed — the dark overlay behind the mega menu
+                  made the page look broken when hovering the navbar. The
+                  white dropdown panel with border + shadow is sufficient
+                  visual separation. */}
 
               <div className="relative w-full max-w-[1000px] mx-4 mt-2">
                 <div
