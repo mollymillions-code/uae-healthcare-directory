@@ -412,6 +412,8 @@ export function ProviderCard({
       {!hideCounterpart && (
         <Link
           href={counterpartHref}
+          hrefLang={isArabicCard ? "en" : "ar"}
+          lang={isArabicCard ? "en" : "ar"}
           className="relative z-10 pointer-events-auto mt-3 inline-block text-[10px] font-medium text-black/40 hover:text-[#006828] font-['Geist',sans-serif]"
           aria-label={counterpartAria}
         >

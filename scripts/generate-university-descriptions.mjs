@@ -60,12 +60,12 @@ async function generateDescriptions(universities) {
   if (!GEMINI_KEY) throw new Error("GEMINI_API_KEY not set");
 
   const results = {};
-  // Process in batches of 30 to avoid token limits
-  const BATCH = 30;
+  // Process in batches of 15 — Gemini 3.1 Pro generates longer descriptions
+  const BATCH = 15;
 
   for (let i = 0; i < universities.length; i += BATCH) {
     const batch = universities.slice(i, i + BATCH);
-    const uniList = batch.map((u, j) => `${j + 1}. ${u.name}`).join("\n");
+    const uniList = batch.map((u, j) => `${j + 1}. ${u.canonical}`).join("\n");
 
     const prompt = `You are a medical education expert. For each university below, write ONE sentence (max 25 words) describing it as a medical/dental school. Include: country, founding year if notable, and whether it's considered prestigious or well-known in its region. If you don't recognize a university, write "Medical institution" only.
 
@@ -76,38 +76,55 @@ ${uniList}
 
 Return ONLY valid JSON, no markdown fences.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+    // Use OpenRouter with Gemini Flash preview
+    const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+    if (!OPENROUTER_KEY) throw new Error("OPENROUTER_API_KEY environment variable is required");
+    const url = "https://openrouter.ai/api/v1/chat/completions";
     const body = {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 4000,
-        responseMimeType: "application/json",
-      },
+      model: "google/gemini-3.1-pro-preview",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+      max_tokens: 8000,
+      response_format: { type: "json_object" },
     };
 
     try {
       const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENROUTER_KEY}`,
+        },
         body: JSON.stringify(body),
       });
 
       if (!res.ok) {
         const text = await res.text();
-        console.error(`Gemini API error ${res.status}:`, text.slice(0, 200));
+        console.error(`OpenRouter error ${res.status}:`, text.slice(0, 200));
         continue;
       }
 
       const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      let text = data.choices?.[0]?.message?.content || "";
+      // Strip markdown fences if present (handles ```json ... ``` wrapping)
+      const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fenceMatch) text = fenceMatch[1].trim();
+      else text = text.trim();
       try {
         const parsed = JSON.parse(text);
-        Object.entries(parsed).forEach(([name, desc]) => {
-          results[name.toLowerCase()] = String(desc).slice(0, 200);
+        Object.entries(parsed).forEach(([key, desc]) => {
+          const descStr = String(desc).slice(0, 200);
+          // The model might use the university name as key OR a number.
+          // If key is numeric, map it back to the university name from the batch.
+          const numKey = parseInt(key, 10);
+          if (!isNaN(numKey) && numKey >= 1 && numKey <= batch.length) {
+            results[batch[numKey - 1].name.toLowerCase()] = descStr;
+          } else {
+            results[key.toLowerCase()] = descStr;
+          }
         });
       } catch (e) {
-        console.error(`JSON parse error for batch ${i}:`, e.message);
+        console.error(`JSON parse error for batch ${i}:`, e.message, text.slice(0, 80));
       }
     } catch (e) {
       console.error(`Fetch error for batch ${i}:`, e.message);
