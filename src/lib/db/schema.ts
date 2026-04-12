@@ -827,6 +827,109 @@ export const reportAuthors = pgTable(
 // on entityType ("city" | "category" | "provider"). A foreign key constraint is
 // intentionally omitted because no single FK can cover all three target tables.
 // Referential integrity is enforced at the application layer in seed.ts and data.ts.
+// ─── Medications (Phase 1 of medication-pharmacy intent graph) ────────────────
+//
+// Implements § 5–6 and § 14 of
+// docs/playbooks/medication-pharmacy-intent-graph-execution-spec.md.
+//
+// Three tables:
+//   - medicationClasses: therapeutic groupings (e.g. "Antidiabetics")
+//   - medications: canonical generic-drug entities
+//   - medicationBrands: brand aliases (may self-canonicalize or point to generic)
+//
+// The generic medication page is the default canonical. Brand pages
+// self-canonicalize only when they have meaningful independent search demand
+// (see the isCanonicalBrand flag). Pharmacy capability flags live on the
+// existing providers table via ALTER TABLE (Phase 1b).
+
+export const medicationClasses = pgTable(
+  "medication_classes",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    nameAr: text("name_ar"),
+    description: text("description"),
+    // e.g. "Medications that lower blood sugar levels"
+    shortDescription: text("short_description"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  }
+);
+
+export const medications = pgTable(
+  "medications",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    genericName: text("generic_name").notNull(),
+    genericNameAr: text("generic_name_ar"),
+    // FK to medication_classes — soft ref by slug, not integer FK
+    classSlug: text("class_slug"),
+    // "prescription" | "otc" | "controlled"
+    rxStatus: text("rx_status").notNull().default("prescription"),
+    // One-paragraph clinical summary (AI-generated, reviewed)
+    description: text("description"),
+    shortDescription: text("short_description"),
+    // Structured fields from spec § 14
+    commonConditions: jsonb("common_conditions").$type<string[]>().notNull().default([]),
+    commonSpecialties: jsonb("common_specialties").$type<string[]>().notNull().default([]),
+    // e.g. ["HbA1c every 3 months", "kidney function annually"]
+    labMonitoringNotes: jsonb("lab_monitoring_notes").$type<string[]>().notNull().default([]),
+    genericSubstitutionNote: text("generic_substitution_note"),
+    insurerNote: text("insurer_note"),
+    // Capability flags from spec § 5.3
+    isPrescriptionRequired: boolean("is_prescription_required").notNull().default(true),
+    hasGenericEquivalent: boolean("has_generic_equivalent").notNull().default(false),
+    requiresMonitoringLabs: boolean("requires_monitoring_labs").notNull().default(false),
+    isHighIntent: boolean("is_high_intent").notNull().default(false),
+    isCitySensitive: boolean("is_city_sensitive").notNull().default(false),
+    // Gating — from spec § 7 page-state model
+    // "canonical" | "secondary" | "not-generated"
+    pageState: text("page_state").notNull().default("canonical"),
+    status: text("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    classSlugIdx: index("idx_medications_class_slug").on(table.classSlug),
+    statusIdx: index("idx_medications_status").on(table.status),
+    highIntentIdx: index("idx_medications_high_intent").on(table.isHighIntent),
+  })
+);
+
+export const medicationBrands = pgTable(
+  "medication_brands",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    brandName: text("brand_name").notNull(),
+    brandNameAr: text("brand_name_ar"),
+    // FK to medications — soft ref by slug
+    genericSlug: text("generic_slug").notNull(),
+    // Brand-specific fields
+    manufacturer: text("manufacturer"),
+    description: text("description"),
+    shortDescription: text("short_description"),
+    // True → brand page self-canonicalizes (e.g. Ozempic, Panadol).
+    // False → brand page canonicalizes to the generic page.
+    isCanonicalBrand: boolean("is_canonical_brand").notNull().default(false),
+    isHighIntent: boolean("is_high_intent").notNull().default(false),
+    // Gating
+    pageState: text("page_state").notNull().default("canonical"),
+    status: text("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    genericSlugIdx: index("idx_brands_generic_slug").on(table.genericSlug),
+    statusIdx: index("idx_brands_status").on(table.status),
+  })
+);
+
+// ─── FAQs ─────────────────────────────────────────────────────────────────────
+
 export const faqs = pgTable(
   "faqs",
   {
