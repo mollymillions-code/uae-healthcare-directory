@@ -121,6 +121,22 @@ export default async function CityPage({ params }: Props) {
           { label: city.name },
         ]} />
 
+        {/* Cross-language crawl anchor — visible body link to the
+            Arabic city hub. hreflang in the head is canonicalization
+            only; this is the actual PageRank path. */}
+        <div className="mb-4 flex items-center justify-end">
+          <Link
+            href={`/ar/directory/${city.slug}`}
+            lang="ar"
+            hrefLang="ar-AE"
+            dir="rtl"
+            className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-xs font-medium text-black/50 hover:text-[#006828] transition-colors"
+            aria-label={`عرض الرعاية الصحية في ${city.name} بالعربية`}
+          >
+            اقرأ هذه الصفحة بالعربية
+          </Link>
+        </div>
+
         <div className="mb-8">
           <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
             Healthcare Providers in {city.name}, UAE
@@ -231,12 +247,27 @@ export default async function CityPage({ params }: Props) {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <Link
-                      href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                      className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[15px] text-[#1c1c1c] hover:text-[#006828] transition-colors tracking-tight"
-                    >
-                      {p.name}
-                    </Link>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Link
+                        href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[15px] text-[#1c1c1c] hover:text-[#006828] transition-colors tracking-tight"
+                      >
+                        {p.name}
+                      </Link>
+                      {/* Per-provider Arabic counterpart anchor — adds
+                          one inbound /ar/ link per featured provider on
+                          every English city hub (6 per hub × 8 cities). */}
+                      <Link
+                        href={`/ar/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                        lang="ar"
+                        hrefLang="ar-AE"
+                        dir="rtl"
+                        className="font-['Geist',sans-serif] text-[10px] font-medium text-black/30 hover:text-[#006828] transition-colors"
+                        aria-label={`عرض ${p.name} بالعربية`}
+                      >
+                        عربي
+                      </Link>
+                    </div>
                     {hasRatings && Number(p.googleRating) > 0 && (
                       <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
                         {p.googleRating}/5 stars · {p.googleReviewCount?.toLocaleString()} reviews

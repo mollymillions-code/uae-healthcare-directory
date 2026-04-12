@@ -375,14 +375,29 @@ export function faqPageSchema(faqs: { question: string; answer: string }[]) {
 export function breadcrumbSchema(
   items: { name: string; url?: string }[]
 ) {
+  // Google's BreadcrumbList validator inspects the `item` field for a name
+  // when `item` is an object. The earlier shape set `name` at ListItem level
+  // AND `item: { "@type": "WebPage", "@id": url }` with no `name` inside,
+  // which the Rich Results Test flags as "Unnamed item" on every ListItem
+  // whose item is an object. We now embed `name` inside the item object so
+  // the validator sees a fully-specified WebPage reference. The last
+  // breadcrumb (no url) still uses the flat `name` form per schema.org.
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((item, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      name: item.name,
-      ...(item.url ? { item: { "@type": "WebPage", "@id": item.url } } : {}),
+      ...(item.url
+        ? {
+            item: {
+              "@type": "WebPage",
+              "@id": item.url,
+              name: item.name,
+              url: item.url,
+            },
+          }
+        : { name: item.name }),
     })),
   };
 }

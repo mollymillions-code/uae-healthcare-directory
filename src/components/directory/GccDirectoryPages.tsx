@@ -1098,6 +1098,7 @@ export async function GccSegmentsPage({
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  hideCounterpart
                 />
               ))}
             </div>
@@ -1267,6 +1268,7 @@ export async function GccSegmentsPage({
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                hideCounterpart
               />
             ))}
           </div>
@@ -1416,6 +1418,7 @@ export async function GccSegmentsPage({
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                hideCounterpart
               />
             ))}
           </div>
@@ -1969,11 +1972,11 @@ export async function GccSegmentsPage({
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {provider.reviewSummaryV2.snippets.map((s, i) => (
+                          // No microdata attrs — JSON-LD ships reviews nested
+                          // under the MedicalBusiness (itemReviewed implicit).
                           <article
                             key={i}
                             className="bg-white rounded-xl p-4 border border-black/[0.04]"
-                            itemScope
-                            itemType="https://schema.org/Review"
                           >
                             <div className="flex items-center gap-0.5 mb-2">
                               {Array.from({ length: 5 }).map((_, starIdx) => (
@@ -1989,14 +1992,11 @@ export async function GccSegmentsPage({
                                 </span>
                               ))}
                             </div>
-                            <p
-                              className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2"
-                              itemProp="reviewBody"
-                            >
+                            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2">
                               {s.text_fragment}
                             </p>
                             <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                              <span itemProp="author" className="font-medium">
+                              <span className="font-medium">
                                 {s.author_display}
                               </span>
                               {s.relative_time && <span> · {s.relative_time}</span>}

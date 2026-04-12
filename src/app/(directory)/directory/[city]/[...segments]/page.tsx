@@ -1339,6 +1339,26 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
         <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
 
+        {/* Cross-language crawl anchor — one visible body-level link to
+            the Arabic counterpart on every provider profile. hreflang in
+            metadata is a canonicalization hint only; Google needs a real
+            <a href> to flow PageRank into /ar/. Multiplied across 25K+
+            English profiles, this is the primary discovery path for the
+            Arabic listing graph. */}
+        <div className="mb-4 flex items-center justify-end">
+          <Link
+            href={`/ar/directory/${city.slug}/${category.slug}/${provider.slug}`}
+            lang="ar"
+            hrefLang="ar-AE"
+            dir="rtl"
+            className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-xs font-medium text-black/50 hover:text-[#006828] transition-colors"
+            aria-label={`عرض ${provider.name} بالعربية`}
+          >
+            <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+            اقرأ هذه الصفحة بالعربية
+          </Link>
+        </div>
+
         {/* Listing hero banner with category image */}
         <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden rounded-2xl">
           <Image
@@ -1648,11 +1668,19 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {provider.reviewSummaryV2.snippets.map((s, i) => (
+                        // NOTE: no microdata attrs on these cards. The JSON-LD
+                        // graph emitted by generateFullProviderSchema already
+                        // ships these snippets as nested Review nodes inside
+                        // the MedicalBusiness (so itemReviewed is implicit).
+                        // Earlier versions declared itemScope/itemType on the
+                        // <article> which made Google parse it as a standalone
+                        // Review requiring its own itemReviewed + Person author,
+                        // failing the Rich Results Test on every provider page.
+                        // The JSON-LD is the canonical signal; the card is
+                        // presentational only.
                         <article
                           key={i}
                           className="bg-white rounded-xl p-4 border border-black/[0.04]"
-                          itemScope
-                          itemType="https://schema.org/Review"
                         >
                           <div className="flex items-center gap-0.5 mb-2">
                             {Array.from({ length: 5 }).map((_, starIdx) => (
@@ -1666,14 +1694,11 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                               />
                             ))}
                           </div>
-                          <p
-                            className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2"
-                            itemProp="reviewBody"
-                          >
+                          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2">
                             {s.text_fragment}
                           </p>
                           <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                            <span itemProp="author" className="font-medium">
+                            <span className="font-medium">
                               {s.author_display}
                             </span>
                             {s.relative_time && <span> · {s.relative_time}</span>}

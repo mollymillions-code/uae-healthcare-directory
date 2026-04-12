@@ -209,6 +209,50 @@ export default async function ArabicHomePage() {
         </div>
       </section>
 
+      {/* Specialties × Cities crawl matrix.
+          Earlier the "Browse by Specialty" block above only emitted
+          /ar/directory/dubai/{category} anchors, which left every
+          non-Dubai Arabic category hub orphaned from /ar root —
+          discoverable only via the per-city hubs at depth-2. This
+          section emits one chip per (city, category) pair so every
+          /ar/directory/{city}/{category} hub has a direct anchor
+          from the Arabic root, distributing crawl signal across all
+          8 emirates instead of concentrating it on Dubai. */}
+      <section className="container-tc py-10">
+        <div className="section-header">
+          <h2>التخصصات في كل مدينة</h2>
+          <span className="arrows">&lt;&lt;&lt;</span>
+        </div>
+        <div className="space-y-6">
+          {cities.map((city) => (
+            <div key={city.slug}>
+              <h3 className="text-base font-bold text-dark mb-3">
+                <Link
+                  href={`/ar/directory/${city.slug}`}
+                  className="hover:text-accent transition-colors"
+                >
+                  {getArabicCityName(city.slug)}
+                </Link>
+                <span className="text-xs font-normal text-muted mr-2">
+                  ({(cityCountMap[city.slug] ?? 0).toLocaleString("ar-AE")})
+                </span>
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <Link
+                    key={`${city.slug}-${cat.slug}`}
+                    href={`/ar/directory/${city.slug}/${cat.slug}`}
+                    className="inline-block bg-light-50 text-dark text-xs px-3 py-1 border border-black/[0.06] hover:border-accent hover:bg-accent-muted transition-colors"
+                  >
+                    {getArabicCategoryName(cat.slug)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Top Rated */}
       <section className="bg-light-50 py-10">
         <div className="container-tc">

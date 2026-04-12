@@ -754,7 +754,10 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {provider.reviewSummaryV2.snippets.map((s, i) => (
-                        <article key={i} className="bg-white p-4 border border-black/[0.04]" itemScope itemType="https://schema.org/Review">
+                        // No microdata attrs — the JSON-LD provider node
+                        // already ships these snippets as nested Reviews.
+                        // See the matching comment in the English template.
+                        <article key={i} className="bg-white p-4 border border-black/[0.04]">
                           <div className="flex items-center gap-0.5 mb-2">
                             {Array.from({ length: 5 }).map((_, starIdx) => (
                               <Star
@@ -765,11 +768,11 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                               />
                             ))}
                           </div>
-                          <p className="text-sm text-muted leading-relaxed italic mb-2" itemProp="reviewBody">
+                          <p className="text-sm text-muted leading-relaxed italic mb-2">
                             {s.text_fragment}
                           </p>
                           <p className="text-xs text-muted/80">
-                            <span itemProp="author" className="font-medium">
+                            <span className="font-medium">
                               {s.author_display}
                             </span>
                             {s.relative_time && <span> · {s.relative_time}</span>}

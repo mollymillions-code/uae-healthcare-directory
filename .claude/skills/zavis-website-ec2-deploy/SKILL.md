@@ -15,6 +15,9 @@ description: "Zavis Website EC2 Deployment Skill — zero-downtime blue-green de
 6. **NEVER edit source files directly on EC2** — changes get wiped on next deploy
 7. **NEVER use `appleboy/ssh-action`** — it opens dual SSH connections that race. Use raw SSH in workflows.
 8. **If unsure whether an action affects the live site: STOP and ASK the user first**
+9. **NEVER allow `2 old + 2 new` slot workers during deploy or rollback** — with the current PM2 shape, that is a known deploy-time OOM path
+10. **ALWAYS read** `docs/ops/blue-green-deploy-oom-runbook.md`, `.claude/engineering-journal.md`, and `.claude/napkin.md` **before deploy debugging or EC2 changes**
+11. **Do not mix incident classes** — provider sitemap CPU oscillation and deploy-time OOM are separate problems with separate fixes
 
 ---
 
@@ -67,7 +70,16 @@ EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
 
 ## Blue-Green Architecture
 
-Two identical app copies. One is **live** (serving traffic), the other is **idle** (backup/build target). Deploys build on idle, swap traffic, keep old slot as instant rollback.
+Two identical app copies. One is **live** (serving traffic), the other is **idle** (backup/build target).
+
+Important:
+
+- the historical deploy flow on EC2 starts the idle slot before stopping the old live slot
+- that flow became unsafe after the PM2 fire-drill change to `instances: 2` and `max_memory_restart: "6G"`
+- the required fix is documented in [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md)
+- the safe target is bounded overlap: build idle at `0`, start idle at `1`, swap, stop old live, then scale new live from `1 -> 2`
+- on PM2 `6.0.14`, `pm2 start ecosystem.config.js --only <app> -i 1` was verified to ignore the CLI `-i 1` override and honor `instances` from the ecosystem file
+- therefore, the `1`-worker start must come from a config-controlled override, not a bare CLI `-i 1` flag
 
 ```
 /home/ubuntu/zavis-landing-blue/     ← Blue slot (port 3200, PM2: zavis-blue)
@@ -103,7 +115,20 @@ git push zavis-support live
 
 GitHub Actions: lint → type check → SSH into EC2 → runs `deploy.sh`.
 
-### What deploy.sh does
+Important:
+
+- until the bounded-overlap runbook is implemented on the server control plane, a normal push-to-`live` still uses the current EC2 `deploy.sh`
+- that means the deployment path may still carry the known full-overlap OOM risk until the server-side deploy logic is updated
+
+### Required reading before any deploy or deploy-debug work
+
+- [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md)
+- [.claude/engineering-journal.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/.claude/engineering-journal.md:8)
+- [.claude/napkin.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/.claude/napkin.md:19)
+
+### Current server `deploy.sh` behavior
+
+This is the historically documented server-side flow:
 
 1. `flock` — acquires exclusive lock, exits if another deploy is running
 2. Reads `active-slot` → determines LIVE (untouched) and IDLE (build target)
@@ -114,6 +139,28 @@ GitHub Actions: lint → type check → SSH into EC2 → runs `deploy.sh`.
 7. Swap Nginx upstream → `nginx -t` → `systemctl reload nginx`. If nginx -t fails → revert
 8. Post-swap health check with `-H 'Host: www.zavis.ai'`. If fails → revert upstream, reload
 9. Stop old live slot, update `active-slot`, `pm2 save`
+
+With the current PM2 shape, that flow is **not** safe enough by itself because it can transiently create `2 old + 2 new` overlap. Treat it as the current state to inspect, not the target pattern to preserve.
+
+### Required target deploy behavior
+
+Future deploy control-plane work must converge to the bounded-overlap model from [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md):
+
+1. stop idle slot before build
+2. build idle slot with `0` idle PM2 workers
+3. verify no orphan `next build` workers remain
+4. start idle slot at exactly `1` worker via a config-controlled override such as `ZAVIS_PM2_INSTANCES=1`
+5. direct-port health check idle
+6. switch Nginx upstream
+7. post-swap edge health check with `Host: www.zavis.ai`
+8. stop old live slot completely
+9. scale new live slot from `1 -> 2`
+10. `pm2 save`
+
+The deploy path must never allow:
+
+- `2 blue + 2 green`
+- and must not rely on `pm2 start ecosystem.config.js --only <app> -i 1` unless that behavior has been proven on the installed PM2 version
 
 **Concurrency guards:**
 - GitHub Actions: `concurrency: { group: deploy-live, cancel-in-progress: false }`
@@ -139,6 +186,11 @@ $EC2 "/home/ubuntu/zavis-deploy/rollback.sh"
 ```
 
 Starts the previous slot, health-checks it, swaps Nginx back, stops the broken slot.
+
+Rollback must respect the same overlap budget as deploy:
+
+- do not allow `2 broken + 2 restored`
+- follow the bounded-overlap rollback shape from [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md)
 
 ### Git revert (audit trail, ~5 min rebuild)
 
@@ -187,7 +239,10 @@ These cost 4+ hours of debugging. Do not repeat them.
 | **Two repos = two deploys** | Both `origin` and `zavis-support` had deploy workflows. Fixed with `if: github.repository == 'zavis-support/zavis-landing'`. Origin only runs lint. |
 | **Always clear `node_modules/.cache`** | Before rebuilding after a failed build. Stale cache → `next-font-manifest.json` missing errors. |
 | **Always use `nohup` for manual builds** | SSH times out in ~20 min. Without nohup, disconnect kills the build mid-way. |
-| **Check `free -h` before building** | Builds need ~2-3GB RAM. Stop idle PM2 processes if memory is low. |
+| **Deploy-time OOM is overlap math, not crawler pressure** | The known April 2026 crash was `instances: 2` on both slots plus `6G` ceilings plus orphan build workers. Treat deploy OOM and sitemap CPU as separate problems. |
+| **Use `MemAvailable`, not `free`, for deploy headroom** | `free -h` is not the decision metric. Check `MemAvailable` or `free -m` `available`, and follow the runbook threshold. |
+| **PM2 cluster mode shows one row per worker** | Two `zavis-blue` rows can be legitimate siblings when `instances: 2`. Verify with `NODE_APP_INSTANCE`, `pm2 describe`, or timestamps before calling anything a duplicate. |
+| **PM2 `-i 1` was ignored with the ecosystem file on PM2 6.0.14** | Verified during bounded-overlap testing: `pm2 start ecosystem.config.js --only zavis-green -i 1` still started both configured workers. Use a config-driven instance override instead. |
 
 ---
 
@@ -221,6 +276,9 @@ $EC2 "psql -U zavis_admin -d zavis_landing -c 'SELECT count(*) FROM providers;'"
 
 # Server health
 $EC2 "df -h && free -h"
+$EC2 "grep -E 'MemAvailable|SwapFree' /proc/meminfo"
+$EC2 "ps -ef | grep 'next/dist/compiled/jest-worker' | grep -v grep"
+$EC2 "pm2 jlist"
 ```
 
 ### Manual Nginx Swap (Emergency Only)
@@ -245,7 +303,8 @@ gh run view <run-id> --log
 | Symptom | Cause | Fix |
 |---|---|---|
 | Lint/type error in CI | Code issue | Fix locally, push again |
-| Build OOM | Low RAM | `free -h`, stop idle processes |
+| Deploy-time OOM during swap | Unsafe `2 old + 2 new` overlap or orphan build workers | Follow [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md) and do not preserve full-overlap transitions |
+| Build memory pressure before swap | Low real headroom on box | Check `MemAvailable`, stop idle slot, clean orphan `next build` workers, fail closed if below threshold |
 | `next-font-manifest.json` missing | Stale cache | `rm -rf node_modules/.cache .next` on idle slot |
 | Static file 404 | Broken symlink | Check `readlink /home/ubuntu/zavis-landing-active` |
 | Health check 404 through Nginx | Missing Host header | Use `-H 'Host: www.zavis.ai'` |

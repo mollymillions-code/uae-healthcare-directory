@@ -40,6 +40,10 @@ interface ProviderCardProps {
     wheelchairAccessibleSeating?: boolean;
   } | null;
   reviewSnippet?: string | null;
+  // Set to true for GCC (qa/sa/bh/kw) providers whose Arabic
+  // counterpart pages do not exist. Without this, the card emits a
+  // "عربي" link to /ar/directory/{city}/… which would 404.
+  hideCounterpart?: boolean;
 }
 
 // ─── Open-now surrogate ────────────────────────────────────────────────────
@@ -171,6 +175,7 @@ export function ProviderCard({
   insurance, languages, services, operatingHours, accessibilityOptions,
   reviewSnippet,
   basePath = "/directory",
+  hideCounterpart = false,
 }: ProviderCardProps) {
   const rating = Number(googleRating) || 0;
   const reviewCount = Number(googleReviewCount) || 0;
@@ -193,6 +198,20 @@ export function ProviderCard({
   );
 
   const href = `${basePath}/${citySlug}/${categorySlug}/${slug}`;
+  // Cross-language counterpart path for the internal-link graph. On an
+  // English card we point at the Arabic profile; on an Arabic card we
+  // point back at the English profile. This adds one visible anchor to
+  // the counterpart locale per card, which multiplied across every hub
+  // gives Googlebot a real PageRank path into /ar/ instead of relying on
+  // the single header button + sitemap submission.
+  const isArabicCard = basePath === "/ar/directory";
+  const counterpartHref = isArabicCard
+    ? `/directory/${citySlug}/${categorySlug}/${slug}`
+    : `/ar/directory/${citySlug}/${categorySlug}/${slug}`;
+  const counterpartLabel = isArabicCard ? "English" : "عربي";
+  const counterpartAria = isArabicCard
+    ? `View ${name} in English`
+    : `عرض ${name} بالعربية`;
 
   const openToneClass =
     openState?.tone === "green"
@@ -202,13 +221,16 @@ export function ProviderCard({
       : "bg-black/[0.04] text-black/50";
 
   return (
-    <Link
-      href={href}
-      className="group block bg-white rounded-2xl p-5 border border-black/[0.06] hover:shadow-card hover:border-[#006828]/15 hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2"
-      aria-label={`${name} — ${categoryName}`}
+    // The whole card is clickable via the main Link's ::before pseudo
+    // overlay (see below). The outer element is an <article>, NOT a
+    // <Link>, because we need a second sibling <Link> inside for the
+    // cross-language crawl anchor — nested <a> is invalid HTML and
+    // React would either strip it or throw a hydration error.
+    <article
+      className="group relative bg-white rounded-2xl p-5 border border-black/[0.06] hover:shadow-card hover:border-[#006828]/15 hover:-translate-y-0.5 transition-all duration-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-[#006828] focus-within:ring-offset-2"
     >
       {/* Top row: facility tag + rating badge */}
-      <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="flex items-center justify-between gap-2 mb-2 pointer-events-none">
         <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">
           {categoryName}
         </span>
@@ -223,7 +245,7 @@ export function ProviderCard({
         )}
       </div>
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 pointer-events-none">
         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl">
           <Image
             src={getCategoryImagePath(categorySlug)}
@@ -237,7 +259,18 @@ export function ProviderCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors truncate tracking-tight">
-              {name}
+              {/* Main clickable link. The `before:` pseudo element makes
+                  the whole card clickable. `pointer-events-auto` is
+                  applied so the Link itself is focusable (the parent
+                  flex row has pointer-events-none for click pass-through
+                  to the overlay). */}
+              <Link
+                href={href}
+                className="pointer-events-auto outline-none before:absolute before:inset-0 before:rounded-2xl before:content-['']"
+                aria-label={`${name} — ${categoryName}`}
+              >
+                {name}
+              </Link>
             </h3>
             {isVerified && (
               <span
@@ -368,6 +401,23 @@ export function ProviderCard({
           aria-hidden="true"
         />
       </div>
-    </Link>
+
+      {/* Cross-language crawl anchor. Sits on top of the card's main
+          clickable ::before overlay via `relative z-10` + explicit
+          pointer-events, so its own click is not swallowed by the
+          main provider link. This is the actual PageRank path into
+          the counterpart locale — hreflang metadata alone does not
+          transfer link equity. Suppressed for GCC providers whose
+          Arabic counterpart pages do not exist. */}
+      {!hideCounterpart && (
+        <Link
+          href={counterpartHref}
+          className="relative z-10 pointer-events-auto mt-3 inline-block text-[10px] font-medium text-black/40 hover:text-[#006828] font-['Geist',sans-serif]"
+          aria-label={counterpartAria}
+        >
+          {counterpartLabel}
+        </Link>
+      )}
+    </article>
   );
 }
