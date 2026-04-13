@@ -5,27 +5,65 @@ on:
     - cron: '0 */2 * * *'
   workflow_dispatch:
 
+# Own concurrency group — prevents two pipeline runs from overlapping.
+# Does NOT share deploy-live group (that would let GitHub cancel live
+# deploys when a pipeline starts). The host-level flock on
+# /tmp/zavis-deploy.lock handles deploy↔pipeline mutual exclusion.
+concurrency:
+  group: content-pipeline
+  cancel-in-progress: true
+
 jobs:
   generate:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
       - name: Run pipeline on EC2
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 25m
-          script: |
-            DEPLOY_DIR=$(readlink -f /home/ubuntu/zavis-landing-active)
-            cd $DEPLOY_DIR
-            git pull origin live
+        run: |
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=20 ubuntu@${{ secrets.EC2_HOST }} '
+            # Acquire the same flock as deploy.sh — prevents contention
+            exec 200>/tmp/zavis-deploy.lock
+            if ! flock -n 200; then
+              echo "Deploy in progress — skipping pipeline run"
+              exit 0
+            fi
+
+            # Use a dedicated workspace — NEVER git pull in the active
+            # slot. The active slot is managed exclusively by deploy.sh.
+            WORK_DIR=/home/ubuntu/zavis-pipeline-workspace
+            mkdir -p $WORK_DIR
+            if [ ! -d "$WORK_DIR/.git" ]; then
+              git clone --depth 1 --branch live https://github.com/zavis-support/zavis-landing.git $WORK_DIR
+            fi
+            cd $WORK_DIR
+            git fetch origin live --depth 1
+            git reset --hard origin/live
+
+            # Symlink shared env + data so DB access works
+            ln -sfn /home/ubuntu/zavis-landing-active/.env.local $WORK_DIR/.env.local
+            ln -sfn /home/ubuntu/zavis-shared/data $WORK_DIR/data 2>/dev/null || true
+
+            # Install deps if needed
+            if [ ! -d node_modules ]; then npm ci; fi
+
             mkdir -p public/images/intelligence
             npx tsx scripts/run-pipeline-persist.ts
 
-            # Commit generated images if any
+            # Copy generated images to the active slot (not git operations on live tree)
+            ACTIVE_DIR=$(readlink -f /home/ubuntu/zavis-landing-active)
+            cp -r public/images/intelligence/*.jpg $ACTIVE_DIR/public/images/intelligence/ 2>/dev/null || true
+
+            # Commit from the workspace, not the active slot
             git add public/images/intelligence/*.jpg 2>/dev/null || true
             if git diff --staged --quiet; then
               echo "No new images to commit"
@@ -37,3 +75,4 @@ jobs:
             fi
 
             echo "Pipeline complete: $(date -u)"
+          '

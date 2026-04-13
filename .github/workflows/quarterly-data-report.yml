@@ -6,25 +6,48 @@ on:
     - cron: '0 6 1 1,4,7,10 *'
   workflow_dispatch:
 
+concurrency:
+  group: quarterly-report
+  cancel-in-progress: true
+
 jobs:
   generate-report:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
       - name: Generate quarterly data report on EC2
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 15m
-          script: |
-            DEPLOY_DIR=$(readlink -f /home/ubuntu/zavis-landing-active)
-            cd $DEPLOY_DIR
-            git pull origin live
+        run: |
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o ServerAliveInterval=60 ubuntu@${{ secrets.EC2_HOST }} '
+            exec 200>/tmp/zavis-deploy.lock
+            if ! flock -n 200; then
+              echo "Deploy in progress — skipping report generation"
+              exit 0
+            fi
+
+            # Dedicated workspace — never touch the active slot
+            WORK_DIR=/home/ubuntu/zavis-pipeline-workspace
+            mkdir -p $WORK_DIR
+            if [ ! -d "$WORK_DIR/.git" ]; then
+              git clone --depth 1 --branch live https://github.com/zavis-support/zavis-landing.git $WORK_DIR
+            fi
+            cd $WORK_DIR
+            git fetch origin live --depth 1
+            git reset --hard origin/live
+            ln -sfn /home/ubuntu/zavis-landing-active/.env.local $WORK_DIR/.env.local
+            if [ ! -d node_modules ]; then npm ci; fi
 
             echo "=== Generating Quarterly Data Report ==="
             npx tsx scripts/quarterly-data-report.ts
 
             echo "=== Report generation complete: $(date -u) ==="
+          '

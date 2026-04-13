@@ -1,6 +1,9 @@
 // PM2 ecosystem config for the zavis-landing blue-green deployment.
 //
-// Steady state: each slot runs 2 cluster workers with a 6G max_memory_restart.
+// Steady state: each slot runs 2 cluster workers with a 2G max_memory_restart.
+// Workers bloat from ~150MB to 2-3GB over 24h due to ISR cache accumulation.
+// At 2G, PM2 gracefully restarts the worker before it causes memory pressure.
+// The old 6G ceiling allowed workers to bloat unchecked and caused OOM crashes.
 //
 // Deploy-time override: during the bounded-overlap transition documented in
 // docs/ops/blue-green-deploy-oom-runbook.md section 9.1, the deploy script
@@ -13,7 +16,8 @@
 // with "type": "module" would otherwise flip this file into ESM mode and
 // break `module.exports`. Documented in runbook section 9.1 hardening.
 //
-// IMPORTANT: This file is on EC2 only, not in git. Drift risk.
+// This file lives in git at scripts/ec2-deploy-infra/ and is synced
+// to EC2 by the GHA deploy workflow's drift-prevention step.
 
 module.exports = {
   apps: [
@@ -24,7 +28,7 @@ module.exports = {
       args: "start -p 3200",
       exec_mode: "cluster",
       instances: Number.parseInt(process.env.ZAVIS_PM2_INSTANCES ?? "2", 10),
-      max_memory_restart: "6G",
+      max_memory_restart: "2G",
       env: { NODE_ENV: "production", PORT: 3200 },
       error_file: "/home/ubuntu/zavis-landing-blue/logs/error.log",
       out_file: "/home/ubuntu/zavis-landing-blue/logs/out.log",
@@ -36,7 +40,7 @@ module.exports = {
       args: "start -p 3201",
       exec_mode: "cluster",
       instances: Number.parseInt(process.env.ZAVIS_PM2_INSTANCES ?? "2", 10),
-      max_memory_restart: "6G",
+      max_memory_restart: "2G",
       env: { NODE_ENV: "production", PORT: 3201 },
       error_file: "/home/ubuntu/zavis-landing-green/logs/error.log",
       out_file: "/home/ubuntu/zavis-landing-green/logs/out.log",
