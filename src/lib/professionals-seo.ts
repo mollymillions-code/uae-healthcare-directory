@@ -225,8 +225,8 @@ export function specialtyHubSchema(
     "@type": "CollectionPage",
     "@id": `${canonicalUrl}#collection`,
     url: canonicalUrl,
-    name: `${specialtyName} Doctors in the UAE`,
-    description: `Directory of ${totalDoctors.toLocaleString()} DHA-licensed ${specialtyName} professionals in the UAE, sourced from the official Sheryan register.`,
+    name: `${specialtyName} Doctors in Dubai`,
+    description: `Directory of ${totalDoctors.toLocaleString()} DHA-licensed ${specialtyName} professionals in Dubai, sourced from the official Sheryan register.`,
     inLanguage: ["en-AE"],
     isPartOf: {
       "@type": "WebSite",

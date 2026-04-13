@@ -38,8 +38,14 @@ export function generateMetadata({ params }: Props): Metadata {
   const count = professionals.length;
   const base = getBaseUrl();
   return {
-    title: `${spec.name} at ${profile.name} — ${count.toLocaleString()} Licensed ${count === 1 ? "Professional" : "Professionals"}`,
-    description: `${count.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai. Browse the full staff list with license types, sourced from the official Sheryan Medical Registry.`,
+    title: count > 0
+      ? `${spec.name} at ${profile.name} — ${count.toLocaleString()} Licensed ${count === 1 ? "Professional" : "Professionals"}`
+      : `${spec.name} at ${profile.name}`,
+    description: count > 0
+      ? `${count.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai. Browse the full staff list with license types, sourced from the official Sheryan Medical Registry.`
+      : `Looking for ${spec.name.toLowerCase()} professionals at ${profile.name}? No staff currently listed for this specialty.`,
+    // noindex when zero professionals — empty page has no unique value
+    ...(count === 0 ? { robots: { index: false, follow: true } } : {}),
     alternates: {
       canonical: `${base}/professionals/facility/${profile.slug}/${spec.slug}`,
     },

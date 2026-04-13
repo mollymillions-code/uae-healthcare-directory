@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { DoctorProfilePage } from "@/components/professionals/DoctorProfilePage";
+import { cache } from "react";
 import {
   getProfessionalBySlug,
   getRelatedProfessionalsFromIndex,
@@ -18,6 +19,11 @@ import {
   getAllSpecialtySlugs,
   type ProfessionalIndexRecord,
 } from "@/lib/professionals";
+
+// Deduplicate: generateMetadata() and the page component both need the
+// doctor record. React's cache() ensures the DB query runs once per
+// request, not twice.
+const getCachedDoctor = cache((slug: string) => getProfessionalBySlug(slug));
 import { doctorProfileSchema } from "@/lib/professionals-seo";
 import { truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -68,7 +74,7 @@ function buildCanonicalUrl(doctor: ProfessionalIndexRecord): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const doctor = await getProfessionalBySlug(params.doctor);
+  const doctor = await getCachedDoctor(params.doctor);
   if (!doctor || doctor.specialtySlug !== params.specialty) {
     return { title: "Doctor not found | Zavis" };
   }
@@ -117,7 +123,7 @@ function toTitleCase(s: string): string {
 }
 
 export default async function DoctorPage({ params }: Props) {
-  const doctor = await getProfessionalBySlug(params.doctor);
+  const doctor = await getCachedDoctor(params.doctor);
   // Not found OR slug mismatch against specialty parent
   if (!doctor || doctor.status !== "active") notFound();
   if (doctor.specialtySlug !== params.specialty) notFound();

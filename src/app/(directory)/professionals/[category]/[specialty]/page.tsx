@@ -31,10 +31,14 @@ export function generateMetadata({ params }: Props): Metadata {
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec || spec.category !== params.category) return {};
   const base = getBaseUrl();
+  // Canonical doctor-intent lives at /find-a-doctor/[specialty]. This
+  // /professionals/ route is a secondary organizational view — noindex
+  // to avoid duplicate content and consolidate ranking signals.
   return {
     title: `Find a ${spec.name} in Dubai — ${spec.count.toLocaleString()} Licensed Professionals`,
     description: `There are ${spec.count.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals practicing in Dubai. Browse the full list with license type and facility details, sourced from the DHA Sheryan Medical Registry.`,
-    alternates: { canonical: `${base}/professionals/${params.category}/${spec.slug}` },
+    robots: { index: false, follow: true },
+    alternates: { canonical: `${base}/find-a-doctor/${spec.slug}` },
     openGraph: {
       title: `Find a ${spec.name} in Dubai — ${spec.count.toLocaleString()} Licensed Professionals`,
       description: `${spec.count.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals in Dubai. Full directory sourced from DHA.`,

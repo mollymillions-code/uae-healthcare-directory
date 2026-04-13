@@ -35,8 +35,9 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: `ابحث عن ${spec.nameAr} في دبي — ${count.toLocaleString("ar-AE")} كادر مرخّص`,
     description: `يوجد ${count.toLocaleString("ar-AE")} كادر صحي مرخّص في تخصص ${spec.nameAr} يمارسون في دبي. تصفح القائمة الكاملة مع نوع الترخيص وتفاصيل المنشأة، مصدرها السجل الطبي شريان التابع لهيئة صحة دبي.`,
+    robots: { index: false, follow: true },
     alternates: {
-      canonical: `${base}/ar/professionals/${params.category}/${spec.slug}`,
+      canonical: `${base}/ar/find-a-doctor/${spec.slug}`,
       languages: {
         "en-AE": `${base}/professionals/${params.category}/${spec.slug}`,
         "ar-AE": `${base}/ar/professionals/${params.category}/${spec.slug}`,

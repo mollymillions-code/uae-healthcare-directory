@@ -63,13 +63,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     limit: 1,
   });
   const year = new Date().getFullYear();
+  // Data is DHA-licensed (Dubai only) — don't claim "UAE"
   const rawTitle = total > 0
-    ? `${total}+ ${specialtyName} Doctors in UAE [${year}] | Zavis`
-    : `${specialtyName} Doctors in the UAE | Zavis`;
+    ? `${total}+ ${specialtyName} Doctors in Dubai [${year}] | Zavis`
+    : `${specialtyName} Doctors in Dubai | Zavis`;
   const rawDescription =
     total > 0
-      ? `Browse ${total} DHA-licensed ${specialtyName} doctors in the UAE, sourced from the official Sheryan register. Facility, license type, and specialty details verified monthly.`
-      : `${specialtyName} doctors in the UAE, sourced from the official DHA Sheryan register.`;
+      ? `Browse ${total} DHA-licensed ${specialtyName} doctors in Dubai, sourced from the official Sheryan register. Facility, license type, and specialty details verified monthly.`
+      : `${specialtyName} doctors in Dubai, sourced from the official DHA Sheryan register.`;
 
   const canonical = `${base}/find-a-doctor/${params.specialty}`;
   return {

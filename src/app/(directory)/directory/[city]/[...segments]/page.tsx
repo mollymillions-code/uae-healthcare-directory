@@ -1004,8 +1004,9 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     const { area } = resolved;
     const insurers = getInsuranceProviders();
 
-    // Get all providers in this area
-    const { providers: areaProviders } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, limit: 99999 });
+    // Cap at 200 — enough for insurer counting without an unbounded query.
+    // The old limit: 99999 was a performance liability on large areas.
+    const { providers: areaProviders } = await getProviders({ citySlug: city.slug, areaSlug: area.slug, limit: 200 });
 
     // Count providers per insurer in this area
     const insurerBreakdown = insurers
