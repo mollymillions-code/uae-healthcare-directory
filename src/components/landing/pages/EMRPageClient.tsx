@@ -7,7 +7,7 @@ import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
 import { emrFeatures, emrCapabilities } from "@/data/landing/emr";
 import { LogoBar } from "@/components/landing/LogoBar";
 import { emrPartners } from "@/data/landing/brand-partners";
-import { PractoIcon, MeDASIcon, UniteIcon, HelixIcon, WhatsAppIcon, InstagramIcon, FacebookIcon, TelegramIcon, SMSIcon, WebChatIcon } from "@/components/landing/BrandIcons";
+import { PractoIcon, MeDASIcon, UniteIcon, WhatsAppIcon, InstagramIcon, FacebookIcon, TelegramIcon, SMSIcon, WebChatIcon } from "@/components/landing/BrandIcons";
 
 export function EMRPageClient() {
   return (
@@ -80,7 +80,6 @@ export function EMRPageClient() {
                       { Icon: PractoIcon, name: "Practo" },
                       { Icon: MeDASIcon, name: "MeDAS" },
                       { Icon: UniteIcon, name: "Unite" },
-                      { Icon: HelixIcon, name: "Helix" },
                     ].map(({ Icon, name }) => (
                       <div key={name} className="flex items-center gap-2.5 bg-[#f8f8f6] rounded-xl px-3 py-2.5">
                         <Icon className="w-8 h-8 shrink-0" />
@@ -160,7 +159,6 @@ export function EMRPageClient() {
                       { Icon: PractoIcon, name: "Practo" },
                       { Icon: MeDASIcon, name: "MeDAS" },
                       { Icon: UniteIcon, name: "Unite" },
-                      { Icon: HelixIcon, name: "Helix" },
                     ].map(({ Icon, name }) => (
                       <div key={name} className="flex items-center gap-2 bg-[#f8f8f6] rounded-lg px-2.5 py-2">
                         <Icon className="w-7 h-7 shrink-0" />

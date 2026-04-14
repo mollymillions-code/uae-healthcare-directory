@@ -9,7 +9,6 @@ import {
   PractoIcon,
   MeDASIcon,
   UniteIcon,
-  HelixIcon,
   TwilioIcon,
   AvayaIcon,
   ThreeCXIcon,
@@ -29,7 +28,6 @@ export const emrPartners = [
   { icon: PractoIcon, name: "Practo", color: "#1A237E" },
   { icon: MeDASIcon, name: "MeDAS", color: "#333333" },
   { icon: UniteIcon, name: "Unite", color: "#1c1c1c" },
-  { icon: HelixIcon, name: "Helix", color: "#D32F2F" },
 ];
 
 export const channelPartners = [
