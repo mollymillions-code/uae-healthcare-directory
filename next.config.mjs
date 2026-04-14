@@ -2,14 +2,13 @@
 const nextConfig = {
   poweredByHeader: false,
   staticPageGenerationTimeout: 300,
+  // Disable in-memory ISR/fetch cache. Workers were bloating from 150MB
+  // to 3GB over 24h as cached pages accumulated in the Node.js heap.
+  // With this set to 0, Next.js uses the file-system cache (.next/cache/)
+  // instead. PM2 max_memory_restart at 2G acts as a safety net.
+  cacheMaxMemorySize: 0,
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    // Disable in-memory ISR cache. Workers were bloating from 150MB to
-    // 3GB over 24h as cached pages accumulated in the Node.js heap.
-    // With this set to 0, Next.js uses the file-system cache (.next/cache/)
-    // instead, which should significantly reduce heap growth. The PM2
-    // max_memory_restart at 2G acts as a safety net for any remaining growth.
-    isrMemoryCacheSize: 0,
   },
   images: {
     // Serve WebP by default. Without this, Next.js sometimes falls back
