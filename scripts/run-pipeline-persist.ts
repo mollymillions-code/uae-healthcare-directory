@@ -202,13 +202,12 @@ Return the improved version as JSON with the same fields (slug, title, excerpt, 
   };
 }
 
-// ─── Imagen 4.0 Image Generator ─────────────────────────────────────────────────
+// ─── Image Generator via OpenRouter + Gemini 3.1 Flash Image Preview ────────────
 
 async function generateImage(title: string, category: string): Promise<string | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_KEY;
   if (!apiKey) return null;
 
-  // Map category to visual scene for better context
   const sceneHint: Record<string, string> = {
     regulatory: "a formal government hearing room or courtroom with legal documents",
     financial: "a modern trading floor, financial data screens, or corporate boardroom",
@@ -222,35 +221,41 @@ async function generateImage(title: string, category: string): Promise<string | 
   };
   const scene = sceneHint[category] || "a modern UAE hospital with clean architecture";
 
-  const prompt = `Professional editorial photograph for a healthcare news article titled "${title}". The image should depict: ${scene}. Style: photojournalistic, cinematic lighting, shallow depth of field. UAE/Middle East context. NO text, NO watermarks, NO logos. 16:9 landscape.`;
+  const prompt = `Generate a photojournalistic image for a healthcare news article titled "${title}". The image should depict: ${scene}. Style: editorial, cinematic lighting, shallow depth of field. UAE/Middle East context. NO text, NO watermarks, NO logos. 16:9 landscape.`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          instances: [{ prompt }],
-          parameters: { sampleCount: 1, aspectRatio: "16:9" },
-        }),
-        signal: AbortSignal.timeout(30000),
-      }
-    );
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-image-preview",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 8192,
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
 
     if (!response.ok) {
-      console.log(`[Imagen] API returned ${response.status}`);
+      console.log(`[ImageGen] API returned ${response.status}`);
       return null;
     }
 
     const data = await response.json();
-    const prediction = data.predictions?.[0];
-    if (prediction?.bytesBase64Encoded) {
-      return `data:image/png;base64,${prediction.bytesBase64Encoded}`;
+    const msg = data.choices?.[0]?.message;
+    // OpenRouter returns generated images in msg.images array
+    const images = msg?.images;
+    if (images && images.length > 0) {
+      const imageUrl = images[0]?.image_url?.url;
+      if (imageUrl && imageUrl.startsWith("data:image")) {
+        return imageUrl;
+      }
     }
     return null;
   } catch (err) {
-    console.log(`[Imagen] Error: ${String(err).slice(0, 100)}`);
+    console.log(`[ImageGen] Error: ${String(err).slice(0, 100)}`);
     return null;
   }
 }

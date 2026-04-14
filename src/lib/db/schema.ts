@@ -945,3 +945,31 @@ export const faqs = pgTable(
     entityIdx: index("idx_faqs_entity").on(table.entityType, table.entityId),
   })
 );
+
+// ─── Admin Change Log ─────────────────────────────────────────────────────
+//
+// Tracks every edit made through the admin dashboard. Stores the before/after
+// values as JSONB so we can diff and audit. Never deleted.
+
+export const adminChanges = pgTable(
+  "admin_changes",
+  {
+    id: serial("id").primaryKey(),
+    // "provider" | "medication" | "brand" | "professional" | "medication_class"
+    entityType: text("entity_type").notNull(),
+    entityId: text("entity_id").notNull(),
+    entityName: text("entity_name"),
+    // Which field(s) changed
+    fieldName: text("field_name").notNull(),
+    oldValue: jsonb("old_value"),
+    newValue: jsonb("new_value"),
+    // Who made the change (email or "admin" for key-based auth)
+    changedBy: text("changed_by").notNull().default("admin"),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    entityIdx: index("idx_admin_changes_entity").on(table.entityType, table.entityId),
+    createdIdx: index("idx_admin_changes_created").on(table.createdAt),
+  })
+);
