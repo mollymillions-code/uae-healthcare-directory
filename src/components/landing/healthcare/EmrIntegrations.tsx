@@ -6,7 +6,6 @@ const emrPartners = [
   { name: "M@DAS", logo: "/images/landing/emrs/medas.png" },
   { name: "Practo", logo: "/images/landing/emrs/practo.png" },
   { name: "Unite", logo: "/images/landing/emrs/unite.png" },
-  { name: "Helix", logo: "/images/landing/emrs/helix.svg" },
 ];
 
 export default function EmrIntegrations() {
