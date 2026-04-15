@@ -48,7 +48,10 @@ $EC2 "curl -s -o /dev/null -w '%{http_code}' -H 'Host: www.zavis.ai' http://loca
 | Deploy branch | `live` |
 | Total sitemap URLs | ~46,000+ |
 | PM2 instances | 2 per slot (controlled via `ZAVIS_PM2_INSTANCES` env var) |
+| PM2 max_memory_restart | `2G` (was `6G` — lowered April 2026 to bound ISR cache bloat) |
+| ISR cache | `cacheMaxMemorySize: 0` in next.config.mjs — file-system cache, NOT in-memory |
 | Ecosystem config | `ecosystem.config.cjs` (NOT .js — avoids ESM trap from `package.json type:module`) |
+| Image generation | OpenRouter `google/gemini-3.1-flash-image-preview` (via `OPENROUTER_KEY` env var) |
 
 **Git remotes (local):**
 - `origin` → `mollymillions-code/uae-healthcare-directory` (dev repo, runs lint only)
@@ -78,7 +81,7 @@ Two identical app copies. One is **live** (serving traffic), the other is **idle
 Important:
 
 - the historical deploy flow on EC2 starts the idle slot before stopping the old live slot
-- that flow became unsafe after the PM2 fire-drill change to `instances: 2` and `max_memory_restart: "6G"`
+- that flow became unsafe after the PM2 fire-drill change to `instances: 2` and `max_memory_restart: "2G"` (was 6G, lowered April 2026)
 - the required fix is documented in [blue-green-deploy-oom-runbook.md](/Users/kankanaray/Zavis%20UAE%20Healthcare%20Directory%20and%20Journal/docs/ops/blue-green-deploy-oom-runbook.md)
 - the safe target is bounded overlap: build idle at `0`, start idle at `1`, swap, stop old live, then scale new live from `1 -> 2`
 - on PM2 `6.0.14`, `pm2 start ecosystem.config.js --only <app> -i 1` was verified to ignore the CLI `-i 1` override and honor `instances` from the ecosystem file
@@ -124,10 +127,22 @@ git push zavis-support live
 
 GitHub Actions: lint → type check → SSH into EC2 → runs `deploy.sh`.
 
-Important:
+### Before deploying: swap check
 
-- until the bounded-overlap runbook is implemented on the server control plane, a normal push-to-`live` still uses the current EC2 `deploy.sh`
-- that means the deployment path may still carry the known full-overlap OOM risk until the server-side deploy logic is updated
+The swap ceiling (3 GB) causes more deploy failures than memory. Before pushing:
+```bash
+$EC2 "free -m | grep Swap"
+```
+If swap used > 2500 MB, drain it BEFORE pushing:
+```bash
+# Stop non-essential services to free RAM, then clear swap
+$EC2 "pm2 stop mcp-postiz mcp-media mcp-zavis-financial mcp-zavis-onboarding video-os-frontend video-os-mcp mcp-ads-analytics reference-pipeline skills-dashboard"
+$EC2 "sudo swapoff /swapfile && sudo swapon /swapfile"
+# Verify: swap should be 0
+$EC2 "free -m | grep Swap"
+# After deploy succeeds, restart services:
+$EC2 "pm2 start mcp-postiz mcp-media mcp-zavis-financial mcp-zavis-onboarding video-os-frontend video-os-mcp mcp-ads-analytics reference-pipeline skills-dashboard"
+```
 
 ### Required reading before any deploy or deploy-debug work
 
@@ -184,9 +199,17 @@ This makes the repo the source of truth. Never edit deploy.sh on EC2 directly.
 | `zavis-blue` stopped but still eating 5 GB | Zombie workers from previous deploy | `pm2 stop zavis-blue` explicitly to reclaim |
 
 **Concurrency guards:**
-- GitHub Actions: `concurrency: { group: deploy-live, cancel-in-progress: false }`
-- deploy.sh: `flock` on `/tmp/zavis-deploy.lock` — rejects concurrent runs
+- `deploy.yml`: `concurrency: { group: deploy-live, cancel-in-progress: false }`
+- `journal-full-pipeline.yml`: `concurrency: { group: content-pipeline }` — own group, NOT shared with deploy
+- `quarterly-data-report.yml`: `concurrency: { group: quarterly-report }` — own group
+- deploy.sh: `flock` on `/tmp/zavis-deploy.lock` — rejects concurrent runs at OS level
+- Pipeline workflows also acquire the same `flock` — gracefully skip if deploy is running
 - Workflow only fires from `zavis-support` repo (not `origin`)
+
+**Pipeline workspace isolation (April 2026 outage fix):**
+- Pipelines use `/home/ubuntu/zavis-pipeline-workspace` (dedicated shallow clone)
+- They NEVER `git pull` inside the active slot — that caused the April 13 outage
+- The active slot's working tree is managed exclusively by deploy.sh
 
 ### Monitor deploys
 
