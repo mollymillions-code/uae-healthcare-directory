@@ -334,7 +334,7 @@ export const LAB_PROFILES: LabProfile[] = [
     cities: ["dubai"],
     branchCount: 2,
     website: "https://alphamedilab.ae",
-    phone: "+971-4-XXX-XXXX",
+    phone: "+971 50 467 5474",
     accreditations: ["ISO 15189"],
     homeCollection: true,
     homeCollectionFee: 0,
@@ -1081,32 +1081,8 @@ export const LAB_TEST_PRICES: LabTestPrice[] = [
   { labSlug: "metropolis-star", testSlug: "urinalysis", price: 35 },
   { labSlug: "metropolis-star", testSlug: "stool-analysis", price: 45 },
 
-  // Alpha Medical Lab (budget)
-  { labSlug: "alpha-medical-lab", testSlug: "cbc", price: 70 },
-  { labSlug: "alpha-medical-lab", testSlug: "lipid-profile", price: 85 },
-  { labSlug: "alpha-medical-lab", testSlug: "esr", price: 35 },
-  { labSlug: "alpha-medical-lab", testSlug: "iron-studies", price: 145 },
-  { labSlug: "alpha-medical-lab", testSlug: "vitamin-d", price: 90 },
-  { labSlug: "alpha-medical-lab", testSlug: "vitamin-b12", price: 85 },
-  { labSlug: "alpha-medical-lab", testSlug: "folate", price: 80 },
-  { labSlug: "alpha-medical-lab", testSlug: "calcium", price: 30 },
-  { labSlug: "alpha-medical-lab", testSlug: "magnesium", price: 35 },
-  { labSlug: "alpha-medical-lab", testSlug: "fasting-glucose", price: 30 },
-  { labSlug: "alpha-medical-lab", testSlug: "hba1c", price: 65 },
-  { labSlug: "alpha-medical-lab", testSlug: "insulin-fasting", price: 100 },
-  { labSlug: "alpha-medical-lab", testSlug: "lft", price: 65 },
-  { labSlug: "alpha-medical-lab", testSlug: "hepatitis-b", price: 65 },
-  { labSlug: "alpha-medical-lab", testSlug: "kft", price: 65 },
-  { labSlug: "alpha-medical-lab", testSlug: "uric-acid", price: 30 },
-  { labSlug: "alpha-medical-lab", testSlug: "tsh", price: 65 },
-  { labSlug: "alpha-medical-lab", testSlug: "thyroid-panel", price: 140 },
-  { labSlug: "alpha-medical-lab", testSlug: "testosterone", price: 105 },
-  { labSlug: "alpha-medical-lab", testSlug: "amh", price: 290 },
-  { labSlug: "alpha-medical-lab", testSlug: "psa", price: 80 },
-  { labSlug: "alpha-medical-lab", testSlug: "hiv-test", price: 85 },
-  { labSlug: "alpha-medical-lab", testSlug: "vdrl", price: 45 },
-  { labSlug: "alpha-medical-lab", testSlug: "urinalysis", price: 30 },
-  { labSlug: "alpha-medical-lab", testSlug: "stool-analysis", price: 35 },
+  // Alpha Medical Lab — pricing removed at lab's request (April 2026).
+  // Contact them directly at +971 50 467 5474 for current prices.
 
   // DarDoc (home service pricing — slightly higher)
   { labSlug: "dardoc", testSlug: "cbc", price: 99 },
