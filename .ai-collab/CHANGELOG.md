@@ -1,5 +1,73 @@
 # Zavis Landing - Changelog
 
+## 2026-04-18 — [Claude Code] Production server migration: shared EC2 → dedicated Lightsail (Mumbai)
+
+**Signed by:** Claude Code (Opus 4.7, 1M context) · 2026-04-18T16:00:00+04:00
+
+**Scope:** Migrated zavis.ai off the shared Zavis Marketing EC2 box and onto a dedicated AWS Lightsail instance in Mumbai. Public site, DB, sitemaps, deploy pipeline, and backups all moved. No user-visible downtime.
+
+**Why:** Public marketing site was sharing ~1.5 GB RAM and 100% of inbound public bandwidth with 20+ internal MCPs, Postiz Docker stack, Video OS, Ontology/Onboarding, Portal, and ads pipelines on a single EC2. Blast radius between internal tools and the public site was too large; Next.js build OOMs on the old box kept corrupting the `clientops` `.next/` folder and silently killed the lead-capture form for 3+ days (see Apr 18 fix note on `zavis-onboarding`). Dedicated box eliminates noisy-neighbor effects and keeps internal tools off the public-traffic path.
+
+**New origin:**
+- AWS Lightsail, region `ap-south-1a` (Mumbai), static IP **13.234.162.47**
+- Spec: 8 GB RAM, 2 vCPU, 160 GB SSD, 2.5 TB transfer
+- Ubuntu 24.04 LTS, Node 20.20.2, Postgres 16.13, Nginx 1.24, PM2 6.0.14
+- SSH key: `~/Downloads/Zavis-site-pem.pem`
+
+**Files created in repo (this commit):**
+- None — this commit only edits existing files. Full migration playbook lives at `/home/ubuntu/MIGRATION.md` on the Lightsail box.
+
+**Files modified (this commit):**
+- `scripts/ec2-deploy-infra/deploy.sh` — `MEMORY_FLOOR_MB` lowered from 8192 → 2048. The 8 GB floor was sized for the 30 GB main EC2; Lightsail has 7.6 GB total, so the old floor would have aborted every deploy at preflight with `preflight: insufficient memory (6641MB < 8192MB)`. 2 GB free still guarantees headroom above the 4 GB `--max-old-space-size` Node heap used during `next build`. `SWAP_USED_CEILING_MB` unchanged (3000 MB is still appropriate on the new 4 GB swap file).
+- `.ai-collab/STATUS.md` — migration entry prepended under Active Work.
+- `.ai-collab/CHANGELOG.md` — this entry.
+
+**State changes on the new Lightsail box (not in the repo):**
+- `zavis_landing` PG database restored from `pg_dump -Fc` of production. Verified: 31,899 providers, 211 articles, 129 cities. Roles `zavis_ontology_admin` (owner), `zavis_landing_admin` (app user), `zavis_admin` (legacy grant role) created with matching credentials to old box so no `.env.local` change was needed. Explicit grants re-applied after restore (dump's default grants didn't survive cleanly).
+- `/home/ubuntu/zavis-landing-blue` + `/home/ubuntu/zavis-landing-green` rsynced from old EC2 (excluding `.next/cache/` and `node_modules/.cache/` to avoid transferring 22 GB of throwaway build cache). `node_modules` re-rsynced separately without `-L` to preserve symlinks in `.bin/`. Total tree size post-migration: blue 7 GB, green 7.6 GB.
+- `/home/ubuntu/zavis-shared` rsynced (env, data, reports, sitemaps).
+- `/home/ubuntu/zavis-deploy` rsynced (deploy.sh, rollback.sh, ecosystem.config.cjs, sitemap-gen/, sitemap-freshness-check.sh).
+- `/home/ubuntu/zavis-landing-active` symlink → `zavis-landing-green`.
+- `POSTIZ_API_BASE` env in `/home/ubuntu/zavis-shared/.env.local` changed from `http://localhost:4007/api` (Postiz is on old EC2, not on new box) to `https://socials.zavisinternaltools.in/api`. Postiz itself stays on old EC2.
+- PM2 ecosystem file `ecosystem.config.cjs` started on new box; `pm2 save` done; `pm2-logrotate` module installed (`max_size=50M`, `retain=7`, `compress=true`). Both slots (blue + green) online with 2 cluster workers each.
+- Nginx: `/etc/nginx/conf.d/zavis-upstream.conf` points `zavis_backend` at `127.0.0.1:3201` (green is active). `/etc/nginx/sites-enabled/zavis.ai` installed with 3 server blocks: port 80 → 443 redirect (both apex + www), apex-443 → `www.zavis.ai` 301 (CRITICAL — same redirect as prior incident), and the real `www.zavis.ai` block with all the same static-aliases (`_next/static`, `assets`, `reports`, sitemap paths) and proxy config. A second site `zavis-landing-new` serves the raw static IP for direct-origin testing.
+- TLS: self-signed cert at `/etc/ssl/certs/zavis-selfsigned.crt` + key in `/etc/ssl/private/zavis-selfsigned.key` (825-day validity, SANs for both `zavis.ai` and `www.zavis.ai`). Works with Cloudflare SSL mode `Full` (not `Full strict`). Replace with Cloudflare Origin Certificate (15-year, free, create in Cloudflare SSL/TLS panel) for production-grade trust when convenient.
+- Backups: `/home/ubuntu/zavis-deploy/db-backup.sh` runs `pg_dump -Fc -Z 6` to `/var/backups/zavis-landing/zavis_landing_YYYYMMDD_HHMMSS.dump` with 14-day retention. Cron: `17 2 * * *` (02:17 UTC daily). Initial dump (105 MB) taken and **restore smoke-tested** against throwaway DB `zavis_landing_restoretest` — 0 errors, row counts matched source exactly.
+- Cron state: sitemap generator `17 * * * * flock -n /tmp/zavis-sitemap-gen.lock /usr/bin/node .../generate-provider-sitemaps.mjs` and freshness check `42 * * * * .../sitemap-freshness-check.sh` enabled on new box. The matching lines on old EC2 commented out with `CUTOVER 2026-04-18 moved to Lightsail —` prefix to prevent double-writes to shared sitemap paths. DB-backup cron also active.
+- Git: ed25519 SSH deploy key `zavis-landing-lightsail` added to the repo as a deploy key. `~/.ssh/config` on new box routes `github.com` through `/home/ubuntu/.ssh/github-deploy`. Both blue and green slots initialized as full git clones (`git init`, remote `git@github.com:zavis-support/zavis-landing.git`, tracking `origin/live`). This is a prerequisite for `deploy.sh` which does `git pull origin live` in the target slot.
+- Lightsail firewall: ports 22, 80, 443 open to world. Postgres (5432) and both Next slots (3200, 3201) are localhost-only.
+- 4 GB swap file active on new box with `vm.swappiness=10`.
+
+**DNS / Cloudflare:**
+- DNS flipped during this session — Cloudflare `zavis.ai` and `www.zavis.ai` A records now point at `13.234.162.47`. Verified via Nginx access log showing OAI-SearchBot, Applebot, and real user-agent traffic from Cloudflare IPs (`172.71.22.71`, `108.162.246.198`) landing on the new box.
+
+**For other agents working on this repo:**
+- **Deploys now target Lightsail (`13.234.162.47`), not EC2.** The old EC2 is parked as a passive rollback target; its PM2 processes are still running but no traffic reaches them.
+- **GitHub Actions secrets `EC2_HOST` and `EC2_SSH_KEY` must be rotated** to the new IP and new PEM (`~/Downloads/Zavis-site-pem.pem`) before the next `push` to `live` will deploy to the right box. This rotation is being done alongside this commit.
+- **Nothing in the app code changed.** This commit is infra-only (`deploy.sh` + `.ai-collab` docs).
+- **Runbook for the new box** is at `/home/ubuntu/MIGRATION.md` on the Lightsail instance — read-only source-of-truth for what lives where, credentials layout, cron state, and rollback procedure.
+- **Old box access still works** via `~/Downloads/Zavis-Marketing.pem` → `ubuntu@13.205.197.148` for diagnostics or rollback. Do not push changes to it; it's now read-only-by-convention.
+- **Cloudflare SSL mode:** must be `Flexible` or `Full` (NOT `Full strict`) while the origin is using a self-signed cert. When a Cloudflare Origin Certificate is installed on the new box at `/etc/ssl/certs/zavis-origin.crt` + `/etc/ssl/private/zavis-origin.key` and the Nginx config is pointed at those paths, the mode can be set to `Full (strict)`.
+
+**Not done yet (owner actions):**
+- Lightsail daily auto-snapshots — not yet enabled (3-click action in Lightsail console, instance → Snapshots → Enable → 7-day retention). Non-blocking for production.
+- Cloudflare Origin Certificate — not issued yet. Self-signed works with `Full` mode. When ready, issue via CF SSL/TLS → Origin Server → Create Certificate → paste into the paths above and update nginx config.
+- Off-site S3 backup of DB dumps — deferred. New box doesn't have AWS credentials configured yet. When needed, copy the `zavis-marketing` AWS profile from old EC2 and append an `aws s3 cp` step to `db-backup.sh`.
+
+**Verification (as of commit time):**
+- `https://www.zavis.ai/` via public DNS → 200 OK ~0.9s
+- `https://zavis.ai/` → 301 → `https://www.zavis.ai/` (apex redirect working)
+- Nginx access log on new box shows live Cloudflare traffic (OAI-SearchBot, Applebot, real users)
+- PM2 list: zavis-blue + zavis-green both online, 4 workers total, steady ~100–130 MB per worker
+- Disk: 23 GB / 154 GB (15% utilization)
+- Memory: 1.2 GB used / 7.6 GB (6.5 GB available)
+- DB: `SELECT COUNT(*) FROM professionals_index` → 31,899 (matches source)
+- Leads webhook (`https://clientops.zavisinternaltools.in/api/leads/website`) → 201 with correct `x-webhook-secret` (unchanged, same as old box; clientops is still hosted on old EC2)
+
+**Committed.** Deployed via this pipeline's first run on the new box.
+
+---
+
 ## 2026-04-11 — [Claude Code] Zocdoc Roadmap Item 4 — Fat City-Specialty Hubs + ProviderCard Decision Upgrade + Condition Matching Pages (BUILDER)
 
 **Signed by:** Claude Code (Opus 4.6, 1M context) · 2026-04-11T22:30:00+04:00
