@@ -42,7 +42,7 @@ BUILD_LOG="/tmp/zavis-build.log"
 SITEMAP_LOCK="/tmp/zavis-sitemap-gen.lock"
 SITEMAP_GEN="/home/ubuntu/zavis-deploy/sitemap-gen/generate-provider-sitemaps.mjs"
 SITEMAP_LOG="/home/ubuntu/logs/sitemap-generation.log"
-MEMORY_FLOOR_MB=8192    # runbook §7.1: abort if MemAvailable < 8 GB
+MEMORY_FLOOR_MB=2048    # Lightsail box has 7.6 GB total; floor = 2 GB free pre-build
 SWAP_USED_CEILING_MB=3000  # abort if swap heavily committed
 
 mkdir -p /home/ubuntu/logs
