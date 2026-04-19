@@ -427,6 +427,7 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
               googleReviewCount={p.googleReviewCount}
               isClaimed={p.isClaimed}
               isVerified={p.isVerified}
+              coverImageUrl={p.coverImageUrl}
             />
           ))}
         </div>

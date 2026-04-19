@@ -225,6 +225,7 @@ export default async function GovernmentAreaPage({ params }: Props) {
               googleReviewCount={provider.googleReviewCount}
               isClaimed={provider.isClaimed}
               isVerified={provider.isVerified}
+              coverImageUrl={provider.coverImageUrl}
             />
           ))}
         </div>

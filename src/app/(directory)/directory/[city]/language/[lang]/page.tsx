@@ -130,6 +130,7 @@ export default async function LanguageProviderPage({ params }: Props) {
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
               />
             ))}
           </div>

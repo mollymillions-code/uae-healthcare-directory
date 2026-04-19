@@ -1098,6 +1098,7 @@ export async function GccSegmentsPage({
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                   hideCounterpart
                 />
               ))}
@@ -1268,6 +1269,7 @@ export async function GccSegmentsPage({
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
                 hideCounterpart
               />
             ))}
@@ -1418,6 +1420,7 @@ export async function GccSegmentsPage({
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
                 hideCounterpart
               />
             ))}

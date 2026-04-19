@@ -327,6 +327,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                   basePath="/ar/directory"
                 />
               ))}

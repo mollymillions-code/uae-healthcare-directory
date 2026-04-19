@@ -400,6 +400,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
                 basePath="/ar/directory"
               />
             ))}
@@ -467,6 +468,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                 googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed}
                 isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
                 basePath="/ar/directory"
               />
             ))}

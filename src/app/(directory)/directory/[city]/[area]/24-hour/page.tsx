@@ -177,7 +177,7 @@ export default async function TwentyFourHourAreaPage({ params }: Props) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((provider) => (
-            <ProviderCard key={provider.id} name={provider.name} slug={provider.slug} citySlug={provider.citySlug} categorySlug={provider.categorySlug} address={provider.address} phone={provider.phone} website={provider.website} shortDescription={provider.shortDescription} googleRating={provider.googleRating} googleReviewCount={provider.googleReviewCount} isClaimed={provider.isClaimed} isVerified={provider.isVerified} />
+            <ProviderCard key={provider.id} name={provider.name} slug={provider.slug} citySlug={provider.citySlug} categorySlug={provider.categorySlug} address={provider.address} phone={provider.phone} website={provider.website} shortDescription={provider.shortDescription} googleRating={provider.googleRating} googleReviewCount={provider.googleReviewCount} isClaimed={provider.isClaimed} isVerified={provider.isVerified} coverImageUrl={provider.coverImageUrl} />
           ))}
         </div>
       </section>

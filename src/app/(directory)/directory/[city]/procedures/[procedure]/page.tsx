@@ -495,6 +495,7 @@ export default async function ProcedureCityPage({ params }: Props) {
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                 />
               ))}
             </div>

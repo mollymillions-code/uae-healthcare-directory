@@ -26,6 +26,7 @@ interface ProviderCardProps {
   googleReviewCount?: number | null;
   isClaimed?: boolean | null;
   isVerified?: boolean | null;
+  coverImageUrl?: string | null;
   basePath?: string;
 
   // Decision-card fields (all optional — every chip gates on truthy data).
@@ -173,7 +174,7 @@ export function ProviderCard({
   name, slug, citySlug, categorySlug, address, phone,
   shortDescription, googleRating, googleReviewCount, isClaimed, isVerified,
   insurance, languages, services, operatingHours, accessibilityOptions,
-  reviewSnippet,
+  reviewSnippet, coverImageUrl,
   basePath = "/directory",
   hideCounterpart = false,
 }: ProviderCardProps) {
@@ -248,7 +249,7 @@ export function ProviderCard({
       <div className="flex items-start gap-3 pointer-events-none">
         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl">
           <Image
-            src={getCategoryImagePath(categorySlug)}
+            src={coverImageUrl || getCategoryImagePath(categorySlug)}
             alt=""
             fill
             className="object-cover"

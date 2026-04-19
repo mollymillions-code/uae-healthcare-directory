@@ -228,6 +228,7 @@ export default async function TwentyFourHourCityPage({ params }: Props) {
               googleReviewCount={provider.googleReviewCount}
               isClaimed={provider.isClaimed}
               isVerified={provider.isVerified}
+              coverImageUrl={provider.coverImageUrl}
             />
           ))}
         </div>

@@ -138,6 +138,7 @@ export default async function CityPharmacyInsurerPage({ params }: Props) {
                 website={p.website} shortDescription={p.shortDescription}
                 googleRating={p.googleRating} googleReviewCount={p.googleReviewCount}
                 isClaimed={p.isClaimed} isVerified={p.isVerified}
+                coverImageUrl={p.coverImageUrl}
                 insurance={p.insurance} operatingHours={p.operatingHours}
               />
             ))}

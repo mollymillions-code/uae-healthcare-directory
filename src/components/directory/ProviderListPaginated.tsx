@@ -73,6 +73,7 @@ export function ProviderListPaginated({
               googleReviewCount={p.googleReviewCount}
               isClaimed={p.isClaimed}
               isVerified={p.isVerified}
+              coverImageUrl={p.coverImageUrl}
               insurance={p.insurance}
               languages={p.languages}
               services={p.services}

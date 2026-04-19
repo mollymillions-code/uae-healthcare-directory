@@ -101,6 +101,7 @@ export default async function CityPharmacyDeliveryPage({ params }: Props) {
               googleReviewCount={p.googleReviewCount}
               isClaimed={p.isClaimed}
               isVerified={p.isVerified}
+              coverImageUrl={p.coverImageUrl}
               operatingHours={p.operatingHours}
             />
           ))}

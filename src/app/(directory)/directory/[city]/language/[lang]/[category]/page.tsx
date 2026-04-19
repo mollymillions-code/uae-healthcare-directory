@@ -192,6 +192,7 @@ export default async function LanguageCategoryPage({ params }: Props) {
               googleReviewCount={p.googleReviewCount}
               isClaimed={p.isClaimed}
               isVerified={p.isVerified}
+              coverImageUrl={p.coverImageUrl}
             />
           ))}
         </div>

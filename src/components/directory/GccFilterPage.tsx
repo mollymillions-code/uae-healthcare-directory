@@ -315,6 +315,7 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
               googleReviewCount={provider.googleReviewCount}
               isClaimed={provider.isClaimed}
               isVerified={provider.isVerified}
+              coverImageUrl={provider.coverImageUrl}
               hideCounterpart
             />
           ))}

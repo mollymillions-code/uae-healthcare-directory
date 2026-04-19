@@ -1,5 +1,60 @@
 # Zavis Landing - Changelog
 
+## 2026-04-19 — [Claude Code] ProviderCard renders real Google Places images on listing grids
+
+**Signed by:** Claude Code · 2026-04-19T00:00:00+04:00
+
+**What happened:**
+- User noticed that every clinic card in the directory listing grid (e.g. `/directory/dubai/clinics`) was rendering the same generic stock image — cards for "Farnek General Clinic", "First Response Clinic", "Family Class Poly Clinic", "Friendly Early Childhood Center LLC" etc. all looked identical (`/images/categories/clinics.png`).
+- Root cause: `src/components/provider/ProviderCard.tsx` hardcoded `src={getCategoryImagePath(categorySlug)}` and was never passed the provider's image. The provider *detail* hero at `src/app/(directory)/directory/[city]/[...segments]/page.tsx:871` already used the correct `provider.coverImageUrl || getCategoryImagePath(category.slug)` fallback — the card component on listing pages was the only place this pattern was missing. Item 4's decision-card refactor added chips for insurance/languages/services/open-now/accessibility but didn't touch the 40×40 image slot.
+- DB audit (local `zavis_landing.providers`): 11,686 / 12,504 rows (93.5%) already have a real `cover_image_url` pointing at `https://places.googleapis.com/v1/places/.../photos/...media?maxWidthPx=800&key=...` from the comprehensive Google Places Photos enrichment. The remaining 6.5% (818 rows) were enriched via the older `enrich-places-api.js` script which doesn't request photos, so their `cover_image_url` fell back to a category stock URL written directly into the DB.
+- Fix: added `coverImageUrl?: string | null` to `ProviderCardProps`, added it to the destructure, and swapped the `<Image>` src to `coverImageUrl || getCategoryImagePath(categorySlug)`. Threaded the prop through **every `<ProviderCard />` call site** — 35 usages across 27 files.
+
+**Why:** Per-facility photos were scraped months ago but never reached the listing grid — users saw "identical cards" and assumed images were missing entirely. This ships the existing scraped data to the UI, unblocking ~93.5% of listing cards immediately. The remaining ~818 stragglers need a targeted re-run of `scripts/comprehensive-enrich-places.mjs` (separate follow-up).
+
+**Call sites updated:**
+- `src/components/provider/ProviderCard.tsx` (prop + fallback render)
+- `src/components/directory/ProviderListPaginated.tsx`
+- `src/components/directory/GccDirectoryPages.tsx` (3 sites)
+- `src/components/directory/GccFilterPage.tsx`
+- `src/app/(directory)/directory/[city]/[...segments]/page.tsx` (6 sites)
+- `src/app/(directory)/directory/[city]/emergency/page.tsx`
+- `src/app/(directory)/directory/[city]/24-hour/page.tsx`
+- `src/app/(directory)/directory/[city]/24-hour/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/24-hours/page.tsx`
+- `src/app/(directory)/directory/[city]/condition/[condition]/page.tsx`
+- `src/app/(directory)/directory/[city]/insurance/[insurer]/page.tsx`
+- `src/app/(directory)/directory/[city]/insurance/[insurer]/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/language/[lang]/page.tsx`
+- `src/app/(directory)/directory/[city]/language/[lang]/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/government/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/procedures/[procedure]/page.tsx`
+- `src/app/(directory)/directory/[city]/pharmacy/delivery/page.tsx`
+- `src/app/(directory)/directory/[city]/pharmacy/insurance/[insurer]/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/emergency/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/24-hour/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/24-hour/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/walk-in/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/walk-in/[category]/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/government/page.tsx`
+- `src/app/(directory)/directory/[city]/[area]/procedures/[procedure]/page.tsx`
+- `src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx` (2 sites)
+- `src/app/(directory)/ar/directory/[city]/condition/[condition]/page.tsx`
+- `src/app/(directory)/ar/directory/[city]/insurance/[insurer]/page.tsx`
+
+**Notes:**
+- Category hero banners (page-level) intentionally kept on `getCategoryImagePath()` — unchanged.
+- `places.googleapis.com` already whitelisted in `next.config.mjs` `images.remotePatterns`, so no config change needed.
+- Search page (`src/app/(directory)/search/page.tsx`) uses a custom `ResultCard`, not `ProviderCard` — not in scope for this change.
+- `npx tsc --noEmit` clean on all modified files.
+
+**Follow-ups (not in this commit):**
+- Run `scripts/comprehensive-enrich-places.mjs` against the 818 providers where `cover_image_url LIKE '/images/categories/%'` to close the last coverage gap.
+- Worst-covered categories are `medical-equipment` (74.8%), `emergency-care` (83.3%), and `dental` (84.6%).
+- Consider enlarging the card thumbnail now that it's a real photo rather than a 40×40 pictogram — design decision, not in scope here.
+
+---
+
 ## 2026-04-18 — [Claude Code] Production server migration: shared EC2 → dedicated Lightsail (Mumbai)
 
 **Signed by:** Claude Code (Opus 4.7, 1M context) · 2026-04-18T16:00:00+04:00

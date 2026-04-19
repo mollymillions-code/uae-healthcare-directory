@@ -608,7 +608,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
         <Suspense fallback={
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} insurance={p.insurance} languages={p.languages} services={p.services} operatingHours={p.operatingHours} accessibilityOptions={p.accessibilityOptions} />))}
+            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} insurance={p.insurance} languages={p.languages} services={p.services} operatingHours={p.operatingHours} accessibilityOptions={p.accessibilityOptions} />))}
           </div>
         }>
           <ProviderListPaginated
@@ -797,6 +797,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                   insurance={p.insurance}
                   languages={p.languages}
                   services={p.services}
@@ -933,7 +934,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
         {providers.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
+            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
           </div>
         )}
 
@@ -987,7 +988,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
         {providers.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
+            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
           </div>
         ) : (
           <div className="text-center py-12">
@@ -1969,7 +1970,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
         <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">{total} {total === 1 ? "provider" : "providers"}</p>
         {providers.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} />))}
+            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
           </div>
         ) : (<div className="text-center py-12"><p className="text-black/40">No providers found yet.</p></div>)}
         <Pagination currentPage={1} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
@@ -2123,6 +2124,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                 />
               ))}
             </div>

@@ -227,7 +227,7 @@ export default async function AreaWalkInCategoryPage({ params }: Props) {
               address={provider.address} phone={provider.phone} website={provider.website}
               shortDescription={provider.shortDescription} googleRating={provider.googleRating}
               googleReviewCount={provider.googleReviewCount} isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified} />
+              isVerified={provider.isVerified} coverImageUrl={provider.coverImageUrl} />
           ))}
         </div>
       </section>

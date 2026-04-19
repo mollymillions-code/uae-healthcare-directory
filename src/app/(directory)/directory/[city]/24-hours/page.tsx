@@ -257,6 +257,7 @@ export default async function TwentyFourHoursPage({ params }: Props) {
                   googleReviewCount={p.googleReviewCount}
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
+                  coverImageUrl={p.coverImageUrl}
                 />
               ))}
             </div>
