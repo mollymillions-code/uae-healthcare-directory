@@ -25,10 +25,15 @@
 
 import { useEffect, useState } from "react";
 import { Phone, MessageCircle, MapPin, Globe } from "lucide-react";
-import { trackEvent } from "@/lib/gtag";
+import { trackProviderCta, type ProviderTrackingInfo } from "@/lib/provider-tracking";
 
 export interface StickyMobileCtaProps {
   providerName: string;
+  providerSlug: string;
+  citySlug: string;
+  categorySlug: string;
+  providerId: string;
+  isClaimed: boolean;
   phoneE164?: string | null;
   whatsappNumber?: string | null;
   /** Pre-built Google Maps deep link (`https://www.google.com/maps/...`). */
@@ -48,11 +53,15 @@ function cleanWhatsapp(raw: string): string {
 
 export function StickyMobileCta({
   providerName,
+  providerSlug,
+  citySlug,
+  categorySlug,
+  providerId,
+  isClaimed,
   phoneE164,
   whatsappNumber,
   directionsUrl,
   websiteUrl,
-  mode = "provider-profile",
 }: StickyMobileCtaProps) {
   const [visible, setVisible] = useState(false);
 
@@ -72,13 +81,17 @@ export function StickyMobileCta({
   const hasAnyCta = Boolean(phone || wa || directionsUrl || websiteUrl);
   if (!hasAnyCta) return null;
 
+  const provider: ProviderTrackingInfo = {
+    name: providerName,
+    slug: providerSlug,
+    citySlug,
+    categorySlug,
+    id: providerId,
+    isClaimed,
+  };
+
   function handleClick(type: "call" | "whatsapp" | "directions" | "website") {
-    trackEvent("cta_click", {
-      type,
-      provider: providerName,
-      mode,
-      surface: "sticky_mobile_cta",
-    });
+    trackProviderCta(type, "sticky_mobile_cta", provider);
   }
 
   return (
