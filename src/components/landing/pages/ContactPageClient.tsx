@@ -119,10 +119,28 @@ export function ContactPageClient() {
 
         // Client-side conversions
         gtag_report_conversion();
-        trackEvent("demo_requested", { form_location: "book_a_demo_page" });
+        trackEvent("demo_requested", {
+          form_location: "book_a_demo_page",
+          lead_company: formData.company,
+          lead_team: formData.team,
+        });
         trackMetaLead(formData.email, eventId); // fbq pixel with eventID for dedup
         trackTwitterLead();
         trackLinkedInConversion();
+
+        // Email notification to team — fire and forget
+        fetch("/api/notify-demo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company,
+            team: formData.team,
+            website: formData.website || null,
+          }),
+        }).catch(() => {});
 
         // Server-side Meta CAPI — fire and forget, never blocks form success
         fetch("/api/capi", {
@@ -143,7 +161,11 @@ export function ContactPageClient() {
       .catch(() => {
         setSubmitting(false);
         setError("Something went wrong. Please try again or email us at syed@zavis.ai.");
-        trackEvent("demo_submit_failed", { form_location: "book_a_demo_page" });
+        trackEvent("demo_submit_failed", {
+          form_location: "book_a_demo_page",
+          lead_company: formData.company,
+          lead_team: formData.team,
+        });
       });
   };
 

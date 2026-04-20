@@ -1,6 +1,6 @@
 ---
 name: zavis-website-ec2-deploy
-description: "Zavis Website EC2 Deployment Skill — zero-downtime blue-green deployment for zavis.ai on EC2 (13.205.197.148). Use whenever the user asks to: deploy the Zavis website, SSH into the server, restart or check the app, tail PM2 or Nginx logs, debug a failed deploy, roll back, run DB migrations, check server health, verify the site is up, or anything requiring EC2 access. Triggers on: 'the server', 'production is down', 'deploy failed', 'check logs', 'PM2', 'restart the app', 'health check', 'Nginx', 'ssh in', 'check the server', 'zavis.ai is down', 'blue-green', 'rollback', or any reference to the live site."
+description: "Zavis Website EC2 Deployment Skill — zero-downtime blue-green deployment for zavis.ai on EC2 (13.234.162.47). Use whenever the user asks to: deploy the Zavis website, SSH into the server, restart or check the app, tail PM2 or Nginx logs, debug a failed deploy, roll back, run DB migrations, check server health, verify the site is up, or anything requiring EC2 access. Triggers on: 'the server', 'production is down', 'deploy failed', 'check logs', 'PM2', 'restart the app', 'health check', 'Nginx', 'ssh in', 'check the server', 'zavis.ai is down', 'blue-green', 'rollback', or any reference to the live site."
 ---
 
 # Zavis Website — EC2 Deployment (Blue-Green, Zero-Downtime)
@@ -24,7 +24,7 @@ description: "Zavis Website EC2 Deployment Skill — zero-downtime blue-green de
 ## PRE-FLIGHT CHECK (Run Before Any Server Operation)
 
 ```bash
-EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+EC2="ssh -i ~/Downloads/Zavis-site-pem.pem ubuntu@13.234.162.47"
 
 ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
 if [ "$ACTIVE" = "blue" ]; then LIVE_PORT=3200; else LIVE_PORT=3201; fi
@@ -63,14 +63,19 @@ Push to **both** remotes. Only `zavis-support` triggers the actual deploy (guard
 
 ## Server Access
 
-| IP | `13.205.197.148` |
+| IP | `13.234.162.47` (migrated from `13.205.197.148` on April 2026) |
 |---|---|
 | SSH user | `ubuntu` |
-| PEM key | `~/.ssh/zavis-ec2.pem` |
+| PEM key | `~/Downloads/Zavis-site-pem.pem` |
+| Old PEM (retired) | `~/.ssh/zavis-ec2.pem` (for old server only) |
 
 ```bash
-EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+EC2="ssh -i ~/Downloads/Zavis-site-pem.pem ubuntu@13.234.162.47"
 ```
+
+**Important:** This is a dedicated instance — no other applications running.
+The old server (`13.205.197.148`) had 18+ non-essential PM2 services competing
+for memory. The new server runs only zavis + PostgreSQL + Nginx.
 
 ---
 
@@ -248,7 +253,7 @@ git push origin live && git push zavis-support live
 ## Emergency Recovery: Site Is Down
 
 ```bash
-EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+EC2="ssh -i ~/Downloads/Zavis-site-pem.pem ubuntu@13.234.162.47"
 ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
 if [ "$ACTIVE" = "blue" ]; then PORT=3200; else PORT=3201; fi
 
@@ -302,7 +307,7 @@ These cost 4+ hours of debugging. Do not repeat them.
 ## Common Operations
 
 ```bash
-EC2="ssh -i ~/.ssh/zavis-ec2.pem ubuntu@13.205.197.148"
+EC2="ssh -i ~/Downloads/Zavis-site-pem.pem ubuntu@13.234.162.47"
 ACTIVE=$($EC2 "cat /home/ubuntu/zavis-deploy/active-slot")
 
 # PM2
