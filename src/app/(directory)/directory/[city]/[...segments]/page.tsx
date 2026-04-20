@@ -47,8 +47,8 @@ import {
 import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import Image from "next/image";
 import {
-  MapPin, Phone, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, ExternalLink, Calendar, Activity, ArrowRight,
+  MapPin, Globe, Clock, Shield, Languages, Stethoscope,
+  CheckCircle, Calendar, Activity, ArrowRight,
   Accessibility, Image as ImageIcon, Star, Quote,
 } from "lucide-react";
 import {
