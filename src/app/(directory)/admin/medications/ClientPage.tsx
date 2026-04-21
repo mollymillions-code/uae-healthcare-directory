@@ -126,7 +126,7 @@ export default function MedicationsAdminPage() {
       const key = getAdminKey();
       const res = await fetch(`/api/admin/medications/${editing.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "x-api-key": key },
+        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
         body: JSON.stringify(editing),
       });
       if (!res.ok) throw new Error("Failed to save");

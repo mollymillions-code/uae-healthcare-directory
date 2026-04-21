@@ -5,23 +5,24 @@ import { useState, useCallback } from "react";
 interface Provider {
   id: string;
   name: string;
-  city: string;
-  category: string;
-  googleRating: number | null;
+  slug: string;
+  citySlug: string;
+  categorySlug: string;
+  googleRating: string | null;
   phone: string | null;
-  phone_secondary: string | null;
   email: string | null;
   website: string | null;
   address: string | null;
   description: string | null;
-  short_description: string | null;
+  shortDescription: string | null;
   insurance: string[];
   services: string[];
   languages: string[];
-  google_review_count: number | null;
-  operating_hours: Record<string, string> | null;
-  is_claimed: boolean;
-  is_verified: boolean;
+  googleReviewCount: number | null;
+  operatingHours: Record<string, unknown> | null;
+  isClaimed: boolean;
+  isVerified: boolean;
+  status: string | null;
 }
 
 function getAdminKey(): string {
@@ -134,7 +135,7 @@ export default function ProvidersAdminPage() {
       const key = getAdminKey();
       const res = await fetch(`/api/admin/providers/${editing.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "x-api-key": key },
+        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
         body: JSON.stringify({ ...editing, reason }),
       });
       if (!res.ok) throw new Error("Failed to save");
@@ -226,8 +227,8 @@ export default function ProvidersAdminPage() {
                   className="border-b border-black/[0.03] hover:bg-[#f8f8f6]/50 transition-colors"
                 >
                   <td className="px-4 py-3 font-medium text-[#1c1c1c]">{p.name}</td>
-                  <td className="px-4 py-3 text-black/60 capitalize">{p.city}</td>
-                  <td className="px-4 py-3 text-black/60 capitalize">{p.category}</td>
+                  <td className="px-4 py-3 text-black/60 capitalize">{p.citySlug?.replace(/-/g, " ")}</td>
+                  <td className="px-4 py-3 text-black/60 capitalize">{p.categorySlug?.replace(/-/g, " ")}</td>
                   <td className="px-4 py-3">
                     {p.googleRating ? (
                       <span className="inline-flex items-center gap-1 text-[#006828] font-medium">
@@ -297,30 +298,17 @@ export default function ProvidersAdminPage() {
                 />
               </div>
 
-              {/* Phone + Phone Secondary */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-black/50 mb-1 font-['Geist',sans-serif]">
-                    Phone
-                  </label>
-                  <input
-                    type="text"
-                    value={editing.phone || ""}
-                    onChange={(e) => updateField("phone", e.target.value || null)}
-                    className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-black/50 mb-1 font-['Geist',sans-serif]">
-                    Phone Secondary
-                  </label>
-                  <input
-                    type="text"
-                    value={editing.phone_secondary || ""}
-                    onChange={(e) => updateField("phone_secondary", e.target.value || null)}
-                    className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif]"
-                  />
-                </div>
+              {/* Phone */}
+              <div>
+                <label className="block text-xs font-medium text-black/50 mb-1 font-['Geist',sans-serif]">
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  value={editing.phone || ""}
+                  onChange={(e) => updateField("phone", e.target.value || null)}
+                  className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif]"
+                />
               </div>
 
               {/* Email + Website */}
@@ -381,8 +369,8 @@ export default function ProvidersAdminPage() {
                   Short Description
                 </label>
                 <textarea
-                  value={editing.short_description || ""}
-                  onChange={(e) => updateField("short_description", e.target.value || null)}
+                  value={editing.shortDescription || ""}
+                  onChange={(e) => updateField("shortDescription", e.target.value || null)}
                   rows={2}
                   className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif] resize-y"
                 />
@@ -430,9 +418,9 @@ export default function ProvidersAdminPage() {
                   <input
                     type="number"
                     min="0"
-                    value={editing.google_review_count ?? ""}
+                    value={editing.googleReviewCount ?? ""}
                     onChange={(e) =>
-                      updateField("google_review_count", e.target.value ? parseInt(e.target.value) : null)
+                      updateField("googleReviewCount", e.target.value ? parseInt(e.target.value) : null)
                     }
                     className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif]"
                   />
@@ -446,14 +434,14 @@ export default function ProvidersAdminPage() {
                 </label>
                 <textarea
                   value={
-                    editing.operating_hours
-                      ? JSON.stringify(editing.operating_hours, null, 2)
+                    editing.operatingHours
+                      ? JSON.stringify(editing.operatingHours, null, 2)
                       : ""
                   }
                   onChange={(e) => {
                     try {
                       const parsed = e.target.value ? JSON.parse(e.target.value) : null;
-                      updateField("operating_hours", parsed);
+                      updateField("operatingHours", parsed);
                     } catch {
                       // Allow typing invalid JSON while editing
                     }
@@ -469,8 +457,8 @@ export default function ProvidersAdminPage() {
                 <label className="flex items-center gap-2 text-sm font-['Geist',sans-serif] text-[#1c1c1c]">
                   <input
                     type="checkbox"
-                    checked={editing.is_claimed}
-                    onChange={(e) => updateField("is_claimed", e.target.checked)}
+                    checked={editing.isClaimed}
+                    onChange={(e) => updateField("isClaimed", e.target.checked)}
                     className="rounded border-black/[0.06] text-[#006828] focus:ring-[#006828]"
                   />
                   Claimed
@@ -478,8 +466,8 @@ export default function ProvidersAdminPage() {
                 <label className="flex items-center gap-2 text-sm font-['Geist',sans-serif] text-[#1c1c1c]">
                   <input
                     type="checkbox"
-                    checked={editing.is_verified}
-                    onChange={(e) => updateField("is_verified", e.target.checked)}
+                    checked={editing.isVerified}
+                    onChange={(e) => updateField("isVerified", e.target.checked)}
                     className="rounded border-black/[0.06] text-[#006828] focus:ring-[#006828]"
                   />
                   Verified

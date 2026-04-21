@@ -51,7 +51,7 @@ export default function ClaimsAdminPage() {
       setLoading(true);
       setError(null);
       const res = await fetch("/api/admin/claims", {
-        headers: { "x-api-key": key },
+        headers: { "x-dashboard-key": key },
       });
       if (!res.ok) throw new Error("Unauthorized or failed to fetch");
       const data = await res.json();
@@ -87,7 +87,7 @@ export default function ClaimsAdminPage() {
     try {
       const res = await fetch("/api/admin/claims", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "x-api-key": key },
+        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
         body: JSON.stringify({
           claimId,
           action,
