@@ -406,7 +406,7 @@ export default function ProvidersAdminPage() {
                     max="5"
                     value={editing.googleRating ?? ""}
                     onChange={(e) =>
-                      updateField("googleRating", e.target.value ? parseFloat(e.target.value) : null)
+                      updateField("googleRating", e.target.value || null)
                     }
                     className="w-full border border-black/[0.06] rounded-lg px-3 py-2 text-sm font-['Geist',sans-serif]"
                   />
