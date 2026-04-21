@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { CheckCircle, Upload, Loader2, AlertCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  Upload,
+  Loader2,
+  AlertCircle,
+  ChevronRight,
+  ShieldCheck,
+  ArrowRight,
+} from "lucide-react";
 
 interface ClaimFormPageProps {
   params: { listingId: string };
@@ -48,7 +56,8 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
       if (formData.phone) requestedChanges.phone = formData.phone;
       if (formData.website) requestedChanges.website = formData.website;
       if (formData.description) requestedChanges.description = formData.description;
-      if (formData.operatingHours) requestedChanges.operatingHours = formData.operatingHours;
+      if (formData.operatingHours)
+        requestedChanges.operatingHours = formData.operatingHours;
       if (Object.keys(requestedChanges).length > 0) {
         body.append("requestedChanges", JSON.stringify(requestedChanges));
       }
@@ -76,7 +85,9 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
 
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -84,254 +95,405 @@ export default function ClaimFormPage({ params }: ClaimFormPageProps) {
 
   if (submitted) {
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-lg mx-auto text-center">
-          <div className="h-16 w-16 bg-[#006828]/[0.04] flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-8 w-8 text-[#006828]" />
+      <>
+        <section className="relative overflow-hidden bg-surface-cream">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
           </div>
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight mb-4">
-            Claim Request Submitted
-          </h1>
-          <p className="text-black/40 mb-6">
-            Thank you for your claim request. Our team will review your submission
-            and get back to you within 2-3 business days.
-          </p>
-          <button
-            onClick={() => router.push("/")}
-            className="btn-accent"
-          >
-            Return to Directory
-          </button>
-        </div>
-      </div>
+          <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="max-w-lg mx-auto text-center">
+              <div className="h-16 w-16 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2
+                  className="h-8 w-8 text-accent-dark"
+                  strokeWidth={1.75}
+                />
+              </div>
+              <h1 className="font-display font-semibold text-ink text-display-md tracking-[-0.02em]">
+                Claim request submitted.
+              </h1>
+              <p className="font-sans text-z-body text-ink-soft mt-3 leading-relaxed">
+                Thanks — our claims team will review your submission and reply within
+                2–3 business days. Keep an eye on{" "}
+                <span className="text-ink font-medium">{formData.contactEmail || "your inbox"}</span>
+                .
+              </p>
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => router.push("/directory")}
+                  className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors"
+                >
+                  Return to directory
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <Link
+                  href="/claim"
+                  className="inline-flex items-center gap-2 bg-white border border-ink text-ink hover:bg-surface-cream rounded-z-pill px-5 py-3 font-sans font-medium text-z-body-sm transition-colors"
+                >
+                  Claim another
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
     );
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Breadcrumb
-        items={[
-          { label: "Claim Listing", href: "/claim" },
-          { label: "Submit Claim" },
-        ]}
-      />
+    <>
+      {/* ─── Hero ─── */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+          <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
+        </div>
 
-      <div className="max-w-2xl mx-auto">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          Claim This Listing
-        </h1>
-        <p className="text-black/40 mb-8">
-          Fill in your details and provide proof of ownership to claim this listing.
-        </p>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Contact Information */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-4">Your Contact Information</h2>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="contactName" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Full Name *
-                </label>
-                <input
-                  id="contactName"
-                  type="text"
-                  required
-                  className="input-tc"
-                  value={formData.contactName}
-                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="contactEmail" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                    Email *
-                  </label>
-                  <input
-                    id="contactEmail"
-                    type="email"
-                    required
-                    className="input-tc"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                    disabled={submitting}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="contactPhone" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                    Phone *
-                  </label>
-                  <input
-                    id="contactPhone"
-                    type="tel"
-                    required
-                    className="input-tc"
-                    value={formData.contactPhone}
-                    onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                    disabled={submitting}
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="jobTitle" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Job Title
-                </label>
-                <input
-                  id="jobTitle"
-                  type="text"
-                  className="input-tc"
-                  placeholder="e.g., Clinic Manager, Owner, Administrator"
-                  value={formData.jobTitle}
-                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Proof of Ownership */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-4">Proof of Ownership</h2>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="proofType" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Proof Type *
-                </label>
-                <select
-                  id="proofType"
-                  className="input-tc"
-                  value={formData.proofType}
-                  onChange={(e) => setFormData({ ...formData, proofType: e.target.value })}
-                  disabled={submitting}
-                >
-                  <option value="license">DHA/DOH/MOH License</option>
-                  <option value="business_card">Business Card</option>
-                  <option value="letter">Official Letterhead</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div
-                className="border-2 border-dashed border-black/[0.06] p-8 text-center cursor-pointer hover:border-[#006828]/30 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-8 w-8 text-black/40 mx-auto mb-3" />
-                {fileName ? (
-                  <p className="font-['Geist',sans-serif] text-sm text-[#006828] font-medium mb-1">
-                    {fileName}
-                  </p>
-                ) : (
-                  <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-1">
-                    Click to upload your proof document
-                  </p>
-                )}
-                <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                  PDF, JPG, or PNG up to 10MB
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    setFileName(file?.name || "");
-                  }}
-                  disabled={submitting}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Requested Changes */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-2">Requested Changes</h2>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-              Optionally specify what information you&apos;d like to update.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="reqPhone" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Phone Number
-                </label>
-                <input
-                  id="reqPhone"
-                  type="tel"
-                  className="input-tc"
-                  placeholder="e.g., +971-4-XXX-XXXX"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="reqWebsite" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Website
-                </label>
-                <input
-                  id="reqWebsite"
-                  type="url"
-                  className="input-tc"
-                  placeholder="https://..."
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="reqDescription" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Description
-                </label>
-                <textarea
-                  id="reqDescription"
-                  className="input-tc"
-                  rows={3}
-                  placeholder="Describe your facility..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Additional Notes
-                </label>
-                <textarea
-                  id="notes"
-                  className="input-tc"
-                  rows={3}
-                  placeholder="Any other changes or information..."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn-accent w-full py-3 text-base flex items-center justify-center gap-2 disabled:opacity-60"
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
           >
-            {submitting ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              "Submit Claim Request"
-            )}
-          </button>
-        </form>
-      </div>
-    </div>
+            <Link href="/" className="hover:text-ink transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href="/claim" className="hover:text-ink transition-colors">
+              Claim
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium">Submit claim</span>
+          </nav>
+
+          <div className="max-w-2xl">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Verification
+            </p>
+            <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[48px] leading-[1.04] tracking-[-0.028em]">
+              Claim this listing.
+            </h1>
+            <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 leading-relaxed">
+              Share your contact info and upload proof of affiliation — a DHA/DOH/MOHAP
+              licence works best. Most claims are approved within 2–3 business days.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Form ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="max-w-2xl mx-auto">
+          {error && (
+            <div
+              className="mb-6 rounded-z-md bg-white border border-red-200 p-4 flex items-start gap-3"
+              role="alert"
+            >
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <p className="font-sans text-z-body-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* ─── Contact info card ─── */}
+            <fieldset className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-7">
+              <legend className="sr-only">Your contact information</legend>
+              <div className="mb-5">
+                <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.012em]">
+                  Your contact information
+                </h2>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">
+                  We&apos;ll use this to reach you during verification. Never shown publicly.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="contactName"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Full name <span className="text-accent-dark">*</span>
+                  </label>
+                  <input
+                    id="contactName"
+                    type="text"
+                    required
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    value={formData.contactName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, contactName: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="contactEmail"
+                      className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                    >
+                      Email <span className="text-accent-dark">*</span>
+                    </label>
+                    <input
+                      id="contactEmail"
+                      type="email"
+                      required
+                      className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                      value={formData.contactEmail}
+                      onChange={(e) =>
+                        setFormData({ ...formData, contactEmail: e.target.value })
+                      }
+                      disabled={submitting}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="contactPhone"
+                      className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                    >
+                      Phone <span className="text-accent-dark">*</span>
+                    </label>
+                    <input
+                      id="contactPhone"
+                      type="tel"
+                      required
+                      className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                      value={formData.contactPhone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, contactPhone: e.target.value })
+                      }
+                      disabled={submitting}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="jobTitle"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Job title
+                  </label>
+                  <input
+                    id="jobTitle"
+                    type="text"
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    placeholder="e.g., Clinic manager, Owner, Administrator"
+                    value={formData.jobTitle}
+                    onChange={(e) =>
+                      setFormData({ ...formData, jobTitle: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            {/* ─── Proof of ownership card ─── */}
+            <fieldset className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-7">
+              <legend className="sr-only">Proof of ownership</legend>
+              <div className="mb-5">
+                <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.012em]">
+                  Proof of ownership
+                </h2>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">
+                  A DHA/DOH/MOHAP licence is fastest. Business cards and letterheads also
+                  work.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="proofType"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Proof type <span className="text-accent-dark">*</span>
+                  </label>
+                  <select
+                    id="proofType"
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors appearance-none cursor-pointer"
+                    value={formData.proofType}
+                    onChange={(e) =>
+                      setFormData({ ...formData, proofType: e.target.value })
+                    }
+                    disabled={submitting}
+                  >
+                    <option value="license">DHA / DOH / MOHAP licence</option>
+                    <option value="business_card">Business card</option>
+                    <option value="letter">Official letterhead</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div
+                  className="rounded-z-md border-2 border-dashed border-ink-hairline p-8 text-center cursor-pointer hover:border-ink-soft hover:bg-surface-cream/60 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                >
+                  <Upload
+                    className="h-8 w-8 text-ink-muted mx-auto mb-3"
+                    strokeWidth={1.75}
+                  />
+                  {fileName ? (
+                    <p className="font-sans text-z-body-sm text-accent-dark font-semibold mb-1">
+                      {fileName}
+                    </p>
+                  ) : (
+                    <p className="font-sans text-z-body-sm text-ink-soft mb-1 font-medium">
+                      Click to upload your proof document
+                    </p>
+                  )}
+                  <p className="font-sans text-z-caption text-ink-muted">
+                    PDF, JPG, or PNG — up to 10 MB
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      setFileName(file?.name || "");
+                    }}
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            {/* ─── Requested changes card ─── */}
+            <fieldset className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-7">
+              <legend className="sr-only">Requested changes</legend>
+              <div className="mb-5">
+                <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.012em]">
+                  Requested changes{" "}
+                  <span className="font-sans text-z-caption text-ink-muted font-normal">
+                    — optional
+                  </span>
+                </h2>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">
+                  Flag any info you&apos;d like updated as part of this claim. You can edit
+                  more later once verified.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="reqPhone"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Updated phone number
+                  </label>
+                  <input
+                    id="reqPhone"
+                    type="tel"
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    placeholder="+971 4 XXX XXXX"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="reqWebsite"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Updated website
+                  </label>
+                  <input
+                    id="reqWebsite"
+                    type="url"
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    placeholder="https://"
+                    value={formData.website}
+                    onChange={(e) =>
+                      setFormData({ ...formData, website: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="reqDescription"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Updated description
+                  </label>
+                  <textarea
+                    id="reqDescription"
+                    rows={3}
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    placeholder="Describe your facility — specialities, tone, what makes it yours."
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="notes"
+                    className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+                  >
+                    Additional notes
+                  </label>
+                  <textarea
+                    id="notes"
+                    rows={3}
+                    className="w-full bg-white rounded-z-md border border-ink-hairline px-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                    placeholder="Anything else our claims team should know."
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill px-6 py-3.5 font-sans font-semibold text-z-body-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Submitting…
+                </>
+              ) : (
+                <>
+                  Submit claim request
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+
+            <p className="font-sans text-z-caption text-ink-muted text-center">
+              By submitting, you confirm you have the authority to manage this listing.
+            </p>
+          </form>
+        </div>
+      </section>
+    </>
   );
 }

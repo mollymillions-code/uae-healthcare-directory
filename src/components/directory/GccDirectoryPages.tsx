@@ -6,9 +6,11 @@ import Image from "next/image";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { CategoryCard } from "@/components/directory/CategoryCard";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ProviderCardV2 } from "@/components/directory-v2/cards/ProviderCardV2";
+import { CityCard } from "@/components/directory-v2/cards/CityCard";
+import { SpecialtyTile } from "@/components/directory-v2/cards/SpecialtyTile";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(
   () =>
@@ -17,7 +19,7 @@ const GoogleMapEmbed = dynamic(
     ),
   {
     ssr: false,
-    loading: () => <div className="w-full h-64 bg-[#f8f8f6] animate-pulse" />,
+    loading: () => <div className="w-full h-64 bg-surface-cream animate-pulse rounded-z-md" />,
   }
 );
 import {
@@ -45,6 +47,7 @@ import {
   getProviders,
   getInsuranceProviders,
 } from "@/lib/data";
+import { safe } from "@/lib/safeData";
 import {
   isValidGccCountry,
   getGccCountry,
@@ -75,7 +78,23 @@ import {
   Calendar,
   MessageSquareQuote,
   ArrowRight,
+  ShieldCheck,
 } from "lucide-react";
+
+/* ==========================================================================
+   Shared helpers for the new UAE-mirrored design
+   ========================================================================== */
+
+const GCC_REGULATOR_SHORT: Record<string, string> = {
+  qa: "MOPH",
+  sa: "MOH",
+  bh: "NHRA",
+  kw: "MOH",
+};
+
+function getCountryRegulatorShort(countryCode: string): string {
+  return GCC_REGULATOR_SHORT[countryCode] ?? "Official";
+}
 
 /* ==========================================================================
    1. Country Directory Home — e.g. /qa/directory
@@ -153,9 +172,12 @@ export async function GccDirectoryHome({
   const cities = getCitiesByCountry(country.code);
   const base = getBaseUrl();
   const categories = getCategories();
+  const regulatorShort = getCountryRegulatorShort(country.code);
 
-  const cityCounts = await Promise.all(
-    cities.map((c) => getProviderCountByCity(c.slug))
+  const cityCounts = await safe(
+    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
+    cities.map(() => 0) as number[],
+    "gccCityCounts"
   );
   const cityCountMap = Object.fromEntries(
     cities.map((c, i) => [c.slug, cityCounts[i]])
@@ -201,142 +223,173 @@ export async function GccDirectoryHome({
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(countryFaqs)} />
 
-      {/* Hero */}
-      <section className="bg-[#1c1c1c]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <Breadcrumb
-            items={[{ label: "Home", href: "/" }, { label: country.name }]}
-          />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.08] text-white tracking-[-0.02em] mb-3">
-            Healthcare Directory{" "}
-            <span className="text-white/60">in {country.name}</span>
-          </h1>
-          <p className="font-['Geist',sans-serif] text-white/50 text-sm sm:text-base max-w-xl">
-            {totalProviders > 0
-              ? `${totalProviders.toLocaleString()} licensed providers across ${cities.length} cities. Regulated by ${country.regulators.join(", ")}.`
-              : `${cities.length} cities. Regulated by ${country.regulators.join(", ")}. Provider data coming soon.`}
-          </p>
+      {/* ─── Hero ─── */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 -right-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.18),transparent_70%)]" />
+          <div className="absolute -top-16 -left-24 h-[320px] w-[320px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
+        </div>
+
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
+          <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-ink transition-colors">Home</Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium">{country.name}</span>
+          </nav>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
+                {regulatorShort} Verified
+              </p>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+                Healthcare in {country.name}.
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+                {totalProviders > 0
+                  ? `${totalProviders.toLocaleString()} licensed providers across ${cities.length} cities. Regulated by ${country.regulators.join(", ")}.`
+                  : `${cities.length} cities. Regulated by ${country.regulators.join(", ")}. Provider data coming soon.`}
+              </p>
+            </div>
+
+            <div className="lg:col-span-4">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { n: totalProviders > 0 ? totalProviders.toLocaleString() : "Soon", l: "Licensed providers" },
+                  { n: cities.length.toString(), l: "Cities covered" },
+                  { n: categories.length.toString(), l: "Specialties" },
+                  { n: country.regulators.length.toString(), l: "Regulators" },
+                ].map((s) => (
+                  <div key={s.l} className="bg-white rounded-z-md border border-ink-line px-4 py-3">
+                    <p className="font-display font-semibold text-ink text-z-h2 leading-none">{s.n}</p>
+                    <p className="font-sans text-z-caption text-ink-muted mt-1">{s.l}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* AEO answer block */}
+          <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              {getCountryOverview(
+                country.name,
+                totalProviders,
+                cities.length,
+                country.regulators,
+                topCityNames
+              )}
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* AEO Answer Block */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div
-          className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6"
-          data-answer-block="true"
-        >
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {getCountryOverview(
-              country.name,
-              totalProviders,
-              cities.length,
-              country.regulators,
-              topCityNames
-            )}
-          </p>
-        </div>
-      </section>
-
-      {/* Cities */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">
-            Cities in {country.name}
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {sortedCities.map((city) => {
+      {/* ─── Cities grid ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <header className="flex items-end justify-between gap-6 mb-6">
+          <div>
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Browse by city
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              {country.name}, city by city.
+            </h2>
+          </div>
+        </header>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {sortedCities.map((city, idx) => {
             const count = cityCountMap[city.slug] ?? 0;
+            const isLarge = idx === 0;
             return (
-              <Link
-                key={city.slug}
-                href={countryDirectoryUrl(country.code, city.slug)}
-                className="flex items-center justify-between bg-white border border-black/[0.06] rounded-xl px-5 py-4 hover:border-[#006828]/15 hover:shadow-card transition-all duration-300 group"
-              >
-                <div className="flex-1 min-w-0">
-                  <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[15px] text-[#1c1c1c] group-hover:text-[#006828] transition-colors tracking-tight block">
-                    {city.name}
-                  </span>
-                  {city.description && (
-                    <span className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-1 mt-0.5 block">
-                      {city.description.slice(0, 80)}...
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                  {count > 0 ? (
-                    <span className="font-['Geist',sans-serif] text-xs text-black/30">
-                      {count} {count === 1 ? "provider" : "providers"}
-                    </span>
-                  ) : (
-                    <span className="font-['Geist',sans-serif] text-xs text-black/20">
-                      Coming soon
-                    </span>
-                  )}
-                  <ChevronRight className="h-4 w-4 text-black/20 group-hover:text-[#006828] transition-colors" />
-                </div>
-              </Link>
+              <div key={city.slug} className={isLarge ? "col-span-2 row-span-2" : ""}>
+                <CityCard
+                  slug={city.slug}
+                  name={city.name}
+                  href={countryDirectoryUrl(country.code, city.slug)}
+                  providerCount={count}
+                  regulator={`${regulatorShort} Verified`}
+                  size={isLarge ? "lg" : "md"}
+                  priority={idx < 2}
+                />
+              </div>
             );
           })}
         </div>
       </section>
 
-      {/* Browse by Specialty */}
-      <section className="bg-[#f8f8f6] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">
-              Medical Specialties
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
-            {categories.slice(0, 12).map((cat) => {
-              const firstCity = cities[0];
-              return (
-                <Link
-                  key={cat.slug}
-                  href={
-                    firstCity
-                      ? countryDirectoryUrl(
-                          country.code,
-                          firstCity.slug,
-                          cat.slug
-                        )
-                      : countryDirectoryUrl(country.code)
-                  }
-                  className="flex items-center justify-between py-3 px-2 border-b border-black/[0.06] hover:bg-white transition-colors group"
-                >
-                  <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
-                    {cat.name}
-                  </span>
-                  <ChevronRight className="h-3.5 w-3.5 text-black/20 group-hover:text-[#006828] transition-colors" />
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-gradient-to-br from-[#1c1c1c] to-[#2a2a2a] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[36px] text-white mb-2 tracking-tight">
-            {country.name} Healthcare Directory
-          </h2>
-          <p className="font-['Geist',sans-serif] font-medium text-white/50 text-sm sm:text-base max-w-2xl mx-auto">
-            {totalProviders > 0
-              ? `${totalProviders.toLocaleString()} licensed providers from official ${country.regulators.join(" & ")} registers. Free. Open. No paywall.`
-              : `Directory launching soon for ${country.name}. Powered by official ${country.regulators.join(" & ")} data.`}
+      {/* ─── Medical specialties ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Medical specialties
           </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            What do you need in {country.name}?
+          </h2>
+        </header>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {categories.slice(0, 15).map((cat) => {
+            const firstCity = sortedCities[0];
+            return (
+              <SpecialtyTile
+                key={cat.slug}
+                slug={cat.slug}
+                name={cat.name}
+                href={
+                  firstCity
+                    ? countryDirectoryUrl(country.code, firstCity.slug, cat.slug)
+                    : countryDirectoryUrl(country.code)
+                }
+                useImage
+              />
+            );
+          })}
         </div>
       </section>
 
-      {/* FAQs */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <FaqSection
-          faqs={countryFaqs}
-          title={`${country.name} Healthcare Directory — FAQ`}
-        />
+      {/* ─── Claim-listing CTA (dark) ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <div className="relative overflow-hidden rounded-z-lg bg-gradient-to-br from-[#0a1f13] via-[#102b1b] to-[#0a1f13] p-8 sm:p-12 lg:p-16">
+          <div className="absolute -top-32 -right-32 h-[400px] w-[400px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.22),transparent_70%)] pointer-events-none" />
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <p className="font-sans text-z-micro text-accent-light uppercase tracking-[0.04em] mb-3">
+                For healthcare providers in {country.name}
+              </p>
+              <h2 className="font-display font-semibold text-white text-display-lg tracking-[-0.02em] leading-[1.05]">
+                {country.name} Healthcare Directory.
+              </h2>
+              <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
+                {totalProviders > 0
+                  ? `${totalProviders.toLocaleString()} licensed providers from official ${country.regulators.join(" & ")} registers. Free. Open. No paywall.`
+                  : `Directory launching soon for ${country.name}. Powered by official ${country.regulators.join(" & ")} data.`}
+              </p>
+              <Link
+                href="/claim"
+                className="mt-7 inline-flex items-center gap-2 rounded-z-pill bg-accent hover:bg-accent-light text-white font-sans font-semibold text-z-body-sm px-6 py-3.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,200,83,0.5)]"
+              >
+                Claim your listing
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About {country.name} healthcare.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={countryFaqs} />
+        </div>
       </section>
     </>
   );
@@ -420,22 +473,40 @@ export async function GccCityPage({
 
   const categories = getCategories();
   const areas = getAreasByCity(city.slug);
-  const topProviders = await getTopRatedProviders(city.slug, 12);
-  const total = await getProviderCountByCity(city.slug);
   const base = getBaseUrl();
+  const regulatorShort = getCountryRegulatorShort(country.code);
 
-  const catCounts = await Promise.all(
-    categories.map((cat) =>
-      getProviderCountByCategoryAndCity(cat.slug, city.slug)
-    )
-  );
+  const [topProviders, total, catCounts, areaCounts] = await Promise.all([
+    safe(
+      getTopRatedProviders(city.slug, 12),
+      [] as Awaited<ReturnType<typeof getTopRatedProviders>>,
+      "gccTopProviders"
+    ),
+    safe(getProviderCountByCity(city.slug), 0, "gccCityTotal"),
+    safe(
+      Promise.all(
+        categories.map((cat) =>
+          getProviderCountByCategoryAndCity(cat.slug, city.slug)
+        )
+      ),
+      categories.map(() => 0) as number[],
+      "gccCatCounts"
+    ),
+    safe(
+      Promise.all(
+        areas.map((area) =>
+          getProviderCountByAreaAndCity(area.slug, city.slug)
+        )
+      ),
+      areas.map(() => 0) as number[],
+      "gccAreaCounts"
+    ),
+  ]);
+
   const catsWithCounts = categories
     .map((cat, i) => ({ ...cat, count: catCounts[i] }))
     .filter((cat) => cat.count > 0);
 
-  const areaCounts = await Promise.all(
-    areas.map((area) => getProviderCountByAreaAndCity(area.slug, city.slug))
-  );
   const areasWithCounts = areas.map((area, i) => ({
     ...area,
     count: areaCounts[i],
@@ -444,12 +515,11 @@ export async function GccCityPage({
   const ratedProviders = topProviders.filter(
     (p) => Number(p.googleRating) > 0
   );
-  const hasRatings = ratedProviders.length > 0;
-  const featuredProviders = hasRatings
-    ? ratedProviders.slice(0, 6)
+  const featuredProviders = ratedProviders.length > 0
+    ? ratedProviders.slice(0, 8)
     : topProviders
         .sort((a, b) => a.name.localeCompare(b.name))
-        .slice(0, 6);
+        .slice(0, 8);
 
   const topSpecialties = catsWithCounts
     .slice(0, 5)
@@ -479,209 +549,252 @@ export async function GccCityPage({
     },
   ];
 
+  const filterShortcuts = [
+    { href: countryDirectoryUrl(country.code, city.slug, "24-hour"), label: "24-hour care", sub: "Open now & overnight" },
+    { href: countryDirectoryUrl(country.code, city.slug, "emergency"), label: "Emergency care", sub: "24/7 emergency departments" },
+    { href: countryDirectoryUrl(country.code, city.slug, "walk-in"), label: "Walk-in clinics", sub: "No appointment needed" },
+    { href: countryBestUrl(country.code, city.slug), label: `Best in ${city.name}`, sub: "Top-rated by reviews" },
+  ];
+
   return (
     <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd
-          data={breadcrumbSchema([
-            { name: "Home", url: base },
-            {
-              name: country.name,
-              url: `${base}${countryDirectoryUrl(country.code)}`,
-            },
-            {
-              name: city.name,
-              url: `${base}${countryDirectoryUrl(country.code, city.slug)}`,
-            },
-          ])}
-        />
-        <JsonLd
-          data={itemListSchema(
-            `Top Healthcare Providers in ${city.name}`,
-            featuredProviders,
-            city.name,
-            base,
-            { countryCode: country.code, countryPrefix: country.code }
-          )}
-        />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", url: base },
+          {
+            name: country.name,
+            url: `${base}${countryDirectoryUrl(country.code)}`,
+          },
+          {
+            name: city.name,
+            url: `${base}${countryDirectoryUrl(country.code, city.slug)}`,
+          },
+        ])}
+      />
+      <JsonLd
+        data={itemListSchema(
+          `Top Healthcare Providers in ${city.name}`,
+          featuredProviders,
+          city.name,
+          base,
+          { countryCode: country.code, countryPrefix: country.code }
+        )}
+      />
+      <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd data={faqPageSchema(faqs)} />
 
-        <Breadcrumb
-          items={[
-            { label: "Home", href: "/" },
-            {
-              label: country.name,
-              href: countryDirectoryUrl(country.code),
-            },
-            { label: city.name },
-          ]}
-        />
+      {/* ─── Hero ─── */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 -right-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.18),transparent_70%)]" />
+          <div className="absolute -top-16 -left-24 h-[320px] w-[320px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
+        </div>
 
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-            Healthcare Providers in {city.name}, {country.name}
-          </h1>
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
+          <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-ink transition-colors">Home</Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href={countryDirectoryUrl(country.code)} className="hover:text-ink transition-colors">
+              {country.name}
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium">{city.name}</span>
+          </nav>
 
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed mb-4">
-            {getEditorialBlurb(
-              city.name,
-              country.name,
-              total,
-              country.regulators,
-              categories.length,
-              areas.length
-            )}
-          </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
+                {regulatorShort} Verified
+              </p>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+                Healthcare in {city.name}.
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+                {getEditorialBlurb(
+                  city.name,
+                  country.name,
+                  total,
+                  country.regulators,
+                  categories.length,
+                  areas.length
+                )}
+              </p>
+            </div>
 
-          <div
-            className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6"
-            data-answer-block="true"
-          >
-            <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-              According to the {country.name} Healthcare Directory by Zavis, as
-              of{" "}
-              {new Date().toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-              , {city.name} has{" "}
-              {total > 0 ? `${total}+` : "a growing number of"} registered
-              healthcare providers listed across {categories.length} medical
-              specialties
-              {areas.length > 0
-                ? ` and ${areas.length} neighborhoods`
-                : ""}
-              . Healthcare in {city.name} is regulated by{" "}
-              {country.regulators.join(" and ")}. All listings include verified
-              contact details, Google ratings from real patient reviews, accepted
-              insurance plans, operating hours, and directions. Data sourced from
-              official government licensed facility registers.
+            <div className="lg:col-span-4">
+              <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
+                {[
+                  { n: total > 0 ? total.toLocaleString() : "Soon", l: "Licensed providers" },
+                  { n: catsWithCounts.length.toString(), l: "Specialties covered" },
+                  { n: areas.length.toString(), l: "Neighborhoods" },
+                ].map((s) => (
+                  <div key={s.l} className="bg-white rounded-z-md border border-ink-line px-4 py-3">
+                    <p className="font-display font-semibold text-ink text-z-h2 leading-none">{s.n}</p>
+                    <p className="font-sans text-z-caption text-ink-muted mt-1">{s.l}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* AEO answer block */}
+          <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              According to the {country.name} Healthcare Directory by Zavis, as of{" "}
+              {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })},{" "}
+              {city.name} has{" "}
+              <span className="font-semibold text-ink">
+                {total > 0 ? `${total}+` : "a growing number of"}
+              </span>{" "}
+              registered healthcare providers listed across {categories.length} medical specialties
+              {areas.length > 0 ? ` and ${areas.length} neighborhoods` : ""}. Healthcare in {city.name}{" "}
+              is regulated by {country.regulators.join(" and ")}. All listings include verified
+              contact details, Google ratings from real patient reviews, accepted insurance plans,
+              operating hours, and directions. Data sourced from official government licensed
+              facility registers.
             </p>
           </div>
         </div>
+      </section>
 
-        {/* Categories */}
-        {catsWithCounts.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Medical Specialties in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {catsWithCounts.map((cat) => (
-                <CategoryCard
-                  key={cat.slug}
-                  name={cat.name}
-                  slug={cat.slug}
-                  icon={cat.icon}
-                  citySlug={city.slug}
-                  providerCount={cat.count}
-                  hrefOverride={countryDirectoryUrl(
-                    country.code,
-                    city.slug,
-                    cat.slug
-                  )}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      {/* ─── Specialties grid ─── */}
+      {catsWithCounts.length > 0 && (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Medical specialties
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              What do you need in {city.name}?
+            </h2>
+          </header>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+            {catsWithCounts.map((cat) => (
+              <SpecialtyTile
+                key={cat.slug}
+                slug={cat.slug}
+                name={cat.name}
+                href={countryDirectoryUrl(country.code, city.slug, cat.slug)}
+                providerCount={cat.count}
+                useImage
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Neighborhoods */}
+      {/* ─── Neighborhoods ─── */}
       {areasWithCounts.length > 0 && (
-        <section className="bg-[#f8f8f6] py-10">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Areas in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {areasWithCounts.map((area) => (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Neighborhoods
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Find care near you in {city.name}.
+            </h2>
+          </header>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 border-t border-ink-line pt-4">
+            {areasWithCounts.map((area) => (
+              <li key={area.slug}>
                 <Link
-                  key={area.slug}
-                  href={countryDirectoryUrl(
-                    country.code,
-                    city.slug,
-                    area.slug
-                  )}
-                  className="flex items-center justify-between bg-white border border-black/[0.06] rounded-xl px-4 py-3 font-['Geist',sans-serif] text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:shadow-card transition-all duration-300"
+                  href={countryDirectoryUrl(country.code, city.slug, area.slug)}
+                  className="flex items-center justify-between py-2.5 group"
                 >
-                  <span className="font-['Geist',sans-serif] font-medium">
+                  <span className="font-sans text-z-body text-ink group-hover:underline decoration-1 underline-offset-2">
                     {area.name}
                   </span>
                   {area.count > 0 && (
-                    <span className="text-black/30 text-xs">
-                      {area.count}{" "}
-                      {area.count === 1 ? "provider" : "providers"}
+                    <span className="font-sans text-z-caption text-ink-muted">
+                      {area.count} {area.count === 1 ? "provider" : "providers"}
                     </span>
                   )}
                 </Link>
-              ))}
-            </div>
-          </div>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
-      {/* Featured Providers */}
+      {/* ─── Filter shortcuts ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Narrow your search
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Filter providers in {city.name}.
+          </h2>
+        </header>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {filterShortcuts.map((f) => (
+            <Link
+              key={f.href}
+              href={f.href}
+              className="group flex items-center gap-4 rounded-z-md bg-white border border-ink-line p-5 hover:border-ink transition-colors"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="font-sans font-semibold text-ink text-z-body leading-tight">{f.label}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-0.5">{f.sub}</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-ink-muted group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Featured providers ─── */}
       {featuredProviders.length > 0 && (
-        <section className="bg-[#f8f8f6] py-10">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Featured Providers in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-              {featuredProviders.map((p, i) => (
-                <div
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Top-rated in {city.name}
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Providers patients love here.
+            </h2>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">
+            {featuredProviders.map((p, i) => {
+              const cat = categories.find((c) => c.slug === p.categorySlug);
+              return (
+                <ProviderCardV2
                   key={p.id}
-                  className="flex items-start gap-4 py-4 px-2 border-b border-black/[0.06] hover:bg-white transition-colors group"
-                >
-                  <span className="font-['Geist',sans-serif] text-2xl font-medium text-[#006828]/25 leading-none mt-0.5 w-8 flex-shrink-0">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      href={countryDirectoryUrl(
-                        country.code,
-                        p.citySlug,
-                        p.categorySlug,
-                        p.slug
-                      )}
-                      className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[15px] text-[#1c1c1c] hover:text-[#006828] transition-colors tracking-tight"
-                    >
-                      {p.name}
-                    </Link>
-                    {hasRatings && Number(p.googleRating) > 0 && (
-                      <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
-                        {p.googleRating}/5 stars ·{" "}
-                        {p.googleReviewCount?.toLocaleString()} reviews
-                      </p>
-                    )}
-                    {p.shortDescription && (
-                      <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-1 line-clamp-1">
-                        {p.shortDescription}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                  name={p.name}
+                  slug={p.slug}
+                  citySlug={p.citySlug}
+                  categorySlug={p.categorySlug}
+                  categoryName={cat?.name ?? null}
+                  address={p.address ?? null}
+                  googleRating={p.googleRating}
+                  googleReviewCount={p.googleReviewCount}
+                  isClaimed={p.isClaimed}
+                  isVerified={p.isVerified}
+                  photos={p.photos ?? []}
+                  coverImageUrl={p.coverImageUrl ?? null}
+                  priority={i < 4}
+                />
+              );
+            })}
           </div>
         </section>
       )}
 
-      {/* FAQs */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <FaqSection
-          faqs={faqs}
-          title={`Healthcare in ${city.name}, ${country.name} — FAQ`}
-        />
-      </div>
+      {/* ─── FAQ ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About {city.name} healthcare.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} />
+        </div>
+      </section>
     </>
   );
 }
@@ -933,13 +1046,17 @@ export async function GccSegmentsPage({
   // --- City + Category Page ---
   if (resolved.type === "city-category") {
     const { category } = resolved;
-    const { providers, total } = await getProviders({
-      citySlug: city.slug,
-      categorySlug: category.slug,
-      page: 1,
-      limit: 20,
-      sort: "rating",
-    });
+    const { providers, total } = await safe(
+      getProviders({
+        citySlug: city.slug,
+        categorySlug: category.slug,
+        page: 1,
+        limit: 20,
+        sort: "rating",
+      }),
+      { providers: [] as Awaited<ReturnType<typeof getProviders>>["providers"], total: 0, page: 1, totalPages: 0 },
+      "gccCityCategoryProviders"
+    );
     const areas = getAreasByCity(city.slug);
     const topProvider = providers[0];
     const countryOpts = {
@@ -958,9 +1075,10 @@ export async function GccSegmentsPage({
       total,
       countryOpts
     );
+    const regulatorShortCC = getCountryRegulatorShort(country.code);
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         <JsonLd
           data={breadcrumbSchema([
             { name: "Home", url: base },
@@ -987,188 +1105,179 @@ export async function GccSegmentsPage({
         <JsonLd data={faqPageSchema(facetFaqs)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb
-          items={[
+        <ListingsTemplate
+          breadcrumbs={[
             { label: "Home", href: "/" },
-            {
-              label: country.name,
-              href: countryDirectoryUrl(country.code),
-            },
-            {
-              label: city.name,
-              href: countryDirectoryUrl(country.code, city.slug),
-            },
+            { label: country.name, href: countryDirectoryUrl(country.code) },
+            { label: city.name, href: countryDirectoryUrl(country.code, city.slug) },
             { label: category.name },
           ]}
-        />
-
-        {/* Category hero banner */}
-        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
-          <Image
-            src={getCategoryImagePath(category.slug)}
-            alt={`${category.name} in ${city.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white mb-1 tracking-tight">
-              {category.name} in {city.name}, {country.name}
-            </h1>
-            <p className="font-['Geist',sans-serif] text-sm text-white/70">
-              {total} verified {total === 1 ? "provider" : "providers"}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
-          data-answer-block="true"
-        >
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {generateFacetAnswerBlock(
-              city,
-              category,
-              null,
-              total,
-              topProvider,
-              countryOpts
-            )}
-          </p>
-        </div>
-
-        {/* Best page callout — only show when there are rated providers */}
-        {providers.some((p) => Number(p.googleRating) > 0) && (
-          <Link
-            href={countryBestUrl(country.code, city.slug, category.slug)}
-            className="flex items-center justify-between bg-[#1c1c1c] text-white px-5 py-3.5 mb-6 hover:bg-[#2a2a2a] transition-colors group"
-          >
-            <div>
-              <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm tracking-tight">
-                See the Best {category.name} in {city.name}
-              </p>
-              <p className="font-['Geist',sans-serif] text-xs text-white/50 mt-0.5">
-                Top-rated providers ranked by patient reviews
-              </p>
-            </div>
-            <ArrowRight className="h-4 w-4 text-white/40 group-hover:text-white transition-colors flex-shrink-0" />
-          </Link>
-        )}
-
-        {areas.length > 0 && (
-          <div className="mb-6">
-            <p className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c] mb-2">
-              Browse by area:
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {areas.map((a) => (
-                <Link
-                  key={a.slug}
-                  href={countryDirectoryUrl(
-                    country.code,
-                    city.slug,
-                    a.slug,
-                    category.slug
-                  )}
-                  className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  {a.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <Suspense
-          fallback={
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              {providers.map((p) => (
-                <ProviderCard
-                  key={p.id}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                  hideCounterpart
-                />
-              ))}
-            </div>
+          eyebrow={`${regulatorShortCC} Verified · ${city.name}`}
+          title={`${category.name} in ${city.name}.`}
+          subtitle={
+            <>
+              {total} verified {total === 1 ? "provider" : "providers"} in {city.name},{" "}
+              {country.name}. Regulated by {country.regulators.join(" and ")}.
+            </>
           }
-        >
-          <ProviderListPaginated
-            providers={providers}
-            currentPage={1}
-            totalCount={total}
-            pageSize={20}
-            baseUrl={countryDirectoryUrl(
-              country.code,
-              city.slug,
-              category.slug
-            )}
-            emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
-          />
-        </Suspense>
-        <FaqSection
-          faqs={facetFaqs}
-          title={`${category.name} in ${city.name} — FAQ`}
+          aeoAnswer={
+            <>
+              {generateFacetAnswerBlock(
+                city,
+                category,
+                null,
+                total,
+                topProvider,
+                countryOpts
+              )}
+            </>
+          }
+          providers={providers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            citySlug: p.citySlug,
+            categorySlug: p.categorySlug,
+            categoryName: category.name,
+            address: p.address ?? null,
+            googleRating: p.googleRating,
+            googleReviewCount: p.googleReviewCount,
+            isClaimed: p.isClaimed,
+            isVerified: p.isVerified,
+            photos: p.photos ?? [],
+            coverImageUrl: p.coverImageUrl ?? null,
+          }))}
+          total={total}
+          pagination={
+            <Suspense fallback={null}>
+              <ProviderListPaginated
+                providers={providers}
+                currentPage={1}
+                totalCount={total}
+                pageSize={20}
+                baseUrl={countryDirectoryUrl(country.code, city.slug, category.slug)}
+                emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
+              />
+            </Suspense>
+          }
+          belowGrid={
+            <>
+              {providers.some((p) => Number(p.googleRating) > 0) && (
+                <section>
+                  <Link
+                    href={countryBestUrl(country.code, city.slug, category.slug)}
+                    className="group relative overflow-hidden rounded-z-lg bg-gradient-to-br from-[#0a1f13] via-[#102b1b] to-[#0a1f13] px-6 py-5 sm:px-8 sm:py-6 flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-sans text-z-micro text-accent-light uppercase tracking-[0.04em] mb-1">
+                        Curated ranking
+                      </p>
+                      <p className="font-display font-semibold text-white text-z-h2 tracking-tight">
+                        See the best {category.name} in {city.name}.
+                      </p>
+                      <p className="font-sans text-white/60 text-z-caption mt-1">
+                        Top-rated providers, ranked by patient reviews.
+                      </p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-white/70 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </section>
+              )}
+
+              {areas.length > 0 && (
+                <section>
+                  <header className="mb-4">
+                    <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                      Browse by area
+                    </p>
+                    <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                      {category.name} by neighborhood.
+                    </h2>
+                  </header>
+                  <ul className="flex flex-wrap gap-2">
+                    {areas.map((a) => (
+                      <li key={a.slug}>
+                        <Link
+                          href={countryDirectoryUrl(country.code, city.slug, a.slug, category.slug)}
+                          className="inline-flex items-center rounded-z-pill bg-white border border-ink-hairline px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                        >
+                          {a.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <section>
+                <header className="mb-6">
+                  <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                    Questions
+                  </p>
+                  <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                    About {category.name.toLowerCase()} in {city.name}.
+                  </h2>
+                </header>
+                <div className="max-w-3xl">
+                  <FaqSection faqs={facetFaqs} />
+                </div>
+              </section>
+
+              {(() => {
+                const allCategories = getCategories();
+                const siblings = allCategories
+                  .filter((c) => c.slug !== category.slug)
+                  .slice(0, 8);
+                if (siblings.length === 0) return null;
+                return (
+                  <section>
+                    <header className="mb-4">
+                      <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                        Other specialties
+                      </p>
+                      <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                        More care in {city.name}.
+                      </h2>
+                    </header>
+                    <ul className="flex flex-wrap gap-2">
+                      {siblings.map((c) => (
+                        <li key={c.slug}>
+                          <Link
+                            href={countryDirectoryUrl(country.code, city.slug, c.slug)}
+                            className="inline-flex items-center rounded-z-pill bg-white border border-ink-hairline px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                          >
+                            {c.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })()}
+            </>
+          }
         />
 
-        {/* Cross-link: Other specialties */}
-        {(() => {
-          const allCategories = getCategories();
-          const siblings = allCategories
-            .filter((c) => c.slug !== category.slug)
-            .slice(0, 8);
-          if (siblings.length === 0) return null;
-          return (
-            <section className="mt-10 mb-4">
-              <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                  Other specialties in {city.name}
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                {siblings.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={countryDirectoryUrl(
-                      country.code,
-                      city.slug,
-                      c.slug
-                    )}
-                    className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                  >
-                    {c.name}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          );
-        })()}
-      </div>
+      </>
     );
   }
 
   // --- City + Area Page ---
   if (resolved.type === "city-area") {
     const { area } = resolved;
-    const { providers, total } = await getProviders({
-      citySlug: city.slug,
-      areaSlug: area.slug,
-      sort: "rating",
-      limit: 20,
-    });
+    const { providers, total } = await safe(
+      getProviders({
+        citySlug: city.slug,
+        areaSlug: area.slug,
+        sort: "rating",
+        limit: 20,
+      }),
+      { providers: [] as Awaited<ReturnType<typeof getProviders>>["providers"], total: 0, page: 1, totalPages: 0 },
+      "gccCityAreaProviders"
+    );
     const categories = getCategories();
+    const categoryNameBySlug = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
+    const regulatorShortCA = getCountryRegulatorShort(country.code);
 
     const areaFaqs = [
       {
@@ -1182,118 +1291,117 @@ export async function GccSegmentsPage({
     ];
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         <JsonLd
           data={breadcrumbSchema([
             { name: "Home", url: base },
-            {
-              name: country.name,
-              url: `${base}${countryDirectoryUrl(country.code)}`,
-            },
-            {
-              name: city.name,
-              url: `${base}${countryDirectoryUrl(country.code, city.slug)}`,
-            },
+            { name: country.name, url: `${base}${countryDirectoryUrl(country.code)}` },
+            { name: city.name, url: `${base}${countryDirectoryUrl(country.code, city.slug)}` },
             { name: area.name },
           ])}
         />
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(areaFaqs)} />
-        <Breadcrumb
-          items={[
+
+        <ListingsTemplate
+          breadcrumbs={[
             { label: "Home", href: "/" },
-            {
-              label: country.name,
-              href: countryDirectoryUrl(country.code),
-            },
-            {
-              label: city.name,
-              href: countryDirectoryUrl(country.code, city.slug),
-            },
+            { label: country.name, href: countryDirectoryUrl(country.code) },
+            { label: city.name, href: countryDirectoryUrl(country.code, city.slug) },
             { label: area.name },
           ]}
+          eyebrow={`${regulatorShortCA} Verified · ${area.name}`}
+          title={`Healthcare in ${area.name}, ${city.name}.`}
+          subtitle={
+            <>
+              {total} {total === 1 ? "provider" : "providers"} serving {area.name} in {city.name},{" "}
+              {country.name}.
+            </>
+          }
+          aeoAnswer={
+            <>
+              {area.name} in {city.name} has{" "}
+              <span className="font-semibold text-ink">{total}</span> healthcare{" "}
+              {total === 1 ? "provider" : "providers"}. Data from official{" "}
+              {country.regulators.join(", ")} registers.
+            </>
+          }
+          providers={providers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            citySlug: p.citySlug,
+            categorySlug: p.categorySlug,
+            categoryName: categoryNameBySlug[p.categorySlug] ?? null,
+            address: p.address ?? null,
+            googleRating: p.googleRating,
+            googleReviewCount: p.googleReviewCount,
+            isClaimed: p.isClaimed,
+            isVerified: p.isVerified,
+            photos: p.photos ?? [],
+            coverImageUrl: p.coverImageUrl ?? null,
+          }))}
+          total={total}
+          belowGrid={
+            <>
+              <section>
+                <header className="mb-4">
+                  <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                    Specialties
+                  </p>
+                  <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                    Specialties in {area.name}.
+                  </h2>
+                </header>
+                <ul className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <li key={cat.slug}>
+                      <Link
+                        href={countryDirectoryUrl(country.code, city.slug, area.slug, cat.slug)}
+                        className="inline-flex items-center rounded-z-pill bg-white border border-ink-hairline px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section>
+                <header className="mb-6">
+                  <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                    Questions
+                  </p>
+                  <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                    About {area.name}.
+                  </h2>
+                </header>
+                <div className="max-w-3xl">
+                  <FaqSection faqs={areaFaqs} />
+                </div>
+              </section>
+            </>
+          }
         />
 
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          Healthcare in {area.name}, {city.name}
-        </h1>
-        <div
-          className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
-          data-answer-block="true"
-        >
-          <p className="text-black/40">
-            {area.name} in {city.name} has {total} healthcare{" "}
-            {total === 1 ? "provider" : "providers"}. Data from official{" "}
-            {country.regulators.join(", ")} registers.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-              Specialties in {area.name}
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={countryDirectoryUrl(
-                  country.code,
-                  city.slug,
-                  area.slug,
-                  cat.slug
-                )}
-                className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {providers.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {providers.map((p) => (
-              <ProviderCard
-                key={p.id}
-                name={p.name}
-                slug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                address={p.address}
-                phone={p.phone}
-                website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating}
-                googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed}
-                isVerified={p.isVerified}
-                coverImageUrl={p.coverImageUrl}
-                hideCounterpart
-              />
-            ))}
-          </div>
-        )}
-
-        <FaqSection
-          faqs={areaFaqs}
-          title={`Healthcare in ${area.name} — FAQ`}
-        />
-      </div>
+      </>
     );
   }
 
   // --- Area + Category Facet Page ---
   if (resolved.type === "area-category") {
     const { area, category } = resolved;
-    const { providers, total } = await getProviders({
-      citySlug: city.slug,
-      areaSlug: area.slug,
-      categorySlug: category.slug,
-      sort: "rating",
-      limit: 50,
-    });
+    const { providers, total } = await safe(
+      getProviders({
+        citySlug: city.slug,
+        areaSlug: area.slug,
+        categorySlug: category.slug,
+        sort: "rating",
+        limit: 50,
+      }),
+      { providers: [] as Awaited<ReturnType<typeof getProviders>>["providers"], total: 0, page: 1, totalPages: 0 },
+      "gccAreaCategoryProviders"
+    );
     if (total === 0) notFound();
     const topProvider = providers[0];
     const countryOptsAC = {
@@ -1312,24 +1420,16 @@ export async function GccSegmentsPage({
       total,
       countryOptsAC
     );
+    const regulatorShortAC = getCountryRegulatorShort(country.code);
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         <JsonLd
           data={breadcrumbSchema([
             { name: "Home", url: base },
-            {
-              name: country.name,
-              url: `${base}${countryDirectoryUrl(country.code)}`,
-            },
-            {
-              name: city.name,
-              url: `${base}${countryDirectoryUrl(country.code, city.slug)}`,
-            },
-            {
-              name: area.name,
-              url: `${base}${countryDirectoryUrl(country.code, city.slug, area.slug)}`,
-            },
+            { name: country.name, url: `${base}${countryDirectoryUrl(country.code)}` },
+            { name: city.name, url: `${base}${countryDirectoryUrl(country.code, city.slug)}` },
+            { name: area.name, url: `${base}${countryDirectoryUrl(country.code, city.slug, area.slug)}` },
             { name: category.name },
           ])}
         />
@@ -1345,108 +1445,83 @@ export async function GccSegmentsPage({
         <JsonLd data={faqPageSchema(facetFaqs)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb
-          items={[
+        <ListingsTemplate
+          breadcrumbs={[
             { label: "Home", href: "/" },
-            {
-              label: country.name,
-              href: countryDirectoryUrl(country.code),
-            },
-            {
-              label: city.name,
-              href: countryDirectoryUrl(country.code, city.slug),
-            },
-            {
-              label: area.name,
-              href: countryDirectoryUrl(
-                country.code,
-                city.slug,
-                area.slug
-              ),
-            },
+            { label: country.name, href: countryDirectoryUrl(country.code) },
+            { label: city.name, href: countryDirectoryUrl(country.code, city.slug) },
+            { label: area.name, href: countryDirectoryUrl(country.code, city.slug, area.slug) },
             { label: category.name },
           ]}
-        />
-
-        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
-          <Image
-            src={getCategoryImagePath(category.slug)}
-            alt={`${category.name} in ${area.name}, ${city.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white tracking-tight mb-1">
-              {category.name} in {area.name}, {city.name}
-            </h1>
-            <p className="font-['Geist',sans-serif] text-sm text-white/70">
-              {total} verified {total === 1 ? "provider" : "providers"}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
-          data-answer-block="true"
-        >
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            {generateFacetAnswerBlock(
-              city,
-              category,
-              area,
-              total,
-              topProvider,
-              countryOptsAC
-            )}
-          </p>
-        </div>
-
-        {providers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (
-              <ProviderCard
-                key={p.id}
-                name={p.name}
-                slug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                address={p.address}
-                phone={p.phone}
-                website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating}
-                googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed}
-                isVerified={p.isVerified}
-                coverImageUrl={p.coverImageUrl}
-                hideCounterpart
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-black/40 mb-2">
-              No {category.name.toLowerCase()} found in {area.name} yet.
-            </p>
-            <Link
-              href={countryDirectoryUrl(
-                country.code,
-                city.slug,
-                category.slug
+          eyebrow={`${regulatorShortAC} Verified · ${area.name}`}
+          title={`${category.name} in ${area.name}, ${city.name}.`}
+          subtitle={
+            <>
+              {total} verified {total === 1 ? "provider" : "providers"} serving {area.name} in{" "}
+              {city.name}, {country.name}.
+            </>
+          }
+          aeoAnswer={
+            <>
+              {generateFacetAnswerBlock(
+                city,
+                category,
+                area,
+                total,
+                topProvider,
+                countryOptsAC
               )}
-              className="text-[#006828] text-sm"
-            >
-              View all {category.name.toLowerCase()} in {city.name} &rarr;
-            </Link>
-          </div>
-        )}
-        <FaqSection
-          faqs={facetFaqs}
-          title={`${category.name} in ${area.name} — FAQ`}
+            </>
+          }
+          providers={providers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            citySlug: p.citySlug,
+            categorySlug: p.categorySlug,
+            categoryName: category.name,
+            address: p.address ?? null,
+            googleRating: p.googleRating,
+            googleReviewCount: p.googleReviewCount,
+            isClaimed: p.isClaimed,
+            isVerified: p.isVerified,
+            photos: p.photos ?? [],
+            coverImageUrl: p.coverImageUrl ?? null,
+          }))}
+          total={total}
+          belowGrid={
+            <>
+              {providers.length === 0 && (
+                <section className="text-center">
+                  <p className="font-sans text-z-body text-ink-muted mb-2">
+                    No {category.name.toLowerCase()} found in {area.name} yet.
+                  </p>
+                  <Link
+                    href={countryDirectoryUrl(country.code, city.slug, category.slug)}
+                    className="font-sans text-z-body-sm text-accent-deep hover:underline"
+                  >
+                    View all {category.name.toLowerCase()} in {city.name} →
+                  </Link>
+                </section>
+              )}
+
+              <section>
+                <header className="mb-6">
+                  <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                    Questions
+                  </p>
+                  <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                    About {category.name.toLowerCase()} in {area.name}.
+                  </h2>
+                </header>
+                <div className="max-w-3xl">
+                  <FaqSection faqs={facetFaqs} />
+                </div>
+              </section>
+            </>
+          }
         />
-      </div>
+      </>
     );
   }
 

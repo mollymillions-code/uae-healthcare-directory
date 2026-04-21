@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -11,7 +10,10 @@ import {
   getAllClassSlugs,
 } from "@/lib/medications";
 import { gateMedicationClassPage } from "@/lib/medication-gating";
-import { Pill, ArrowRight, FileText } from "lucide-react";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemplate";
+import type { HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
+import { Pill, ArrowRight } from "lucide-react";
 
 export const revalidate = 43200;
 export const dynamicParams = true;
@@ -52,132 +54,102 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MedicationClassPage({ params }: Props) {
-  const cls = await getMedicationClassBySlug(params.slug);
+  const cls = await safe(getMedicationClassBySlug(params.slug), null, "medClass");
   if (!cls) notFound();
 
   const base = getBaseUrl();
-  const meds = await getMedicationsByClass(cls.slug);
+  const meds = await safe(getMedicationsByClass(cls.slug), [] as Awaited<ReturnType<typeof getMedicationsByClass>>, "classMeds");
 
-  const rxCount = meds.filter(m => m.rxStatus === "prescription").length;
-  const otcCount = meds.filter(m => m.rxStatus === "otc").length;
-  const highIntentCount = meds.filter(m => m.isHighIntent).length;
+  const rxCount = meds.filter((m) => m.rxStatus === "prescription").length;
+  const otcCount = meds.filter((m) => m.rxStatus === "otc").length;
+  const highIntentCount = meds.filter((m) => m.isHighIntent).length;
+
+  const medItems: HubItem[] = meds.map((med) => ({
+    href: `/medications/${med.slug}`,
+    label: med.genericName,
+    subLabel: med.shortDescription ?? undefined,
+    icon: <Pill className="h-4 w-4" />,
+  }));
+
+  const sections = [
+    {
+      title: "Medications in this class",
+      eyebrow: `${meds.length} ${meds.length === 1 ? "medication" : "medications"}`,
+      items: medItems,
+      layout: "grid" as const,
+      gridCols: "3" as const,
+    },
+  ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: "Medications", url: `${base}/medications` },
-        { name: cls.name },
-      ])} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      <Breadcrumb items={[
-        { label: "UAE", href: "/" },
-        { label: "Medications", href: "/medications" },
-        { label: cls.name },
-      ]} />
-
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <Pill className="h-8 w-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            {cls.name}
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap mb-4">
-          <span className="inline-flex items-center gap-1 bg-[#006828]/[0.08] text-[#006828] text-[11px] font-medium px-3 py-1 rounded-full font-['Geist',sans-serif]">
-            {meds.length} Medications
-          </span>
-          {rxCount > 0 && (
-            <span className="inline-flex items-center gap-1 bg-amber-500/[0.08] text-amber-700 text-[11px] font-medium px-3 py-1 rounded-full font-['Geist',sans-serif]">
-              {rxCount} Prescription
-            </span>
-          )}
-          {otcCount > 0 && (
-            <span className="inline-flex items-center gap-1 bg-blue-500/[0.08] text-blue-700 text-[11px] font-medium px-3 py-1 rounded-full font-['Geist',sans-serif]">
-              {otcCount} OTC
-            </span>
-          )}
-        </div>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
+    <>
+      <HubPageTemplate
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: "Medications", href: "/medications" },
+          { label: cls.name },
+        ]}
+        eyebrow="Drug class"
+        title={cls.name}
+        subtitle={cls.shortDescription ?? undefined}
+        stats={[
+          { n: String(meds.length), l: meds.length === 1 ? "Medication" : "Medications" },
+          ...(rxCount > 0 ? [{ n: String(rxCount), l: "Prescription" }] : []),
+          ...(otcCount > 0 ? [{ n: String(otcCount), l: "Over-the-counter" }] : []),
+        ].slice(0, 4)}
+        aeoAnswer={
+          <>
             {cls.shortDescription || `${cls.name} is a class of medications.`}
             {" "}This class includes {meds.length} medications available in UAE pharmacies
             {rxCount > 0 && otcCount > 0 ? ` — ${rxCount} require a prescription and ${otcCount} are available over the counter` : ""}.
             {highIntentCount > 0 && ` ${highIntentCount} are among the most searched medications in the UAE.`}
+          </>
+        }
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema([
+              { name: "UAE", url: base },
+              { name: "Medications", url: `${base}/medications` },
+              { name: cls.name },
+            ])} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+          </>
+        }
+        sections={sections}
+      />
+
+      {/* Pharmacy CTA + Disclaimer */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24 space-y-8">
+        <div className="relative overflow-hidden rounded-z-lg bg-gradient-to-br from-[#0a1f13] via-[#102b1b] to-[#0a1f13] p-8 sm:p-10">
+          <div className="absolute -top-20 -right-16 h-[260px] w-[260px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.22),transparent_70%)] pointer-events-none" />
+          <div className="relative max-w-2xl">
+            <p className="font-sans text-z-micro text-accent-light uppercase tracking-[0.04em] mb-2">
+              Find availability
+            </p>
+            <h2 className="font-display font-semibold text-white text-display-md tracking-[-0.018em] leading-[1.1]">
+              Find {cls.name} at a pharmacy.
+            </h2>
+            <p className="font-sans text-white/70 text-z-body mt-3 leading-relaxed">
+              Browse UAE pharmacies to check availability of {cls.name.toLowerCase()}.
+            </p>
+            <Link
+              href="/pharmacy"
+              className="mt-5 inline-flex items-center gap-2 rounded-z-pill bg-accent hover:bg-accent-light text-white font-sans font-semibold text-z-body-sm px-5 py-2.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,200,83,0.5)]"
+            >
+              Browse pharmacies
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Disclaimer.</strong> This page lists medications in the {cls.name.toLowerCase()} class
+            for informational purposes. It is not medical advice. Consult a licensed healthcare provider
+            for prescribing guidance. Data from publicly available pharmaceutical references.
           </p>
         </div>
-      </div>
-
-      {/* Medication grid */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            Medications in This Class
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {meds.map((med) => (
-            <Link
-              key={med.slug}
-              href={`/medications/${med.slug}`}
-              className="group flex items-start gap-3 bg-white border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:shadow-card transition-all"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors tracking-tight">
-                  {med.genericName}
-                </p>
-                {med.shortDescription && (
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-2">
-                    {med.shortDescription}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif] ${
-                    med.rxStatus === "otc" ? "bg-[#006828]/[0.08] text-[#006828]" :
-                    med.rxStatus === "controlled" ? "bg-red-500/[0.08] text-red-700" :
-                    "bg-amber-500/[0.08] text-amber-700"
-                  }`}>
-                    {med.rxStatus === "otc" ? "OTC" : med.rxStatus === "controlled" ? "Controlled" : "Rx"}
-                  </span>
-                  {med.isHighIntent && (
-                    <span className="inline-block bg-purple-500/[0.08] text-purple-700 text-[10px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif]">
-                      Popular
-                    </span>
-                  )}
-                </div>
-              </div>
-              <ArrowRight className="h-4 w-4 text-black/20 group-hover:text-[#006828] transition-colors mt-1 flex-shrink-0" />
-            </Link>
-          ))}
-        </div>
       </section>
-
-      {/* Find Pharmacies */}
-      <section className="rounded-2xl border border-[#006828]/20 bg-[#006828]/[0.04] p-6 mb-8">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-2">
-          Find {cls.name} at a Pharmacy
-        </h2>
-        <p className="font-['Geist',sans-serif] text-sm text-black/50 mb-3">
-          Browse UAE pharmacies to check availability of {cls.name.toLowerCase()}.
-        </p>
-        <Link
-          href="/pharmacy"
-          className="inline-flex items-center gap-2 bg-[#006828] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#005520] transition-colors font-['Geist',sans-serif]"
-        >
-          Browse Pharmacies <ArrowRight className="h-4 w-4" />
-        </Link>
-      </section>
-
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-6">
-        <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-          <strong>Disclaimer.</strong> This page lists medications in the {cls.name.toLowerCase()} class for informational purposes.
-          It is not medical advice. Consult a licensed healthcare provider for prescribing guidance.{" "}
-          <FileText className="inline h-3 w-3" /> Data from publicly available pharmaceutical references.
-        </p>
-      </div>
-    </div>
+    </>
   );
 }

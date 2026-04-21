@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -21,6 +19,7 @@ import {
   speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -43,7 +42,11 @@ export async function generateStaticParams() {
     for (const area of areas) {
       for (const cat of categories) {
         if (!WALK_IN_CATS.includes(cat.slug)) continue;
-        const providers = await getWalkInProviders(city.slug, cat.slug, area.slug);
+        const providers = await safe(
+          getWalkInProviders(city.slug, cat.slug, area.slug),
+          [],
+          "walkin-area-cat:params",
+        );
         if (providers.length >= 3) {
           params.push({ city: city.slug, area: area.slug, category: cat.slug });
         }
@@ -122,7 +125,11 @@ export default async function AreaWalkInCategoryPage({ params }: Props) {
   if (!city || !area || !cat) notFound();
   if (!WALK_IN_CATS.includes(cat.slug)) notFound();
 
-  const providers = await getWalkInProviders(city.slug, cat.slug, area.slug);
+  const providers = await safe(
+    getWalkInProviders(city.slug, cat.slug, area.slug),
+    [],
+    "walkin-area-cat:page",
+  );
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();
@@ -161,7 +168,7 @@ export default async function AreaWalkInCategoryPage({ params }: Props) {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
     { name: area.name, url: `${base}/directory/${city.slug}/${area.slug}` },
@@ -169,91 +176,117 @@ export default async function AreaWalkInCategoryPage({ params }: Props) {
     { name: cat.name },
   ];
 
-  return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={itemListSchema(`Walk-In ${cat.name} in ${area.name}, ${city.name}`, sorted.slice(0, 20), city.name, base)} />
+  const topRated = sorted[0];
 
-      <Breadcrumb items={[
+  return (
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
         { label: "Walk-In", href: `/directory/${city.slug}/${area.slug}/walk-in` },
         { label: cat.name },
-      ]} />
+      ]}
+      eyebrow={`Walk-in · ${cat.name} · ${area.name}`}
+      title={`Walk-in ${catLower} in ${area.name}, ${city.name}.`}
+      subtitle={
+        <span>
+          {count} verified {catLower} accepting walk-ins in {area.name}. No appointment needed. Regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count} {catLower} in {area.name}, {city.name} that accept walk-in patients.
+          {topRated && Number(topRated.googleRating) > 0 && (
+            <>
+              {" "}The highest-rated is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star Google rating based on {topRated.googleReviewCount.toLocaleString()} patient reviews.
+            </>
+          )}{" "}
+          {waitTimeText} All listings are sourced from official {regulator} licensed facility registers.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: cat.name,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={itemListSchema(`Walk-In ${cat.name} in ${area.name}, ${city.name}`, sorted.slice(0, 20), city.name, base)} />
+        </>
+      }
+      belowGrid={
+        <>
+          <div className="rounded-z-md border border-ink-line bg-white p-5 sm:p-6">
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-3">
+              Typical wait times — {cat.name} in {area.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans text-z-body-sm">
+              <div>
+                <p className="font-semibold text-ink">GP Walk-In</p>
+                <p className="text-ink-muted">15-45 minutes</p>
+              </div>
+              <div>
+                <p className="font-semibold text-ink">Specialist Appointment</p>
+                <p className="text-ink-muted">1-7 days</p>
+              </div>
+              <div>
+                <p className="font-semibold text-ink">Lab Results (basic)</p>
+                <p className="text-ink-muted">Same day</p>
+              </div>
+              <div>
+                <p className="font-semibold text-ink">Consultation Fee (GP)</p>
+                <p className="text-ink-muted">{gpFee}</p>
+              </div>
+            </div>
+          </div>
 
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-          Walk-In {cat.name} in {area.name}, {city.name}, UAE
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-          {count} verified facilities · No appointment needed · Last updated March 2026
-        </p>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All walk-in clinics in ${area.name}`}
+                href={`/directory/${city.slug}/${area.slug}/walk-in`}
+              />
+              <ListingsCrossLink
+                label={`Walk-in ${catLower} across ${city.name}`}
+                href={`/directory/${city.slug}/walk-in/${cat.slug}`}
+              />
+              <ListingsCrossLink
+                label={`All ${catLower} in ${area.name}`}
+                href={`/directory/${city.slug}/${area.slug}/${cat.slug}`}
+              />
+            </div>
+          </div>
 
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the UAE Open Healthcare Directory, there are {count}{" "}
-            {catLower} in {area.name}, {city.name} that accept walk-in patients.
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <>{" "}The highest-rated is <strong>{sorted[0].name}</strong> with a{" "}
-              {sorted[0].googleRating}-star Google rating based on{" "}
-              {sorted[0].googleReviewCount.toLocaleString()} patient reviews.</>
-            )}{" "}
-            {waitTimeText} All listings are sourced from official {regulator} licensed facility registers.
-          </p>
-        </div>
-      </div>
-
-      <div className="border border-black/[0.06] bg-[#f8f8f6] p-5 mb-8">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-3">Typical Wait Times — {cat.name} in {area.name}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">GP Walk-In</p><p className="text-black/40">15-45 minutes</p></div>
-          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Specialist Appointment</p><p className="text-black/40">1-7 days</p></div>
-          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Lab Results (basic)</p><p className="text-black/40">Same day</p></div>
-          <div><p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">Consultation Fee (GP)</p><p className="text-black/40">{gpFee}</p></div>
-        </div>
-      </div>
-
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Walk-In {cat.name} in {area.name}, {city.name}</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard key={provider.id} name={provider.name} slug={provider.slug}
-              citySlug={provider.citySlug} categorySlug={provider.categorySlug}
-              address={provider.address} phone={provider.phone} website={provider.website}
-              shortDescription={provider.shortDescription} googleRating={provider.googleRating}
-              googleReviewCount={provider.googleReviewCount} isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified} coverImageUrl={provider.coverImageUrl} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10 space-y-2">
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          See all walk-in facilities in {area.name}?{" "}
-          <Link href={`/directory/${city.slug}/${area.slug}/walk-in`} className="text-[#006828] hover:underline font-medium">
-            All walk-in clinics in {area.name} &rarr;
-          </Link>
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          See city-wide walk-in {catLower}?{" "}
-          <Link href={`/directory/${city.slug}/walk-in/${cat.slug}`} className="text-[#006828] hover:underline font-medium">
-            Walk-in {catLower} across {city.name} &rarr;
-          </Link>
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Browse all {catLower} in {area.name}?{" "}
-          <Link href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="text-[#006828] hover:underline font-medium">
-            All {catLower} in {area.name} &rarr;
-          </Link>
-        </p>
-      </section>
-
-      <FaqSection faqs={faqs} title={`Walk-In ${cat.name} in ${area.name}, ${city.name} — FAQ`} />
-    </div>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Walk-in {catLower} in {area.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

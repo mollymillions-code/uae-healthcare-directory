@@ -1,14 +1,13 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { getCityBySlug, getCities, getProviders } from "@/lib/data";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
-import { ProviderCard } from "@/components/provider/ProviderCard";
-import { ShieldCheck } from "lucide-react";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const revalidate = 43200;
 export const dynamicParams = true;
@@ -32,9 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Query and filter to check if we have real matched data for this
   // city+insurer combo. noindex when the matched set is empty —
   // prevents indexing a misleading page that shows unrelated pharmacies.
-  const { providers } = await getProviders({
-    citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 50,
-  });
+  const { providers } = await safe(
+    getProviders({
+      citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 50,
+    }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "pharmacy-ins-meta",
+  );
   const insurerLower = insurer.name.toLowerCase();
   const matchCount = providers.filter(p =>
     p.insurance && p.insurance.some((ins: string) => {
@@ -62,9 +65,13 @@ export default async function CityPharmacyInsurerPage({ params }: Props) {
   const base = getBaseUrl();
 
   // Fetch a larger set to improve match chances, then filter.
-  const { providers, total } = await getProviders({
-    citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 50,
-  });
+  const { providers, total } = await safe(
+    getProviders({
+      citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 50,
+    }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "pharmacy-ins",
+  );
 
   const insurerLower = insurer.name.toLowerCase();
   const filtered = providers.filter(p =>
@@ -80,107 +87,102 @@ export default async function CityPharmacyInsurerPage({ params }: Props) {
     .filter(i => i.slug !== insurer.slug)
     .slice(0, 8);
 
+  const filteredItems: HubItem[] = filtered.map((p) => ({
+    href: `/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`,
+    label: p.name,
+    subLabel: p.address ?? undefined,
+  }));
+
+  const otherInsurerItems: HubItem[] = otherInsurers.map((ins) => ({
+    href: `/directory/${city.slug}/pharmacy/insurance/${ins.slug}`,
+    label: ins.name,
+  }));
+
+  const sections = [] as Parameters<typeof HubPageTemplate>[0]["sections"];
+  if (hasMatches) {
+    sections.push({
+      title: `${filtered.length} pharmacies with ${insurer.name}`,
+      eyebrow: "Matched pharmacies",
+      items: filteredItems,
+      layout: "grid",
+      gridCols: "3",
+    });
+  }
+  sections.push({
+    title: "Other insurance plans",
+    items: otherInsurerItems,
+    layout: "chips",
+  });
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-        { name: "Pharmacy", url: `${base}/directory/${city.slug}/pharmacy` },
-        { name: `${insurer.name} Insurance` },
-      ])} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
+    <>
+      <HubPageTemplate
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: city.name, href: `/directory/${city.slug}` },
+          { label: "Pharmacy", href: `/directory/${city.slug}/pharmacy` },
+          { label: `${insurer.name} Insurance` },
+        ]}
+        eyebrow={`${insurer.name} · ${city.name}`}
+        title={`Pharmacies Accepting ${insurer.name} in ${city.name}.`}
+        subtitle={
+          hasMatches
+            ? <>We found {filtered.length} pharmacies in {city.name} that list {insurer.name} as an accepted insurance provider. {city.name} has {total} total registered pharmacies.</>
+            : <>Our records do not currently show specific pharmacies in {city.name} with confirmed {insurer.name} acceptance. {city.name} has {total} registered pharmacies — contact them directly to verify {insurer.name} coverage.</>
+        }
+        stats={[
+          { n: String(filtered.length), l: "Matched" },
+          { n: String(total), l: "Total pharmacies" },
+        ]}
+        aeoAnswer={
+          hasMatches
+            ? <>We found {filtered.length} pharmacies in {city.name} that list {insurer.name} as an accepted insurance provider. {city.name} has {total} total registered pharmacies. Always bring your insurance card and verify coverage before purchasing medications.</>
+            : <>Our records do not currently show specific pharmacies in {city.name} with confirmed {insurer.name} acceptance. {city.name} has {total} registered pharmacies — contact them directly to verify {insurer.name} coverage. Insurance acceptance data is updated periodically from provider submissions.</>
+        }
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema([
+              { name: "UAE", url: base },
+              { name: city.name, url: `${base}/directory/${city.slug}` },
+              { name: "Pharmacy", url: `${base}/directory/${city.slug}/pharmacy` },
+              { name: `${insurer.name} Insurance` },
+            ])} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+          </>
+        }
+        sections={sections}
+        ctaBanner={
+          <>
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Link href={`/directory/${city.slug}/pharmacy`} className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">All pharmacies in {city.name}</Link>
+              <Link href={`/directory/${city.slug}/pharmacy/delivery`} className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">Delivery</Link>
+              <Link href={`/directory/${city.slug}/insurance`} className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">All {insurer.name} providers</Link>
+            </div>
 
-      <Breadcrumb items={[
-        { label: "UAE", href: "/" },
-        { label: city.name, href: `/directory/${city.slug}` },
-        { label: "Pharmacy", href: `/directory/${city.slug}/pharmacy` },
-        { label: `${insurer.name} Insurance` },
-      ]} />
+            {!hasMatches && (
+              <div className="text-center py-12 bg-surface-cream rounded-z-md border border-ink-line mb-4">
+                <p className="font-sans text-z-body text-ink-muted mb-3">
+                  We don&apos;t have confirmed {insurer.name} acceptance data for pharmacies in {city.name} yet.
+                </p>
+                <Link
+                  href={`/directory/${city.slug}/pharmacy`}
+                  className="inline-flex items-center font-sans text-z-body-sm font-semibold text-accent-dark hover:underline"
+                >
+                  Browse all {city.name} pharmacies &rarr;
+                </Link>
+              </div>
+            )}
 
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <ShieldCheck className="h-8 w-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            Pharmacies Accepting {insurer.name} in {city.name}
-          </h1>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {hasMatches
-              ? `We found ${filtered.length} pharmacies in ${city.name} that list ${insurer.name} as an accepted insurance provider. ${city.name} has ${total} total registered pharmacies. Always bring your insurance card and verify coverage before purchasing medications.`
-              : `Our records do not currently show specific pharmacies in ${city.name} with confirmed ${insurer.name} acceptance. ${city.name} has ${total} registered pharmacies — contact them directly to verify ${insurer.name} coverage. Insurance acceptance data is updated periodically from provider submissions.`}
-          </p>
-        </div>
-      </div>
-
-      {/* Quick links */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <Link href={`/directory/${city.slug}/pharmacy`} className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">All Pharmacies in {city.name}</Link>
-        <Link href={`/directory/${city.slug}/pharmacy/delivery`} className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">Delivery</Link>
-        <Link href={`/directory/${city.slug}/insurance`} className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">All {insurer.name} Providers</Link>
-      </div>
-
-      {/* Only show matched pharmacies — NEVER fall back to generic top
-          pharmacies, which would mislead users into thinking those
-          pharmacies accept the insurer. */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            {hasMatches ? `${filtered.length} Pharmacies with ${insurer.name}` : `No Confirmed ${insurer.name} Pharmacies`}
-          </h2>
-        </div>
-        {hasMatches ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((p) => (
-              <ProviderCard
-                key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug}
-                categorySlug={p.categorySlug} address={p.address} phone={p.phone}
-                website={p.website} shortDescription={p.shortDescription}
-                googleRating={p.googleRating} googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed} isVerified={p.isVerified}
-                coverImageUrl={p.coverImageUrl}
-                insurance={p.insurance} operatingHours={p.operatingHours}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-[#f8f8f6] rounded-2xl border border-black/[0.06]">
-            <p className="font-['Geist',sans-serif] text-black/40 mb-3">
-              We don&apos;t have confirmed {insurer.name} acceptance data for pharmacies in {city.name} yet.
-            </p>
-            <Link href={`/directory/${city.slug}/pharmacy`}
-              className="inline-flex items-center gap-2 bg-[#006828] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#005520] transition-colors font-['Geist',sans-serif]">
-              Browse All {city.name} Pharmacies
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* Other insurers */}
-      {otherInsurers.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight">
-              Other Insurance Plans
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {otherInsurers.map((ins) => (
-              <Link key={ins.slug} href={`/directory/${city.slug}/pharmacy/insurance/${ins.slug}`}
-                className="inline-block bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 hover:text-[#006828] transition-all font-['Geist',sans-serif]">
-                {ins.name}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-6">
-        <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-          <strong>Disclaimer.</strong> Insurance acceptance data is based on provider-submitted information and may not be current.
-          Always verify {insurer.name} coverage directly with the pharmacy before purchasing medications.
-        </p>
-      </div>
-    </div>
+            <div className="border-t border-ink-line pt-4">
+              <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+                <strong>Disclaimer.</strong> Insurance acceptance data is based on provider-submitted
+                information and may not be current. Always verify {insurer.name} coverage directly with
+                the pharmacy before purchasing medications.
+              </p>
+            </div>
+          </>
+        }
+      />
+    </>
   );
 }

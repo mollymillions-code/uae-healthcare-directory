@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCategories, getProviders } from "@/lib/data";
+import { getCategories, getProviders, LocalProvider } from "@/lib/data";
 import { faqPageSchema, breadcrumbSchema, speakableSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -34,7 +35,11 @@ export function generateMetadata(): Metadata {
 export default async function TopUAEPage() {
   const base = getBaseUrl();
 
-  const { providers: allProviders } = await getProviders({ limit: 99999, sort: "rating" });
+  const { providers: allProviders } = await safe(
+    getProviders({ limit: 99999, sort: "rating" }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "top-uae:page",
+  );
 
   const top10 = allProviders
     .filter((p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10)
@@ -67,162 +72,121 @@ export default async function TopUAEPage() {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: "Directory", url: `${base}/directory` },
     { name: "Top 10 UAE", url: `${base}/directory/top` },
   ];
 
+  const topRated = top10[0];
+
+  const cityLinks = [
+    { slug: "dubai", name: "Dubai" },
+    { slug: "abu-dhabi", name: "Abu Dhabi" },
+    { slug: "sharjah", name: "Sharjah" },
+    { slug: "al-ain", name: "Al Ain" },
+    { slug: "ajman", name: "Ajman" },
+    { slug: "ras-al-khaimah", name: "Ras Al Khaimah" },
+    { slug: "fujairah", name: "Fujairah" },
+    { slug: "umm-al-quwain", name: "Umm Al Quwain" },
+  ];
+
   return (
-    <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
-        {top10.length > 0 && (
-          <JsonLd data={itemListSchema("Top 10 Healthcare Providers in the UAE", top10, "UAE", base)} />
-        )}
-
-        <Breadcrumb
-          items={[
-            { label: "Directory", href: "/directory" },
-            { label: "Top 10 UAE" },
-          ]}
-        />
-
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-            Top 10 Healthcare Providers in the UAE — Ranked by Patient Reviews
-          </h1>
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
-            These are the highest-rated healthcare providers across all seven UAE emirates, based on verified Google
-            patient reviews. Only providers with a rating above 0 and more than 10 verified reviews are included. All
-            listed facilities are licensed by the Dubai Health Authority (DHA), Department of Health Abu Dhabi (DOH), or
-            the Ministry of Health and Prevention (MOHAP).
-          </p>
-
-          {/* Answer block — cited by LLMs */}
-          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-              According to the UAE Open Healthcare Directory, these are the highest-rated healthcare providers in the
-              United Arab Emirates as of March 2026, ranked by Google patient reviews.
-              {top10[0] && (
-                <>
-                  {" "}
-                  The top-ranked provider is <strong>{top10[0].name}</strong> with a {top10[0].googleRating}-star rating
-                  based on {top10[0].googleReviewCount.toLocaleString()} verified patient reviews.
-                </>
-              )}
-              {" "}All listings are sourced from official government-licensed facility registers.
-            </p>
-          </div>
-        </div>
-
-        {top10.length > 0 ? (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Ranked List — Top Healthcare Providers in the UAE</h2>
-            </div>
-            <ol className="space-y-0">
-              {top10.map((provider, index) => (
-                <li key={provider.id} className="article-row">
-                  <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div className="flex-1 min-w-0">
-                        <Link
-                          href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`}
-                          className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                        >
-                          {provider.name}
-                        </Link>
-                        <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                          <span className="text-xs font-semibold text-[#006828]">
-                            ★ {provider.googleRating}
-                          </span>
-                          <span className="font-['Geist',sans-serif] text-xs text-black/40">
-                            {provider.googleReviewCount.toLocaleString()} patient reviews
-                          </span>
-                          {provider.phone && (
-                            <a
-                              href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
-                              className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors"
-                            >
-                              {provider.phone}
-                            </a>
-                          )}
-                        </div>
-                        {provider.address && (
-                          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{provider.address}</p>
-                        )}
-                      </div>
-                      <div className="shrink-0 flex gap-2 flex-wrap justify-end">
-                        <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">#{index + 1} in UAE</span>
-                        <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">
-                          {categories.find((c) => c.slug === provider.categorySlug)?.name || provider.categorySlug}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "Directory", href: "/directory" },
+        { label: "Top 10 UAE" },
+      ]}
+      eyebrow="Top-rated · UAE"
+      title="Top 10 healthcare providers in the UAE."
+      subtitle={
+        <span>
+          The highest-rated providers across all seven UAE emirates, by verified Google patient reviews. Only providers with a rating above 0 and more than 10 verified reviews are included. All facilities licensed by DHA, DOH, or MOHAP.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, these are the highest-rated healthcare providers in the United Arab Emirates as of March 2026, ranked by Google patient reviews.
+          {topRated && (
+            <>
+              {" "}The top-ranked provider is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star rating based on {topRated.googleReviewCount.toLocaleString()} verified patient reviews.
+            </>
+          )}{" "}
+          All listings are sourced from official government-licensed facility registers.
+        </>
+      }
+      total={top10.length}
+      providers={top10.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          {top10.length > 0 && (
+            <JsonLd data={itemListSchema("Top 10 Healthcare Providers in the UAE", top10, "UAE", base)} />
+          )}
+        </>
+      }
+      belowGrid={
+        <>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Top 10 by city
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {cityLinks.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/directory/${c.slug}/top`}
+                    className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                  >
+                    Top 10 in {c.name}
+                  </Link>
                 </li>
               ))}
-            </ol>
-          </section>
-        ) : (
-          <p className="text-black/40 text-sm mb-10">
-            No providers with sufficient ratings available yet. Check back as the directory grows.
-          </p>
-        )}
-
-        {/* Cross-links to city-level top lists */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by City</h2>
+            </ul>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { slug: "dubai", name: "Dubai" },
-              { slug: "abu-dhabi", name: "Abu Dhabi" },
-              { slug: "sharjah", name: "Sharjah" },
-              { slug: "al-ain", name: "Al Ain" },
-              { slug: "ajman", name: "Ajman" },
-              { slug: "ras-al-khaimah", name: "Ras Al Khaimah" },
-              { slug: "fujairah", name: "Fujairah" },
-              { slug: "umm-al-quwain", name: "Umm Al Quwain" },
-            ].map((city) => (
-              <Link
-                key={city.slug}
-                href={`/directory/${city.slug}/top`}
-                className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] hover:bg-[#006828] hover:text-white transition-colors"
-              >
-                Top 10 in {city.name}
-              </Link>
-            ))}
+
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Top by specialty
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink label="Top hospitals in UAE" href="/directory/top/hospitals" />
+              <ListingsCrossLink label="Top clinics in UAE" href="/directory/top/clinics" />
+              <ListingsCrossLink label="Top dental clinics in UAE" href="/directory/top/dental" />
+            </div>
           </div>
-        </section>
 
-        {/* Cross-link to category top lists */}
-        <section className="mb-10">
-          <p className="font-['Geist',sans-serif] text-sm text-black/40">
-            Looking for top providers by specialty?{" "}
-            <Link href="/directory/top/hospitals" className="text-[#006828] hover:underline font-medium">
-              Top Hospitals in UAE →
-            </Link>
-            {" · "}
-            <Link href="/directory/top/clinics" className="text-[#006828] hover:underline font-medium">
-              Top Clinics in UAE →
-            </Link>
-            {" · "}
-            <Link href="/directory/top/dental" className="text-[#006828] hover:underline font-medium">
-              Top Dental Clinics in UAE →
-            </Link>
-          </p>
-        </section>
-
-        <FaqSection faqs={faqs} title="Top Healthcare Providers UAE — FAQ" />
-      </div>
-    </>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Top healthcare providers UAE — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

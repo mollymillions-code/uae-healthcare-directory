@@ -1,12 +1,15 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCities, getCityBySlug, getProviders } from "@/lib/data";
+import {
+  getCities, getCityBySlug, getCategories, getProviders,
+  LocalProvider,
+} from "@/lib/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 interface Props { params: { city: string } }
@@ -14,8 +17,19 @@ interface Props { params: { city: string } }
 const GOV_NAME_TERMS = ["- dubai health","- dha","ministry of health","government","public health protection","primary health","health center -","health centre -","tawam hospital","al ain hospital","al qassimi hospital","saqr hospital","fujairah hospital","dibba hospital","kalba hospital","khorfakkan hospital","masafi hospital","sheikh khalifa medical city","sheikh shakhbout","mafraq hospital","corniche hospital","kanad hospital","al dhafra hospital","al wagan hospital"];
 const GOV_FT = ["primary healthcare"];
 
-function isGov(name: string, ft: string): boolean { const n = name.toLowerCase(); const f = ft.toLowerCase(); return GOV_NAME_TERMS.some((t) => n.includes(t)) || GOV_FT.some((t) => f.includes(t)); }
-async function getGovProviders(citySlug: string) { const { providers } = await getProviders({ citySlug, limit: 99999 }); return providers.filter((p) => isGov(p.name, p.facilityType || "")); }
+function isGov(name: string, ft: string): boolean {
+  const n = name.toLowerCase();
+  const f = ft.toLowerCase();
+  return GOV_NAME_TERMS.some((t) => n.includes(t)) || GOV_FT.some((t) => f.includes(t));
+}
+async function getGovProviders(citySlug: string) {
+  const { providers } = await safe(
+    getProviders({ citySlug, limit: 99999 }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "gov:city",
+  );
+  return providers.filter((p) => isGov(p.name, p.facilityType || ""));
+}
 
 export async function generateStaticParams() {
   const cities = getCities();
@@ -27,14 +41,29 @@ export async function generateStaticParams() {
   return results;
 }
 
-function getRegulatorName(s: string): string { if (s === "dubai") return "the Dubai Health Authority (DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)"; return "the Ministry of Health and Prevention (MOHAP)"; }
-function getRegulatorShort(s: string): string { if (s === "dubai") return "DHA"; if (s === "abu-dhabi" || s === "al-ain") return "DOH"; return "MOHAP"; }
-function getGovOperator(s: string): string { if (s === "dubai") return "Dubai Health (formerly DHA)"; if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under the DOH"; return "the Ministry of Health and Prevention (MOHAP)"; }
+function getRegulatorName(s: string): string {
+  if (s === "dubai") return "the Dubai Health Authority (DHA)";
+  if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)";
+  return "the Ministry of Health and Prevention (MOHAP)";
+}
+function getRegulatorShort(s: string): string {
+  if (s === "dubai") return "DHA";
+  if (s === "abu-dhabi" || s === "al-ain") return "DOH";
+  return "MOHAP";
+}
+function getGovOperator(s: string): string {
+  if (s === "dubai") return "Dubai Health (formerly DHA)";
+  if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under the DOH";
+  return "the Ministry of Health and Prevention (MOHAP)";
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const city = getCityBySlug(params.city); if (!city) return {};
+  const city = getCityBySlug(params.city);
+  if (!city) return {};
   const govProvidersMeta = await getGovProviders(city.slug);
-  const count = govProvidersMeta.length; const base = getBaseUrl(); const url = `${base}/directory/${city.slug}/government`;
+  const count = govProvidersMeta.length;
+  const base = getBaseUrl();
+  const url = `${base}/directory/${city.slug}/government`;
   return {
     title: `Government Healthcare Facilities in ${city.name}, UAE | ${count} Public Facilities`,
     description: `Find ${count} government and public healthcare facilities in ${city.name}, UAE. Browse government hospitals, primary health centers, and public clinics operated by ${getRegulatorShort(city.slug)}. Updated March 2026.`,
@@ -44,13 +73,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function GovernmentPage({ params }: Props) {
-  const city = getCityBySlug(params.city); if (!city) notFound();
-  const govProviders = await getGovProviders(city.slug); if (govProviders.length === 0) notFound();
-  const base = getBaseUrl(); const regulator = getRegulatorName(city.slug); const regulatorShort = getRegulatorShort(city.slug); const govOperator = getGovOperator(city.slug); const count = govProviders.length;
+  const city = getCityBySlug(params.city);
+  if (!city) notFound();
+  const govProviders = await getGovProviders(city.slug);
+  if (govProviders.length === 0) notFound();
+  const base = getBaseUrl();
+  const regulator = getRegulatorName(city.slug);
+  const regulatorShort = getRegulatorShort(city.slug);
+  const govOperator = getGovOperator(city.slug);
+  const count = govProviders.length;
+  const categories = getCategories();
+
   const hospitals = govProviders.filter((p) => (p.facilityType || "").toLowerCase().includes("hospital"));
-  const primaryCare = govProviders.filter((p) => { const ft = (p.facilityType || "").toLowerCase(); const n = p.name.toLowerCase(); return ft.includes("primary healthcare") || n.includes("primary health") || n.includes("health center") || n.includes("health centre"); });
-  const sorted = [...govProviders].sort((a, b) => { const r = Number(b.googleRating) - Number(a.googleRating); return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0); });
+  const primaryCare = govProviders.filter((p) => {
+    const ft = (p.facilityType || "").toLowerCase();
+    const n = p.name.toLowerCase();
+    return ft.includes("primary healthcare") || n.includes("primary health") || n.includes("health center") || n.includes("health centre");
+  });
+  const sorted = [...govProviders].sort((a, b) => {
+    const r = Number(b.googleRating) - Number(a.googleRating);
+    return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+  });
   const ratedProviders = sorted.filter((p) => Number(p.googleRating) > 0);
+
   const faqs = [
     { question: `How many government healthcare facilities are there in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, there are ${count} government and public healthcare facilities in ${city.name}, UAE. These include government hospitals, primary healthcare centers, and specialized public health facilities operated by ${govOperator}. Data sourced from official government registers, last verified March 2026.` },
     { question: `Are government hospitals in ${city.name} free?`, answer: `Government healthcare in the UAE is subsidized but not entirely free. UAE nationals receive free or heavily subsidized treatment. Expatriates with valid health insurance pay reduced co-payments. Uninsured patients pay out-of-pocket at government-set rates, typically 30-50% lower than private hospital fees.` },
@@ -60,63 +105,107 @@ export default async function GovernmentPage({ params }: Props) {
     { question: `What are the wait times at government hospitals in ${city.name}?`, answer: `Emergency departments provide immediate triage for critical cases. Non-critical emergencies: 30-120 minutes. Outpatient specialist appointments: 1-4 weeks. Primary healthcare centers: 15-45 minutes for walk-ins.` },
   ];
 
-  const renderRow = (provider: typeof govProviders[0], index: number, badge: string) => (
-    <li key={provider.id} className="article-row">
-      <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">{String(index + 1).padStart(2, "0")}</span>
-      <div className="flex-1 min-w-0"><div className="flex items-start justify-between gap-4 flex-wrap"><div className="flex-1 min-w-0">
-        <Link href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`} className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors">{provider.name}</Link>
-        <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-          {Number(provider.googleRating) > 0 && <span className="text-xs font-semibold text-[#006828]">{provider.googleRating}/5</span>}
-          {provider.googleReviewCount > 0 && <span className="font-['Geist',sans-serif] text-xs text-black/40">{provider.googleReviewCount.toLocaleString()} reviews</span>}
-          {provider.facilityType && <span className="font-['Geist',sans-serif] text-xs text-black/40">{provider.facilityType}</span>}
-          {provider.phone && <a href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`} className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors">{provider.phone}</a>}
-        </div>
-        {provider.address && <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{provider.address}</p>}
-      </div><div className="shrink-0"><span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">{badge}</span></div></div></div>
-    </li>
-  );
+  const breadcrumbSchemaItems = [
+    { name: "UAE", url: base },
+    { name: city.name, url: `${base}/directory/${city.slug}` },
+    { name: "Government Facilities", url: `${base}/directory/${city.slug}/government` },
+  ];
+
+  const topRated = ratedProviders[0];
 
   return (
-    <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: "Government Facilities", url: `${base}/directory/${city.slug}/government` }])} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
-        {ratedProviders.length >= 3 && <JsonLd data={itemListSchema(`Government Healthcare Facilities in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />}
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: "Government Facilities" }]} />
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">Government Healthcare Facilities in {city.name}, UAE</h1>
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{city.name} has {count} government and public healthcare facilities operated by {govOperator}. These include government hospitals, primary healthcare centers, and specialized public health services. Healthcare in {city.name} is regulated by {regulator}.</p>
-          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-              According to the UAE Open Healthcare Directory, there are {count} government healthcare facilities in {city.name}.
-              {hospitals.length > 0 && ` This includes ${hospitals.length} government hospital${hospitals.length === 1 ? "" : "s"}`}
-              {primaryCare.length > 0 && ` and ${primaryCare.length} primary healthcare center${primaryCare.length === 1 ? "" : "s"}`}.
-              Government facilities in {city.name} are operated by {govOperator}. UAE nationals receive subsidized or free treatment; expatriates are covered through employer-provided insurance or pay government-set rates.
-              {ratedProviders.length > 0 && ratedProviders[0] && (<> The highest-rated government facility is <strong>{ratedProviders[0].name}</strong>{Number(ratedProviders[0].googleRating) > 0 ? ` with a ${ratedProviders[0].googleRating}-star Google rating` : ""}.</>)}{" "}
-              All listings are sourced from official {regulatorShort} registers, last verified March 2026.
-            </p>
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "UAE", href: "/" },
+        { label: city.name, href: `/directory/${city.slug}` },
+        { label: "Government Facilities" },
+      ]}
+      eyebrow={`Government · ${city.name}`}
+      title={`Government healthcare facilities in ${city.name}.`}
+      subtitle={
+        <span>
+          {count} government and public healthcare facilities in {city.name}, operated by {govOperator}. Regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count} government healthcare facilities in {city.name}.
+          {hospitals.length > 0 && ` This includes ${hospitals.length} government hospital${hospitals.length === 1 ? "" : "s"}`}
+          {primaryCare.length > 0 && ` and ${primaryCare.length} primary healthcare center${primaryCare.length === 1 ? "" : "s"}`}.
+          {" "}Government facilities in {city.name} are operated by {govOperator}. UAE nationals receive subsidized or free treatment; expatriates are covered through employer-provided insurance or pay government-set rates.
+          {topRated && (
+            <>
+              {" "}The highest-rated government facility is <strong>{topRated.name}</strong>{Number(topRated.googleRating) > 0 ? ` with a ${topRated.googleRating}-star Google rating` : ""}.
+            </>
+          )}{" "}
+          All listings are sourced from official {regulatorShort} registers, last verified March 2026.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          {ratedProviders.length >= 3 && (
+            <JsonLd data={itemListSchema(`Government Healthcare Facilities in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />
+          )}
+        </>
+      }
+      belowGrid={
+        <>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All healthcare in ${city.name}`}
+                href={`/directory/${city.slug}`}
+              />
+              <ListingsCrossLink
+                label={`Walk-in clinics in ${city.name}`}
+                href={`/directory/${city.slug}/walk-in`}
+                sub="No appointment needed"
+              />
+              <ListingsCrossLink
+                label={`Insurance in ${city.name}`}
+                href={`/directory/${city.slug}/insurance`}
+                sub="Daman, Thiqa, AXA..."
+              />
+            </div>
           </div>
-        </div>
-        {hospitals.length > 0 && (
-          <section className="mb-10">
-            <ol className="space-y-0">{[...hospitals].sort((a, b) => Number(b.googleRating) - Number(a.googleRating) || (b.googleReviewCount || 0) - (a.googleReviewCount || 0)).map((p, i) => renderRow(p, i, "Government"))}</ol>
-          </section>
-        )}
-        {primaryCare.length > 0 && (
-          <section className="mb-10">
-            <ol className="space-y-0">{[...primaryCare].sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => renderRow(p, i, "Public"))}</ol>
-          </section>
-        )}
-        {(() => { const hIds = new Set(hospitals.map((p) => p.id)); const pIds = new Set(primaryCare.map((p) => p.id)); sorted.filter((p) => !hIds.has(p.id) && !pIds.has(p.id)); return null;
-        })()}
-        <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">All Providers</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{city.name}</span></Link>
-          <Link href={`/directory/${city.slug}/walk-in`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">Walk-In Clinics</span><span className="font-['Geist',sans-serif] text-xs text-black/40">No appointment needed</span></Link>
-          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">By Insurance</span><span className="font-['Geist',sans-serif] text-xs text-black/40">Daman, Thiqa, AXA...</span></Link>
-        </div></section>
-        <FaqSection faqs={faqs} title={`Government Healthcare in ${city.name} — FAQ`} />
-      </div>
-    </>
+
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Government healthcare in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -10,9 +9,11 @@ import {
   getCityBySlug,
   getCategoryBySlug,
   getProviders,
+  LocalProvider,
 } from "@/lib/data";
 import { faqPageSchema, breadcrumbSchema, speakableSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -26,11 +27,15 @@ export async function generateStaticParams() {
 
   for (const city of cities) {
     for (const cat of categories) {
-      const { providers } = await getProviders({
-        citySlug: city.slug,
-        categorySlug: cat.slug,
-        limit: 99999,
-      });
+      const { providers } = await safe(
+        getProviders({
+          citySlug: city.slug,
+          categorySlug: cat.slug,
+          limit: 99999,
+        }),
+        { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+        "top-cat:params",
+      );
       const qualified = providers.filter(
         (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10
       );
@@ -81,11 +86,15 @@ export default async function TopCategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();
 
-  const { providers: allProviders } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: cat.slug,
-    limit: 99999,
-  });
+  const { providers: allProviders } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: cat.slug,
+      limit: 99999,
+    }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "top-cat:page",
+  );
 
   const top10 = allProviders
     .filter((p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10)
@@ -101,7 +110,6 @@ export default async function TopCategoryPage({ params }: Props) {
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const catLower = cat.name.toLowerCase();
-  const pageUrl = `${base}/directory/${city.slug}/top/${cat.slug}`;
 
   const faqs = [
     {
@@ -118,119 +126,101 @@ export default async function TopCategoryPage({ params }: Props) {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
     { name: cat.name, url: `${base}/directory/${city.slug}/${cat.slug}` },
-    { name: `Top 10`, url: pageUrl },
+    { name: `Top 10`, url: `${base}/directory/${city.slug}/top/${cat.slug}` },
   ];
 
+  const topRated = top10[0];
+
   return (
-    <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
-        <JsonLd data={itemListSchema(`Top 10 ${cat.name} in ${city.name}`, top10, city.name, base)} />
-
-        <Breadcrumb items={[
-          { label: "UAE", href: "/" },
-          { label: city.name, href: `/directory/${city.slug}` },
-          { label: cat.name, href: `/directory/${city.slug}/${cat.slug}` },
-          { label: "Top 10" },
-        ]} />
-
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-            Top 10 {cat.name} in {city.name}, UAE
-          </h1>
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
-            The {cat.name.toLowerCase()} below are the highest-rated in {city.name} by verified Google patient reviews,
-            sourced from the UAE Open Healthcare Directory. Only providers with a rating above 0 and more than 10 verified
-            reviews are included. Healthcare in {city.name} is regulated by {regulator}.
-          </p>
-
-          {/* Answer block — cited by LLMs */}
-          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-              According to the UAE Open Healthcare Directory, these are the 10 highest-rated {catLower} in {city.name}, UAE,
-              ranked by Google patient reviews as of March 2026.
-              {top10[0] && (
-                <> The top-ranked provider is <strong>{top10[0].name}</strong> with a {top10[0].googleRating}-star rating
-                based on {top10[0].googleReviewCount.toLocaleString()} verified patient reviews.</>
-              )}
-              {" "}All listings are sourced from official {regulator} licensed facility registers.
-            </p>
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "UAE", href: "/" },
+        { label: city.name, href: `/directory/${city.slug}` },
+        { label: cat.name, href: `/directory/${city.slug}/${cat.slug}` },
+        { label: "Top 10" },
+      ]}
+      eyebrow={`Top-rated · ${cat.name} · ${city.name}`}
+      title={`Top 10 ${catLower} in ${city.name}.`}
+      subtitle={
+        <span>
+          The highest-rated {catLower} in {city.name} by verified Google patient reviews. Only providers with a rating above 0 and more than 10 verified reviews are included. Regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, these are the 10 highest-rated {catLower} in {city.name}, UAE, ranked by Google patient reviews as of March 2026.
+          {topRated && (
+            <>
+              {" "}The top-ranked provider is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star rating based on {topRated.googleReviewCount.toLocaleString()} verified patient reviews.
+            </>
+          )}{" "}
+          All listings are sourced from official {regulator} licensed facility registers.
+        </>
+      }
+      total={top10.length}
+      providers={top10.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: cat.name,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={itemListSchema(`Top 10 ${cat.name} in ${city.name}`, top10, city.name, base)} />
+        </>
+      }
+      belowGrid={
+        <>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All ${catLower} in ${city.name}`}
+                href={`/directory/${city.slug}/${cat.slug}`}
+              />
+              <ListingsCrossLink
+                label={`Top 10 in ${city.name}`}
+                href={`/directory/${city.slug}/top`}
+                sub="Across every specialty"
+              />
+              <ListingsCrossLink
+                label={`Top ${catLower} in UAE`}
+                href={`/directory/top/${cat.slug}`}
+                sub="Nationwide"
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Numbered list */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Ranked List — {cat.name} in {city.name}</h2>
-          </div>
-          <ol className="space-y-0">
-            {top10.map((provider, index) => (
-              <li key={provider.id} className="article-row">
-                <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-4 flex-wrap">
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/directory/${provider.citySlug}/${provider.categorySlug}/${provider.slug}`}
-                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                      >
-                        {provider.name}
-                      </Link>
-                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                        <span className="text-xs font-semibold text-[#006828]">
-                          ★ {provider.googleRating}
-                        </span>
-                        <span className="font-['Geist',sans-serif] text-xs text-black/40">
-                          {provider.googleReviewCount.toLocaleString()} patient reviews
-                        </span>
-                        {provider.phone && (
-                          <a
-                            href={`tel:${provider.phone.replace(/[^+\d]/g, "")}`}
-                            className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors"
-                          >
-                            {provider.phone}
-                          </a>
-                        )}
-                      </div>
-                      {provider.address && (
-                        <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{provider.address}</p>
-                      )}
-                    </div>
-                    <div className="shrink-0">
-                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">
-                        #{index + 1} in {city.name}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* Cross-link to the full category listing */}
-        <section className="mb-10">
-          <p className="font-['Geist',sans-serif] text-sm text-black/40">
-            Looking for more options?{" "}
-            <Link
-              href={`/directory/${city.slug}/${cat.slug}`}
-              className="text-[#006828] hover:underline font-medium"
-            >
-              Browse all {cat.name.toLowerCase()} in {city.name} →
-            </Link>
-          </p>
-        </section>
-
-        <FaqSection faqs={faqs} title={`Top ${cat.name} in ${city.name} — FAQ`} />
-      </div>
-    </>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Top {catLower} in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

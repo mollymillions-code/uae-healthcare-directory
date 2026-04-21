@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -20,6 +19,7 @@ import {
   speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -33,7 +33,11 @@ export async function generateStaticParams() {
   for (const city of cities) {
     const areas = getAreasByCity(city.slug);
     for (const area of areas) {
-      const providers = await get24HourProviders(city.slug, undefined, area.slug);
+      const providers = await safe(
+        get24HourProviders(city.slug, undefined, area.slug),
+        [],
+        "24hour-area:params",
+      );
       if (providers.length >= 3) {
         params.push({ city: city.slug, area: area.slug });
       }
@@ -79,12 +83,15 @@ export default async function TwentyFourHourAreaPage({ params }: Props) {
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();
 
-  const providers = await get24HourProviders(city.slug, undefined, area.slug);
+  const providers = await safe(
+    get24HourProviders(city.slug, undefined, area.slug),
+    [],
+    "24hour-area:page",
+  );
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const pageUrl = `${base}/directory/${city.slug}/${area.slug}/24-hour`;
   const count = providers.length;
 
   const sorted = [...providers].sort((a, b) => {
@@ -123,71 +130,118 @@ export default async function TwentyFourHourAreaPage({ params }: Props) {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
     { name: area.name, url: `${base}/directory/${city.slug}/${area.slug}` },
-    { name: "24-Hour", url: pageUrl },
+    { name: "24-Hour", url: `${base}/directory/${city.slug}/${area.slug}/24-hour` },
   ];
 
-  return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={itemListSchema(`24-Hour Healthcare in ${area.name}, ${city.name}`, sorted.slice(0, 20), city.name, base)} />
+  const topRated = sorted[0];
 
-      <Breadcrumb items={[
+  return (
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
         { label: "24-Hour" },
-      ]} />
+      ]}
+      eyebrow={`24-hour · ${area.name}, ${city.name}`}
+      title={`24-hour healthcare in ${area.name}, ${city.name}.`}
+      subtitle={
+        <span>
+          {count} verified facilities open 24/7 in {area.name}, {city.name}. Hospitals, pharmacies, clinics, and urgent care — licensed by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count} healthcare facilities in {area.name}, {city.name} that operate 24 hours a day, 7 days a week. These include hospitals, pharmacies, clinics, and urgent care centers.
+          {topRated && Number(topRated.googleRating) > 0 && (
+            <>
+              {" "}The highest-rated is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star Google rating based on {topRated.googleReviewCount.toLocaleString()} patient reviews.
+            </>
+          )}{" "}
+          All listings are sourced from official {regulator} licensed facility registers. Emergency departments provide immediate triage for critical cases; non-critical cases are typically seen within 30 to 120 minutes.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={itemListSchema(`24-Hour Healthcare in ${area.name}, ${city.name}`, sorted.slice(0, 20), city.name, base)} />
+        </>
+      }
+      belowGrid={
+        <>
+          {categoryLinks.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                24-hour {area.name.toLowerCase()} by category
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {categoryLinks.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/${area.slug}/24-hour/${cat.slug}`}
+                      className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {cat.name} ({categoryCounts.get(cat.slug)})
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">24-Hour Healthcare in {area.name}, {city.name}, UAE</h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">{count} verified facilities open 24/7 · Last updated March 2026</p>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the UAE Open Healthcare Directory, there are {count} healthcare facilities in {area.name}, {city.name} that operate 24 hours a day, 7 days a week. These include hospitals, pharmacies, clinics, and urgent care centers.
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <> The highest-rated is <strong>{sorted[0].name}</strong> with a {sorted[0].googleRating}-star Google rating based on {sorted[0].googleReviewCount.toLocaleString()} patient reviews.</>
-            )}{" "}
-            All listings are sourced from official {regulator} licensed facility registers. Emergency departments provide immediate triage for critical cases; non-critical cases are typically seen within 30 to 120 minutes.
-          </p>
-        </div>
-      </div>
-
-      {categoryLinks.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm font-medium text-[#1c1c1c] mb-2">Filter by category:</p>
-          <div className="flex flex-wrap gap-2">
-            {categoryLinks.map((cat) => (
-              <Link key={cat.slug} href={`/directory/${city.slug}/${area.slug}/24-hour/${cat.slug}`} className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]">
-                {cat.name} ({categoryCounts.get(cat.slug)})
-              </Link>
-            ))}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All 24-hour healthcare in ${city.name}`}
+                href={`/directory/${city.slug}/24-hour`}
+              />
+              <ListingsCrossLink
+                label={`All healthcare in ${area.name}`}
+                href={`/directory/${city.slug}/${area.slug}`}
+              />
+            </div>
           </div>
-        </div>
-      )}
 
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All 24-Hour Facilities in {area.name}, {city.name}</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard key={provider.id} name={provider.name} slug={provider.slug} citySlug={provider.citySlug} categorySlug={provider.categorySlug} address={provider.address} phone={provider.phone} website={provider.website} shortDescription={provider.shortDescription} googleRating={provider.googleRating} googleReviewCount={provider.googleReviewCount} isClaimed={provider.isClaimed} isVerified={provider.isVerified} coverImageUrl={provider.coverImageUrl} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-10 space-y-2">
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">See all 24-hour facilities in {city.name}?{" "}<Link href={`/directory/${city.slug}/24-hour`} className="text-[#006828] hover:underline font-medium">24-hour healthcare in {city.name} &rarr;</Link></p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">Need non-24-hour options?{" "}<Link href={`/directory/${city.slug}/${area.slug}`} className="text-[#006828] hover:underline font-medium">Browse all healthcare providers in {area.name} &rarr;</Link></p>
-      </section>
-
-      <FaqSection faqs={faqs} title={`24-Hour Healthcare in ${area.name}, ${city.name} — FAQ`} />
-    </div>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                24-hour healthcare in {area.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

@@ -1,7 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { SearchBar } from "@/components/search/SearchBar";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -13,28 +11,41 @@ import {
 } from "@/lib/data";
 import { speakableSchema, faqPageSchema, truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { ChevronRight, Search, BarChart3, Phone } from "lucide-react";
+import { safe } from "@/lib/safeData";
+import {
+  Stethoscope, Baby, Brain, Heart, Eye, Ear, Bone, Smile, Syringe, FlaskConical, Pill,
+  UserRound, ShieldCheck, Star, Sparkles, ArrowRight,
+} from "lucide-react";
+import { DirectoryHomeHero } from "./_components/DirectoryHomeHero";
+import { CategoryRail } from "@/components/directory-v2/rails/CategoryRail";
+import { CityCard } from "@/components/directory-v2/cards/CityCard";
+import { ProviderCardV2 } from "@/components/directory-v2/cards/ProviderCardV2";
 
 export async function generateMetadata(): Promise<Metadata> {
   const year = new Date().getFullYear();
   const base = getBaseUrl();
   return {
     title: truncateTitle(`UAE Healthcare Directory — 12,500+ Providers [${year}]`),
-    description: truncateDescription(`Compare 12,500+ DHA/DOH/MOHAP-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`),
+    description: truncateDescription(
+      `Compare 12,500+ DHA/DOH/MOHAP-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`
+    ),
     openGraph: {
       type: "website",
       title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals",
-      description: "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
+      description:
+        "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
       locale: "en_AE",
       siteName: "UAE Open Healthcare Directory by Zavis",
       url: `${base}/directory`,
-      images: [{ url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "UAE Open Healthcare Directory" }],
+      images: [
+        { url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "UAE Open Healthcare Directory" },
+      ],
     },
     alternates: {
       canonical: `${base}/directory`,
       languages: {
-        'en-AE': `${base}/directory`,
-        'ar-AE': `${base}/ar`,
+        "en-AE": `${base}/directory`,
+        "ar-AE": `${base}/ar`,
       },
     },
   };
@@ -42,33 +53,101 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const revalidate = 21600;
 
+// Icon palette for category rail (unicode-free, accessible SVG via lucide-react)
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  hospitals: <Stethoscope className="h-4 w-4" strokeWidth={1.75} />,
+  dental: <Smile className="h-4 w-4" strokeWidth={1.75} />,
+  "dental-clinics": <Smile className="h-4 w-4" strokeWidth={1.75} />,
+  dentists: <Smile className="h-4 w-4" strokeWidth={1.75} />,
+  pediatrics: <Baby className="h-4 w-4" strokeWidth={1.75} />,
+  "mental-health": <Brain className="h-4 w-4" strokeWidth={1.75} />,
+  cardiology: <Heart className="h-4 w-4" strokeWidth={1.75} />,
+  ophthalmology: <Eye className="h-4 w-4" strokeWidth={1.75} />,
+  ent: <Ear className="h-4 w-4" strokeWidth={1.75} />,
+  orthopedics: <Bone className="h-4 w-4" strokeWidth={1.75} />,
+  dermatology: <Sparkles className="h-4 w-4" strokeWidth={1.75} />,
+  "general-medicine": <Stethoscope className="h-4 w-4" strokeWidth={1.75} />,
+  gynecology: <UserRound className="h-4 w-4" strokeWidth={1.75} />,
+  fertility: <UserRound className="h-4 w-4" strokeWidth={1.75} />,
+  pharmacy: <Pill className="h-4 w-4" strokeWidth={1.75} />,
+  laboratory: <FlaskConical className="h-4 w-4" strokeWidth={1.75} />,
+  aesthetic: <Syringe className="h-4 w-4" strokeWidth={1.75} />,
+  aesthetics: <Syringe className="h-4 w-4" strokeWidth={1.75} />,
+  clinics: <Stethoscope className="h-4 w-4" strokeWidth={1.75} />,
+};
+function iconFor(slug: string): React.ReactNode {
+  return CATEGORY_ICONS[slug] ?? <Stethoscope className="h-4 w-4" strokeWidth={1.75} />;
+}
+
 export default async function DirectoryHomePage() {
   const cities = getCities();
   const categories = getCategories();
   const base = getBaseUrl();
 
-  // Fetch all async data in parallel
   const [cityCounts, catCounts, topProviders] = await Promise.all([
-    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
-    Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))),
-    getTopRatedProviders(undefined, 20),
+    safe(Promise.all(cities.map((c) => getProviderCountByCity(c.slug))), cities.map(() => 0) as number[], "cityCounts"),
+    safe(Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))), categories.map(() => 0) as number[], "catCounts"),
+    safe(getTopRatedProviders(undefined, 12), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "topProviders"),
   ]);
 
   const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
-  const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
+  const rawTotal = cityCounts.reduce((s, n) => s + n, 0);
+  const totalProviders = rawTotal > 0 ? rawTotal : 12500;
 
-  // Top 8 categories sorted by provider count
   const categoriesWithCount = categories
-    .map((cat, i) => ({ ...cat, count: catCounts[i] }))
-    .sort((a, b) => b.count - a.count);
-  const top8Categories = categoriesWithCount.slice(0, 8);
+    .map((c, i) => ({ ...c, count: catCounts[i] }))
+    .sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
 
-  // Featured providers: only those with ratings > 0, otherwise first 8 alphabetically
-  const ratedProviders = topProviders.filter((p) => Number(p.googleRating) > 0);
-  const hasRatings = ratedProviders.length > 0;
-  const featuredProviders = hasRatings
-    ? ratedProviders.slice(0, 8)
-    : topProviders.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 8);
+  const featuredCities = [...cities]
+    .sort((a, b) => (cityCountMap[b.slug] ?? 0) - (cityCountMap[a.slug] ?? 0))
+    .slice(0, 8);
+
+  const featured = topProviders.filter((p) => Number(p.googleRating) > 0).slice(0, 8);
+
+  // Inspiration links (SEO-rich long-tail — stays in SSR HTML)
+  const inspirationLinks = [
+    { label: "24-hour clinics in Dubai", href: "/directory/dubai/24-hour" },
+    { label: "Pediatric hospitals in Abu Dhabi", href: "/directory/abu-dhabi/hospitals" },
+    { label: "Dental clinics in Dubai Marina", href: "/directory/dubai/marina/dental-clinics" },
+    { label: "Dermatologists in Sharjah", href: "/directory/sharjah/dermatology" },
+    { label: "Cardiology specialists in Al Ain", href: "/directory/al-ain/cardiology" },
+    { label: "Mental health in Dubai", href: "/directory/dubai/mental-health" },
+    { label: "ENT specialists in Ajman", href: "/directory/ajman/ent" },
+    { label: "Eye clinics in Abu Dhabi", href: "/directory/abu-dhabi/ophthalmology" },
+    { label: "Walk-in clinics in Dubai", href: "/directory/dubai/walk-in" },
+    { label: "Emergency care in Sharjah", href: "/directory/sharjah/emergency" },
+    { label: "Gynecologists in Dubai", href: "/directory/dubai/gynecology" },
+    { label: "Orthopedic surgeons in Abu Dhabi", href: "/directory/abu-dhabi/orthopedics" },
+    { label: "Government hospitals in Dubai", href: "/directory/dubai/government" },
+    { label: "Fertility clinics in Dubai", href: "/directory/dubai/fertility" },
+    { label: "Pharmacies with home delivery", href: "/pharmacy/how-delivery-works" },
+    { label: "Dubai clinics accepting Daman", href: "/directory/dubai/insurance/daman" },
+    { label: "Clinics in Arabic in Dubai", href: "/directory/dubai/language/ar" },
+    { label: "Aesthetic clinics in Dubai", href: "/directory/dubai/aesthetic" },
+  ];
+
+  const homeFaqs = [
+    {
+      question: "What is the UAE Open Healthcare Directory?",
+      answer:
+        "A free, comprehensive directory of licensed healthcare providers across all seven Emirates. Data sourced from official DHA, DOH, and MOHAP registers. Ratings from Google Maps. By Zavis.",
+    },
+    {
+      question: "How do I find a doctor near me?",
+      answer:
+        "Use the search pill at the top — filter by specialty, city, date and insurance. Or browse the city and specialty grids below.",
+    },
+    {
+      question: "Where does the data come from?",
+      answer:
+        "All listings are sourced from official UAE health authority registers: DHA (Dubai), DOH (Abu Dhabi & Al Ain), and MOHAP (Sharjah, Ajman, RAK, Fujairah, UAQ).",
+    },
+    {
+      question: "Can clinics update their listing?",
+      answer:
+        "Yes. Healthcare providers can claim their listing for free with a DHA/DOH/MOHAP licence. Once verified, update contact details, hours, and services.",
+    },
+  ];
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -82,13 +161,13 @@ export default async function DirectoryHomePage() {
     },
   };
 
-  const homeFaqs = [
-    { question: "What is the UAE Open Healthcare Directory?", answer: "The UAE Open Healthcare Directory is a free, open, comprehensive directory of licensed healthcare providers across all seven Emirates. Data sourced from official DHA, DOH, and MOHAP registers. Ratings from Google Maps. By Zavis." },
-    { question: "How do I find a doctor near me?", answer: "Use the search bar to filter by city, specialty, and area. Or browse the city and category listings below." },
-    { question: "Where does the data come from?", answer: "All listings are sourced from official UAE health authority registers: DHA (Dubai), DOH (Abu Dhabi/Al Ain), and MOHAP (Sharjah, Ajman, RAK, Fujairah, UAQ). Verified March 2026." },
-    { question: "Can clinics update their listing?", answer: "Yes. Healthcare providers can claim their listing for free with a DHA/DOH/MOHAP license. Once verified, update contact details, hours, and services." },
-  ];
-
+  const railItems = categoriesWithCount.slice(0, 14).map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    count: c.count,
+    icon: iconFor(c.slug),
+    href: `/directory/dubai/${c.slug}`,
+  }));
 
   return (
     <>
@@ -96,232 +175,274 @@ export default async function DirectoryHomePage() {
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(homeFaqs)} />
 
-      {/* ─── Hero Grid ─── */}
-      <section className="bg-[#1c1c1c]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-0">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-[#2a2a2a]">
-            {/* Main hero card — left half */}
-            <Link href="/directory/dubai" className="lg:col-span-6 relative overflow-hidden rounded-none bg-[#1c1c1c] min-h-[420px] lg:min-h-[500px] group">
-              <Image src="/images/cities/dubai.webp" alt="Dubai Healthcare" fill sizes="(max-width: 1024px) 100vw, 50vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="relative z-10 p-6 flex flex-col justify-end h-full">
-                <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-3 w-fit font-['Geist',sans-serif]">Dubai</span>
-                <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.08] text-white tracking-[-0.02em] mb-2">
-                  Find Healthcare<br />Across the UAE
-                </h1>
-                <p className="font-['Geist',sans-serif] text-white/60 text-sm sm:text-base max-w-md">
-                  {totalProviders.toLocaleString()}+ licensed providers. 8 cities. 26 specialties. Sourced from official government registers.
-                </p>
+      {/* ───── Hero ───── */}
+      <DirectoryHomeHero totalProviders={totalProviders} />
+
+      {/* ───── Category rail (sticky below header on scroll) ───── */}
+      <div className="sticky top-20 z-20 bg-surface-cream/90 backdrop-blur-md border-b border-ink-line">
+        <div className="max-w-z-container mx-auto">
+          <CategoryRail items={railItems} />
+        </div>
+      </div>
+
+      {/* ───── Cities mosaic ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <header className="flex items-end justify-between gap-6 mb-6">
+          <div>
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Browse by Emirate
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Healthcare, city by city.
+            </h2>
+          </div>
+          <Link
+            href="/find-a-doctor"
+            className="hidden md:inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-ink hover:text-ink-soft group"
+          >
+            See all cities
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </header>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {featuredCities.map((city, idx) => {
+            const isLarge = idx === 0;
+            const regulator =
+              city.slug === "dubai"
+                ? "DHA Verified"
+                : city.slug === "abu-dhabi" || city.slug === "al-ain"
+                ? "DOH Verified"
+                : "MOHAP Verified";
+            return (
+              <div
+                key={city.slug}
+                className={isLarge ? "col-span-2 row-span-2" : ""}
+              >
+                <CityCard
+                  slug={city.slug}
+                  name={city.name}
+                  href={`/directory/${city.slug}`}
+                  providerCount={cityCountMap[city.slug] ?? 0}
+                  regulator={regulator}
+                  size={isLarge ? "lg" : "md"}
+                  priority={idx < 2}
+                />
               </div>
-            </Link>
+            );
+          })}
+        </div>
+      </section>
 
-            {/* Right column — 2 stacked cards */}
-            <div className="lg:col-span-3 flex flex-col gap-px">
-              <Link href="/directory/abu-dhabi" className="relative overflow-hidden bg-[#1c1c1c] flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/abu-dhabi.webp" alt="Abu Dhabi Healthcare" fill sizes="(max-width: 1024px) 100vw, 25vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="relative z-10 p-6 flex flex-col justify-end h-full">
-                  <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-2 w-fit font-['Geist',sans-serif]">Abu Dhabi</span>
-                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-xl text-white leading-tight tracking-tight">
-                    {cityCountMap["abu-dhabi"] ?? 0} providers in Abu Dhabi
-                  </h2>
-                  <p className="font-['Geist',sans-serif] text-white/50 text-sm mt-1">DOH regulated</p>
-                </div>
-              </Link>
-              <Link href="/directory/sharjah" className="relative overflow-hidden bg-[#1c1c1c] flex-1 min-h-[200px] lg:min-h-0 group">
-                <Image src="/images/cities/sharjah.webp" alt="Sharjah Healthcare" fill sizes="(max-width: 1024px) 100vw, 25vw" priority className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="relative z-10 p-6 flex flex-col justify-end h-full">
-                  <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-1 rounded-full mb-2 w-fit font-['Geist',sans-serif]">Sharjah</span>
-                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-xl text-white leading-tight tracking-tight">
-                    {(cityCountMap["sharjah"] ?? 0).toLocaleString()} providers in Sharjah
-                  </h2>
-                  <p className="font-['Geist',sans-serif] text-white/50 text-sm mt-1">MOHAP regulated</p>
-                </div>
-              </Link>
+      {/* ───── Top-rated providers grid ───── */}
+      {featured.length > 0 && (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+          <header className="flex items-end justify-between gap-6 mb-6">
+            <div>
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                Top-rated this month
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Providers patients love.
+              </h2>
             </div>
-
-            {/* Far right — headline list */}
-            <div className="lg:col-span-3 bg-[#111] p-5 flex flex-col">
-              <h3 className="font-['Geist',sans-serif] text-xs font-medium text-[#006828] uppercase tracking-widest mb-4">All Emirates</h3>
-              {cities.map((city) => {
-                const count = cityCountMap[city.slug] ?? 0;
-                return (
-                  <Link
-                    key={city.slug}
-                    href={`/directory/${city.slug}`}
-                    className="flex items-start gap-3 py-3 border-b border-white/10 text-white/70 hover:text-[#006828] transition-colors text-sm group"
-                  >
-                    <span className="block w-2 h-2 bg-[#006828] flex-shrink-0 mt-2 opacity-40 group-hover:opacity-100 transition-opacity" />
-                    <span className="flex-1 font-['Bricolage_Grotesque',sans-serif] font-medium">{city.name}</span>
-                    <span className="text-white/30 text-xs font-['Geist',sans-serif]">{count}</span>
-                  </Link>
-                );
-              })}
-            </div>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">
+            {featured.map((p, i) => {
+              const cat = categories.find((c) => c.slug === p.categorySlug);
+              return (
+                <ProviderCardV2
+                  key={p.id}
+                  name={p.name}
+                  slug={p.slug}
+                  citySlug={p.citySlug}
+                  categorySlug={p.categorySlug}
+                  categoryName={cat?.name ?? null}
+                  address={p.address ?? null}
+                  googleRating={p.googleRating}
+                  googleReviewCount={p.googleReviewCount}
+                  isClaimed={p.isClaimed}
+                  isVerified={p.isVerified}
+                  photos={p.photos ?? []}
+                  coverImageUrl={p.coverImageUrl ?? null}
+                  priority={i < 4}
+                />
+              );
+            })}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* ─── Search bar ─── */}
-      <section className="bg-[#f8f8f6] border-b border-black/5">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <SearchBar />
-        </div>
-      </section>
-
-      {/* ─── AEO answer block ─── */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            According to the UAE Open Healthcare Directory, as of March 2026, there are {totalProviders.toLocaleString()}+ licensed healthcare providers listed across all seven emirates of the United Arab Emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Al Ain, Ras Al Khaimah, Fujairah, and Umm Al Quwain. These facilities are regulated by three government health authorities: the Dubai Health Authority (DHA) oversees Dubai, the Department of Health (DOH) regulates Abu Dhabi and Al Ain, and the Ministry of Health and Prevention (MOHAP) governs Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. The directory covers 26 medical specialties including hospitals, dental clinics, dermatology, cardiology, ophthalmology, mental health, pharmacy, and pediatrics, with each listing providing verified contact details, Google ratings from patient reviews, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
-          </p>
-        </div>
-      </section>
-
-      {/* ─── How It Works ─── */}
-      <section className="bg-[#f8f8f6] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">How It Works</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              { icon: Search, title: "1. Search by city or specialty", desc: "Browse 8 cities and 26 medical specialties to find the right provider." },
-              { icon: BarChart3, title: "2. Compare providers", desc: "Check Google ratings, patient reviews, accepted insurance, and services." },
-              { icon: Phone, title: "3. Call, get directions, or visit", desc: "Contact the provider directly with phone, map directions, or website links." },
-            ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center text-center sm:items-start sm:text-left">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#006828]/10 to-[#006828]/5 mb-3">
-                  <step.icon className="h-5 w-5 text-[#006828]" />
-                </div>
-                <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] mb-1">{step.title}</h3>
-                <p className="font-['Geist',sans-serif] text-xs text-black/40">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Browse by Specialty — Top 8 only ─── */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">Specialties</h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
-          {top8Categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/directory/dubai/${cat.slug}`}
-              className="flex items-center justify-between py-3 px-2 border-b border-black/[0.06] hover:bg-[#f8f8f6] transition-colors group"
+      {/* ───── Trust pillars ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              Icon: ShieldCheck,
+              title: "Government-verified",
+              desc:
+                "Every listing is cross-referenced against DHA, DOH, or MOHAP licensed facility registers. If it isn't licensed, it isn't here.",
+            },
+            {
+              Icon: Star,
+              title: "Real patient reviews",
+              desc:
+                "Google ratings pulled directly from verified patient reviews — no curation, no pay-to-play, no fake 5-stars.",
+            },
+            {
+              Icon: Sparkles,
+              title: "Free. Forever.",
+              desc:
+                "No paywall. No login. No tracking scripts. Built as a public utility for UAE residents and visitors alike.",
+            },
+          ].map((f) => (
+            <div
+              key={f.title}
+              className="rounded-z-lg bg-white border border-ink-line p-7 hover:shadow-z-card transition-shadow duration-z-base"
             >
-              <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
-                {cat.name}
-              </span>
-              <div className="flex items-center gap-2">
-                {cat.count > 0 && (
-                  <span className="font-['Geist',sans-serif] text-xs text-black/30">{cat.count}</span>
-                )}
-                <ChevronRight className="h-3.5 w-3.5 text-black/20 group-hover:text-[#006828] transition-colors" />
+              <div className="h-11 w-11 rounded-z-md bg-accent-muted flex items-center justify-center">
+                <f.Icon className="h-5 w-5 text-accent-deep" />
               </div>
-            </Link>
+              <h3 className="font-display font-semibold text-ink text-z-h2 mt-5">{f.title}</h3>
+              <p className="font-sans text-ink-soft text-z-body leading-relaxed mt-2">{f.desc}</p>
+            </div>
           ))}
         </div>
-
-        <div className="mt-4">
-          <Link href="/search" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828] hover:underline">
-            View all 26 specialties &rarr;
-          </Link>
-        </div>
       </section>
 
-      {/* ─── Source of Truth ─── */}
-      <section className="bg-gradient-to-br from-[#1c1c1c] to-[#2a2a2a] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[36px] text-white mb-2 tracking-tight">
-            The Source of Truth for UAE Healthcare
-          </h2>
-          <p className="font-['Geist',sans-serif] font-medium text-white/50 text-sm sm:text-base max-w-2xl mx-auto">
-            {totalProviders.toLocaleString()}+ licensed providers from official DHA, DOH, and MOHAP government registers. Free. Open. No paywall.
+      {/* ───── AEO answer block (preserved for search visibility) ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <div className="answer-block rounded-z-md bg-white border border-ink-line p-6 sm:p-8 max-w-4xl">
+          <p className="font-sans text-z-body text-ink-soft leading-[1.75]">
+            <span className="font-semibold text-ink">According to the UAE Open Healthcare Directory,</span>{" "}
+            there are {totalProviders.toLocaleString()}+ licensed healthcare providers listed across all seven
+            emirates of the United Arab Emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Al Ain, Ras Al Khaimah,
+            Fujairah, and Umm Al Quwain. These facilities are regulated by three government health authorities:
+            the Dubai Health Authority (DHA) oversees Dubai, the Department of Health (DOH) regulates Abu Dhabi
+            and Al Ain, and the Ministry of Health and Prevention (MOHAP) governs Sharjah, Ajman, Ras Al Khaimah,
+            Fujairah, and Umm Al Quwain. The directory covers 26 medical specialties — hospitals, dental clinics,
+            dermatology, cardiology, ophthalmology, mental health, pharmacy, and pediatrics among them — with
+            each listing providing verified contact details, Google ratings from patient reviews, accepted
+            insurance plans, operating hours, and directions. Data sourced from official government licensed
+            facility registers.
           </p>
         </div>
       </section>
 
-      {/* ─── Featured Providers ─── */}
-      <section className="bg-[#f8f8f6] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">Featured Providers</h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {featuredProviders.map((p, idx) => (
+      {/* ───── Claim-listing CTA (dark) ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <div className="relative overflow-hidden rounded-z-lg bg-gradient-to-br from-[#0a1f13] via-[#102b1b] to-[#0a1f13] p-8 sm:p-12 lg:p-16">
+          <div className="absolute -top-32 -right-32 h-[400px] w-[400px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.22),transparent_70%)] pointer-events-none" />
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <p className="font-sans text-z-micro text-accent-light uppercase tracking-[0.04em] mb-3">
+                For healthcare providers
+              </p>
+              <h2 className="font-display font-semibold text-white text-display-lg tracking-[-0.02em] leading-[1.05]">
+                Own a clinic? Claim your free listing.
+              </h2>
+              <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
+                Verify in under 2 minutes with your DHA/DOH/MOHAP licence. Update hours, insurance, services.
+                Reach thousands of patients actively searching — for free.
+              </p>
               <Link
-                key={p.id}
-                href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                className="flex items-start gap-4 py-4 px-2 border-b border-black/[0.06] hover:bg-white transition-colors group"
+                href="/claim"
+                className="mt-7 inline-flex items-center gap-2 rounded-z-pill bg-accent hover:bg-accent-light text-white font-sans font-semibold text-z-body-sm px-6 py-3.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,200,83,0.5)]"
               >
-                <span className="font-['Geist',sans-serif] text-2xl font-medium text-[#006828]/25 w-8 flex-shrink-0">
-                  {String(idx + 1).padStart(2, "0")}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[15px] text-[#1c1c1c] group-hover:text-[#006828] transition-colors truncate tracking-tight">
-                    {p.name}
-                  </h3>
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5 truncate">{p.address}</p>
-                  <div className="flex items-center gap-3 mt-1">
-                    {hasRatings && Number(p.googleRating) > 0 && (
-                      <span className="font-['Geist',sans-serif] text-xs font-medium text-[#006828]">{p.googleRating} ★</span>
-                    )}
-                    {p.phone && (
-                      <span className="font-['Geist',sans-serif] text-xs text-black/30">{p.phone}</span>
-                    )}
-                  </div>
-                </div>
+                Claim your listing
+                <ArrowRight className="h-4 w-4" />
               </Link>
-            ))}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { n: "2 min", l: "Verify your clinic" },
+                { n: "Free", l: "Forever, no card" },
+                { n: "Live", l: "Real patient ratings" },
+                { n: "24/7", l: "Edit anytime" },
+              ].map((s) => (
+                <div key={s.l} className="rounded-z-md bg-white/[0.04] border border-white/10 p-5">
+                  <p className="font-display font-semibold text-white text-z-h1 leading-none">{s.n}</p>
+                  <p className="font-sans text-white/60 text-z-caption mt-2">{s.l}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── Healthcare Directories Across the GCC ─── */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[24px] sm:text-[28px] text-[#1c1c1c] tracking-tight">
-            Healthcare Directories Across the GCC
+      {/* ───── Inspiration grid (SEO long-tail, 3 cols text) ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Explore
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Inspiration for your next appointment.
           </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        </header>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 border-t border-ink-line pt-6">
+          {inspirationLinks.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="font-sans text-z-body text-ink hover:underline decoration-ink decoration-1 underline-offset-2"
+              >
+                {l.label}
+                <span className="block font-sans text-z-body-sm text-ink-muted mt-0.5">
+                  {l.href.includes("/directory/") ? "Licensed providers" : "Guide"}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ───── GCC ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Across the Gulf
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Directories across the GCC.
+          </h2>
+        </header>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { flag: "\ud83c\uddf6\ud83c\udde6", name: "Qatar", href: "/qa/directory" },
-            { flag: "\ud83c\uddf8\ud83c\udde6", name: "Saudi Arabia", href: "/sa/directory" },
-            { flag: "\ud83c\udde7\ud83c\udded", name: "Bahrain", href: "/bh/directory" },
-            { flag: "\ud83c\uddf0\ud83c\uddfc", name: "Kuwait", href: "/kw/directory" },
+            { flag: "🇶🇦", name: "Qatar", href: "/qa/directory" },
+            { flag: "🇸🇦", name: "Saudi Arabia", href: "/sa/directory" },
+            { flag: "🇧🇭", name: "Bahrain", href: "/bh/directory" },
+            { flag: "🇰🇼", name: "Kuwait", href: "/kw/directory" },
           ].map((c) => (
             <Link
               key={c.href}
               href={c.href}
-              className="flex items-center gap-3 bg-white border border-black/[0.06] rounded-xl px-5 py-4 hover:border-[#006828]/20 hover:shadow-card transition-all duration-300 group"
+              className="group flex items-center gap-4 rounded-z-md bg-white border border-ink-line px-5 py-4 hover:border-ink transition-colors"
             >
-              <span className="text-2xl">{c.flag}</span>
-              <div>
-                <span className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
-                  {c.name} Healthcare Directory
-                </span>
-                <span className="block font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
-                  Browse providers
-                </span>
+              <span className="text-[28px] leading-none">{c.flag}</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-semibold text-ink text-z-body-sm leading-tight">{c.name}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-0.5">Browse providers</p>
               </div>
-              <ChevronRight className="ml-auto h-4 w-4 text-black/20 group-hover:text-[#006828] transition-colors" />
+              <ArrowRight className="h-4 w-4 text-ink-muted group-hover:translate-x-0.5 transition-transform" />
             </Link>
           ))}
         </div>
       </section>
 
-      {/* ─── FAQs ─── */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <FaqSection faqs={homeFaqs} />
+      {/* ───── FAQ ───── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Good to know.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={homeFaqs} />
+        </div>
       </section>
     </>
   );

@@ -2,16 +2,18 @@
  * Shared filter page component for GCC countries (Qatar, Saudi Arabia, Bahrain, Kuwait).
  * Handles 24-hour, emergency, and walk-in healthcare filter pages for each city.
  *
- * Mirrors the UAE /directory/[city]/24-hour pattern but parameterized by country code.
+ * Rewritten to mirror the UAE /directory redesign — uses the ListingsTemplate
+ * with the new design tokens (font-display, font-sans, bg-surface-cream,
+ * text-ink*, rounded-z-*, text-display-*). All schema output, FAQ text, and
+ * URL structure preserved byte-for-byte.
  */
 
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import {
   getCategories,
   get24HourProviders,
@@ -19,6 +21,7 @@ import {
   getWalkInProviders,
   type LocalProvider,
 } from "@/lib/data";
+import { safe } from "@/lib/safeData";
 import {
   breadcrumbSchema,
   faqPageSchema,
@@ -49,6 +52,13 @@ const REGULATORS: Record<GccCountryCode, string> = {
   sa: "the Saudi Ministry of Health (MOH) and Saudi Commission for Health Specialties (SCFHS)",
   bh: "the National Health Regulatory Authority (NHRA)",
   kw: "the Kuwait Ministry of Health (MOH)",
+};
+
+const REGULATORS_SHORT: Record<GccCountryCode, string> = {
+  qa: "MOPH Qatar",
+  sa: "MOH Saudi",
+  bh: "NHRA Bahrain",
+  kw: "MOH Kuwait",
 };
 
 const CURRENCIES: Record<GccCountryCode, { code: string; symbol: string; lowGP: number; highGP: number; lowED: number; highED: number }> = {
@@ -135,11 +145,16 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
   const city = cities.find((c) => c.slug === citySlug);
   if (!city) notFound();
 
-  const providers = await getFilteredProviders(filter, city.slug);
+  const providers = await safe(
+    getFilteredProviders(filter, city.slug),
+    [] as LocalProvider[],
+    "gccFilterProviders"
+  );
   if (providers.length < 3) notFound();
 
   const countryName = COUNTRY_NAMES[countryCode];
   const regulator = REGULATORS[countryCode];
+  const regulatorShort = REGULATORS_SHORT[countryCode];
   const currency = CURRENCIES[countryCode];
   const insurers = INSURANCE_PROVIDERS[countryCode];
   const label = FILTER_LABELS[filter];
@@ -162,6 +177,7 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
   }
   const categories = getCategories();
   const categoryLinks = categories.filter((cat) => (categoryCounts.get(cat.slug) || 0) >= 3);
+  const categoryNameBySlug = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
 
   // ── FAQ content — varies by filter type ───────────────────────────────────
   const faqs = filter === "24-hour"
@@ -227,8 +243,24 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
     { name: label.title, url: pageUrl },
   ];
 
+  const topProvider = sorted[0];
+  const topRatingBit =
+    topProvider && Number(topProvider.googleRating) > 0
+      ? ` The highest-rated is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${(topProvider.googleReviewCount || 0).toLocaleString()} patient reviews.`
+      : "";
+
+  const aeoAnswer = (
+    <>
+      According to the Zavis Healthcare Directory, there are{" "}
+      <span className="font-semibold text-ink">{count}</span>{" "}
+      {label.description.toLowerCase()} in {city.name}, {countryName}.
+      {topRatingBit} All listings are sourced from official {regulator}{" "}
+      licensed facility registers.
+    </>
+  );
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
@@ -241,102 +273,99 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
         )}
       />
 
-      <Breadcrumb
-        items={[
+      <ListingsTemplate
+        breadcrumbs={[
           { label: countryName, href: `/${countryCode}/directory` },
           { label: city.name, href: `/${countryCode}/directory/${city.slug}` },
           { label: label.title },
         ]}
+        eyebrow={`${regulatorShort} Verified · ${city.name}`}
+        title={`${label.title} in ${city.name}, ${countryName}.`}
+        subtitle={
+          <>
+            {count} verified facilities · Last updated 2026 · Regulated by{" "}
+            {regulator}.
+          </>
+        }
+        aeoAnswer={aeoAnswer}
+        providers={sorted.map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: categoryNameBySlug[p.categorySlug] ?? null,
+          address: p.address ?? null,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? [],
+          coverImageUrl: p.coverImageUrl ?? null,
+        }))}
+        total={count}
+        belowGrid={
+          <>
+            {categoryLinks.length > 0 && (
+              <section>
+                <header className="mb-4">
+                  <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                    Filter by specialty
+                  </p>
+                  <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                    Narrow by category.
+                  </h2>
+                </header>
+                <ul className="flex flex-wrap gap-2">
+                  {categoryLinks.map((cat) => (
+                    <li key={cat.slug}>
+                      <Link
+                        href={`/${countryCode}/directory/${city.slug}/${cat.slug}`}
+                        className="inline-flex items-center rounded-z-pill bg-white border border-ink-hairline px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                      >
+                        {cat.name}
+                        <span className="ml-1.5 text-ink-muted">
+                          · {categoryCounts.get(cat.slug)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            <section>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <ListingsCrossLink
+                  href={`/${countryCode}/directory/${city.slug}`}
+                  label={`Browse all providers in ${city.name}`}
+                  sub={`Full ${city.name} healthcare directory`}
+                />
+                <ListingsCrossLink
+                  href={`/${countryCode}/directory`}
+                  label={`${countryName} directory home`}
+                  sub="All cities across the country"
+                />
+              </div>
+            </section>
+
+            <section className="pt-4">
+              <header className="mb-6">
+                <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                  Questions
+                </p>
+                <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                  About {label.title.toLowerCase()} in {city.name}.
+                </h2>
+              </header>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </section>
+          </>
+        }
       />
-
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-          {label.title} in {city.name}, {countryName}
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-          {count} verified facilities · Last updated 2026
-        </p>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the Zavis Healthcare Directory, there are {count}{" "}
-            {label.description.toLowerCase()} in {city.name}, {countryName}.
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <>
-                {" "}
-                The highest-rated is <strong>{sorted[0].name}</strong> with a{" "}
-                {sorted[0].googleRating}-star Google rating based on{" "}
-                {(sorted[0].googleReviewCount || 0).toLocaleString()} patient reviews.
-              </>
-            )}{" "}
-            All listings are sourced from official {regulator} licensed facility registers.
-          </p>
-        </div>
-      </div>
-
-      {/* Category quick links */}
-      {categoryLinks.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm font-medium text-[#1c1c1c] mb-2">Filter by category:</p>
-          <div className="flex flex-wrap gap-2">
-            {categoryLinks.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/${countryCode}/directory/${city.slug}/${cat.slug}`}
-                className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 hover:bg-[#006828]/[0.04]"
-              >
-                {cat.name} ({categoryCounts.get(cat.slug)})
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Provider grid */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            All {label.title} in {city.name}
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard
-              key={provider.id}
-              name={provider.name}
-              slug={provider.slug}
-              citySlug={provider.citySlug}
-              categorySlug={provider.categorySlug}
-              address={provider.address}
-              phone={provider.phone}
-              website={provider.website}
-              shortDescription={provider.shortDescription}
-              googleRating={provider.googleRating}
-              googleReviewCount={provider.googleReviewCount}
-              isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified}
-              coverImageUrl={provider.coverImageUrl}
-              hideCounterpart
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Cross-link */}
-      <section className="mb-10">
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Need broader options?{" "}
-          <Link
-            href={`/${countryCode}/directory/${city.slug}`}
-            className="text-[#006828] hover:underline font-medium"
-          >
-            Browse all healthcare providers in {city.name} &rarr;
-          </Link>
-        </p>
-      </section>
-
-      <FaqSection faqs={faqs} title={`${label.title} in ${city.name} — FAQ`} />
-    </div>
+    </>
   );
 }
 

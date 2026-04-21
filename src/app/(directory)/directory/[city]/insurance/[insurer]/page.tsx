@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
@@ -20,6 +18,8 @@ import {
   getInsurancePlansByGeo,
   INSURANCE_DATA_VERIFIED_AT,
 } from "@/lib/insurance-facets/data";
+import { safe } from "@/lib/safeData";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 
 export const revalidate = 21600;
 
@@ -73,7 +73,11 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
   if (!insurer) return {};
-  const count = await getProviderCountByInsurance(insurer.slug, city.slug);
+  const count = await safe(
+    getProviderCountByInsurance(insurer.slug, city.slug),
+    0,
+    "ins-count-meta",
+  );
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const page = parsePage(searchParams);
@@ -121,7 +125,11 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
   const insurer = allInsurers.find((i) => i.slug === params.insurer);
   if (!insurer) notFound();
 
-  const providers = await getProvidersByInsurance(insurer.slug, city.slug);
+  const providers = await safe(
+    getProvidersByInsurance(insurer.slug, city.slug),
+    [] as Awaited<ReturnType<typeof getProvidersByInsurance>>,
+    "providersByInsurance",
+  );
   const count = providers.length;
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
@@ -147,20 +155,12 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
     .filter((c) => c.insurerCount > 0)
     .sort((a, b) => b.insurerCount - a.insurerCount);
 
-  // ─── Top-rated providers ─────────────────────────────────────────────────────
-  const topRated = [...providers]
-    .filter((p) => Number(p.googleRating) > 0)
-    .sort((a, b) => {
-      const ratingDiff = Number(b.googleRating) - Number(a.googleRating);
-      if (ratingDiff !== 0) return ratingDiff;
-      return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
-    })
-    .slice(0, 5);
-
   // ─── Other cities this insurer is accepted in ────────────────────────────────
   const otherCitiesRaw = getCities().filter((c) => c.slug !== city.slug);
   const otherCityCounts = await Promise.all(
-    otherCitiesRaw.map((c) => getProviderCountByInsurance(insurer.slug, c.slug))
+    otherCitiesRaw.map((c) =>
+      safe(getProviderCountByInsurance(insurer.slug, c.slug), 0, `other-city:${c.slug}`)
+    )
   );
   const otherCities = otherCitiesRaw
     .map((c, i) => ({ ...c, count: otherCityCounts[i] }))
@@ -174,7 +174,9 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
     .filter((i) => i.slug !== insurer.slug && popularSlugs.includes(i.slug))
     .slice(0, 5);
   const relatedInsurerCounts = await Promise.all(
-    relatedInsurersRaw.map((i) => getProviderCountByInsurance(i.slug, city.slug))
+    relatedInsurersRaw.map((i) =>
+      safe(getProviderCountByInsurance(i.slug, city.slug), 0, `related:${i.slug}`)
+    )
   );
   const relatedInsurers = relatedInsurersRaw
     .map((i, idx) => ({ ...i, count: relatedInsurerCounts[idx] }))
@@ -222,258 +224,151 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
   ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* JSON-LD */}
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-        { name: "Insurance", url: `${base}/directory/${city.slug}/insurance` },
-        { name: insurer.name },
-      ])} />
-      {providers.length > 0 && (
-        <JsonLd data={itemListSchema(`Healthcare Providers Accepting ${insurer.name} in ${city.name}`, providers.slice(0, 20), city.name, base)} />
-      )}
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      {/* Breadcrumb */}
-      <Breadcrumb items={[
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "Insurance", href: `/directory/${city.slug}/insurance` },
         { label: insurer.name },
-      ]} />
-
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-start justify-between gap-4 mb-2">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            {insurer.name} Insurance — Healthcare Providers in {city.name}
-          </h1>
-          <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0 mt-1">{insurer.type}</span>
-        </div>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
+      ]}
+      eyebrow={`${insurer.name} · ${city.name}`}
+      title={`${insurer.name} Insurance — Providers in ${city.name}.`}
+      subtitle={
+        <>
           {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated {INSURANCE_DATA_VERIFIED_AT}
-        </p>
-      </div>
-
-      {/* Answer Block */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">{answerParagraph}</p>
-      </div>
-
-      {/* Quick nav links */}
-      <div className="flex flex-wrap gap-2 mb-8 text-xs">
-        <Link
-          href={`/directory/${city.slug}/insurance`}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          All insurance in {city.name}
-        </Link>
-        <Link
-          href={`/insurance/${insurer.slug}`}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          {insurer.name} plans &amp; coverage
-        </Link>
-        <Link
-          href="/insurance/compare"
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          Compare insurers
-        </Link>
-      </div>
-
-      {/* Category Breakdown */}
-      {catBreakdown.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Providers by Category</h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {catBreakdown.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-[#006828]/15 group transition-colors"
-              >
-                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
-                  {cat.name}
-                </span>
-                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
-                  {cat.insurerCount}
-                </span>
-              </Link>
-            ))}
-          </div>
-          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-3">
-            Showing {catBreakdown.length} {catBreakdown.length === 1 ? "category" : "categories"} with {insurer.name}-accepting providers in {city.name}.
-            Click a category to browse all {city.name} providers in that specialty.
-          </p>
-        </section>
-      )}
-
-      {/* Top-rated section */}
-      {topRated.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top-Rated {insurer.name} Providers in {city.name}</h2>
-          </div>
-          <div className="space-y-0">
-            {topRated.map((p, idx) => (
-              <div key={p.id} className="flex items-center gap-3 py-3 border-b border-black/[0.06] last:border-b-0">
-                <span className="text-xs font-bold text-black/40 w-5 flex-shrink-0">#{idx + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                    className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors block truncate"
-                  >
-                    {p.name}
-                  </Link>
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">{p.address}</p>
-                </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5">
-                    {p.googleRating} ★
-                  </span>
-                  {p.googleReviewCount > 0 && (
-                    <span className="font-['Geist',sans-serif] text-xs text-black/40">({p.googleReviewCount.toLocaleString()})</span>
-                  )}
-                </div>
-                <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{p.categorySlug.replace(/-/g, " ")}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* All providers grid — SSR-paginated (Item 0.5) */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {insurer.name} Providers in {city.name}</h2>
-        </div>
-
-        {pagedProviders.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {pagedProviders.map((p) => (
-                <ProviderCard
-                  key={p.id}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                />
-              ))}
+        </>
+      }
+      aeoAnswer={answerParagraph}
+      total={count}
+      providers={pagedProviders.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: null,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      pagination={
+        totalPages > 1 ? (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            baseUrl={`/directory/${city.slug}/insurance/${insurer.slug}`}
+          />
+        ) : undefined
+      }
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema([
+            { name: "UAE", url: base },
+            { name: city.name, url: `${base}/directory/${city.slug}` },
+            { name: "Insurance", url: `${base}/directory/${city.slug}/insurance` },
+            { name: insurer.name },
+          ])} />
+          {providers.length > 0 && (
+            <JsonLd data={itemListSchema(`Healthcare Providers Accepting ${insurer.name} in ${city.name}`, providers.slice(0, 20), city.name, base)} />
+          )}
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {/* Category breakdown */}
+          {catBreakdown.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                {insurer.name} providers by category
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {catBreakdown.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`}
+                      className="inline-flex items-center gap-2 rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {cat.name}
+                      <span className="text-ink-muted">· {cat.insurerCount}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              baseUrl={`/directory/${city.slug}/insurance/${insurer.slug}`}
-            />
-            {count > INSURANCE_PAGE_SIZE && (
-              <div className="mt-4 text-center">
-                <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                  Page {currentPage} of {totalPages} · {count.toLocaleString()} {insurer.name}-accepting {count === 1 ? "provider" : "providers"} in {city.name}.
-                </p>
-              </div>
-            )}
-          </>
+          )}
 
-        ) : (
-          <div className="text-center py-12 border border-black/[0.06]">
-            <p className="text-black/40 mb-2">No providers accepting {insurer.name} found in {city.name} yet.</p>
-            <Link href={`/directory/${city.slug}`} className="text-[#006828] text-sm font-bold">
-              View all healthcare providers in {city.name} &rarr;
-            </Link>
+          {/* Other cities */}
+          {otherCities.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                {insurer.name} in other emirates
+              </h2>
+              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {otherCities.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/directory/${c.slug}/insurance/${insurer.slug}`}
+                      className="block rounded-z-md bg-white border border-ink-line px-4 py-3 hover:border-ink transition-colors text-center"
+                    >
+                      <p className="font-sans font-semibold text-ink text-z-body-sm">{c.name}</p>
+                      <p className="font-sans text-z-caption text-ink-muted mt-0.5">
+                        {c.count} {c.count === 1 ? "provider" : "providers"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Related insurers */}
+          {relatedInsurers.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Other insurance plans in {city.name}
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {relatedInsurers.map((ins) => (
+                  <li key={ins.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/insurance/${ins.slug}`}
+                      className="inline-flex items-center gap-2 rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {ins.name}
+                      <span className="text-ink-muted">· {ins.count}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* FAQ */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+              {insurer.name} in {city.name} — questions
+            </h2>
+            <div className="max-w-3xl">
+              <FaqSection faqs={faqs} title={`${insurer.name} Insurance in ${city.name} — FAQ`} />
+            </div>
           </div>
-        )}
-      </section>
 
-      {/* FAQs */}
-      <FaqSection faqs={faqs} title={`${insurer.name} Insurance in ${city.name} — FAQ`} />
-
-      {/* Cross-link: other cities */}
-      {otherCities.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{insurer.name} in Other Emirates</h2>
+          {/* Disclaimer */}
+          <div className="border-t border-ink-line pt-4">
+            <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+              <strong>Disclaimer:</strong> Provider licenses are sourced from the official {regulator} register.
+              Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit.
+              For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker. Last verified {INSURANCE_DATA_VERIFIED_AT}.
+            </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {otherCities.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/directory/${c.slug}/insurance/${insurer.slug}`}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
-              >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">{c.name}</p>
-                <p className="text-xs text-[#006828] font-bold mt-1">{c.count} {c.count === 1 ? "provider" : "providers"}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Related insurers */}
-      {relatedInsurers.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Insurance Plans in {city.name}</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {relatedInsurers.map((ins) => (
-              <Link
-                key={ins.slug}
-                href={`/directory/${city.slug}/insurance/${ins.slug}`}
-                className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-[#1c1c1c] text-sm">{ins.name}</h3>
-                  <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{ins.type}</span>
-                </div>
-                <p className="font-['Geist',sans-serif] text-xs text-black/40 line-clamp-2 mb-2">{ins.description}</p>
-                <p className="text-xs font-bold text-[#006828]">
-                  {ins.count} {ins.count === 1 ? "provider" : "providers"} in {city.name}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Compare CTA */}
-      <div className="bg-[#1c1c1c] text-white p-6 flex items-center justify-between mb-8">
-        <div>
-          <p className="font-bold text-sm">Compare {insurer.name} with other insurers</p>
-          <p className="text-xs text-white/70 mt-1">
-            Side-by-side plan comparison — premiums, co-pay, dental, maternity, and network size
-          </p>
-        </div>
-        <Link
-          href="/insurance/compare"
-          className="bg-[#006828] text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
-        >
-          Compare plans
-        </Link>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Provider licenses are sourced from the official {regulator} register.
-          Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit.
-          For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker. Last verified {INSURANCE_DATA_VERIFIED_AT}.
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }

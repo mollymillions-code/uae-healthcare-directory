@@ -348,7 +348,7 @@ export default async function ArabicLabCityPage({
   };
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqPageSchema(faqs)} />

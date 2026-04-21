@@ -39,6 +39,40 @@
   ::selection {
     background-color: rgba(0, 200, 83, 0.2);
   }
+
+  /* Motion tokens (Airbnb-calibrated) — duration + easing standards */
+  :root {
+    --dur-fast:   150ms;
+    --dur-base:   200ms;
+    --dur-med:    300ms;
+    --dur-slow:   450ms;
+    --ease-standard:  cubic-bezier(0.2, 0, 0, 1);
+    --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
+    --ease-overshoot: cubic-bezier(0.17, 0.67, 0.3, 1.33);
+  }
+
+  /* Smooth scroll with reduced-motion respect */
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 120ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Sticky-anchor offset (matches 80px header + breathing room) */
+  .z-anchor { scroll-margin-top: 88px; }
+
+  /* Body scroll lock helper (modals use this) */
+  body[data-modal-open="true"] {
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
 }
 
 /* ─── Landing Site Styles ──────────────────────────────────── */
@@ -113,6 +147,67 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* ─── Airbnb-style shadow system (softer than Zavis card shadows) ────── */
+.shadow-z-ring   { box-shadow: 0 0 0 1px #DDDDDD; }
+.shadow-z-card   { box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+.shadow-z-hover  { box-shadow: 0 10px 24px rgba(0,0,0,0.08); }
+.shadow-z-pill   { box-shadow: 0 6px 20px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08); }
+.shadow-z-float  { box-shadow: 0 16px 48px rgba(0,0,0,0.18); }
+.shadow-z-sticky { box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
+
+/* ─── Scroll rail utilities (category rails, chip rows) ────────────── */
+.z-no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.z-no-scrollbar::-webkit-scrollbar { display: none; }
+
+.z-snap-rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 80px;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.z-snap-rail::-webkit-scrollbar { display: none; }
+.z-snap-rail > * { scroll-snap-align: start; }
+
+/* ─── Heart pop animation (save provider) ─────────────────────────── */
+@keyframes z-heart-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.25); }
+  55%  { transform: scale(0.9); }
+  80%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.animate-heart-pop {
+  animation: z-heart-pop var(--dur-slow) var(--ease-overshoot);
+}
+
+/* ─── Fade-up reveal on scroll (CSS only) ─────────────────────────── */
+@keyframes z-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: z-fade-up var(--dur-med) var(--ease-standard) both;
+}
+
+/* ─── Stagger children (CSS-only alternative) ─────────────────────── */
+.z-stagger > * {
+  opacity: 0;
+  animation: z-fade-up var(--dur-med) var(--ease-standard) forwards;
+}
+.z-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.z-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.z-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.z-stagger > *:nth-child(4) { animation-delay: 120ms; }
+.z-stagger > *:nth-child(5) { animation-delay: 160ms; }
+.z-stagger > *:nth-child(6) { animation-delay: 200ms; }
+.z-stagger > *:nth-child(7) { animation-delay: 240ms; }
+.z-stagger > *:nth-child(8) { animation-delay: 280ms; }
+.z-stagger > *:nth-child(n+9) { animation-delay: 320ms; }
 
 /* Infinite logo ticker */
 @keyframes ticker {

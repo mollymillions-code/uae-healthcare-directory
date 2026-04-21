@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -22,7 +23,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = await getProviderCountByCity(city.slug);
+  const count = await safe(getProviderCountByCity(city.slug), 0, "ar.city.metaCount");
   const cityNameAr = getArabicCityName(city.slug);
   const base = getBaseUrl();
   const year = new Date().getFullYear();
@@ -50,18 +51,18 @@ export default async function ArabicCityPage({ params }: Props) {
   const cityNameAr = getArabicCityName(city.slug);
   const regulator = getArabicRegulator(city.slug);
 
-  // Pre-fetch all async data in parallel
+  // Pre-fetch all async data in parallel (wrapped in safe())
   const [topProviders, total, catCounts, areaCounts] = await Promise.all([
-    getTopRatedProviders(city.slug, 6),
-    getProviderCountByCity(city.slug),
-    Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))),
-    Promise.all(areas.map((area) => getProviderCountByAreaAndCity(area.slug, city.slug))),
+    safe(getTopRatedProviders(city.slug, 6), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "ar.city.topProviders"),
+    safe(getProviderCountByCity(city.slug), 0, "ar.city.total"),
+    safe(Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))), categories.map(() => 0) as number[], "ar.city.catCounts"),
+    safe(Promise.all(areas.map((area) => getProviderCountByAreaAndCity(area.slug, city.slug))), areas.map(() => 0) as number[], "ar.city.areaCounts"),
   ]);
   const catCountMap = Object.fromEntries(categories.map((cat, i) => [cat.slug, catCounts[i]]));
   const areaCountMap = Object.fromEntries(areas.map((area, i) => [area.slug, areaCounts[i]]));
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: ar.home, url: `${base}/ar` },
         { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },

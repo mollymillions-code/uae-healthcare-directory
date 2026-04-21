@@ -1,114 +1,153 @@
-'use client'
+"use client";
 
-import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2, Lock, ArrowRight, Sparkles } from "lucide-react";
 
 function LoginForm() {
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/dashboard'
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const res = await fetch('/api/research/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/research/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
-    })
+    });
 
     if (res.ok) {
-      router.push(redirect)
+      router.push(redirect);
     } else {
-      setError('Invalid password')
+      setError("Invalid password");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#0a0a0f',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: '#12121a',
-        borderRadius: 12,
-        padding: 40,
-        width: 400,
-        border: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        <div style={{ marginBottom: 24 }}>
-          <span style={{ color: '#006828', fontSize: 28, fontWeight: 700 }}>ZAVIS</span>
-          <span style={{ color: '#5e5e72', fontSize: 14, marginLeft: 8 }}>Research Dashboard</span>
+    <section className="relative overflow-hidden bg-surface-cream min-h-[calc(100vh-5rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+        <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
+      </div>
+
+      <div className="relative w-full max-w-md">
+        {/* Hero copy */}
+        <div className="text-center mb-8">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" />
+            Research dashboard
+          </p>
+          <h1 className="font-display font-semibold text-ink text-display-md lg:text-[40px] leading-[1.04] tracking-[-0.022em]">
+            Welcome back.
+          </h1>
+          <p className="font-sans text-z-body text-ink-soft mt-3 leading-relaxed">
+            Sign in to access the Zavis research dashboard.
+          </p>
         </div>
 
-        <input
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder="Dashboard password"
-          autoFocus
-          style={{
-            width: '100%',
-            padding: '14px 16px',
-            background: '#0a0a0f',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 8,
-            color: '#f0ece4',
-            fontSize: 16,
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
-        />
+        {/* Login card */}
+        <div className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-8 shadow-z-card">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label
+                htmlFor="password"
+                className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
+              >
+                Dashboard password
+              </label>
+              <div className="relative">
+                <Lock
+                  className="h-4 w-4 text-ink-muted absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                  strokeWidth={1.75}
+                />
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  autoFocus
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full bg-white rounded-z-md border border-ink-hairline pl-11 pr-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
+                  disabled={loading}
+                />
+              </div>
+              {error && (
+                <p
+                  role="alert"
+                  className="mt-2 font-sans text-z-caption text-red-600 flex items-center gap-1.5"
+                >
+                  {error}
+                </p>
+              )}
+            </div>
 
-        {error && (
-          <p style={{ color: '#e63946', fontSize: 14, marginTop: 8 }}>{error}</p>
-        )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            marginTop: 16,
-            padding: '14px 16px',
-            background: '#006828',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: loading ? 'wait' : 'pointer',
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
-          {loading ? 'Signing in...' : 'Sign in'}
-        </button>
-      </form>
-    </div>
-  )
+          <p className="font-sans text-z-caption text-ink-muted text-center mt-6 pt-6 border-t border-ink-hairline">
+            Trouble signing in? Email{" "}
+            <a
+              href="mailto:support@zavis.ai"
+              className="font-medium text-ink underline underline-offset-2 hover:text-ink-soft"
+            >
+              support@zavis.ai
+            </a>
+            .
+          </p>
+        </div>
+
+        <div className="text-center mt-6">
+          <Link
+            href="/directory"
+            className="font-sans text-z-caption text-ink-muted hover:text-ink underline underline-offset-2"
+          >
+            ← Back to directory
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div style={{
-        minHeight: '100vh', background: '#0a0a0f',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5e5e72',
-      }}>
-        Loading...
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <section className="bg-surface-cream min-h-[calc(100vh-5rem)] flex items-center justify-center">
+          <div className="inline-flex items-center gap-2 font-sans text-z-body-sm text-ink-muted">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading…
+          </div>
+        </section>
+      }
+    >
       <LoginForm />
     </Suspense>
-  )
+  );
 }

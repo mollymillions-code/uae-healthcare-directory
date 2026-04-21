@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Shield, ArrowRight } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ChevronRight, Sparkles, Shield } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { PlanBrowser } from "@/components/insurance/PlanBrowser";
@@ -11,8 +10,14 @@ import {
   getAllInsurerNetworkStats,
 } from "@/lib/insurance";
 import { getCities, getProviderCountByCity } from "@/lib/data";
-import { breadcrumbSchema, speakableSchema, faqPageSchema, medicalWebPageSchema } from "@/lib/seo";
+import {
+  breadcrumbSchema,
+  speakableSchema,
+  faqPageSchema,
+  medicalWebPageSchema,
+} from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 export const dynamic = "force-dynamic";
@@ -20,13 +25,15 @@ export const dynamic = "force-dynamic";
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: "UAE Health Insurance Navigator — Compare Plans, Coverage & Provider Networks | UAE Open Healthcare Directory",
+    title:
+      "UAE Health Insurance Navigator — Compare Plans, Coverage & Provider Networks | UAE Open Healthcare Directory",
     description:
       "Compare health insurance plans in the UAE side-by-side. Coverage details, premiums, co-pay, dental, maternity, and provider network sizes for Daman, Thiqa, AXA, Cigna, Bupa, and 8 more insurers. Find the right plan for your budget and needs.",
     alternates: { canonical: `${base}/insurance` },
     openGraph: {
       title: "UAE Health Insurance Navigator — Compare Plans & Networks",
-      description: "Compare 80+ health insurance plans across 38 UAE insurers. Coverage, premiums, network sizes, and a personalised plan finder.",
+      description:
+        "Compare 80+ health insurance plans across 38 UAE insurers. Coverage, premiums, network sizes, and a personalised plan finder.",
       url: `${base}/insurance`,
       type: "website",
     },
@@ -35,32 +42,42 @@ export function generateMetadata(): Metadata {
 
 export default async function InsuranceNavigatorPage() {
   const base = getBaseUrl();
-  let allStats: Awaited<ReturnType<typeof getAllInsurerNetworkStats>>;
-  try {
-    allStats = await getAllInsurerNetworkStats();
-  } catch (e) {
-    console.error("[insurance] Failed to load insurer network stats:", e instanceof Error ? e.message : e);
-    allStats = [];
-  }
+
+  const allStats = await safe(
+    getAllInsurerNetworkStats(),
+    [] as Awaited<ReturnType<typeof getAllInsurerNetworkStats>>,
+    "insurance:allStats",
+  );
   const totalPlans = INSURER_PROFILES.reduce((sum, p) => sum + p.plans.length, 0);
   const totalProviders = allStats.reduce((sum, s) => sum + s.totalProviders, 0);
 
   // City insurance data — top 3 insurers by network size per city
   const cities = getCities();
-  const cityInsuranceData = await Promise.all(cities
-    .map(async (city) => {
-      const providerCount = await getProviderCountByCity(city.slug);
+  const cityInsuranceData = await Promise.all(
+    cities.map(async (city) => {
+      const providerCount = await safe(
+        getProviderCountByCity(city.slug),
+        0,
+        `insurance:providerCount:${city.slug}`,
+      );
       const topInsurers = allStats
         .map((s) => {
           const cityBreakdown = s.byCity.find((b) => b.citySlug === city.slug);
-          return { name: s.name, slug: s.slug, count: cityBreakdown?.providerCount ?? 0 };
+          return {
+            name: s.name,
+            slug: s.slug,
+            count: cityBreakdown?.providerCount ?? 0,
+          };
         })
         .filter((i) => i.count > 0)
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
       return { city, providerCount, topInsurers };
-    }));
-  const filteredCityInsuranceData = cityInsuranceData.filter((d) => d.providerCount > 0 && d.topInsurers.length > 0);
+    }),
+  );
+  const filteredCityInsuranceData = cityInsuranceData.filter(
+    (d) => d.providerCount > 0 && d.topInsurers.length > 0,
+  );
 
   const faqs = [
     {
@@ -105,8 +122,13 @@ export default async function InsuranceNavigatorPage() {
     },
   ];
 
+  const breadcrumbs = [
+    { label: "UAE", href: "/" },
+    { label: "Health Insurance Navigator" },
+  ];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -115,288 +137,360 @@ export default async function InsuranceNavigatorPage() {
       />
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={medicalWebPageSchema(
-        "UAE Health Insurance Navigator",
-        `Compare ${totalPlans} health insurance plans across ${INSURER_PROFILES.length} UAE insurers, mapped to ${totalProviders.toLocaleString()} healthcare providers.`,
-        "2026-03-25"
-      )} />
-
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: "Health Insurance Navigator" },
-        ]}
+      <JsonLd
+        data={medicalWebPageSchema(
+          "UAE Health Insurance Navigator",
+          `Compare ${totalPlans} health insurance plans across ${INSURER_PROFILES.length} UAE insurers, mapped to ${totalProviders.toLocaleString()} healthcare providers.`,
+          "2026-03-25",
+        )}
       />
 
       {/* Hero */}
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-3">
-          <Shield className="w-8 h-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            UAE Health Insurance Navigator
-          </h1>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            Compare {totalPlans} health insurance plans across {INSURER_PROFILES.length} UAE insurers — mapped to{" "}
-            {totalProviders.toLocaleString()} healthcare providers in our directory. Filter by
-            coverage, premium, co-pay, and network size. Find which insurers cover your
-            preferred hospitals and clinics, and compare plans side-by-side.
-          </p>
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+          <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {[
-            { value: INSURER_PROFILES.length.toString(), label: "Insurers" },
-            { value: totalPlans.toString(), label: "Plans compared" },
-            { value: totalProviders.toLocaleString(), label: "Providers mapped" },
-            { value: "8", label: "UAE cities" },
-          ].map(({ value, label }) => (
-            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
-              <p className="text-2xl font-bold text-[#006828]">{value}</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* How UAE Health Insurance Works */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How UAE Health Insurance Works</h2>
-      </div>
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-12" data-answer-block="true">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* Card 1 — Mandatory Coverage */}
-          <div className="border border-black/[0.06] p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="inline-block w-2 h-6 bg-[#006828] flex-shrink-0" />
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">Mandatory Coverage</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed mb-3">
-              Health insurance is compulsory for all UAE residents. Abu Dhabi mandated employer-sponsored
-              coverage in <strong>2006</strong> under the HAAD (now DOH) scheme, making it the first emirate to do so.
-              Dubai followed in <strong>2014</strong> under the DHA&apos;s mandatory health insurance law.
-              The remaining Northern Emirates — Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain —
-              are progressively implementing mandatory schemes under <strong>MOHAP</strong> federal supervision.
-              Employers who fail to provide coverage face fines and visa renewal restrictions.
-            </p>
-            <div className="flex flex-wrap gap-1">
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Abu Dhabi: since 2006</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Dubai: since 2014</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Others: phased rollout</span>
-            </div>
-          </div>
-
-          {/* Card 2 — How Plans Work */}
-          <div className="border border-black/[0.06] p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="inline-block w-2 h-6 bg-[#006828] flex-shrink-0" />
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">How Plans Work</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed mb-3">
-              Most UAE residents receive employer-sponsored insurance: the employer pays the annual premium
-              directly to the insurer. When you visit a provider, you present your insurance card and pay a
-              <strong> co-pay</strong> (typically 10–20% of the consultation or treatment cost) up to a
-              per-visit cap. The insurer covers the rest up to the plan&apos;s <strong>annual limit</strong>
-              — ranging from AED 150,000 for basic plans to AED 1,000,000+ for premium plans. Inpatient
-              hospital admissions often require <strong>pre-authorisation</strong> from the insurer before treatment.
-              Claims are processed either directly between the provider and insurer (direct billing) or reimbursed
-              to you after paying out-of-pocket.
-            </p>
-            <div className="flex flex-wrap gap-1">
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Employer pays premium</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">10–20% co-pay</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Annual limits apply</span>
-            </div>
-          </div>
-
-          {/* Card 3 — Choosing a Plan */}
-          <div className="border border-black/[0.06] p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="inline-block w-2 h-6 bg-[#006828] flex-shrink-0" />
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">Choosing a Plan</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed mb-3">
-              The single most important factor is <strong>network size</strong> — how many hospitals and clinics
-              in your city accept the plan directly. A large network means fewer out-of-pocket surprises.
-              Second, check the <strong>co-pay percentage</strong>: the difference between 10% and 20% adds
-              up quickly on frequent outpatient visits. Third, look at optional extras: <strong>dental and optical</strong>
-              coverage are excluded from most basic plans but available as add-ons or on enhanced tiers.
-              For families or women planning pregnancies, confirm <strong>maternity coverage</strong> and
-              the waiting period (typically 6–12 months). Finally, if you travel frequently, check whether the
-              plan includes emergency or elective <strong>international coverage</strong>.
-            </p>
-            <div className="flex flex-wrap gap-1">
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">1. Network size</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">2. Co-pay %</span>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">3. Dental / optical</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Insurer Quick Links */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurers</h2>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-12">
-        {INSURER_PROFILES.map((insurer) => {
-          const stats = allStats.find((s) => s.slug === insurer.slug);
-          return (
-            <Link
-              key={insurer.slug}
-              href={`/insurance/${insurer.slug}`}
-              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
-            >
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                  {insurer.name}
-                </h3>
-                <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] transition-colors" />
-              </div>
-              <p className="text-[11px] text-black/40">
-                {insurer.plans.length} plan{insurer.plans.length !== 1 ? "s" : ""} ·{" "}
-                {stats ? `${stats.totalProviders.toLocaleString()} providers` : "Network data"}
-              </p>
-              <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] mt-2">{insurer.type}</span>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Insurance by City */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance by City</h2>
-      </div>
-      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
-        Insurance network coverage varies significantly by emirate. Browse providers and top-performing insurers in each UAE city.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-12">
-        {filteredCityInsuranceData.map(({ city, providerCount, topInsurers }) => (
-          <Link
-            key={city.slug}
-            href={`/directory/${city.slug}/insurance`}
-            className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
           >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                {city.name}
-              </h3>
-              <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] transition-colors flex-shrink-0" />
+            {breadcrumbs.map((b, i) => {
+              const isLast = i === breadcrumbs.length - 1;
+              return (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {b.href && !isLast ? (
+                    <Link href={b.href} className="hover:text-ink transition-colors">
+                      {b.label}
+                    </Link>
+                  ) : (
+                    <span className={isLast ? "text-ink font-medium" : undefined}>
+                      {b.label}
+                    </span>
+                  )}
+                  {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
+                </span>
+              );
+            })}
+          </nav>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Insurance navigator
+              </p>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em] flex items-center gap-3">
+                <Shield className="h-9 w-9 text-accent-dark shrink-0" />
+                UAE Health Insurance Navigator
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+                Compare {totalPlans} health insurance plans across{" "}
+                {INSURER_PROFILES.length} UAE insurers — mapped to{" "}
+                {totalProviders.toLocaleString()} healthcare providers in our directory.
+              </p>
             </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3">
-              {providerCount.toLocaleString()} providers
-            </p>
-            <div className="space-y-1">
-              {topInsurers.map((ins, idx) => (
-                <div key={ins.slug} className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-['Geist',sans-serif] text-black/40 w-3 flex-shrink-0">#{idx + 1}</span>
-                  <span className="text-[11px] text-[#1c1c1c] truncate">{ins.name}</span>
-                  <span className="text-[9px] text-black/40 ml-auto flex-shrink-0">{ins.count.toLocaleString()}</span>
+
+            <div className="lg:col-span-4 grid grid-cols-2 gap-3">
+              {[
+                { n: INSURER_PROFILES.length.toString(), l: "Insurers" },
+                { n: totalPlans.toString(), l: "Plans compared" },
+                { n: totalProviders.toLocaleString(), l: "Providers mapped" },
+                { n: "8", l: "UAE cities" },
+              ].map((s) => (
+                <div
+                  key={s.l}
+                  className="rounded-z-md bg-white border border-ink-line px-4 py-3"
+                >
+                  <p className="font-display font-semibold text-ink text-z-h1 leading-none">
+                    {s.n}
+                  </p>
+                  <p className="font-sans text-z-caption text-ink-muted mt-1">{s.l}</p>
                 </div>
               ))}
             </div>
-          </Link>
-        ))}
-      </div>
+          </div>
 
-      {/* Plan Finder Quiz */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Find Your Plan</h2>
-      </div>
-      <div className="mb-12 bg-[#f8f8f6] p-6 border border-black/[0.06]">
-        <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
-          Answer a few questions and we&apos;ll recommend plans that match your budget, coverage needs, and preferred city.
-        </p>
-        <InsuranceQuiz />
-      </div>
+          <div
+            className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl"
+            data-answer-block="true"
+          >
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              Filter by coverage, premium, co-pay, and network size. Find which
+              insurers cover your preferred hospitals and clinics, and compare
+              plans side-by-side. All data is cross-referenced with the UAE Open
+              Healthcare Directory.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* All Plans Browser */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Compare All Plans</h2>
+      <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-14">
+        {/* How UAE Health Insurance Works */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Fundamentals
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              How UAE health insurance works.
+            </h2>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                title: "Mandatory coverage",
+                body:
+                  "Health insurance is compulsory for all UAE residents. Abu Dhabi mandated employer-sponsored coverage in 2006 under HAAD (now DOH). Dubai followed in 2014 under the DHA's mandatory health insurance law. The Northern Emirates are progressively implementing schemes under MOHAP federal supervision.",
+                tags: ["Abu Dhabi: 2006", "Dubai: 2014", "Others: phased"],
+              },
+              {
+                title: "How plans work",
+                body:
+                  "Most UAE residents receive employer-sponsored insurance. You present your card at a provider, pay a co-pay (typically 10–20%), and the insurer covers the rest up to the annual limit — AED 150,000 for basic plans to AED 1,000,000+ for premium. Inpatient admissions usually need pre-authorisation.",
+                tags: ["Employer pays premium", "10–20% co-pay", "Annual limits"],
+              },
+              {
+                title: "Choosing a plan",
+                body:
+                  "Start with network size — how many hospitals and clinics in your city accept the plan. Then compare co-pay (10% vs 20% adds up fast), dental and optical add-ons, maternity waiting periods (6–12 months), and international coverage if you travel often.",
+                tags: ["1. Network size", "2. Co-pay %", "3. Dental / optical"],
+              },
+            ].map((card) => (
+              <div
+                key={card.title}
+                className="rounded-z-md bg-white border border-ink-line p-5"
+              >
+                <h3 className="font-display font-semibold text-ink text-z-h3 mb-2">
+                  {card.title}
+                </h3>
+                <p className="font-sans text-z-body-sm text-ink-soft leading-relaxed mb-3">
+                  {card.body}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {card.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center rounded-z-pill bg-accent-muted px-2.5 py-0.5 font-sans text-z-micro font-medium text-accent-dark"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Insurer Quick Links */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Browse by insurer
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Insurers in the UAE.
+            </h2>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {INSURER_PROFILES.map((insurer) => {
+              const stats = allStats.find((s) => s.slug === insurer.slug);
+              return (
+                <Link
+                  key={insurer.slug}
+                  href={`/insurance/${insurer.slug}`}
+                  className="group flex flex-col rounded-z-md bg-white border border-ink-line p-5 hover:border-ink hover:shadow-z-card transition-all duration-z-base"
+                >
+                  <p className="font-sans font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
+                    {insurer.name}
+                  </p>
+                  <p className="font-sans text-z-caption text-ink-muted mt-1">
+                    {insurer.plans.length} plan
+                    {insurer.plans.length !== 1 ? "s" : ""}
+                    {stats
+                      ? ` · ${stats.totalProviders.toLocaleString()} providers`
+                      : ""}
+                  </p>
+                  <span className="mt-3 inline-flex w-fit items-center rounded-z-pill bg-accent-muted px-2.5 py-0.5 font-sans text-z-micro font-medium text-accent-dark">
+                    {insurer.type}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Insurance by City */}
+        {filteredCityInsuranceData.length > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                By emirate
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Insurance by city.
+              </h2>
+              <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-2xl">
+                Network coverage varies by emirate. Browse providers and
+                top-performing insurers in each UAE city.
+              </p>
+            </header>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredCityInsuranceData.map(({ city, providerCount, topInsurers }) => (
+                <Link
+                  key={city.slug}
+                  href={`/directory/${city.slug}/insurance`}
+                  className="group rounded-z-md bg-white border border-ink-line p-5 hover:border-ink hover:shadow-z-card transition-all duration-z-base"
+                >
+                  <p className="font-sans font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
+                    {city.name}
+                  </p>
+                  <p className="font-sans text-z-caption text-ink-muted mt-0.5 mb-3">
+                    {providerCount.toLocaleString()} providers
+                  </p>
+                  <ul className="space-y-1">
+                    {topInsurers.map((ins, idx) => (
+                      <li
+                        key={ins.slug}
+                        className="flex items-center gap-2 font-sans text-z-caption"
+                      >
+                        <span className="text-ink-muted w-4 shrink-0">
+                          #{idx + 1}
+                        </span>
+                        <span className="text-ink truncate flex-1">{ins.name}</span>
+                        <span className="text-ink-muted">
+                          {ins.count.toLocaleString()}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Plan Finder Quiz */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Personalised
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Find your plan.
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-2xl">
+              Answer a few questions and we&rsquo;ll recommend plans that match
+              your budget, coverage needs, and preferred city.
+            </p>
+          </header>
+          <div className="rounded-z-md bg-white border border-ink-line p-6">
+            <InsuranceQuiz />
+          </div>
+        </section>
+
+        {/* All Plans Browser */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Side-by-side
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Compare all plans.
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-2xl">
+              Browse all {totalPlans} plans. Select up to 4 for side-by-side
+              comparison.
+            </p>
+          </header>
+          <PlanBrowser />
+        </section>
+
+        {/* Regulators */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Who regulates what
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              UAE health insurance regulators.
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-2xl">
+              Health insurance in the UAE is regulated at both the emirate and
+              federal level. Three bodies govern the majority of the insured
+              population.
+            </p>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                scope: "Dubai",
+                name: "Dubai Health Authority (DHA)",
+                body:
+                  "The DHA regulates all health insurance activity in the Emirate of Dubai, including licensing insurers and TPAs, setting mandatory benefit structures, and managing the Saada basic benefits plan for low-income workers. All health insurance sold in Dubai must comply with DHA's Essential Benefits Plan (EBP).",
+              },
+              {
+                scope: "Abu Dhabi",
+                name: "Department of Health — Abu Dhabi (DOH)",
+                body:
+                  "Formerly HAAD, the DOH oversees healthcare regulation and mandatory insurance in Abu Dhabi and Al Ain. Daman administers the Thiqa scheme for Emirati nationals and the Basic plan for expatriate dependants. The DOH sets minimum benefit standards and conducts annual audits.",
+              },
+              {
+                scope: "Federal",
+                name: "Ministry of Health & Prevention (MOHAP)",
+                body:
+                  "MOHAP is the federal health authority covering the Northern Emirates — Sharjah, Ajman, Ras Al Khaimah, Fujairah, Umm Al Quwain — and sets national policy. It coordinates cross-emirate standards, supervises rollout in non-DHA/DOH emirates, and maintains the federal Malaffi record exchange.",
+              },
+            ].map((card) => (
+              <div key={card.name} className="rounded-z-md bg-white border border-ink-line p-5">
+                <span className="inline-flex w-fit items-center rounded-z-pill bg-accent-muted px-2.5 py-0.5 font-sans text-z-micro font-medium text-accent-dark mb-3">
+                  {card.scope}
+                </span>
+                <h3 className="font-display font-semibold text-ink text-z-h3 mb-2">
+                  {card.name}
+                </h3>
+                <p className="font-sans text-z-body-sm text-ink-soft leading-relaxed">
+                  {card.body}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="font-sans text-z-caption text-ink-muted mt-4">
+            Source: DHA circular No. 16/2013 (mandatory insurance Dubai), DOH
+            Resolution No. 1/2014 (Abu Dhabi updates), MOHAP federal mandate
+            2023.
+          </p>
+        </section>
       </div>
-      <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
-        Browse all {totalPlans} plans. Use the checkboxes to select up to 4 plans for side-by-side comparison.
-      </p>
-      <PlanBrowser />
 
       {/* FAQ */}
-      <div className="mt-12">
-        <FaqSection faqs={faqs} title="Health Insurance in the UAE — FAQ" />
-      </div>
-
-      {/* Regulatory Bodies */}
-      <div className="mt-12">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">UAE Health Insurance Regulators</h2>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
-            Health insurance in the UAE is regulated at both the emirate and federal level. Three bodies govern the majority of the insured population:
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            {/* DHA */}
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Dubai</span>
-              </div>
-              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Dubai Health Authority (DHA)</h3>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-                The DHA regulates all health insurance activity in the Emirate of Dubai, including licensing
-                insurers and TPAs, setting mandatory benefit structures, and managing the <strong>Saada</strong>
-                basic benefits plan for low-income workers. All health insurance sold in Dubai must comply with
-                DHA&apos;s Essential Benefits Plan (EBP) as the minimum standard. The DHA also operates the
-                Dubai Electronic Unified Trading Platform (DEUPT) for insurance data submissions.
-              </p>
-            </div>
-            {/* DOH */}
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Abu Dhabi</span>
-              </div>
-              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Department of Health – Abu Dhabi (DOH)</h3>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-                Formerly the Health Authority Abu Dhabi (HAAD), the DOH oversees healthcare regulation and
-                mandatory insurance in Abu Dhabi and Al Ain. The DOH&apos;s <strong>Daman</strong> (National
-                Health Insurance Company) administers the <strong>Thiqa</strong> scheme for Emirati nationals and
-                the <strong>Basic</strong> plan for expatriate dependants. The DOH sets minimum benefit standards
-                and conducts annual audits of all insurance products operating in the emirate.
-              </p>
-            </div>
-            {/* MOHAP */}
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Federal</span>
-              </div>
-              <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Ministry of Health & Prevention (MOHAP)</h3>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-                MOHAP acts as the federal health authority covering the Northern Emirates — Sharjah, Ajman,
-                Ras Al Khaimah, Fujairah, and Umm Al Quwain — as well as setting national health policy.
-                While Dubai and Abu Dhabi have their own regulators, MOHAP coordinates cross-emirate standards,
-                supervises health insurance rollout in non-DHA/DOH emirates, and maintains the federal
-                <strong> Malaffi</strong> health record exchange. Insurers operating across multiple emirates
-                must satisfy both the relevant emirate regulator and MOHAP reporting requirements.
-              </p>
-            </div>
-          </div>
-          <p className="text-[11px] text-black/40">
-            Source: DHA circular No. 16/2013 (mandatory insurance Dubai), DOH Resolution No. 1/2014 (Abu Dhabi updates), MOHAP federal mandate 2023.
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About UAE health insurance.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title="Health Insurance in the UAE — FAQ" />
+        </div>
+
+        <div className="mt-12 rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Disclaimer.</strong> Premium
+            ranges and coverage details shown are indicative, based on publicly
+            available UAE insurance market data. Actual premiums vary by age,
+            nationality, visa type, employer group size, and medical history.
+            Always obtain a personalised quote from the insurer or an
+            authorised broker before purchasing. Data cross-referenced with
+            the UAE Open Healthcare Directory, last verified March 2026.
           </p>
         </div>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="mt-8 border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Premium ranges and coverage details shown are indicative,
-          based on publicly available UAE insurance market data. Actual premiums vary by age,
-          nationality, visa type, employer group size, and medical history. Always obtain a
-          personalised quote from the insurer or an authorised broker before purchasing.
-          This tool is for informational purposes only and does not constitute insurance advice.
-          Data cross-referenced with the UAE Open Healthcare Directory, last verified March 2026.
-        </p>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

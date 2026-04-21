@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -19,6 +17,7 @@ import {
   speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -34,7 +33,7 @@ export async function generateStaticParams() {
 
   for (const city of cities) {
     for (const cat of categories) {
-      const providers = await getGovernmentProviders(city.slug, cat.slug);
+      const providers = await safe(getGovernmentProviders(city.slug, cat.slug), [], "gov-cat:params");
       if (providers.length >= 3) {
         params.push({ city: city.slug, category: cat.slug });
       }
@@ -89,7 +88,7 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();
 
-  const providers = await getGovernmentProviders(city.slug, cat.slug);
+  const providers = await safe(getGovernmentProviders(city.slug, cat.slug), [], "gov-cat:city");
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();
@@ -128,126 +127,103 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
-    {
-      name: "Government",
-      url: `${base}/directory/${city.slug}/government`,
-    },
+    { name: "Government", url: `${base}/directory/${city.slug}/government` },
     { name: cat.name },
   ];
 
+  const topRated = sorted[0];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd
-        data={itemListSchema(
-          `Government ${cat.name} in ${city.name}`,
-          sorted.slice(0, 20),
-          city.name,
-          base
-        )}
-      />
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "UAE", href: "/" },
+        { label: city.name, href: `/directory/${city.slug}` },
+        { label: "Government", href: `/directory/${city.slug}/government` },
+        { label: cat.name },
+      ]}
+      eyebrow={`Government · ${cat.name} · ${city.name}`}
+      title={`Government ${catLower} in ${city.name}.`}
+      subtitle={
+        <span>
+          {count} government and public {catLower} in {city.name}, operated by {operator}. Regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count} government and public {catLower} in {city.name}. These facilities are operated by {operator} and offer services that are often free for UAE nationals or subsidized for insured residents.
+          {topRated && Number(topRated.googleRating) > 0 && (
+            <>
+              {" "}The highest-rated is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star Google rating based on {topRated.googleReviewCount.toLocaleString()} patient reviews.
+            </>
+          )}{" "}
+          All listings are sourced from official {regulator} licensed facility registers.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: cat.name,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd
+            data={itemListSchema(
+              `Government ${cat.name} in ${city.name}`,
+              sorted.slice(0, 20),
+              city.name,
+              base
+            )}
+          />
+        </>
+      }
+      belowGrid={
+        <>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All government healthcare in ${city.name}`}
+                href={`/directory/${city.slug}/government`}
+              />
+              <ListingsCrossLink
+                label={`All ${catLower} in ${city.name}`}
+                href={`/directory/${city.slug}/${cat.slug}`}
+                sub="Private and public"
+              />
+            </div>
+          </div>
 
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: city.name, href: `/directory/${city.slug}` },
-          {
-            label: "Government",
-            href: `/directory/${city.slug}/government`,
-          },
-          { label: cat.name },
-        ]}
-      />
-
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-          Government {cat.name} in {city.name}, UAE
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-          {count} government & public {catLower} · Last updated March 2026
-        </p>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the UAE Open Healthcare Directory, there are {count}{" "}
-            government and public {catLower} in {city.name}. These facilities
-            are operated by {operator} and offer services that are often free
-            for UAE nationals or subsidized for insured residents.
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <>
-                {" "}
-                The highest-rated is{" "}
-                <strong>{sorted[0].name}</strong> with a{" "}
-                {sorted[0].googleRating}-star Google rating based on{" "}
-                {sorted[0].googleReviewCount.toLocaleString()} patient reviews.
-              </>
-            )}{" "}
-            All listings are sourced from official {regulator} licensed facility
-            registers.
-          </p>
-        </div>
-      </div>
-
-      {/* Provider grid */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            Government {cat.name} in {city.name}
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard
-              key={provider.id}
-              name={provider.name}
-              slug={provider.slug}
-              citySlug={provider.citySlug}
-              categorySlug={provider.categorySlug}
-              address={provider.address}
-              phone={provider.phone}
-              website={provider.website}
-              shortDescription={provider.shortDescription}
-              googleRating={provider.googleRating}
-              googleReviewCount={provider.googleReviewCount}
-              isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified}
-              coverImageUrl={provider.coverImageUrl}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Cross-links */}
-      <section className="mb-10 space-y-2">
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          See all government facilities?{" "}
-          <Link
-            href={`/directory/${city.slug}/government`}
-            className="text-[#006828] hover:underline font-medium"
-          >
-            All government healthcare in {city.name} &rarr;
-          </Link>
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Looking for private options?{" "}
-          <Link
-            href={`/directory/${city.slug}/${cat.slug}`}
-            className="text-[#006828] hover:underline font-medium"
-          >
-            Browse all {catLower} in {city.name} &rarr;
-          </Link>
-        </p>
-      </section>
-
-      <FaqSection
-        faqs={faqs}
-        title={`Government ${cat.name} in ${city.name} — FAQ`}
-      />
-    </div>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Government {catLower} in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

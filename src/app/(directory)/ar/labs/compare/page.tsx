@@ -71,7 +71,7 @@ export default function ArabicLabComparePage() {
   const labCount = LAB_PROFILES.length;
 
   return (
-    <div className="container-tc py-8" dir="rtl">
+    <div className="font-arabic container-tc py-8" dir="rtl">
       {/* Schema.org */}
       <JsonLd
         data={breadcrumbSchema([

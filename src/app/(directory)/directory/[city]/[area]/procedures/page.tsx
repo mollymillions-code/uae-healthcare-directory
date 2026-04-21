@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -14,6 +13,8 @@ import {
 import { PROCEDURES, MedicalProcedure } from "@/lib/constants/procedures";
 import { faqPageSchema, breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const revalidate = 43200;
 
@@ -25,12 +26,16 @@ interface Props {
 async function getProceduresWithProviders(citySlug: string, areaSlug: string): Promise<MedicalProcedure[]> {
   const results = await Promise.all(
     PROCEDURES.map(async (proc) => {
-      const { total } = await getProviders({
-        citySlug,
-        areaSlug,
-        categorySlug: proc.categorySlug,
-        limit: 1,
-      });
+      const { total } = await safe(
+        getProviders({
+          citySlug,
+          areaSlug,
+          categorySlug: proc.categorySlug,
+          limit: 1,
+        }),
+        { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+        `proc-area-count:${proc.slug}`,
+      );
       return total > 0 ? proc : null;
     })
   );
@@ -132,146 +137,82 @@ export default async function AreaProceduresPage({ params }: Props) {
     { name: "Procedures", url: pageUrl },
   ];
 
+  const sections = Array.from(grouped.entries()).map(([catSlug, procs]) => ({
+    title: catSlug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    items: procs
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((proc) => {
+        const cityPrice = proc.cityPricing[city.slug];
+        const priceDisplay = cityPrice
+          ? `AED ${cityPrice.min.toLocaleString()}–${cityPrice.max.toLocaleString()}`
+          : `AED ${proc.priceRange.min.toLocaleString()}–${proc.priceRange.max.toLocaleString()}`;
+        return {
+          href: `/directory/${city.slug}/${area.slug}/procedures/${proc.slug}`,
+          label: proc.name,
+          subLabel: `${priceDisplay} · ${proc.duration}`,
+        };
+      }),
+    layout: "grid" as const,
+    gridCols: "3" as const,
+  }));
+
   return (
     <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
-
-        <Breadcrumb
-          items={[
-            { label: "UAE", href: "/" },
-            { label: city.name, href: `/directory/${city.slug}` },
-            { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
-            { label: "Procedures" },
-          ]}
-        />
-
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-            Medical Procedures in {area.name}, {city.name}
-          </h1>
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">
-            Compare costs and find providers for {available.length} medical procedures available
-            in {area.name}, {city.name}, UAE. All pricing is in AED and reflects observed ranges
-            across government, private, and premium facilities. Healthcare in {city.name} is
-            regulated by {regulator}.
-          </p>
-
-          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-              According to the UAE Open Healthcare Directory, {area.name} in {city.name} has
-              providers offering {available.length} medical procedures. Costs vary by facility
-              tier, insurance coverage, and procedure complexity. Data sourced from official
-              government registers and market-observed pricing. Last updated March 2026.
-            </p>
-          </div>
-        </div>
-
-        {/* Procedure categories */}
-        {Array.from(grouped.entries()).map(([catSlug, procs]) => (
-          <section key={catSlug} className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{catSlug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b-2 border-black/[0.06]">
-                    <th className="text-left py-3 pr-4 font-bold text-[#1c1c1c]">Procedure</th>
-                    <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
-                      Cost in {city.name}
-                    </th>
-                    <th className="text-center py-3 px-4 font-bold text-[#1c1c1c]">Insurance</th>
-                    <th className="text-right py-3 pl-4 font-bold text-[#1c1c1c]">Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {procs
-                    .sort((a, b) => a.sortOrder - b.sortOrder)
-                    .map((proc) => {
-                      const cityPrice = proc.cityPricing[city.slug];
-                      const priceDisplay = cityPrice
-                        ? `AED ${cityPrice.min.toLocaleString()} - ${cityPrice.max.toLocaleString()}`
-                        : `AED ${proc.priceRange.min.toLocaleString()} - ${proc.priceRange.max.toLocaleString()}`;
-
-                      const insuranceBadge =
-                        proc.insuranceCoverage === "typically-covered"
-                          ? "bg-green-100 text-green-800"
-                          : proc.insuranceCoverage === "partially-covered"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : proc.insuranceCoverage === "rarely-covered"
-                              ? "bg-orange-100 text-orange-800"
-                              : "bg-red-100 text-red-800";
-                      const insuranceLabel =
-                        proc.insuranceCoverage === "typically-covered"
-                          ? "Covered"
-                          : proc.insuranceCoverage === "partially-covered"
-                            ? "Partial"
-                            : proc.insuranceCoverage === "rarely-covered"
-                              ? "Rare"
-                              : "Not covered";
-
-                      return (
-                        <tr
-                          key={proc.slug}
-                          className="border-b border-black/[0.06] hover:bg-[#f8f8f6] transition-colors"
-                        >
-                          <td className="py-3 pr-4">
-                            <Link
-                              href={`/directory/${city.slug}/${area.slug}/procedures/${proc.slug}`}
-                              className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                            >
-                              {proc.name}
-                            </Link>
-                            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">{proc.nameAr}</p>
-                          </td>
-                          <td className="text-right py-3 px-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight whitespace-nowrap">
-                            {priceDisplay}
-                          </td>
-                          <td className="text-center py-3 px-4">
-                            <span
-                              className={`inline-block text-[10px] font-bold px-2 py-0.5 ${insuranceBadge}`}
-                            >
-                              {insuranceLabel}
-                            </span>
-                          </td>
-                          <td className="text-right py-3 pl-4 text-black/40 whitespace-nowrap">
-                            {proc.duration}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ))}
-
-        {/* Cross-links */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Explore {area.name}</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <HubPageTemplate
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: city.name, href: `/directory/${city.slug}` },
+          { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
+          { label: "Procedures" },
+        ]}
+        eyebrow={`${area.name} · ${city.name}`}
+        title={`Medical Procedures in ${area.name}, ${city.name}.`}
+        subtitle={
+          <>
+            Compare costs and find providers for {available.length} medical procedures available in {area.name}, {city.name}. All pricing in AED, reflecting observed ranges across government, private, and premium facilities. Healthcare in {city.name} is regulated by {regulator}.
+          </>
+        }
+        stats={[
+          { n: String(available.length), l: "Procedures" },
+          { n: area.name, l: "Neighborhood" },
+        ]}
+        aeoAnswer={
+          <>
+            According to the UAE Open Healthcare Directory, {area.name} in {city.name} has providers offering {available.length} medical procedures. Costs vary by facility tier, insurance coverage, and procedure complexity. Data sourced from official government registers and market-observed pricing. Last updated March 2026.
+          </>
+        }
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+            <JsonLd data={faqPageSchema(faqs)} />
+          </>
+        }
+        sections={sections}
+        ctaBanner={
+          <div className="flex flex-wrap gap-2">
             <Link
               href={`/directory/${city.slug}/${area.slug}`}
-              className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-4 py-2 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"
+              className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
             >
               All providers in {area.name}
             </Link>
             <Link
               href={`/directory/${city.slug}`}
-              className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-4 py-2 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"
+              className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
             >
               Healthcare in {city.name}
             </Link>
           </div>
-        </section>
+        }
+      />
 
-        <FaqSection faqs={faqs} title={`Medical Procedures in ${area.name}, ${city.name} — FAQ`} />
-      </div>
+      {/* FAQ */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title={`Medical Procedures in ${area.name}, ${city.name} — FAQ`} />
+        </div>
+      </section>
     </>
   );
 }

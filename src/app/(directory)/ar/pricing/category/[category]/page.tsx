@@ -132,7 +132,7 @@ export default async function ArCategoryPricingPage({ params }: Props) {
   ];
 
   return (
-    <div dir="rtl" className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div dir="rtl" className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "الإمارات", url: base },

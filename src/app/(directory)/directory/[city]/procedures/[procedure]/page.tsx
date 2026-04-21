@@ -1,9 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Clock, Shield, Activity, MapPin, ArrowRight } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { Clock, Shield, Activity, MapPin, ArrowRight, ChevronRight } from "lucide-react";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -29,6 +27,7 @@ import {
   procedureCityOffersSchema,
 } from "@/lib/pricing";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -60,9 +59,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!pricing) return {};
 
   const base = getBaseUrl();
-  const providerCount = await getProviderCountByCategoryAndCity(
-    proc.categorySlug,
-    city.slug
+  const providerCount = await safe(
+    getProviderCountByCategoryAndCity(proc.categorySlug, city.slug),
+    0,
+    "provCountCatCity-meta",
   );
 
   return {
@@ -127,12 +127,16 @@ export default async function ProcedureCityPage({ params }: Props) {
   const regulator = getRegulatorName(city.slug);
 
   // Related providers in this city + category
-  const { providers, total: providerCount } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: proc.categorySlug,
-    limit: 12,
-    sort: "rating",
-  });
+  const { providers, total: providerCount } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: proc.categorySlug,
+      limit: 12,
+      sort: "rating",
+    }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "procProviders",
+  );
 
   // City comparison table data
   const cityComparisons = CITIES.map((c) => {
@@ -199,224 +203,204 @@ export default async function ProcedureCityPage({ params }: Props) {
   // Schema.org data
   const offersSchema = procedureCityOffersSchema(proc, city.slug, city.name);
 
+  const breadcrumbs = [
+    { label: "UAE", href: "/" },
+    { label: city.name, href: `/directory/${city.slug}` },
+    { label: "Procedures", href: `/directory/${city.slug}/procedures` },
+    { label: proc.name },
+  ];
+
   return (
     <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd
-          data={breadcrumbSchema([
-            { name: "UAE", url: base },
-            { name: city.name, url: `${base}/directory/${city.slug}` },
-            {
-              name: "Procedures",
-              url: `${base}/directory/${city.slug}/procedures`,
-            },
-            { name: proc.name },
-          ])}
-        />
-        <JsonLd data={procedureSchema(proc)} />
-        {offersSchema && <JsonLd data={offersSchema} />}
-        <JsonLd data={faqPageSchema(faqs)} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "UAE", url: base },
+          { name: city.name, url: `${base}/directory/${city.slug}` },
+          {
+            name: "Procedures",
+            url: `${base}/directory/${city.slug}/procedures`,
+          },
+          { name: proc.name },
+        ])}
+      />
+      <JsonLd data={procedureSchema(proc)} />
+      {offersSchema && <JsonLd data={offersSchema} />}
+      <JsonLd data={faqPageSchema(faqs)} />
+      <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb
-          items={[
-            { label: "UAE", href: "/" },
-            { label: city.name, href: `/directory/${city.slug}` },
-            {
-              label: "Procedures",
-              href: `/directory/${city.slug}/procedures`,
-            },
-            { label: proc.name },
-          ]}
-        />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 -right-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+        </div>
 
-        {/* Header */}
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          {proc.name} Cost in {city.name}
-        </h1>
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap" aria-label="Breadcrumb">
+            {breadcrumbs.map((b, i) => {
+              const isLast = i === breadcrumbs.length - 1;
+              return (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {b.href && !isLast ? (
+                    <Link href={b.href} className="hover:text-ink transition-colors">{b.label}</Link>
+                  ) : (
+                    <span className={isLast ? "text-ink font-medium" : undefined}>{b.label}</span>
+                  )}
+                  {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
+                </span>
+              );
+            })}
+          </nav>
 
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-          {providerCount} providers &middot; {proc.duration} &middot;{" "}
-          {getCoverageLabel(proc.insuranceCoverage)} by insurance &middot;
-          Last updated March 2026
-        </p>
-
-        {/* Answer block for AEO */}
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the UAE Open Healthcare Directory, a{" "}
-            {proc.name.toLowerCase()} in {city.name} costs {formatAed(pricing.min)}{" "}
-            to {formatAed(pricing.max)}, with a typical price of{" "}
-            {formatAed(pricing.typical)}. There are {providerCount}{" "}
-            {proc.categorySlug.replace(/-/g, " ")} providers in {city.name}{" "}
-            listed in the directory.{" "}
-            {proc.insuranceCoverage === "typically-covered"
-              ? "Most health insurance plans in the UAE cover this procedure when medically indicated. "
-              : proc.insuranceCoverage === "not-covered"
-                ? "This is a cosmetic/elective procedure and is not covered by UAE health insurance. "
-                : ""}
-            Healthcare in {city.name} is regulated by the {regulator}. Prices
-            vary based on facility type (government vs. private vs. premium),
-            doctor experience, and clinical complexity. Data sourced from DOH
-            Mandatory Tariff methodology and market-observed ranges, last
-            verified March 2026.
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3">
+            Procedure cost · {city.name}
           </p>
-        </div>
+          <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[52px] leading-[1.04] tracking-[-0.025em]">
+            {proc.name} Cost in {city.name}.
+          </h1>
+          <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+            {providerCount} providers · {proc.duration} · {getCoverageLabel(proc.insuranceCoverage)} by insurance · Last updated March 2026
+          </p>
 
-        {/* Price highlight card */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 text-center">
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 uppercase tracking-wider mb-1">
-              From
+          {/* AEO Answer Block */}
+          <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              According to the UAE Open Healthcare Directory, a{" "}
+              {proc.name.toLowerCase()} in {city.name} costs {formatAed(pricing.min)}{" "}
+              to {formatAed(pricing.max)}, with a typical price of{" "}
+              {formatAed(pricing.typical)}. There are {providerCount}{" "}
+              {proc.categorySlug.replace(/-/g, " ")} providers in {city.name}{" "}
+              listed in the directory.{" "}
+              {proc.insuranceCoverage === "typically-covered"
+                ? "Most health insurance plans in the UAE cover this procedure when medically indicated. "
+                : proc.insuranceCoverage === "not-covered"
+                  ? "This is a cosmetic/elective procedure and is not covered by UAE health insurance. "
+                  : ""}
+              Healthcare in {city.name} is regulated by the {regulator}. Prices
+              vary based on facility type (government vs. private vs. premium),
+              doctor experience, and clinical complexity. Data sourced from DOH
+              Mandatory Tariff methodology and market-observed ranges, last
+              verified March 2026.
             </p>
-            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-              {formatAed(pricing.min)}
-            </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40">Lowest price</p>
-          </div>
-          <div className="bg-[#006828]/[0.04] border border-[#006828] p-5 text-center">
-            <p className="text-xs text-[#006828] uppercase tracking-wider mb-1">
-              Typical
-            </p>
-            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-              {formatAed(pricing.typical)}
-            </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40">Most common price</p>
-          </div>
-          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5 text-center">
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 uppercase tracking-wider mb-1">
-              Up to
-            </p>
-            <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-              {formatAed(pricing.max)}
-            </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40">Premium facilities</p>
           </div>
         </div>
+      </section>
 
-        {/* Procedure details */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">About {proc.name}</h2>
+      {/* Price highlight cards */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+            <p className="font-sans text-z-micro text-ink-muted uppercase tracking-[0.04em] mb-1">From</p>
+            <p className="font-display font-semibold text-ink text-display-md leading-none">{formatAed(pricing.min)}</p>
+            <p className="font-sans text-z-caption text-ink-muted mt-1">Lowest price</p>
           </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
+          <div className="bg-surface-cream border border-accent-dark/40 rounded-z-md p-5 text-center">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-1">Typical</p>
+            <p className="font-display font-semibold text-ink text-display-md leading-none">{formatAed(pricing.typical)}</p>
+            <p className="font-sans text-z-caption text-ink-muted mt-1">Most common price</p>
+          </div>
+          <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+            <p className="font-sans text-z-micro text-ink-muted uppercase tracking-[0.04em] mb-1">Up to</p>
+            <p className="font-display font-semibold text-ink text-display-md leading-none">{formatAed(pricing.max)}</p>
+            <p className="font-sans text-z-caption text-ink-muted mt-1">Premium facilities</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Prose body — about + what to expect */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div className="max-w-[720px]">
+          <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.018em] mb-4">
+            About {proc.name}
+          </h2>
+          <p className="font-sans text-z-body text-ink-soft leading-relaxed mb-6">
             {proc.description}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
-              <Clock className="h-4 w-4 text-[#006828] mb-1" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Duration</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">{proc.duration}</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+            <div className="bg-white border border-ink-line rounded-z-sm p-3">
+              <Clock className="h-4 w-4 text-accent-dark mb-1" />
+              <p className="font-sans text-z-caption font-semibold text-ink">Duration</p>
+              <p className="font-sans text-z-caption text-ink-muted">{proc.duration}</p>
             </div>
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
-              <Activity className="h-4 w-4 text-[#006828] mb-1" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Recovery</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">{proc.recoveryTime}</p>
+            <div className="bg-white border border-ink-line rounded-z-sm p-3">
+              <Activity className="h-4 w-4 text-accent-dark mb-1" />
+              <p className="font-sans text-z-caption font-semibold text-ink">Recovery</p>
+              <p className="font-sans text-z-caption text-ink-muted">{proc.recoveryTime}</p>
             </div>
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
-              <Shield className="h-4 w-4 text-[#006828] mb-1" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Insurance</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                <span
-                  className={`inline-block px-1.5 py-0.5 text-[9px] font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}
-                >
+            <div className="bg-white border border-ink-line rounded-z-sm p-3">
+              <Shield className="h-4 w-4 text-accent-dark mb-1" />
+              <p className="font-sans text-z-caption font-semibold text-ink">Insurance</p>
+              <p className="font-sans text-z-caption text-ink-muted">
+                <span className={`inline-block px-1.5 py-0.5 text-[9px] font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}>
                   {getCoverageLabel(proc.insuranceCoverage)}
                 </span>
               </p>
             </div>
-            <div className="bg-[#f8f8f6] border border-black/[0.06] p-3">
-              <MapPin className="h-4 w-4 text-[#006828] mb-1" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Setting</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40 capitalize">{proc.setting}</p>
+            <div className="bg-white border border-ink-line rounded-z-sm p-3">
+              <MapPin className="h-4 w-4 text-accent-dark mb-1" />
+              <p className="font-sans text-z-caption font-semibold text-ink">Setting</p>
+              <p className="font-sans text-z-caption text-ink-muted capitalize">{proc.setting}</p>
             </div>
           </div>
-        </section>
 
-        {/* What to expect */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What to Expect</h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
+          <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.018em] mb-4">
+            What to expect
+          </h2>
+          <p className="font-sans text-z-body text-ink-soft leading-relaxed">
             {proc.whatToExpect}
           </p>
           {proc.anaesthesia !== "none" && (
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-2">
-              <strong>Anaesthesia:</strong>{" "}
-              {proc.anaesthesia.charAt(0).toUpperCase() +
-                proc.anaesthesia.slice(1)}{" "}
-              anaesthesia is typically used for this procedure.
+            <p className="font-sans text-z-body-sm text-ink-muted mt-3">
+              <strong className="text-ink">Anaesthesia:</strong>{" "}
+              {proc.anaesthesia.charAt(0).toUpperCase() + proc.anaesthesia.slice(1)} anaesthesia is typically used for this procedure.
             </p>
           )}
-        </section>
-      </div>
+        </div>
+      </section>
 
-      {/* City comparison table — bg-[#f8f8f6] section */}
-      <section className="bg-[#f8f8f6] py-10">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-              {proc.name} Cost Comparison — All UAE Cities
-            </h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-            Compare {proc.name.toLowerCase()} prices across all UAE emirates.{" "}
-            {city.name} is highlighted below.
+      {/* City comparison table */}
+      <section className="bg-surface-cream py-12 mt-16">
+        <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em] mb-3">
+            {proc.name} cost comparison — all UAE cities
+          </h2>
+          <p className="font-sans text-z-body-sm text-ink-muted mb-6">
+            Compare {proc.name.toLowerCase()} prices across all UAE emirates. {city.name} is highlighted below.
           </p>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white rounded-z-md border border-ink-line">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b-2 border-black/[0.06]">
-                  <th className="text-left py-3 pr-4 font-bold text-[#1c1c1c]">
-                    City
-                  </th>
-                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
-                    From
-                  </th>
-                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
-                    Typical
-                  </th>
-                  <th className="text-right py-3 px-4 font-bold text-[#1c1c1c]">
-                    Up to
-                  </th>
-                  <th className="text-right py-3 pl-4 font-bold text-[#1c1c1c]">
-                    Details
-                  </th>
+                <tr className="border-b border-ink-line">
+                  <th className="text-left py-3 px-4 font-sans font-semibold text-ink">City</th>
+                  <th className="text-right py-3 px-4 font-sans font-semibold text-ink">From</th>
+                  <th className="text-right py-3 px-4 font-sans font-semibold text-ink">Typical</th>
+                  <th className="text-right py-3 px-4 font-sans font-semibold text-ink">Up to</th>
+                  <th className="text-right py-3 px-4 font-sans font-semibold text-ink">Details</th>
                 </tr>
               </thead>
               <tbody>
                 {cityComparisons.map((comp) => (
                   <tr
                     key={comp.slug}
-                    className={`border-b border-black/[0.06] ${comp.isCurrent ? "bg-[#006828]/[0.04] font-bold" : ""}`}
+                    className={`border-b border-ink-line last:border-b-0 ${comp.isCurrent ? "bg-surface-cream font-semibold" : ""}`}
                   >
-                    <td className="py-3 pr-4 text-[#1c1c1c]">
+                    <td className="py-3 px-4 text-ink">
                       {comp.name}
                       {comp.isCurrent && (
-                        <span className="text-[9px] text-[#006828] ml-1">
-                          (current)
-                        </span>
+                        <span className="text-z-micro text-accent-dark ml-1">(current)</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-black/40">
-                      {formatAed(comp.min)}
-                    </td>
-                    <td className="py-3 px-4 text-right font-bold text-[#1c1c1c]">
-                      {formatAed(comp.typical)}
-                    </td>
-                    <td className="py-3 px-4 text-right text-black/40">
-                      {formatAed(comp.max)}
-                    </td>
-                    <td className="py-3 pl-4 text-right">
+                    <td className="py-3 px-4 text-right text-ink-soft">{formatAed(comp.min)}</td>
+                    <td className="py-3 px-4 text-right font-semibold text-ink">{formatAed(comp.typical)}</td>
+                    <td className="py-3 px-4 text-right text-ink-soft">{formatAed(comp.max)}</td>
+                    <td className="py-3 px-4 text-right">
                       {comp.isCurrent ? (
-                        <span className="font-['Geist',sans-serif] text-xs text-black/40">
-                          Viewing
-                        </span>
+                        <span className="font-sans text-z-caption text-ink-muted">Viewing</span>
                       ) : (
                         <Link
                           href={`/directory/${comp.slug}/procedures/${proc.slug}`}
-                          className="text-xs text-[#006828] hover:underline"
+                          className="font-sans text-z-caption text-accent-dark hover:underline"
                         >
                           View
                         </Link>
@@ -430,21 +414,19 @@ export default async function ProcedureCityPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Insurance coverage section */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
-          </div>
-          <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
+      {/* Insurance coverage */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-[720px]">
+          <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.018em] mb-4">
+            Insurance coverage
+          </h2>
+          <div className="bg-surface-cream border border-ink-line rounded-z-md p-5">
             <div className="flex items-center gap-3 mb-3">
-              <span
-                className={`px-2 py-1 text-xs font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}
-              >
+              <span className={`px-2 py-1 text-xs font-bold ${getCoverageBadgeClass(proc.insuranceCoverage)}`}>
                 {getCoverageLabel(proc.insuranceCoverage)}
               </span>
               {proc.setting !== "outpatient" && (
-                <span className="font-['Geist',sans-serif] text-xs text-black/40">
+                <span className="font-sans text-z-caption text-ink-muted">
                   {proc.setting === "inpatient"
                     ? "Inpatient — typically 0% co-pay"
                     : proc.setting === "day-case"
@@ -453,126 +435,121 @@ export default async function ProcedureCityPage({ params }: Props) {
                 </span>
               )}
             </div>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
+            <p className="font-sans text-z-body-sm text-ink-soft leading-relaxed">
               {proc.insuranceNotes}
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Related providers */}
+      {providers.length > 0 && (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <h2 className="font-display font-semibold text-ink text-z-h1 mb-3">
+            {proc.categorySlug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")} providers in {city.name}
+          </h2>
+          <p className="font-sans text-z-body-sm text-ink-muted mb-6">
+            {providerCount} providers offer {proc.categorySlug.replace(/-/g, " ")} services in {city.name}. These clinics and hospitals may perform {proc.name.toLowerCase()} procedures. Contact providers directly to confirm availability and pricing.
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {providers.slice(0, 6).map((p) => (
+              <li key={p.id}>
+                <Link
+                  href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                  className="block bg-white border border-ink-line rounded-z-md p-4 hover:border-ink transition-colors"
+                >
+                  <p className="font-sans font-semibold text-ink text-z-body-sm line-clamp-2">{p.name}</p>
+                  {p.address && (
+                    <p className="font-sans text-z-caption text-ink-muted mt-1 line-clamp-1">{p.address}</p>
+                  )}
+                  {p.googleRating && (
+                    <p className="font-sans text-z-caption text-ink-muted mt-1">
+                      {p.googleRating} ★ {p.googleReviewCount ? `(${p.googleReviewCount.toLocaleString()})` : ""}
+                    </p>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {providerCount > 6 && (
+            <Link
+              href={`/directory/${city.slug}/${proc.categorySlug}`}
+              className="inline-flex items-center gap-1 mt-6 font-sans text-z-body-sm font-semibold text-accent-dark hover:underline"
+            >
+              View all {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          )}
         </section>
+      )}
 
-        {/* Related providers */}
-        {providers.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                {proc.categorySlug
-                  .split("-")
-                  .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                  .join(" ")}{" "}
-                Providers in {city.name}
-              </h2>
-            </div>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-              {providerCount} providers offer{" "}
-              {proc.categorySlug.replace(/-/g, " ")} services in {city.name}.
-              These clinics and hospitals may perform{" "}
-              {proc.name.toLowerCase()} procedures. Contact providers directly
-              to confirm availability and pricing.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              {providers.slice(0, 6).map((p) => (
-                <ProviderCard
-                  key={p.id}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                />
-              ))}
-            </div>
-
-            {providerCount > 6 && (
-              <Link
-                href={`/directory/${city.slug}/${proc.categorySlug}`}
-                className="inline-flex items-center gap-1 text-sm font-bold text-[#006828] hover:underline"
-              >
-                View all {providerCount}{" "}
-                {proc.categorySlug.replace(/-/g, " ")} providers in{" "}
-                {city.name}
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            )}
-          </section>
-        )}
-
-        {/* Related procedures */}
-        {relatedProcs.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Procedures</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {relatedProcs.map((rp) => {
-                const rpPricing = rp.cityPricing[city.slug];
-                if (!rpPricing) return null;
-                return (
+      {/* Related procedures */}
+      {relatedProcs.length > 0 && (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+            Related procedures
+          </h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {relatedProcs.map((rp) => {
+              const rpPricing = rp.cityPricing[city.slug];
+              if (!rpPricing) return null;
+              return (
+                <li key={rp.slug}>
                   <Link
-                    key={rp.slug}
                     href={`/directory/${city.slug}/procedures/${rp.slug}`}
-                    className="flex items-center justify-between border border-black/[0.06] px-4 py-3 hover:border-[#006828]/15 transition-colors"
+                    className="flex items-center justify-between bg-white border border-ink-line rounded-z-md px-4 py-3 hover:border-ink transition-colors"
                   >
                     <div>
-                      <span className="text-sm font-medium text-[#1c1c1c]">
-                        {rp.name}
-                      </span>
-                      <p className="font-['Geist',sans-serif] text-xs text-black/40">{rp.duration}</p>
+                      <span className="font-sans text-z-body-sm font-semibold text-ink">{rp.name}</span>
+                      <p className="font-sans text-z-caption text-ink-muted">{rp.duration}</p>
                     </div>
-                    <span className="text-sm font-bold text-[#006828] whitespace-nowrap">
+                    <span className="font-sans text-z-body-sm font-semibold text-accent-dark whitespace-nowrap">
                       {formatAed(rpPricing.typical)}
                     </span>
                   </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
-        {/* Cross-links */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <Link
-            href={`/pricing/${proc.slug}/${city.slug}`}
-            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
-          >
-            Detailed pricing breakdown &rarr;
-          </Link>
-          <Link
-            href={`/pricing/${proc.slug}`}
-            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
-          >
-            UAE-wide {proc.name} pricing &rarr;
-          </Link>
-          <Link
-            href={`/directory/${city.slug}/procedures`}
-            className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04]"
-          >
-            All procedures in {city.name} &rarr;
-          </Link>
+      {/* Related links */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <ul className="flex flex-wrap gap-2">
+          <li>
+            <Link
+              href={`/pricing/${proc.slug}/${city.slug}`}
+              className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+            >
+              Detailed pricing breakdown &rarr;
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/pricing/${proc.slug}`}
+              className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+            >
+              UAE-wide {proc.name} pricing &rarr;
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/directory/${city.slug}/procedures`}
+              className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+            >
+              All procedures in {city.name} &rarr;
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      {/* FAQ */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title={`${proc.name} in ${city.name} — FAQ`} />
         </div>
-
-        <FaqSection
-          faqs={faqs}
-          title={`${proc.name} in ${city.name} — FAQ`}
-        />
-      </div>
+      </section>
     </>
   );
 }

@@ -103,7 +103,7 @@ export default async function ArabicInsurerDetailPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-tc py-8" dir="rtl">
+    <div className="font-arabic container-tc py-8" dir="rtl">
       <JsonLd
         data={breadcrumbSchema([
           { name: "الإمارات", url: `${base}/ar` },

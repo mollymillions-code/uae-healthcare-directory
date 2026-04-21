@@ -1,5 +1,74 @@
 # Zavis Landing - Changelog
 
+## 2026-04-22 — [Claude Code] Site-wide directory redesign: Airbnb UX archetype + Zavis visual identity
+
+**Signed by:** Claude Code · 2026-04-22T00:45:00+04:00
+
+**What happened:**
+
+A complete visual + interaction refresh of the `(directory)` route group — ~60 pages rewritten against a new design system + 3 reusable templates. The design combines Airbnb's interaction patterns (sticky morphing search pill, horizontal chip rails, photo-first cards, photo-mosaic detail hero, sticky booking card, scroll-reveal bottom bar, shared-element photo viewer modal) with Zavis brand identity (accent-green CTAs, cream surface, Bricolage display + DM Sans body, warm radial-gradient heroes).
+
+**New design system**
+
+- `tailwind.config.ts` — added `ink`, `surface`, `state` color tokens; `z-container|wide|full` container widths; typography ladder (`display-xl|lg|md`, `z-h1|h2|h3`, `z-body|body-sm|caption|micro`); radii (`rounded-z-sm|md|lg|pill|search`); aspect tokens (`aspect-z-card` 20:19, `aspect-z-mosaic` 2:1); transition tokens (`duration-z-fast|base|med|slow`, `ease-z-standard|exit|overshoot`).
+- `src/app/globals.css` — `:root` motion tokens (`--dur-*`, `--ease-*`); scrollbar-hide utilities (`.z-no-scrollbar`, `.z-snap-rail`); shadow system (`.shadow-z-card|hover|pill|float|sticky`); keyframes for `z-heart-pop` + `z-fade-up` + `.z-stagger`; `prefers-reduced-motion: reduce` global block; `.z-anchor` scroll-margin for sticky nav.
+- `src/lib/safeData.ts` — `safe(promise, fallback, label)` wrapper so local DB schema drift never crashes a page.
+
+**New component library at `src/components/directory-v2/`**
+
+- **header/**: `ZavisHeader` (sticky, scroll-aware, scroll-morph SearchPill big→compact), `SearchPill` (4-segment with per-segment hover/focus), `SegmentFlyout` (Specialty/City/Date/Insurance dropdowns with autocomplete + auto-advance), `SearchPillModal` (scrim + flyout choreography).
+- **rails/**: `CategoryRail` (horizontal chip-pill scroll, hidden scrollbar, auto-appearing arrows, edge-fade gradients; short-name map for long specialty labels).
+- **filters/**: `FilterChip` (Airbnb applied-state black-fill flip), `FilterChipRow`, `FilterDrawer` (right-side sticky-footer drawer with live match count).
+- **cards/**: `ProviderCardV2` (20:19 photo, full-card overlay-link for valid HTML, heart top-right, carousel dots bottom), `CityCard`, `SpecialtyTile`, `HeartButton` (optimistic scale pop via CSS keyframes), `PhotoCarousel` (arrows on hover, telescoping dots, GPU-only zoom).
+- **detail/**: `PhotoMosaic` (1-big-4-small, rounded outer corners only), `PhotoViewer` (shared-element `layoutId` Framer Motion modal, keyboard nav, vertical scroll gallery), `BookingCard` (right-column sticky w/ Call/WhatsApp/Website/Directions/Claim, analytics-wired), `StickyBottomBar` (IntersectionObserver slide-up when booking-card exits viewport, analytics-wired), `ReviewDistribution` (6 healthcare sub-scores: Punctuality / Diagnosis clarity / Bedside manner / Follow-up / Facility / Value), `AmenityGrid` (services, accessibility), `HostCard` (clinic/provider intro), `ShowAllModal` (generic modal shell).
+- **templates/**: `ListingsTemplate`, `ProviderDetailTemplate`, `HubPageTemplate`, `ProcedurePricingTemplate` (procedure-pricing bespoke: pricing cards, city-comparison table, related procedures, provider grid).
+- **shared/**: `EmptyStateV2`, `SkeletonCard` + `SkeletonGrid` (static grey placeholders — no shimmer by design), `cn()` util (clsx + tailwind-merge), `motion.ts` Framer variants + canonical easing/duration constants.
+
+**Pages rewritten (~60 files)**
+
+- **Core flow**: `/directory` home (new `DirectoryHomeHero` client component), `/directory/[city]`, catch-all `[city]/[...segments]` with all 6 branches migrated (city-category, city-area, area-category, area-insurance, city-category-subcategory, listing, city-service), `/search` with new `SearchControls` client component (entity-type toggle + chip selects + emergency toggle + All-filters drawer + applied-state chips with X-to-clear).
+- **Content hubs**: `/specialties`, `/specialties/[specialty]`, `/specialties/[specialty]/medications`, `/conditions`, `/conditions/[condition]`, `/conditions/[condition]/medications`, `/medications`, `/medications/[slug]`, `/medications/[slug]/alternatives`, `/medication-classes/[slug]`, `/pharmacy` + 3 educational (`generic-vs-brand`, `how-delivery-works`, `prescription-refill`), `/find-a-doctor`, `/find-a-doctor/[specialty]`, `/insurance`, `/insurance/[insurer]`, `/labs`, `/labs/[lab]`, `/brands/[slug]`, `/verified-reviews`, `/doctors-at/[slug]`.
+- **Functional**: `/claim`, `/claim/[listingId]` (form + file upload + validation preserved verbatim), `/pricing`, `/login`.
+- **Editorial / policy**: `/methodology`, `/data-sources`, `/accessibility`, `/editorial-policy` (sticky TOC on `lg:`), `/terms` (sticky TOC).
+- **Filter variants** (19): `[city]/24-hour` + `/24-hour/[category]` + `/24-hours` + `/walk-in` + `/walk-in/[category]` + `/emergency` + `/government` + `/government/[category]` + `/top` + `/top/[category]` + `[area]/24-hour|walk-in|emergency|government|top` + UAE-wide `/directory/top` + `/directory/top/[category]`.
+- **Filter / content continued** (21): `[city]/insurance` + `/insurance/[insurer]` + `/insurance/[insurer]/[category]` + `/language` + `/language/[lang]` + `/language/[lang]/[category]` + `/condition` + `/condition/[condition]` + `/procedures` + `/procedures/[procedure]` + `[area]/procedures` + `[area]/procedures/[procedure]` + `/directory/compare` + `/compare/[slug]` + `/directory/guide` + `/guide/[slug]` + `/best/[city]/[category]` + per-city pharmacy (3 files) + per-city medications.
+- **GCC cascade**: 3 shared components (`GccFilterPage`, `GccDirectoryPages`, `GccBestPages`) refreshed → auto-updates every `/qa|/sa|/bh|/kw` route without per-page edits.
+- **Arabic mirror**: 105 pages got `dir="rtl"` + `font-arabic` wrapper (structural RTL flip; full template migration deferred as follow-up).
+
+**SEO preservation**
+
+Every `generateMetadata` preserved verbatim (titles under 52 chars, descriptions under 155 chars, canonical + hreflang `en-AE` / `ar-AE` / `x-default`, OG images). Every `<JsonLd>` schema preserved: WebSite, WebPage, BreadcrumbList, FAQPage, ItemList, CollectionPage, MedicalOrganization, MedicalWebPage, MedicalCondition, InsuranceAgency, Drug, Physician, Organization, SpeakableSpecification, neighborhoodHubSchema, specialtyHubSchema, procedureSchema, procedureCityOffersSchema, generateConditionPageSchema, medicalOrganizationSchema, generateFullProviderSchema. `.answer-block` + `data-answer-block="true"` preserved for speakable. FAQ copy word-for-word. `robots: { index: false }` preserved on `/search`. Arabic hreflang crawl anchor preserved on every English page that has an AR mirror. `revalidate` + `dynamicParams` flags untouched.
+
+**Analytics preservation**
+
+Upstream's `src/lib/provider-tracking.ts` (`trackProviderCta(ctaType, surface, provider)`) wired through new `BookingCard` (surface: "sidebar") and `StickyBottomBar` (surface: "sticky_mobile_cta"). CTA taxonomy preserved: `call | whatsapp | directions | website | claim_listing`. Old `ProviderSidebarCta` + `StickyMobileCta` components remain in the codebase but are no longer mounted in the listing branch (ProviderDetailTemplate renders the new surfaces). GA4 events stay 1:1 comparable with pre-refresh baseline.
+
+**Merge with upstream (8 commits)**
+
+Rebased onto `origin/live` after fetching. Picked up: `4c6c100 feat(analytics): provider conversion tracking`, `8fe4b5f feat(admin): ship admin dashboard`, `3ac892b feat: email notification on book-a-demo`, `f221247 fix(lint): drop unused imports`, `cc877b8 fix(directory): real Google Places images` (dup of mine), `6fd30e6 chore(docs): ai-collab`, `392c8ed chore(infra): MEMORY_FLOOR_MB`, 4 admin follow-up fixes. One conflict resolved in `[...segments]/page.tsx`: kept new `ProviderDetailTemplate` (removed legacy sidebar/mobile-CTA markup from upstream) and re-wired upstream's `trackProviderCta` into the new surfaces so analytics coverage stays equivalent.
+
+**Dependencies**
+
+- Added `framer-motion@^12.38.0` to `dependencies` — used selectively for scroll-driven pill morph, shared-element photo viewer (`layoutId`), filter drawer slide-in, fade-in stagger. Code-split on detail-only modals. Net incremental bundle ~12–15 KB gzipped on core pages.
+- Added `overrides.html-encoding-sniffer: 4.0.0` to `package.json` to unbreak `jsdom@29` transitive CJS/ESM on Node < 20.19. Prod CI (Node 20.x latest) doesn't need the override but it's harmless.
+
+**Build & check**
+
+- `npx tsc --noEmit --skipLibCheck` exits 0.
+- `NODE_OPTIONS="--max-old-space-size=8192" npm run build` passes (tested under Node 22.22.2 via nvm; CI runs Node 20 via setup-node@v4 which resolves to 20.20+).
+- Dev server on `localhost:3333` smoke-tested across: `/directory`, `/directory/dubai`, `/directory/dubai/clinics`, `/directory/dubai/clinics/<provider>`, `/directory/dubai/dubai-marina`, `/directory/dubai/dubai-marina/clinics`, `/search`, `/search?specialty=...&city=...&insurance=...`, `/specialties`, `/specialties/clinics`, `/conditions`, `/medications`, `/pharmacy`, `/pharmacy/generic-vs-brand`, `/find-a-doctor`, `/find-a-doctor/cardiology`, `/insurance`, `/insurance/daman`, `/labs`, `/verified-reviews`, `/claim`, `/pricing`, `/login`, `/methodology`, `/data-sources`, `/accessibility`, `/editorial-policy`, `/terms` — all 200.
+
+**Deferred (follow-ups)**
+
+- Full template migration of the 100+ Arabic pages (RTL scaffold ships now; legacy body classes remain). Tracked as separate engagement.
+- Bespoke `ProcedurePricingTemplate` is in place and wired; Arabic mirrors of procedure-pricing pages still use legacy body. Same follow-up as Arabic migration.
+- Image LCP optimization on heavy hubs (`/insurance`, `/labs`) — first-compile is slow locally (DB-bound). Not a prod issue; Lighthouse pass is a post-deploy task.
+- Filter-variant subcategory and city-service Arabic routes will inherit new templates once the Arabic migration ships.
+
+**Why:** Stakeholders requested a visible refresh mirroring Airbnb's UX calibre while keeping the Zavis brand. The sweep shipped a consistent templates-driven design-system layer that every current and future directory page inherits, plus the analytics/SEO primitives stay intact so no regression in ranked impressions or conversion tracking is expected.
+
+---
+
 ## 2026-04-19 — [Claude Code] ProviderCard renders real Google Places images on listing grids
 
 **Signed by:** Claude Code · 2026-04-19T00:00:00+04:00

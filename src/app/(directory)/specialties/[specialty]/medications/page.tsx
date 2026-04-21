@@ -1,12 +1,14 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { getMedicationsBySpecialty, getAllSpecialtiesWithMedications } from "@/lib/medications";
-import { ArrowRight, Stethoscope } from "lucide-react";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemplate";
+import type { HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
+import { Pill, Stethoscope, ArrowRight } from "lucide-react";
 
 export const revalidate = 43200;
 export const dynamicParams = true;
@@ -14,12 +16,12 @@ export const dynamicParams = true;
 interface Props { params: { specialty: string } }
 
 function toTitle(slug: string): string {
-  return slug.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+  return slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
 export async function generateStaticParams() {
   const all = await getAllSpecialtiesWithMedications();
-  return all.filter(s => s.medications.length >= 2).map(s => ({ specialty: s.slug }));
+  return all.filter((s) => s.medications.length >= 2).map((s) => ({ specialty: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SpecialtyMedicationsPage({ params }: Props) {
-  const meds = await getMedicationsBySpecialty(params.specialty);
+  const meds = await safe(getMedicationsBySpecialty(params.specialty), [] as Awaited<ReturnType<typeof getMedicationsBySpecialty>>, "specMeds");
   if (meds.length === 0) notFound();
   const base = getBaseUrl();
   const specName = toTitle(params.specialty);
@@ -49,74 +51,95 @@ export default async function SpecialtyMedicationsPage({ params }: Props) {
     byClass.get(cls)!.push(med);
   }
 
+  const rxCount = meds.filter((m) => m.rxStatus === "prescription" || m.rxStatus === "controlled").length;
+  const otcCount = meds.filter((m) => m.rxStatus === "otc").length;
+
+  const medItems: HubItem[] = meds.map((med) => ({
+    href: `/medications/${med.slug}`,
+    label: med.genericName,
+    subLabel: med.shortDescription ?? undefined,
+    icon: <Pill className="h-4 w-4" />,
+  }));
+
+  const sections = [
+    {
+      title: `Medications prescribed in ${specName}`,
+      eyebrow: `${meds.length} ${meds.length === 1 ? "medication" : "medications"} · ${byClass.size} classes`,
+      items: medItems,
+      layout: "grid" as const,
+      gridCols: "3" as const,
+    },
+  ];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: "Medications", url: `${base}/medications` },
-        { name: `${specName} Medications` },
-      ])} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      <Breadcrumb items={[
-        { label: "UAE", href: "/" },
-        { label: "Medications", href: "/medications" },
-        { label: `${specName} Medications` },
-      ]} />
-
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <Stethoscope className="h-8 w-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            Medications Prescribed by {specName} Specialists
-          </h1>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
+    <>
+      <HubPageTemplate
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: "Medications", href: "/medications" },
+          { label: `${specName} Medications` },
+        ]}
+        eyebrow="Specialty prescribing"
+        title={`Medications Prescribed by ${specName} Specialists`}
+        subtitle={`A reference of medications commonly prescribed in ${specName.toLowerCase()} practice across UAE licensed pharmacies.`}
+        stats={[
+          { n: String(meds.length), l: meds.length === 1 ? "Medication" : "Medications" },
+          { n: String(byClass.size), l: byClass.size === 1 ? "Drug class" : "Drug classes" },
+          ...(rxCount > 0 ? [{ n: String(rxCount), l: "Prescription" }] : []),
+          ...(otcCount > 0 ? [{ n: String(otcCount), l: "Over-the-counter" }] : []),
+        ].slice(0, 4)}
+        aeoAnswer={
+          <>
             {specName} specialists in the UAE commonly prescribe {meds.length} medications across {byClass.size} drug classes.
             This page covers the most frequently prescribed medications in {specName.toLowerCase()} practice.
             Always consult a licensed {specName.toLowerCase()} specialist for prescribing guidance.
+          </>
+        }
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema([
+              { name: "UAE", url: base },
+              { name: "Medications", url: `${base}/medications` },
+              { name: `${specName} Medications` },
+            ])} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+          </>
+        }
+        sections={sections}
+      />
+
+      {/* Specialist CTA + Disclaimer */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24 space-y-8">
+        <div className="relative overflow-hidden rounded-z-lg bg-gradient-to-br from-[#0a1f13] via-[#102b1b] to-[#0a1f13] p-8 sm:p-10">
+          <div className="absolute -top-20 -right-16 h-[260px] w-[260px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.22),transparent_70%)] pointer-events-none" />
+          <div className="relative max-w-2xl">
+            <p className="font-sans text-z-micro text-accent-light uppercase tracking-[0.04em] mb-2 inline-flex items-center gap-1.5">
+              <Stethoscope className="h-3.5 w-3.5" />
+              Find a clinician
+            </p>
+            <h2 className="font-display font-semibold text-white text-display-md tracking-[-0.018em] leading-[1.1]">
+              Find a {specName} specialist.
+            </h2>
+            <p className="font-sans text-white/70 text-z-body mt-3 leading-relaxed">
+              Browse {specName.toLowerCase()} specialists and clinics in the UAE.
+            </p>
+            <Link
+              href="/directory/dubai"
+              className="mt-5 inline-flex items-center gap-2 rounded-z-pill bg-accent hover:bg-accent-light text-white font-sans font-semibold text-z-body-sm px-5 py-2.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,200,83,0.5)]"
+            >
+              Browse directory
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Disclaimer.</strong> This page is for informational purposes only. It does not
+            constitute medical advice. Consult a licensed {specName.toLowerCase()} specialist for prescribing guidance.
           </p>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
-        {meds.map((med) => (
-          <Link key={med.slug} href={`/medications/${med.slug}`}
-            className="group flex items-start gap-3 bg-white border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:shadow-card transition-all">
-            <div className="flex-1 min-w-0">
-              <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] transition-colors tracking-tight">{med.genericName}</p>
-              {med.shortDescription && <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-2">{med.shortDescription}</p>}
-              <div className="flex items-center gap-2 mt-2">
-                <span className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif] ${med.rxStatus === "otc" ? "bg-[#006828]/[0.08] text-[#006828]" : "bg-amber-500/[0.08] text-amber-700"}`}>
-                  {med.rxStatus === "otc" ? "OTC" : "Rx"}
-                </span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-black/20 group-hover:text-[#006828] transition-colors mt-1 flex-shrink-0" />
-          </Link>
-        ))}
-      </div>
-
-      {/* Cross-links to find specialists */}
-      <section className="rounded-2xl border border-[#006828]/20 bg-[#006828]/[0.04] p-6 mb-8">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-2">
-          Find a {specName} Specialist
-        </h2>
-        <p className="font-['Geist',sans-serif] text-sm text-black/50 mb-3">
-          Browse {specName.toLowerCase()} specialists and clinics in the UAE.
-        </p>
-        <Link href="/directory/dubai" className="inline-flex items-center gap-2 bg-[#006828] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#005520] transition-colors font-['Geist',sans-serif]">
-          Browse Directory <ArrowRight className="h-4 w-4" />
-        </Link>
       </section>
-
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-6">
-        <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-          <strong>Disclaimer.</strong> This page is for informational purposes only. It does not constitute medical advice.
-          Consult a licensed {specName.toLowerCase()} specialist for prescribing guidance.
-        </p>
-      </div>
-    </div>
+    </>
   );
 }

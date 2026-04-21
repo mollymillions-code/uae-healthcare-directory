@@ -245,7 +245,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
     const regulator = getArabicRegulator(city.slug);
 
     return (
-      <div className="container-tc py-8">
+      <div dir="rtl" className="font-arabic container-tc py-8">
         <JsonLd data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },
           { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },

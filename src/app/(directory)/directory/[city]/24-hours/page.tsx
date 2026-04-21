@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -13,6 +12,7 @@ import {
   breadcrumbSchema, faqPageSchema, itemListSchema, speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -58,7 +58,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!city) return {};
   const base = getBaseUrl();
 
-  const { providers: allCity } = await getProviders({ citySlug: city.slug, limit: 99999 });
+  const { providers: allCity } = await safe(
+    getProviders({ citySlug: city.slug, limit: 99999 }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "24hours-alias:meta"
+  );
   const providers24 = allCity.filter(is24Hour);
   const count = providers24.length;
 
@@ -88,7 +92,11 @@ export default async function TwentyFourHoursPage({ params }: Props) {
   const categories = getCategories();
 
   // Get all providers in this city and filter for 24-hour
-  const { providers: allCity } = await getProviders({ citySlug: city.slug, limit: 99999 });
+  const { providers: allCity } = await safe(
+    getProviders({ citySlug: city.slug, limit: 99999 }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "24hours-alias:page"
+  );
   const providers24 = allCity.filter(is24Hour);
   const total = providers24.length;
 
@@ -145,11 +153,11 @@ export default async function TwentyFourHoursPage({ params }: Props) {
 
   // ─── JSON-LD ──────────────────────────────────────────────────────────────
 
-  const breadcrumbs = breadcrumbSchema([
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
     { name: "24 Hour Healthcare" },
-  ]);
+  ];
 
   const itemList = sorted.length > 0
     ? itemListSchema(
@@ -161,33 +169,21 @@ export default async function TwentyFourHoursPage({ params }: Props) {
     : null;
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* JSON-LD */}
-      <JsonLd data={breadcrumbs} />
-      {itemList && <JsonLd data={itemList} />}
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      {/* Breadcrumb */}
-      <Breadcrumb items={[
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "24 Hour Healthcare" },
-      ]} />
-
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          24 Hour Clinics, Hospitals &amp; Pharmacies in {city.name}
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          {total} verified 24-hour {total === 1 ? "provider" : "providers"} &middot; {regulatorShort} licensed &middot; Last updated March 2026
-        </p>
-      </div>
-
-      {/* Answer Block */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+      ]}
+      eyebrow={`24-hour · ${regulatorShort} · ${city.name}`}
+      title={`24-hour clinics, hospitals & pharmacies in ${city.name}.`}
+      subtitle={
+        <span>
+          {total} verified 24-hour {total === 1 ? "provider" : "providers"} across {city.name}. All facilities licensed by {regulator} and last verified March 2026.
+        </span>
+      }
+      aeoAnswer={
+        <>
           According to the UAE Open Healthcare Directory, {city.name} has{" "}
           <strong>{total} healthcare {total === 1 ? "facility" : "facilities"}</strong>{" "}
           that {total === 1 ? "operates" : "operate"} 24 hours a day, 7 days a week.
@@ -201,187 +197,147 @@ export default async function TwentyFourHoursPage({ params }: Props) {
           {" "}In {city.name}, emergency care is regulated by {regulator} — all licensed
           emergency departments must accept patients regardless of insurance status.
           Data sourced from official government registers, last verified March 2026.
-        </p>
-      </div>
-
-      {/* Category Breakdown */}
-      {catBreakdown.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">24-Hour Providers by Category</h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {catBreakdown.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/directory/${city.slug}/${cat.slug}`}
-                className="flex items-center gap-2 border border-black/[0.06] px-3 py-2 hover:border-[#006828]/15 group transition-colors"
-              >
-                <span className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
-                  {cat.name}
-                </span>
-                <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
-                  {cat.count24}
-                </span>
-              </Link>
-            ))}
-          </div>
-          <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-3">
-            Showing {catBreakdown.length} {catBreakdown.length === 1 ? "category" : "categories"} with
-            24-hour providers in {city.name}. Click a category to browse all providers in that specialty.
-          </p>
-        </section>
-      )}
-
-      {/* Provider List */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All 24-Hour Healthcare Providers in {city.name}</h2>
-        </div>
-
-        {displayProviders.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayProviders.map((p) => (
-                <ProviderCard
-                  key={p.id}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                />
-              ))}
+        </>
+      }
+      total={total}
+      providers={displayProviders.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          {itemList && <JsonLd data={itemList} />}
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {total > 50 && (
+            <div className="rounded-z-md border border-ink-line bg-white p-5">
+              <p className="font-sans text-z-body-sm text-ink-soft">
+                Showing 50 of {total.toLocaleString()} 24-hour providers.{" "}
+                <Link
+                  href={`/search?city=${city.slug}&q=24+hours`}
+                  className="font-semibold text-ink underline underline-offset-2"
+                >
+                  Use the search tool
+                </Link>{" "}
+                to browse all 24-hour providers in {city.name}.
+              </p>
             </div>
-            {total > 50 && (
-              <div className="mt-4 text-center">
-                <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                  Showing 50 of {total.toLocaleString()} 24-hour providers. Use the{" "}
-                  <Link
-                    href={`/search?city=${city.slug}&q=24+hours`}
-                    className="text-[#006828] font-bold"
-                  >
-                    search tool
-                  </Link>{" "}
-                  to browse all 24-hour providers in {city.name}.
-                </p>
+          )}
+
+          {catBreakdown.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                24-hour providers in {city.name} by category
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {catBreakdown.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/${cat.slug}`}
+                      className="inline-flex items-center gap-2 rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      <span>{cat.name}</span>
+                      <span className="text-ink-muted">{cat.count24}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div
+            className="rounded-z-md bg-white border border-ink-line p-5 sm:p-6"
+            data-answer-block="true"
+          >
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-3">
+              Emergency information — {city.name}
+            </h2>
+            <div className="font-sans text-z-body-sm text-ink-soft leading-[1.75] space-y-3">
+              <p>
+                <strong>UAE Emergency Numbers:</strong>
+              </p>
+              <ul className="list-none space-y-1.5">
+                <li><strong>998</strong> — Ambulance</li>
+                <li><strong>999</strong> — Police</li>
+                <li><strong>997</strong> — Fire</li>
+                <li><strong>112</strong> — Universal emergency (works across all emirates)</li>
+              </ul>
+              <p>
+                In a medical emergency, go to the nearest hospital emergency department — they cannot refuse treatment regardless of your insurance status. All {regulatorShort}-licensed emergency departments in {city.name} operate 24/7 with immediate triage.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All healthcare in ${city.name}`}
+                href={`/directory/${city.slug}`}
+              />
+              <ListingsCrossLink
+                label={`Emergency care in ${city.name}`}
+                href={`/directory/${city.slug}/emergency-care`}
+              />
+              <ListingsCrossLink
+                label={`Hospitals in ${city.name}`}
+                href={`/directory/${city.slug}/hospitals`}
+              />
+              <ListingsCrossLink
+                label={`Pharmacies in ${city.name}`}
+                href={`/directory/${city.slug}/pharmacy`}
+              />
+              <ListingsCrossLink
+                label={`Insurance in ${city.name}`}
+                href={`/directory/${city.slug}/insurance`}
+              />
+            </div>
+          </div>
+
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                24 Hour healthcare in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-12 border border-black/[0.06]">
-            <p className="text-black/40 mb-2">
-              No confirmed 24-hour providers found in {city.name} yet.
-            </p>
-            <Link
-              href={`/directory/${city.slug}`}
-              className="text-[#006828] text-sm font-bold"
-            >
-              View all healthcare providers in {city.name} &rarr;
-            </Link>
-          </div>
-        )}
-      </section>
+            </div>
+          )}
 
-      {/* Emergency Info Section */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Emergency Information — {city.name}</h2>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <div className="space-y-3 text-black/40 leading-relaxed">
-            <p>
-              <strong>UAE Emergency Numbers:</strong>
-            </p>
-            <ul className="list-none space-y-1.5 text-sm">
-              <li>
-                <strong>998</strong> — Ambulance
-              </li>
-              <li>
-                <strong>999</strong> — Police
-              </li>
-              <li>
-                <strong>997</strong> — Fire
-              </li>
-              <li>
-                <strong>112</strong> — Universal emergency (works across all
-                emirates)
-              </li>
-            </ul>
-            <p className="text-sm">
-              In a medical emergency, go to the nearest hospital emergency
-              department — they cannot refuse treatment regardless of your
-              insurance status. All {regulatorShort}-licensed emergency
-              departments in {city.name} operate 24/7 with immediate triage.
+          <div className="border-t border-ink-line pt-4">
+            <p className="font-sans text-z-micro text-ink-muted leading-relaxed">
+              <strong>Disclaimer:</strong> Operating hours are sourced from official{" "}
+              {regulatorShort} registers and provider-submitted data, last verified
+              March 2026. Hours may vary on public holidays. Always confirm directly
+              with the provider before visiting, especially during Ramadan or UAE
+              national holidays. For medical emergencies, call 998 (ambulance) or go
+              to the nearest hospital emergency department.
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* FAQs */}
-      <FaqSection
-        faqs={faqs}
-        title={`24 Hour Healthcare in ${city.name} — FAQ`}
-      />
-
-      {/* Cross-links */}
-      <section className="mt-10 mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Pages</h2>
-        </div>
-        <div className="flex flex-wrap gap-2 text-xs">
-          <Link
-            href={`/directory/${city.slug}`}
-            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-          >
-            All healthcare in {city.name}
-          </Link>
-          <Link
-            href={`/directory/${city.slug}/emergency-care`}
-            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-          >
-            Emergency care in {city.name}
-          </Link>
-          <Link
-            href={`/directory/${city.slug}/hospitals`}
-            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-          >
-            Hospitals in {city.name}
-          </Link>
-          <Link
-            href={`/directory/${city.slug}/pharmacy`}
-            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-          >
-            Pharmacies in {city.name}
-          </Link>
-          <Link
-            href={`/directory/${city.slug}/insurance`}
-            className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-          >
-            Insurance in {city.name}
-          </Link>
-        </div>
-      </section>
-
-      {/* Disclaimer */}
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Operating hours are sourced from official{" "}
-          {regulatorShort} registers and provider-submitted data, last verified
-          March 2026. Hours may vary on public holidays. Always confirm directly
-          with the provider before visiting, especially during Ramadan or UAE
-          national holidays. For medical emergencies, call 998 (ambulance) or go
-          to the nearest hospital emergency department.
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }

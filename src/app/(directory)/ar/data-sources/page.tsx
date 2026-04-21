@@ -129,7 +129,7 @@ export default function ArabicDataSourcesPage() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16" dir="rtl">
+    <div className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16" dir="rtl">
       <JsonLd data={webPageJsonLd} />
       <JsonLd
         data={breadcrumbSchema([

@@ -1,16 +1,25 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { DollarSign, ArrowRight, Search, TrendingDown, Shield } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import {
+  ChevronRight,
+  Sparkles,
+  DollarSign,
+  ArrowRight,
+  Search,
+  TrendingDown,
+  ShieldCheck,
+} from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ProcedureSearch } from "@/components/pricing/ProcedureSearch";
+import { PROCEDURES, PROCEDURE_CATEGORIES, formatAed } from "@/lib/pricing";
 import {
-  PROCEDURES,
-  PROCEDURE_CATEGORIES,
-  formatAed,
-} from "@/lib/pricing";
-import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
+  breadcrumbSchema,
+  speakableSchema,
+  faqPageSchema,
+  truncateTitle,
+  truncateDescription,
+} from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { PageEvent } from "@/components/analytics/PageEvent";
 
@@ -19,10 +28,12 @@ export const revalidate = 43200;
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title:
-      "UAE Medical Procedure Costs — Compare Prices Across Dubai, Abu Dhabi & All Emirates | UAE Open Healthcare Directory",
-    description:
-      "How much does an MRI, dental implant, or knee replacement cost in the UAE? Compare medical procedure prices across Dubai, Abu Dhabi, Sharjah, and all emirates. Estimate your out-of-pocket cost with our insurance calculator. Pricing based on DOH Mandatory Tariff data.",
+    title: truncateTitle(
+      "UAE Medical Procedure Costs — Compare Prices Across Dubai, Abu Dhabi & All Emirates"
+    ),
+    description: truncateDescription(
+      "How much does an MRI, dental implant, or knee replacement cost in the UAE? Compare medical procedure prices across Dubai, Abu Dhabi, Sharjah, and all emirates. Estimate out-of-pocket cost. Based on DOH Mandatory Tariff data."
+    ),
     alternates: { canonical: `${base}/pricing` },
     openGraph: {
       title: "UAE Medical Procedure Costs — Compare Prices Across All Emirates",
@@ -34,14 +45,26 @@ export function generateMetadata(): Metadata {
   };
 }
 
+// Category → procedure-slug mapping (kept identical to the original page)
+const CATEGORY_MAP: Record<string, string[]> = {
+  diagnostics: ["radiology-imaging", "labs-diagnostics"],
+  dental: ["dental"],
+  "eye-care": ["ophthalmology"],
+  surgical: ["hospitals", "gastroenterology"],
+  orthopedic: ["orthopedics"],
+  maternity: ["ob-gyn", "fertility-ivf"],
+  cosmetic: ["cosmetic-plastic", "dermatology"],
+  cardiac: ["cardiology"],
+  wellness: ["clinics"],
+  therapy: ["physiotherapy", "mental-health"],
+};
+
 export default function PricingPage() {
   const base = getBaseUrl();
 
-  // Stats
   const procedureCount = PROCEDURES.length;
   const categoryCount = PROCEDURE_CATEGORIES.length;
 
-  // For search component — pass only what the client needs
   const searchData = PROCEDURES.map((p) => ({
     slug: p.slug,
     name: p.name,
@@ -51,7 +74,6 @@ export default function PricingPage() {
     insuranceCoverage: p.insuranceCoverage,
   }));
 
-  // Popular procedures (top 12 by sort order)
   const popular = PROCEDURES.slice(0, 12);
 
   const faqs = [
@@ -83,7 +105,7 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -91,6 +113,7 @@ export default function PricingPage() {
         ])}
       />
       <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -99,7 +122,11 @@ export default function PricingPage() {
           description:
             "Compare medical procedure prices across all UAE emirates with insurance cost estimation.",
           url: `${base}/pricing`,
-          isPartOf: { "@type": "WebSite", name: "UAE Open Healthcare Directory", url: base },
+          isPartOf: {
+            "@type": "WebSite",
+            name: "UAE Open Healthcare Directory",
+            url: base,
+          },
           about: {
             "@type": "MedicalCondition",
             name: "Healthcare Cost Transparency in the UAE",
@@ -108,264 +135,353 @@ export default function PricingPage() {
       />
 
       <PageEvent event="pricing_page_view" />
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: "Medical Procedure Costs" },
-        ]}
-      />
 
-      {/* Hero */}
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-3">
-          <DollarSign className="w-8 h-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            UAE Medical Procedure Costs
-          </h1>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            Compare prices for {procedureCount} medical procedures across Dubai, Abu Dhabi,
-            Sharjah, and all UAE emirates. Pricing based on the DOH Mandatory Tariff
-            (Shafafiya) methodology and market-observed data. Use our insurance calculator
-            to estimate your out-of-pocket cost.
-          </p>
+      {/* ─── Hero ─── */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+          <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {[
-            { value: procedureCount.toString(), label: "Procedures priced" },
-            { value: categoryCount.toString(), label: "Categories" },
-            { value: "8", label: "UAE cities compared" },
-            { value: "85+", label: "Insurance plans mapped" },
-          ].map(({ value, label }) => (
-            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
-              <p className="text-2xl font-bold text-[#006828]">{value}</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Search */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Search Procedures</h2>
-        </div>
-        <ProcedureSearch procedures={searchData} />
-      </div>
-
-      {/* Categories */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Browse by Category</h2>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
-        {PROCEDURE_CATEGORIES.map((cat) => {
-          const count = PROCEDURES.filter((p) => {
-            const categoryMap: Record<string, string[]> = {
-              diagnostics: ["radiology-imaging", "labs-diagnostics"],
-              dental: ["dental"],
-              "eye-care": ["ophthalmology"],
-              surgical: ["hospitals", "gastroenterology"],
-              orthopedic: ["orthopedics"],
-              maternity: ["ob-gyn", "fertility-ivf"],
-              cosmetic: ["cosmetic-plastic", "dermatology"],
-              cardiac: ["cardiology"],
-              wellness: ["clinics"],
-              therapy: ["physiotherapy", "mental-health"],
-            };
-            return (categoryMap[cat.slug] || []).includes(p.categorySlug);
-          }).length;
-
-          return (
-            <Link
-              key={cat.slug}
-              href={`/pricing#${cat.slug}`}
-              className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
-            >
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors mb-1">
-                {cat.name}
-              </h3>
-              <p className="text-[11px] text-black/40">
-                {count} procedure{count !== 1 ? "s" : ""}
-              </p>
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          {/* Breadcrumb */}
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/" className="hover:text-ink transition-colors">
+              UAE
             </Link>
-          );
-        })}
-      </div>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium">Medical procedure costs</span>
+          </nav>
 
-      {/* Popular Procedures */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Most Searched Procedures</h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-        {popular.map((proc) => {
-          const coverageColor =
-            proc.insuranceCoverage === "typically-covered"
-              ? "text-green-700 bg-green-50"
-              : proc.insuranceCoverage === "partially-covered"
-              ? "text-yellow-700 bg-yellow-50"
-              : proc.insuranceCoverage === "rarely-covered"
-              ? "text-orange-700 bg-orange-50"
-              : "text-red-700 bg-red-50";
-
-          const coverageLabel =
-            proc.insuranceCoverage === "typically-covered"
-              ? "Covered"
-              : proc.insuranceCoverage === "partially-covered"
-              ? "Partial"
-              : proc.insuranceCoverage === "rarely-covered"
-              ? "Rare"
-              : "Not covered";
-
-          return (
-            <Link
-              key={proc.slug}
-              href={`/pricing/${proc.slug}`}
-              className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                  {proc.name}
-                </h3>
-                <ArrowRight className="w-3.5 h-3.5 text-black/40 group-hover:text-[#006828] flex-shrink-0 mt-0.5" />
-              </div>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-3 line-clamp-2">
-                {proc.description.slice(0, 120)}...
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Pricing intelligence
               </p>
-              <div className="flex items-center justify-between">
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
-                  {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
-                </p>
-                <span className={`text-[10px] font-medium px-2 py-0.5 ${coverageColor}`}>
-                  {coverageLabel}
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* All Procedures by Category */}
-      {PROCEDURE_CATEGORIES.map((cat) => {
-        const categoryMap: Record<string, string[]> = {
-          diagnostics: ["radiology-imaging", "labs-diagnostics"],
-          dental: ["dental"],
-          "eye-care": ["ophthalmology"],
-          surgical: ["hospitals", "gastroenterology"],
-          orthopedic: ["orthopedics"],
-          maternity: ["ob-gyn", "fertility-ivf"],
-          cosmetic: ["cosmetic-plastic", "dermatology"],
-          cardiac: ["cardiology"],
-          wellness: ["clinics"],
-          therapy: ["physiotherapy", "mental-health"],
-        };
-        const catProcs = PROCEDURES.filter((p) =>
-          (categoryMap[cat.slug] || []).includes(p.categorySlug)
-        ).sort((a, b) => a.sortOrder - b.sortOrder);
-
-        if (catProcs.length === 0) return null;
-
-        return (
-          <div key={cat.slug} id={cat.slug} className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name}</h2>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+                UAE medical procedure costs.
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+                Compare prices for {procedureCount} procedures across Dubai, Abu Dhabi,
+                Sharjah, and every UAE emirate. Based on the DOH Mandatory Tariff
+                (Shafafiya) methodology and market-observed rates — with an insurance
+                estimator to check your real out-of-pocket cost.
+              </p>
             </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">{cat.description}</p>
-            <div className="border border-black/[0.06] divide-y divide-light-200">
-              {catProcs.map((proc) => (
-                <Link
-                  key={proc.slug}
-                  href={`/pricing/${proc.slug}`}
-                  className="flex items-center justify-between p-3 hover:bg-[#f8f8f6] transition-colors group"
+
+            {/* Stats */}
+            <div className="lg:col-span-4 grid grid-cols-2 gap-3">
+              {[
+                { n: procedureCount.toString(), l: "Procedures priced" },
+                { n: categoryCount.toString(), l: "Categories" },
+                { n: "8", l: "Cities compared" },
+                { n: "85+", l: "Insurance plans" },
+              ].map((s) => (
+                <div
+                  key={s.l}
+                  className="rounded-z-md bg-white border border-ink-line px-4 py-3"
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">
-                        {proc.name}
-                      </h3>
-                      {proc.cptCode && (
-                        <span className="text-[9px] text-black/40 font-['Geist',sans-serif] hidden sm:inline">
-                          CPT {proc.cptCode}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-black/40">
-                      {proc.duration} · {proc.setting} · {proc.recoveryTime} recovery
-                    </p>
-                  </div>
-                  <div className="text-right flex-shrink-0 ml-4">
-                    <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight">
-                      {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
-                    </p>
-                  </div>
-                </Link>
+                  <p className="font-display font-semibold text-ink text-z-h1 leading-none">
+                    {s.n}
+                  </p>
+                  <p className="font-sans text-z-caption text-ink-muted mt-1">
+                    {s.l}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
-        );
-      })}
 
-      {/* Key Insights (AEO content) */}
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-10">
-        <h2 className="text-lg font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-4">
-          UAE Medical Pricing — Key Facts
-        </h2>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 space-y-3" data-answer-block="true">
-          <div className="flex items-start gap-3">
-            <TrendingDown className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
-            <p className="font-['Geist',sans-serif] text-sm text-black/40">
-              <strong className="text-[#1c1c1c]">Cheapest emirate:</strong> Northern emirates
-              (Sharjah, Ajman, UAQ) consistently offer the lowest medical procedure prices,
-              often 30–40% less than Dubai for the same procedure.
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <DollarSign className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
-            <p className="font-['Geist',sans-serif] text-sm text-black/40">
-              <strong className="text-[#1c1c1c]">Abu Dhabi pricing:</strong> Governed by the DOH
-              Mandatory Tariff (Shafafiya) — base rates derived from US Medicare rates ×
-              3.672 AED/USD, with facility-negotiated multipliers of 1x–3x.
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
-            <p className="font-['Geist',sans-serif] text-sm text-black/40">
-              <strong className="text-[#1c1c1c]">Insurance since Jan 2025:</strong> Health
-              insurance is mandatory for all UAE residents across all seven emirates. Most
-              medically necessary procedures are covered with 0–20% co-pay.
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <Search className="w-5 h-5 text-[#006828] flex-shrink-0 mt-0.5" />
-            <p className="font-['Geist',sans-serif] text-sm text-black/40">
-              <strong className="text-[#1c1c1c]">Price variation:</strong> The same procedure can
-              cost 2–3x more at a premium hospital versus a government or basic private
-              facility. Always compare multiple providers.
+          {/* AEO answer block in hero */}
+          <div
+            className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl"
+            data-answer-block="true"
+          >
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              <span className="font-semibold text-ink">
+                In the UAE, a GP consultation costs AED 100–500, an MRI AED 800–5,000,
+                and a knee replacement AED 30,000–100,000.
+              </span>{" "}
+              Prices vary 2–3x between Dubai&apos;s premium hospitals and the northern
+              emirates. Abu Dhabi uses the DOH Mandatory Tariff (base rate × 1–3
+              multiplier), Dubai uses DRG billing for inpatients and market rates for
+              outpatients, and MOHAP emirates set their own fee caps. Insurance is
+              mandatory across all seven emirates and typically covers 80–100% of
+              medically necessary procedures.
             </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FAQ */}
-      <FaqSection
-        faqs={faqs}
-        title="UAE Medical Pricing — Frequently Asked Questions"
-      />
+      {/* ─── Search ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Search
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Find any procedure.
+          </h2>
+        </header>
+        <div className="rounded-z-lg bg-white border border-ink-line p-5 sm:p-6">
+          <ProcedureSearch procedures={searchData} />
+        </div>
+      </section>
 
-      {/* Disclaimer */}
-      <div className="mt-8 border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> All prices shown are indicative ranges based on the
-          DOH Mandatory Tariff (Shafafiya) methodology, DHA DRG parameters, and
-          market-observed data as of March 2026. Actual costs vary by facility, doctor,
-          clinical complexity, and insurance plan. This tool is for informational purposes
-          only and does not constitute medical or financial advice. Always obtain a
-          personalised quote from the healthcare provider before proceeding with any
-          procedure. Data cross-referenced with the UAE Open Healthcare Directory.
-        </p>
-      </div>
-    </div>
+      {/* ─── Browse by category (chip grid) ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Browse by category
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Start with the procedure type.
+          </h2>
+        </header>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {PROCEDURE_CATEGORIES.map((cat) => {
+            const count = PROCEDURES.filter((p) =>
+              (CATEGORY_MAP[cat.slug] || []).includes(p.categorySlug)
+            ).length;
+
+            return (
+              <Link
+                key={cat.slug}
+                href={`/pricing#${cat.slug}`}
+                className="group rounded-z-md bg-white border border-ink-line p-4 hover:border-ink hover:shadow-z-card transition-all duration-z-base"
+              >
+                <h3 className="font-display font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
+                  {cat.name}
+                </h3>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">
+                  {count} procedure{count !== 1 ? "s" : ""}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─── Most searched procedures ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="flex items-end justify-between gap-6 mb-6">
+          <div>
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Most searched
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              What patients look up most.
+            </h2>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {popular.map((proc) => {
+            const coverageBadge = {
+              "typically-covered": {
+                label: "Covered",
+                cls: "bg-accent-muted text-accent-dark",
+              },
+              "partially-covered": {
+                label: "Partial",
+                cls: "bg-amber-50 text-amber-700",
+              },
+              "rarely-covered": {
+                label: "Rare",
+                cls: "bg-orange-50 text-orange-700",
+              },
+              "not-covered": {
+                label: "Not covered",
+                cls: "bg-red-50 text-red-700",
+              },
+            }[proc.insuranceCoverage] ?? { label: "Check plan", cls: "bg-surface-cream text-ink-soft" };
+
+            return (
+              <Link
+                key={proc.slug}
+                href={`/pricing/${proc.slug}`}
+                className="group flex flex-col justify-between rounded-z-md bg-white border border-ink-line p-5 hover:border-ink hover:shadow-z-card transition-all duration-z-base"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-display font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
+                      {proc.name}
+                    </h3>
+                    <ArrowRight className="h-4 w-4 text-ink-muted group-hover:translate-x-0.5 transition-transform flex-shrink-0 mt-1" />
+                  </div>
+                  <p className="font-sans text-z-caption text-ink-muted mt-2 line-clamp-2">
+                    {proc.description.slice(0, 140)}
+                    {proc.description.length > 140 ? "…" : ""}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-ink-hairline">
+                  <p className="font-display font-semibold text-ink text-z-body-sm">
+                    {formatAed(proc.priceRange.min)} – {formatAed(proc.priceRange.max)}
+                  </p>
+                  <span
+                    className={`font-sans text-z-micro font-medium rounded-z-pill px-2 py-0.5 ${coverageBadge.cls}`}
+                  >
+                    {coverageBadge.label}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─── All procedures by category (prose + table) ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 space-y-14">
+        {PROCEDURE_CATEGORIES.map((cat) => {
+          const catProcs = PROCEDURES.filter((p) =>
+            (CATEGORY_MAP[cat.slug] || []).includes(p.categorySlug)
+          ).sort((a, b) => a.sortOrder - b.sortOrder);
+
+          if (catProcs.length === 0) return null;
+
+          return (
+            <section key={cat.slug} id={cat.slug} className="scroll-mt-24">
+              <header className="mb-5">
+                <h2 className="font-display font-semibold text-ink text-z-h1 tracking-[-0.012em]">
+                  {cat.name}
+                </h2>
+                <p className="font-sans text-z-body-sm text-ink-soft mt-1.5 leading-relaxed max-w-3xl">
+                  {cat.description}
+                </p>
+              </header>
+
+              <div className="rounded-z-md bg-white border border-ink-line overflow-hidden">
+                <ul className="divide-y divide-ink-hairline">
+                  {catProcs.map((proc) => (
+                    <li key={proc.slug}>
+                      <Link
+                        href={`/pricing/${proc.slug}`}
+                        className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-surface-cream transition-colors group"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-display font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2 truncate">
+                              {proc.name}
+                            </h3>
+                            {proc.cptCode && (
+                              <span className="font-sans text-z-micro text-ink-muted hidden sm:inline">
+                                CPT {proc.cptCode}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-sans text-z-caption text-ink-muted mt-0.5">
+                            {proc.duration} · {proc.setting} · {proc.recoveryTime} recovery
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="font-display font-semibold text-ink text-z-body-sm">
+                            {formatAed(proc.priceRange.min)} –{" "}
+                            {formatAed(proc.priceRange.max)}
+                          </p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-ink-muted group-hover:translate-x-0.5 transition-transform flex-shrink-0 hidden sm:block" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          );
+        })}
+      </section>
+
+      {/* ─── Key insights (AEO prose block) ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Key facts
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            UAE medical pricing in four lines.
+          </h2>
+        </header>
+
+        <div
+          className="answer-block rounded-z-md bg-white border border-ink-line p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6"
+          data-answer-block="true"
+        >
+          {[
+            {
+              Icon: TrendingDown,
+              title: "Cheapest emirates",
+              body:
+                "Sharjah, Ajman, and UAQ consistently undercut Dubai by 30–40% for the same procedure — a direct result of lower rent and operating costs.",
+            },
+            {
+              Icon: DollarSign,
+              title: "Abu Dhabi pricing",
+              body:
+                "Governed by the DOH Mandatory Tariff (Shafafiya). Base rates derive from US Medicare RVUs × AED 3.672, with facility-negotiated multipliers of 1x–3x.",
+            },
+            {
+              Icon: ShieldCheck,
+              title: "Insurance since Jan 2025",
+              body:
+                "Health insurance is mandatory for every UAE resident across all seven emirates. Most medically necessary procedures are covered at 80–100%.",
+            },
+            {
+              Icon: Search,
+              title: "Price variation",
+              body:
+                "The same procedure can cost 2–3x more at a premium hospital versus a government or basic private facility. Always compare three providers.",
+            },
+          ].map((row) => (
+            <div key={row.title} className="flex items-start gap-4">
+              <div className="h-10 w-10 rounded-z-sm bg-accent-muted flex items-center justify-center flex-shrink-0">
+                <row.Icon className="h-5 w-5 text-accent-dark" strokeWidth={1.75} />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold text-ink text-z-h3">
+                  {row.title}
+                </h3>
+                <p className="font-sans text-z-body-sm text-ink-soft mt-1 leading-relaxed">
+                  {row.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            UAE medical pricing FAQ.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title="UAE Medical Pricing" />
+        </div>
+      </section>
+
+      {/* ─── Disclaimer ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 sm:pb-24">
+        <div className="border-t border-ink-hairline pt-6">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed max-w-4xl">
+            <span className="font-semibold text-ink-soft">Disclaimer —</span> all prices
+            are indicative ranges based on the DOH Mandatory Tariff (Shafafiya)
+            methodology, DHA DRG parameters, and market-observed data as of March 2026.
+            Actual costs vary by facility, doctor, clinical complexity, and insurance
+            plan. This tool is informational and does not constitute medical or
+            financial advice. Obtain a personalised quote from the provider before
+            proceeding. Data cross-referenced with the UAE Open Healthcare Directory.
+          </p>
+        </div>
+      </section>
+    </>
   );
 }

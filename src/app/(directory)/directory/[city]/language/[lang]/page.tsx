@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -13,6 +11,8 @@ import {
   breadcrumbSchema, faqPageSchema, itemListSchema, speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 
 export const revalidate = 21600;
 
@@ -42,7 +42,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!city) return {};
   const language = getLanguagesList().find((l) => l.slug === params.lang);
   if (!language) return {};
-  const count = await getProviderCountByLanguage(language.slug, city.slug);
+  const count = await safe(
+    getProviderCountByLanguage(language.slug, city.slug),
+    0,
+    "lang-count-meta",
+  );
   const base = getBaseUrl();
 
   return {
@@ -52,6 +56,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+const LISTING_CAP = 48;
+
 export default async function LanguageProviderPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
@@ -59,9 +65,14 @@ export default async function LanguageProviderPage({ params }: Props) {
   const language = getLanguagesList().find((l) => l.slug === params.lang);
   if (!language) notFound();
 
-  const providers = await getProvidersByLanguage(language.slug, city.slug);
+  const providers = await safe(
+    getProvidersByLanguage(language.slug, city.slug),
+    [] as Awaited<ReturnType<typeof getProvidersByLanguage>>,
+    "providersByLanguage",
+  );
   const count = providers.length;
   const base = getBaseUrl();
+  const capped = providers.slice(0, LISTING_CAP);
 
   const faqs = [
     {
@@ -79,79 +90,79 @@ export default async function LanguageProviderPage({ params }: Props) {
   ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-        { name: "Languages", url: `${base}/directory/${city.slug}/language` },
-        { name: language.name },
-      ])} />
-      {providers.length > 0 && (
-        <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, providers, city.name, base)} />
-      )}
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      <Breadcrumb items={[
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "Languages", href: `/directory/${city.slug}/language` },
         { label: language.name },
-      ]} />
-
-      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-        {language.name}-Speaking Healthcare Providers in {city.name}
-      </h1>
-      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-        {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
-      </p>
-
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+      ]}
+      eyebrow={`${language.name} · ${city.name}`}
+      title={`${language.name}-Speaking Healthcare Providers in ${city.name}.`}
+      subtitle={
+        <>
+          {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
+        </>
+      }
+      aeoAnswer={
+        <>
           According to the UAE Open Healthcare Directory, there are {count} healthcare {count === 1 ? "provider" : "providers"} in {city.name} with {language.name}-speaking staff. The UAE&apos;s multicultural healthcare system ensures patients can receive care in their preferred language. Data from official government registers, last verified March 2026.
-        </p>
-      </div>
-
-      {providers.length > 0 ? (
-        <div className="mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {providers.slice(0, 48).map((p) => (
-              <ProviderCard
-                key={p.id}
-                name={p.name}
-                slug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                address={p.address}
-                phone={p.phone}
-                website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating}
-                googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed}
-                isVerified={p.isVerified}
-                coverImageUrl={p.coverImageUrl}
-              />
-            ))}
-          </div>
-          {providers.length > 48 && (
-            <div className="text-center mt-6 py-4 border-t border-black/[0.06]">
-              <Link href={`/search?city=${city.slug}&q=${language.name}`} className="btn-accent">
+        </>
+      }
+      total={count}
+      providers={capped.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: null,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema([
+            { name: "UAE", url: base },
+            { name: city.name, url: `${base}/directory/${city.slug}` },
+            { name: "Languages", url: `${base}/directory/${city.slug}/language` },
+            { name: language.name },
+          ])} />
+          {providers.length > 0 && (
+            <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, providers, city.name, base)} />
+          )}
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {providers.length > LISTING_CAP && (
+            <div className="text-center">
+              <Link
+                href={`/search?city=${city.slug}&q=${language.name}`}
+                className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-4 py-2 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+              >
                 View all {count} {language.name}-speaking providers
               </Link>
             </div>
           )}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-black/40 mb-2">No providers with {language.name}-speaking staff found in {city.name} yet.</p>
-          <Link href={`/directory/${city.slug}`} className="text-[#006828] text-sm">
-            View all healthcare providers in {city.name} &rarr;
-          </Link>
-        </div>
-      )}
 
-      <FaqSection faqs={faqs} title={`${language.name}-Speaking Doctors in ${city.name} — FAQ`} />
-    </div>
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+              {language.name}-speaking doctors in {city.name} — questions
+            </h2>
+            <div className="max-w-3xl">
+              <FaqSection faqs={faqs} title={`${language.name}-Speaking Doctors in ${city.name} — FAQ`} />
+            </div>
+          </div>
+        </>
+      }
+    />
   );
 }

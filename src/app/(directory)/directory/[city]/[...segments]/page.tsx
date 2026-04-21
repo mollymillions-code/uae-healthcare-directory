@@ -1,20 +1,17 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
-import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
-// StarRating available if needed
-import dynamic from "next/dynamic";
-const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-[#f8f8f6] animate-pulse" /> });
+import { ProviderDetailTemplate } from "@/components/directory-v2/templates/ProviderDetailTemplate";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
+import { ProcedurePricingTemplate } from "@/components/directory-v2/templates/ProcedurePricingTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
   getCityBySlug, getCategories, getCategoryBySlug,
-  getAreaBySlug, getAreasByCity,
-  getProviders, getTopRatedProviders,
+  getAreaBySlug,
+  getProviders,
   getInsuranceProviders,
   getNeighborhoodsByCity,
 } from "@/lib/data";
@@ -28,28 +25,21 @@ import {
 import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
 import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 import { neighborhoodHubSchema } from "@/lib/seo-neighborhoods";
-import { StickyMobileCta } from "@/components/directory/StickyMobileCta";
-import { ProviderSidebarCta } from "@/components/directory/ProviderSidebarCta";
-import { loadDbArticles, getArticlesByDirectoryContext } from "@/lib/intelligence/data";
-import { getJournalCategory } from "@/lib/intelligence/categories";
-import { formatDate } from "@/components/intelligence/utils";
 import {
   breadcrumbSchema, itemListSchema,
   faqPageSchema, speakableSchema, generateFacetAnswerBlock, generateFacetFaqs,
-  generateProviderParagraph, truncateTitle, truncateDescription,
+  truncateTitle, truncateDescription,
   generateFullProviderSchema,
 } from "@/lib/seo";
-import { getBaseUrl, getCategoryImagePath } from "@/lib/helpers";
+import { getBaseUrl } from "@/lib/helpers";
 import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDate,
   resolveSegments,
 } from "@/lib/directory-utils";
-import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
+import { buildFaqDayLine } from "@/lib/hours-utils";
 import Image from "next/image";
 import {
-  MapPin, Globe, Clock, Shield, Languages, Stethoscope,
-  CheckCircle, Calendar, Activity, ArrowRight,
-  Accessibility, Image as ImageIcon, Star, Quote,
+  ArrowRight, Star,
 } from "lucide-react";
 import {
   PROCEDURES,
@@ -58,6 +48,7 @@ import {
   type MedicalProcedure,
 } from "@/lib/constants/procedures";
 import { CITIES } from "@/lib/constants/cities";
+import { safe } from "@/lib/safeData";
 
 // ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
 export const revalidate = 21600;
@@ -402,8 +393,6 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     // 404 past-end: if the sitemap pointed at a ?page= that no longer
     // has providers, return a real 404 rather than an empty grid.
     if (currentPage > 1 && providers.length === 0) notFound();
-    const areas = getAreasByCity(city.slug);
-    const topProvider = providers[0];
     const facetFaqs = generateFacetFaqs(city, category, null, total);
     const baseCategoryUrl = `${base}/directory/${city.slug}/${category.slug}`;
     const canonicalUrl =
@@ -564,323 +553,192 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     ) as Record<string, unknown>;
     itemListNode["@id"] = `${canonicalUrl}#providers`;
 
+
+    const arabicHref = `/ar/directory/${city.slug}/${category.slug}`;
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         <JsonLd data={collectionPageNode} />
         <JsonLd data={breadcrumbNode} />
         <JsonLd data={itemListNode} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name }]} />
-
-        {/* Category hero banner — compact. `priority` forces preload so this
-            above-the-fold LCP element isn't lazy-loaded on the ~10k
-            city×specialty pages in this branch. */}
-        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
-          <Image
-            src={getCategoryImagePath(category.slug)}
-            alt={`${category.name} in ${city.name}`}
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white mb-1 tracking-tight">{category.name} in {city.name}, UAE</h1>
-            <p className="font-['Geist',sans-serif] text-sm text-white/70">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
-          </div>
-        </div>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">{generateFacetAnswerBlock(city, category, null, total, topProvider)}</p>
-        </div>
-
-        {areas.length > 0 && (
-          <div className="mb-6">
-            <p className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c] mb-2">Browse by area:</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {areas.map((a) => (<Link key={a.slug} href={`/directory/${city.slug}/${a.slug}/${category.slug}`} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors">{a.name}</Link>))}
-            </div>
-          </div>
-        )}
-
-        <Suspense fallback={
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} insurance={p.insurance} languages={p.languages} services={p.services} operatingHours={p.operatingHours} accessibilityOptions={p.accessibilityOptions} />))}
-          </div>
-        }>
-          <ProviderListPaginated
-            providers={providers}
-            currentPage={currentPage}
-            totalCount={total}
-            pageSize={LIST_PAGE_SIZE}
-            baseUrl={`/directory/${city.slug}/${category.slug}`}
-            emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
-          />
-        </Suspense>
-
-        {/* ── (1) Editorial intro — ~200 words, bilingual ─────────────── */}
-        <section className="mt-10 mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-3 border-b-2 border-[#1c1c1c] pb-2">
-              About {category.name} in {city.name}
-            </h2>
-            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-              {editorial.en}
-            </p>
-            {!editorial.handWritten && (
-              <p className="font-['Geist',sans-serif] text-[10px] text-black/30 mt-2">
-                Automated city-specialty overview — editorial review pending.
-              </p>
-            )}
-          </div>
-          <div dir="rtl" lang="ar">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-3 border-b-2 border-[#1c1c1c] pb-2">
-              {category.name} في {city.name}
-            </h2>
-            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-              {editorial.ar}
-            </p>
-          </div>
-        </section>
-
-        {/* ── (2) Sibling neighborhood grid ─────────────────────────── */}
-        {topNeighborhoods.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                {category.name} by neighborhood in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {topNeighborhoods.map((n) => (
-                <Link
-                  key={n.slug}
-                  href={`/directory/${city.slug}/${n.slug}/${category.slug}`}
-                  className="inline-block font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  {category.name} in {n.name}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (3) Insurance pivot strip (geo + tri-facet gated) ─────── */}
-        {insurerPivots.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                {category.name} by insurance in {city.name}
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {insurerPivots.map((ins) => (
-                <Link
-                  key={ins.slug}
-                  href={`/directory/${city.slug}/insurance/${ins.slug}/${category.slug}`}
-                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  <Shield className="h-3 w-3 text-[#006828]" aria-hidden="true" />
-                  {category.name} accepting {ins.name}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (4) Language pivot strip ───────────────────────────────── */}
-        {languagePivots.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                {category.name} by language in {city.name}
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {languagePivots.map((lang) => (
-                <Link
-                  key={lang.slug}
-                  href={`/directory/${city.slug}/language/${lang.slug}/${category.slug}`}
-                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  <Languages className="h-3 w-3 text-[#006828]" aria-hidden="true" />
-                  {lang.name}-speaking {category.name.toLowerCase()}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (5) Related specialties strip ──────────────────────────── */}
-        {relatedCategories.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Related specialties in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {relatedCategories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/directory/${city.slug}/${c.slug}`}
-                  className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  <Stethoscope className="h-3 w-3 text-[#006828]" aria-hidden="true" />
-                  {c.name}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (6) Doctor cross-links — bridges facility ↔ doctor ────── */}
-        {doctorCrossLinks.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center justify-between gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Individual {category.name.toLowerCase()} in {city.name}
-              </h2>
-              <Link href={`/find-a-doctor/${category.slug}`} className="font-['Geist',sans-serif] text-xs font-semibold text-[#006828] hover:underline">
-                All doctors &rarr;
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {doctorCrossLinks.map((doc) => (
-                <Link
-                  key={doc.id}
-                  href={`/find-a-doctor/${doc.specialtySlug}/${doc.slug}`}
-                  className="group block bg-white border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
-                >
-                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] tracking-tight mb-1 truncate">
-                    {doc.displayTitle}
-                  </h3>
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">
-                    {doc.specialty}
-                  </p>
-                  {doc.primaryFacilityName && (
-                    <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5 truncate">
-                      {doc.primaryFacilityName}
-                    </p>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (7) Top-rated module — deterministic daily rotation ────── */}
-        {topRated.length > 0 && (
-          <section className="mt-10 mb-8">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-              <Star className="h-4 w-4 text-[#006828]" aria-hidden="true" />
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Top-rated {category.name.toLowerCase()} today in {city.name}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topRated.map((p) => (
-                <ProviderCard
-                  key={`tr-${p.id}`}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                  insurance={p.insurance}
-                  languages={p.languages}
-                  services={p.services}
-                  operatingHours={p.operatingHours}
-                  accessibilityOptions={p.accessibilityOptions}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── (8) FAQ block ──────────────────────────────────────────── */}
-        <FaqSection faqs={facetFaqs} title={`${category.name} in ${city.name} — FAQ`} />
-
-        {/* Related Intelligence — hub-and-spoke cross-link */}
-        {await (async () => {
-          // Gracefully skip this block if article loading fails — page must
-          // still render even if the intelligence DB is slow or unreachable.
-          let relatedArticles: ReturnType<typeof getArticlesByDirectoryContext> = [];
-          try {
-            await loadDbArticles();
-            relatedArticles = getArticlesByDirectoryContext(city.name, category.slug, category.name, 4);
-          } catch {
-            return null;
+        <ListingsTemplate
+          breadcrumbs={[
+            { label: "UAE", href: "/" },
+            { label: city.name, href: `/directory/${city.slug}` },
+            { label: category.name },
+          ]}
+          eyebrow={`${category.name} · ${city.name}`}
+          title={`${category.name} in ${city.name}.`}
+          subtitle={
+            <>
+              {editorial?.en ? (
+                <span>{editorial.en}</span>
+              ) : (
+                <>
+                  <span>
+                    Compare {total} {category.name.toLowerCase()} in {city.name}, UAE — regulated by {regulator}. Every listing is cross-referenced against official government registers.
+                  </span>
+                </>
+              )}
+            </>
           }
-          if (relatedArticles.length === 0) return null;
-          return (
-            <section className="mt-10 mb-4">
-              <div className="flex items-center justify-between gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Intelligence</h2>
-                <Link href="/intelligence" className="font-['Geist',sans-serif] text-xs font-semibold text-[#006828] hover:underline">All coverage &rarr;</Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {relatedArticles.map((a) => {
-                  const cat = getJournalCategory(a.category);
-                  return (
-                    <Link
-                      key={a.id}
-                      href={`/intelligence/${a.slug}`}
-                      className="group block border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-['Geist',sans-serif] uppercase text-[10px] tracking-widest font-semibold text-[#006828]">{cat?.name ?? a.category}</span>
-                        <span className="text-black/20">&middot;</span>
-                        <span className="font-['Geist',sans-serif] text-[10px] text-black/30">{formatDate(a.publishedAt)}</span>
-                      </div>
-                      <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors leading-snug mb-1.5">
-                        {a.title}
-                      </h3>
-                      <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed line-clamp-2">{a.excerpt}</p>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })()}
+          aeoAnswer={generateFacetAnswerBlock(city, category, null, total, providers[0])}
+          total={total}
+          providers={providers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            citySlug: p.citySlug,
+            categorySlug: p.categorySlug,
+            categoryName: category.name,
+            address: p.address,
+            googleRating: p.googleRating,
+            googleReviewCount: p.googleReviewCount,
+            isClaimed: p.isClaimed,
+            isVerified: p.isVerified,
+            photos: p.photos ?? null,
+            coverImageUrl: p.coverImageUrl ?? null,
+          }))}
+          pagination={
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(total / LIST_PAGE_SIZE)}
+              baseUrl={`/directory/${city.slug}/${category.slug}`}
+            />
+          }
+          arabicHref={arabicHref}
+          belowGrid={
+            <>
+              {/* Neighborhoods */}
+              {topNeighborhoods.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                    {category.name} by neighborhood in {city.name}
+                  </h2>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 border-t border-ink-line pt-4">
+                    {topNeighborhoods.map((n) => (
+                      <li key={n.slug}>
+                        <Link
+                          href={`/directory/${city.slug}/${n.slug}/${category.slug}`}
+                          className="flex items-center justify-between py-2.5 group"
+                        >
+                          <span className="font-sans text-z-body text-ink group-hover:underline decoration-1 underline-offset-2">
+                            {category.name} in {n.name}
+                          </span>
+                          {n.providerCountCached ? (
+                            <span className="font-sans text-z-caption text-ink-muted">
+                              {n.providerCountCached} {n.providerCountCached === 1 ? "provider" : "providers"}
+                            </span>
+                          ) : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-        {/* Cross-link: Other specialties in this city */}
-        {(() => {
-          const allCategories = getCategories();
-          const siblings = allCategories.filter((c) => c.slug !== category.slug).slice(0, 8);
-          if (siblings.length === 0) return null;
-          return (
-            <section className="mt-10 mb-4">
-              <div className="flex items-center gap-3 mb-4 border-b-2 border-[#1c1c1c] pb-3">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other specialties in {city.name}</h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                {siblings.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={`/directory/${city.slug}/${c.slug}`}
-                    className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                  >
-                    {c.name}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          );
-        })()}
-      </div>
+              {/* Insurance pivot */}
+              {insurerPivots.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                    {category.name} in {city.name} by insurance
+                  </h2>
+                  <ul className="flex flex-wrap gap-2">
+                    {insurerPivots.map((ins) => (
+                      <li key={ins.slug}>
+                        <Link
+                          href={`/directory/${city.slug}/insurance/${ins.slug}/${category.slug}`}
+                          className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                        >
+                          Accepts {ins.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Language pivot */}
+              {languagePivots.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                    {category.name} in {city.name} by language spoken
+                  </h2>
+                  <ul className="flex flex-wrap gap-2">
+                    {languagePivots.map((l) => (
+                      <li key={l.slug}>
+                        <Link
+                          href={`/directory/${city.slug}/language/${l.slug}/${category.slug}`}
+                          className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                        >
+                          {l.name}-speaking
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Related specialties */}
+              {relatedCategories.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                    Related specialties in {city.name}
+                  </h2>
+                  <ul className="flex flex-wrap gap-2">
+                    {relatedCategories.map((rc) => (
+                      <li key={rc.slug}>
+                        <Link
+                          href={`/directory/${city.slug}/${rc.slug}`}
+                          className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                        >
+                          {rc.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Doctor cross-links */}
+              {doctorCrossLinks.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                    Top {category.name.toLowerCase()} doctors in {city.name}
+                  </h2>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3 border-t border-ink-line pt-4">
+                    {doctorCrossLinks.slice(0, 9).map((d) => (
+                      <li key={d.slug}>
+                        <Link
+                          href={`/professionals/${d.slug}`}
+                          className="font-sans text-z-body text-ink hover:underline decoration-1 underline-offset-2"
+                        >
+                          {d.name}
+                          {d.primaryCitySlug ? <span className="text-ink-muted"> · {d.primaryCitySlug}</span> : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* FAQ */}
+              {facetFaqs.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                    Good to know about {category.name.toLowerCase()} in {city.name}
+                  </h2>
+                  <div className="max-w-3xl">
+                    <FaqSection faqs={facetFaqs} />
+                  </div>
+                </div>
+              )}
+            </>
+          }
+        />
+      </>
     );
   }
 
@@ -910,36 +768,85 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     );
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         {neighborhoodNodes.map((node, i) => (
           <JsonLd key={`neighborhood-schema-${i}`} data={node} />
         ))}
         <JsonLd data={speakableSchema([".answer-block"])} />
         <JsonLd data={faqPageSchema(areaFaqs)} />
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name }]} />
 
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">Healthcare in {area.name}, {city.name}</h1>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="text-black/40">According to the UAE Open Healthcare Directory, {area.name} in {city.name} has {total} healthcare {total === 1 ? "provider" : "providers"}. Browse by specialty below. Data from official UAE health authority registers. Last verified March 2026.</p>
-        </div>
+        <ListingsTemplate
+          breadcrumbs={[
+            { label: "UAE", href: "/" },
+            { label: city.name, href: `/directory/${city.slug}` },
+            { label: area.name },
+          ]}
+          eyebrow={`Neighborhood · ${city.name}`}
+          title={`Healthcare in ${area.name}, ${city.name}.`}
+          subtitle={
+            <span>
+              {total} {total === 1 ? "provider" : "providers"} across multiple specialties in {area.name}. Browse by specialty below or view all providers in {city.name}.
+            </span>
+          }
+          aeoAnswer={
+            <>
+              According to the UAE Open Healthcare Directory, {area.name} in {city.name} has{" "}
+              <span className="font-semibold text-ink">{total} healthcare {total === 1 ? "provider" : "providers"}</span>. Data sourced from official UAE health authority registers.
+            </>
+          }
+          total={total}
+          providers={providers.map((p) => {
+            const cat = categories.find((c) => c.slug === p.categorySlug);
+            return {
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              citySlug: p.citySlug,
+              categorySlug: p.categorySlug,
+              categoryName: cat?.name ?? null,
+              address: p.address,
+              googleRating: p.googleRating,
+              googleReviewCount: p.googleReviewCount,
+              isClaimed: p.isClaimed,
+              isVerified: p.isVerified,
+              photos: p.photos ?? null,
+              coverImageUrl: p.coverImageUrl ?? null,
+            };
+          })}
+          belowGrid={
+            <>
+              <div>
+                <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                  Specialties in {area.name}
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <li key={cat.slug}>
+                      <Link
+                        href={`/directory/${city.slug}/${area.slug}/${cat.slug}`}
+                        className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Specialties in {area.name}</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {categories.map((cat) => (<Link key={cat.slug} href={`/directory/${city.slug}/${area.slug}/${cat.slug}`} className="inline-block bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 border border-black/[0.06] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors">{cat.name}</Link>))}
-          </div>
-        </div>
-
-        {providers.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
-          </div>
-        )}
-
-        <FaqSection faqs={areaFaqs} title={`Healthcare in ${area.name} — FAQ`} />
-      </div>
+              {areaFaqs.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                    About healthcare in {area.name}
+                  </h2>
+                  <div className="max-w-3xl">
+                    <FaqSection faqs={areaFaqs} />
+                  </div>
+                </div>
+              )}
+            </>
+          }
+        />
+      </>
     );
   }
 
@@ -954,50 +861,73 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     const facetFaqs = total > 0 ? generateFacetFaqs(city, category, area, total) : [];
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: area.name, url: `${base}/directory/${city.slug}/${area.slug}` }, { name: category.name }])} />
         <JsonLd data={itemListSchema(`${category.name} in ${area.name}, ${city.name}`, providers, city.name, base)} />
         <JsonLd data={faqPageSchema(facetFaqs)} />
         <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: area.name, href: `/directory/${city.slug}/${area.slug}` }, { label: category.name }]} />
-
-        {/* Category hero banner — compact */}
-        <div className="relative h-32 w-full mb-6 overflow-hidden rounded-2xl">
-          <Image
-            src={getCategoryImagePath(category.slug)}
-            alt={`${category.name} in ${area.name}, ${city.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl text-white tracking-tight mb-1">{category.name} in {area.name}, {city.name}</h1>
-            <p className="font-['Geist',sans-serif] text-sm text-white/70">{total} verified {total === 1 ? "provider" : "providers"} · Last updated March 2026</p>
-          </div>
-        </div>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            {total > 0 && topProvider
+        <ListingsTemplate
+          breadcrumbs={[
+            { label: "UAE", href: "/" },
+            { label: city.name, href: `/directory/${city.slug}` },
+            { label: area.name, href: `/directory/${city.slug}/${area.slug}` },
+            { label: category.name },
+          ]}
+          eyebrow={`${category.name} · ${area.name}`}
+          title={`${category.name} in ${area.name}, ${city.name}.`}
+          subtitle={
+            <span>
+              {total > 0 ? `${total} verified ${total === 1 ? "provider" : "providers"} · ${category.name} in ${area.name}, ${city.name}` : `No ${category.name.toLowerCase()} listed in ${area.name} yet — browse the city-wide category instead.`}
+            </span>
+          }
+          aeoAnswer={
+            total > 0 && topProvider
               ? generateFacetAnswerBlock(city, category, area, total, topProvider)
-              : `There are currently no registered ${category.name.toLowerCase()} providers in ${area.name}, ${city.name}. Browse all ${category.name.toLowerCase()} across ${city.name} instead.`}
-          </p>
-        </div>
-
-        {providers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-black/40 mb-2">No {category.name.toLowerCase()} found in {area.name} yet.</p>
-            <Link href={`/directory/${city.slug}/${category.slug}`} className="text-[#006828] text-sm">View all {category.name.toLowerCase()} in {city.name} &rarr;</Link>
-          </div>
-        )}
-        <FaqSection faqs={facetFaqs} title={`${category.name} in ${area.name} — FAQ`} />
-      </div>
+              : `There are currently no registered ${category.name.toLowerCase()} providers in ${area.name}, ${city.name}. Browse all ${category.name.toLowerCase()} across ${city.name} instead.`
+          }
+          total={total}
+          providers={providers.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            citySlug: p.citySlug,
+            categorySlug: p.categorySlug,
+            categoryName: category.name,
+            address: p.address,
+            googleRating: p.googleRating,
+            googleReviewCount: p.googleReviewCount,
+            isClaimed: p.isClaimed,
+            isVerified: p.isVerified,
+            photos: p.photos ?? null,
+            coverImageUrl: p.coverImageUrl ?? null,
+          }))}
+          belowGrid={
+            <>
+              {providers.length === 0 && (
+                <div className="rounded-z-md border border-ink-line bg-white p-6">
+                  <p className="font-sans text-z-body text-ink-soft">
+                    Looking for {category.name.toLowerCase()} in {area.name}?{" "}
+                    <Link href={`/directory/${city.slug}/${category.slug}`} className="font-semibold text-ink underline underline-offset-2">
+                      View all {category.name.toLowerCase()} in {city.name} →
+                    </Link>
+                  </p>
+                </div>
+              )}
+              {facetFaqs.length > 0 && (
+                <div>
+                  <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                    About {category.name.toLowerCase()} in {area.name}
+                  </h2>
+                  <div className="max-w-3xl">
+                    <FaqSection faqs={facetFaqs} />
+                  </div>
+                </div>
+              )}
+            </>
+          }
+        />
+      </>
     );
   }
 
@@ -1212,7 +1142,6 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "listing") {
     const { category, provider } = resolved;
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
-    const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
 
     // Same-category providers for internal linking
     const sameCategoryResult = await getProviders({
@@ -1364,597 +1293,132 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     });
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <>
         {providerSchemaNodes.map((node, i) => (
           <JsonLd key={`provider-schema-${i}`} data={node} />
         ))}
         <JsonLd data={speakableSchema([".answer-block"])} />
 
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: provider.name }]} />
-
-        {/* Cross-language crawl anchor — one visible body-level link to
-            the Arabic counterpart on every provider profile. hreflang in
-            metadata is a canonicalization hint only; Google needs a real
-            <a href> to flow PageRank into /ar/. Multiplied across 25K+
-            English profiles, this is the primary discovery path for the
-            Arabic listing graph. */}
-        <div className="mb-4 flex items-center justify-end">
-          <Link
-            href={`/ar/directory/${city.slug}/${category.slug}/${provider.slug}`}
-            lang="ar"
-            hrefLang="ar-AE"
-            dir="rtl"
-            className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-xs font-medium text-black/50 hover:text-[#006828] transition-colors"
-            aria-label={`عرض ${provider.name} بالعربية`}
-          >
-            <Globe className="h-3.5 w-3.5" aria-hidden="true" />
-            اقرأ هذه الصفحة بالعربية
-          </Link>
-        </div>
-
-        {/* Listing hero banner with category image */}
-        <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden rounded-2xl">
-          <Image
-            src={provider.coverImageUrl || getCategoryImagePath(category.slug)}
-            alt={`${provider.name} — ${category.name} in ${city.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl text-white tracking-tight">{provider.name}</h1>
-              {provider.isVerified && <CheckCircle className="h-6 w-6 text-[#006828]" />}
-            </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="inline-block bg-[#006828] text-white text-[11px] font-medium uppercase tracking-wide px-3 py-0.5 rounded-full font-['Geist',sans-serif]">{category.name}</span>
-              {area && <span className="inline-block bg-white/20 text-white text-[11px] font-medium uppercase tracking-wide px-3 py-0.5 rounded-full font-['Geist',sans-serif]">{area.name}</span>}
-            </div>
-            {provider.googleRating && Number(provider.googleRating) > 0 && (
-              <div className="flex items-center gap-1.5">
-                <span className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]">{provider.googleRating}/5 ★</span>
-                {provider.googleReviewCount && <span className="font-['Geist',sans-serif] text-sm text-white/60">({provider.googleReviewCount.toLocaleString()} reviews)</span>}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Photo gallery — shown above the fold when Google provided multiple images */}
-        {provider.galleryPhotos && provider.galleryPhotos.length > 1 && (
-          <div className="mb-8" data-section="gallery">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
-                <ImageIcon className="h-5 w-5 text-[#006828]" /> Photos
-              </h2>
-              <span className="font-['Geist',sans-serif] text-xs text-black/30">
-                {provider.galleryPhotos.length} photos · via Google
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {provider.galleryPhotos.slice(0, 8).map((photo, idx) => (
-                <div
-                  key={idx}
-                  className="relative aspect-square overflow-hidden rounded-xl border border-black/[0.06]"
-                >
-                  <Image
-                    src={photo.url}
-                    alt={`${provider.name} — photo ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    loading={idx < 4 ? "eager" : "lazy"}
-                  />
-                </div>
-              ))}
-            </div>
-            {provider.galleryPhotos.some((p) => p.attributions?.length > 0) && (
-              <p className="font-['Geist',sans-serif] text-[11px] text-black/25 mt-2">
-                Photos by {Array.from(new Set(provider.galleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join(", ")} via Google Maps
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-
-            {/* 50-word LLM answer block */}
-            <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true" data-last-verified={provider.lastVerified}>
-              <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">{answerBlock}</p>
-            </div>
-
-            {/* About */}
-            <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="about">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">About {provider.name}</h2>
-              {provider.editorialSummary && (
-                <div className="bg-[#f8f8f6] border border-black/[0.04] rounded-lg p-3 mb-3">
-                  <p className="font-['Geist',sans-serif] text-[10px] uppercase tracking-wider text-black/40 mb-1">Google summary</p>
-                  <p className="font-['Geist',sans-serif] text-sm text-[#1c1c1c] leading-relaxed">{provider.editorialSummary}</p>
-                </div>
-              )}
-              {provider.description ? (
-                <>
-                  <div className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed whitespace-pre-line">{provider.description}</div>
-                  <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed mt-3">{generateProviderParagraph(provider, city, category, area)}</p>
-                </>
-              ) : (
-                <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{generateProviderParagraph(provider, city, category, area)}</p>
-              )}
-              <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-3">Source: Official UAE health authority register. Last verified: {formatVerifiedDate(provider.lastVerified)}.</p>
-            </div>
-
-            {/* Accessibility */}
-            {provider.accessibilityOptions &&
-              Object.values(provider.accessibilityOptions).some((v) => v === true) && (
-                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="accessibility">
-                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
-                    <Accessibility className="h-5 w-5 text-[#006828]" /> Accessibility
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {provider.accessibilityOptions.wheelchairAccessibleEntrance && (
-                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
-                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible entrance
-                      </span>
-                    )}
-                    {provider.accessibilityOptions.wheelchairAccessibleParking && (
-                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
-                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible parking
-                      </span>
-                    )}
-                    {provider.accessibilityOptions.wheelchairAccessibleRestroom && (
-                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
-                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible restroom
-                      </span>
-                    )}
-                    {provider.accessibilityOptions.wheelchairAccessibleSeating && (
-                      <span className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] bg-[#006828]/[0.08] text-[#006828] text-xs font-medium px-3 py-1.5 rounded-full">
-                        <CheckCircle className="h-3.5 w-3.5" /> Wheelchair-accessible seating
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-            {/* Services */}
-            {provider.services.length > 0 && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="services">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Stethoscope className="h-5 w-5 text-[#006828]" /> Services</h2>
-                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} provides these services in {city.name}:</p>
-                <div className="flex flex-wrap gap-2">{provider.services.map((s) => (<span key={s} className="inline-block font-['Geist',sans-serif] border border-[#006828]/20 text-[#006828] text-sm px-3 py-1 rounded-full">{s}</span>))}</div>
-                <Link href={`/directory/${city.slug}/${category.slug}`} className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-sm text-[#006828] hover:text-[#004d1c] mt-4 transition-colors">
-                  Browse all {category.name} in {city.name} <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            )}
-
-            {/* Hours — prefer Google's rich weekday descriptions when available */}
-            {(() => {
-              const weekday = provider.currentOpeningHours?.weekdayDescriptions;
-              const hasWeekday = Array.isArray(weekday) && weekday.length > 0;
-              const hasLegacy =
-                provider.operatingHours &&
-                Object.keys(provider.operatingHours).length > 0;
-              if (!hasWeekday && !hasLegacy) return null;
-              return (
-                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="hours">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
-                      <Clock className="h-5 w-5 text-[#006828]" /> Operating Hours
-                    </h2>
-                    {provider.currentOpeningHours?.openNow !== undefined && (
-                      <span
-                        className={`font-['Geist',sans-serif] text-xs font-medium px-3 py-1 rounded-full ${
-                          provider.currentOpeningHours.openNow
-                            ? "bg-[#006828]/[0.08] text-[#006828]"
-                            : "bg-black/[0.04] text-black/50"
-                        }`}
-                      >
-                        {provider.currentOpeningHours.openNow ? "Open now" : "Closed now"}
-                      </span>
-                    )}
-                  </div>
-                  {hasWeekday ? (
-                    <ul className="space-y-1">
-                      {weekday!.map((line, i) => (
-                        <li
-                          key={i}
-                          className="font-['Geist',sans-serif] text-sm text-[#1c1c1c] py-1 border-b border-black/[0.06] last:border-b-0"
-                        >
-                          {line}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    (() => {
-                      // Normalize legacy operatingHours shapes (full English
-                      // day names, 12-hour AM/PM, etc.) — drop rows whose
-                      // day key or time range can't be resolved instead of
-                      // rendering "undefined – undefined".
-                      const rows = Object.entries(provider.operatingHours!)
-                        .map(([d, h]) => {
-                          const day = normalizeDayName(d);
-                          const range = formatHoursRange(h?.open, h?.close);
-                          if (!day || !range) return null;
-                          return { key: d, day, range };
-                        })
-                        .filter(
-                          (row): row is { key: string; day: string; range: string } => row !== null
-                        );
-                      if (rows.length === 0) return null;
-                      return (
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                          {rows.map((row) => (
-                            <div key={row.key} className="flex justify-between text-sm py-1 border-b border-black/[0.06] last:border-b-0">
-                              <span className="font-['Geist',sans-serif] text-black/40">{row.day}</span>
-                              <span className="font-['Geist',sans-serif] font-medium text-[#1c1c1c]">{row.range}</span>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })()
-                  )}
-                </div>
-              );
-            })()}
-
-            {/* Insurance */}
-            {provider.insurance.length > 0 && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="insurance">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Shield className="h-5 w-5 text-[#006828]" /> Accepted Insurance</h2>
-                <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">{provider.name} accepts these insurance plans:</p>
-                <div className="flex flex-wrap gap-2">{provider.insurance.map((i) => {
-                  const insurerSlug = insurerSlugMap.get(i.toLowerCase());
-                  return insurerSlug ? (
-                    <Link key={i} href={`/insurance/${insurerSlug}`} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/30 hover:text-[#006828] transition-colors">{i}</Link>
-                  ) : (
-                    <span key={i} className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]">{i}</span>
-                  );
-                })}</div>
-              </div>
-            )}
-
-            {/* Patient reviews section. Three-tier fallback, picks the best
-                data available per provider:
-                  1. reviewSummaryV2 — bulky block with editorial overview,
-                     theme chips, and partial-quote snippet cards. Produced by
-                     scripts/rewrite-reviews-v2-or.mjs from raw google_reviews.
-                  2. reviewSummary (legacy) — themed bullet list (pre-v2 work).
-                  3. (nothing) — section is hidden.
-                All tiers cap at half-sentence partial quotes; never republish
-                verbatim user content. Avoids duplicate-content de-ranking +
-                complies with Google TOS §3.2.4(b) on review display. */}
-            {provider.reviewSummaryV2 ? (
-              <div
-                className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
-                data-section="reviews"
-              >
-                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
-                    <Quote className="h-5 w-5 text-[#006828]" /> What patients say
-                  </h2>
-                  {hasValidRating && (
-                    <div className="flex items-center gap-1.5 font-['Geist',sans-serif] text-sm">
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-3.5 w-3.5 ${
-                              i < Math.round(Number(provider.googleRating))
-                                ? "text-[#006828] fill-[#006828]"
-                                : "text-black/15"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
-                      <span className="text-black/40">
-                        ({provider.googleReviewCount?.toLocaleString()} reviews)
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Overall sentiment — the editorial synthesis paragraph */}
-                <div className="mb-5">
-                  <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
-                    Overall sentiment
-                  </h3>
-                  <p className="font-['Geist',sans-serif] text-sm text-black/70 leading-relaxed">
-                    {provider.reviewSummaryV2.overall_sentiment}
-                  </p>
-                </div>
-
-                {/* What stood out — theme chips */}
-                {provider.reviewSummaryV2.what_stood_out && provider.reviewSummaryV2.what_stood_out.length > 0 && (
-                  <div className="mb-5">
-                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-2">
-                      What stood out
-                    </h3>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
-                      {provider.reviewSummaryV2.what_stood_out.map((t, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/60"
-                        >
-                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
-                          <span>
-                            {t.theme}
-                            {t.mention_count > 1 && (
-                              <span className="text-black/30 text-xs ml-1">
-                                ({t.mention_count} mentions)
-                              </span>
-                            )}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Partial-quote snippet cards */}
-                {provider.reviewSummaryV2.snippets && provider.reviewSummaryV2.snippets.length > 0 && (
-                  <div className="mb-3">
-                    <h3 className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wider text-black/40 mb-3">
-                      Recent patient voices
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {provider.reviewSummaryV2.snippets.map((s, i) => (
-                        // NOTE: no microdata attrs on these cards. The JSON-LD
-                        // graph emitted by generateFullProviderSchema already
-                        // ships these snippets as nested Review nodes inside
-                        // the MedicalBusiness (so itemReviewed is implicit).
-                        // Earlier versions declared itemScope/itemType on the
-                        // <article> which made Google parse it as a standalone
-                        // Review requiring its own itemReviewed + Person author,
-                        // failing the Rich Results Test on every provider page.
-                        // The JSON-LD is the canonical signal; the card is
-                        // presentational only.
-                        <article
-                          key={i}
-                          className="bg-white rounded-xl p-4 border border-black/[0.04]"
-                        >
-                          <div className="flex items-center gap-0.5 mb-2">
-                            {Array.from({ length: 5 }).map((_, starIdx) => (
-                              <Star
-                                key={starIdx}
-                                className={`h-3 w-3 ${
-                                  starIdx < s.rating
-                                    ? "text-[#006828] fill-[#006828]"
-                                    : "text-black/15"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed italic mb-2">
-                            {s.text_fragment}
-                          </p>
-                          <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                            <span className="font-medium">
-                              {s.author_display}
-                            </span>
-                            {s.relative_time && <span> · {s.relative_time}</span>}
-                          </p>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                  Themes and patient voices synthesized from {provider.googleReviewCount?.toLocaleString() || "recent"} Google reviews, last synced{" "}
-                  {provider.reviewSummaryV2.synced_at
-                    ? new Date(provider.reviewSummaryV2.synced_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-                    : "recently"}
-                  .{" "}
-                  {provider.googleMapsUri && (
-                    <a
-                      href={provider.googleMapsUri}
-                      target="_blank"
-                      rel="nofollow noopener"
-                      className="text-[#006828] hover:underline"
-                    >
-                      Read original reviews on Google Maps →
-                    </a>
-                  )}
-                </p>
-              </div>
-            ) : (
-              provider.reviewSummary &&
-              provider.reviewSummary.length > 0 &&
-              provider.reviewSummary[0] !== "No patient reviews available yet" && (
-                <div className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]" data-section="reviews">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] flex items-center gap-2 tracking-tight">
-                      <Quote className="h-5 w-5 text-[#006828]" /> What patients say
-                    </h2>
-                    {hasValidRating && (
-                      <div className="flex items-center gap-1.5 font-['Geist',sans-serif] text-sm">
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3.5 w-3.5 ${
-                                i < Math.round(Number(provider.googleRating))
-                                  ? "text-[#006828] fill-[#006828]"
-                                  : "text-black/15"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="font-medium text-[#1c1c1c]">{provider.googleRating}</span>
-                        <span className="text-black/40">({provider.googleReviewCount?.toLocaleString()})</span>
-                      </div>
-                    )}
-                  </div>
-                  {provider.reviewSummary.length === 1 ? (
-                    <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-                      {provider.reviewSummary[0]}
-                    </p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {provider.reviewSummary.map((point: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50">
-                          <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {hasValidRating && (
-                    <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                      Themes synthesized from {provider.googleReviewCount?.toLocaleString()} Google reviews.{" "}
-                      {provider.googleMapsUri && (
-                        <a
-                          href={provider.googleMapsUri}
-                          target="_blank"
-                          rel="nofollow noopener"
-                          className="text-[#006828] hover:underline"
-                        >
-                          Read original reviews on Google Maps →
-                        </a>
-                      )}
-                    </p>
-                  )}
-                </div>
-              )
-            )}
-
-            {/* Languages */}
-            {provider.languages.length > 0 && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="languages">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><Languages className="h-5 w-5 text-[#006828]" /> Languages Spoken</h2>
-                <p className="font-['Geist',sans-serif] text-sm text-black/50">Staff at {provider.name} speak: {provider.languages.join(", ")}.</p>
-              </div>
-            )}
-
-            {/* Map */}
-            <div className="border border-black/[0.06] rounded-2xl p-6 mb-5" data-section="location">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight"><MapPin className="h-5 w-5 text-[#006828]" /> Location</h2>
-              <div className="rounded-xl overflow-hidden"><GoogleMapEmbed query={`${provider.name}, ${provider.address}`} /></div>
-              <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-3">{provider.address}</p>
-            </div>
-
-            <div className="flex items-center gap-2 font-['Geist',sans-serif] text-xs text-black/30 mb-6">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>Last verified: {formatVerifiedDate(provider.lastVerified)} · Data from official UAE health authority register</span>
-            </div>
-
-            <div className="bg-[#006828]/[0.04] rounded-2xl p-6">
-              <FaqSection faqs={providerFaqs} title={`${provider.name} — FAQ`} />
-            </div>
-
-            {/* Same-category providers for internal linking */}
-            {sameCategoryProviders.length > 0 && (
-              <div className="border border-black/[0.06] rounded-2xl p-6 mt-5">
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-4 tracking-tight">
-                  More {category.name} in {area?.name || city.name}
+        <ProviderDetailTemplate
+          provider={{
+            id: provider.id,
+            name: provider.name,
+            slug: provider.slug,
+            citySlug: provider.citySlug,
+            categorySlug: provider.categorySlug,
+            subcategorySlug: provider.subcategorySlug,
+            areaSlug: provider.areaSlug,
+            address: provider.address,
+            phone: provider.phone,
+            whatsapp: (provider as unknown as { whatsapp?: string }).whatsapp,
+            email: provider.email,
+            website: provider.website,
+            googleMapsUri: (provider as unknown as { googleMapsUri?: string }).googleMapsUri,
+            description: provider.description,
+            shortDescription: provider.shortDescription,
+            googleRating: provider.googleRating,
+            googleReviewCount: provider.googleReviewCount,
+            licenseNumber: provider.licenseNumber,
+            yearEstablished: provider.yearEstablished,
+            isClaimed: provider.isClaimed,
+            isVerified: provider.isVerified,
+            facilityType: provider.facilityType,
+            languages: provider.languages,
+            insurance: provider.insurance,
+            services: provider.services,
+            amenities: provider.amenities,
+            photos: provider.photos ?? [],
+            coverImageUrl: provider.coverImageUrl,
+            galleryPhotos: provider.galleryPhotos,
+            reviewSummary: provider.reviewSummary,
+            reviewSummaryV2: provider.reviewSummaryV2
+              ? {
+                  overall_sentiment: provider.reviewSummaryV2.overall_sentiment,
+                  what_stood_out: provider.reviewSummaryV2.what_stood_out ?? [],
+                  snippets: provider.reviewSummaryV2.snippets ?? [],
+                  google_maps_url: provider.reviewSummaryV2.google_maps_url,
+                }
+              : null,
+            operatingHours: provider.operatingHours,
+            accessibilityOptions: provider.accessibilityOptions,
+            latitude: provider.latitude,
+            longitude: provider.longitude,
+          }}
+          categoryName={category.name}
+          cityName={city.name}
+          areaName={area?.name ?? null}
+          breadcrumbs={[
+            { label: "UAE", href: "/" },
+            { label: city.name, href: `/directory/${city.slug}` },
+            { label: category.name, href: `/directory/${city.slug}/${category.slug}` },
+            { label: provider.name },
+          ]}
+          aeoAnswer={answerBlock}
+          faqs={providerFaqs}
+          arabicHref={`/ar/directory/${city.slug}/${category.slug}/${provider.slug}`}
+          relatedSection={
+            sameCategoryProviders.length > 0 ? (
+              <section className="pt-4 pb-8 border-t border-ink-line z-anchor" id="related">
+                <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                  Other {category.name.toLowerCase()} in {city.name}
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {sameCategoryProviders.map((sp) => (
-                    <Link
-                      key={sp.id}
-                      href={`/directory/${sp.citySlug}/${sp.categorySlug}/${sp.slug}`}
-                      className="flex items-start gap-3 p-3 rounded-xl border border-black/[0.04] hover:border-[#006828]/20 transition-colors group"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors truncate">{sp.name}</p>
-                        {Number(sp.googleRating) > 0 && (
-                          <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">{sp.googleRating}/5 ★ · {sp.googleReviewCount?.toLocaleString()} reviews</p>
-                        )}
-                        {sp.areaSlug && (
-                          <p className="font-['Geist',sans-serif] text-xs text-black/25 mt-0.5">{getAreaBySlug(city.slug, sp.areaSlug)?.name || sp.areaSlug}</p>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                  {sameCategoryProviders.map((rp) => {
+                    const rating = Number(rp.googleRating) || 0;
+                    return (
+                      <Link
+                        key={rp.id}
+                        href={`/directory/${rp.citySlug}/${rp.categorySlug}/${rp.slug}`}
+                        className="group flex items-start gap-4"
+                      >
+                        {rp.coverImageUrl ? (
+                          <div className="relative h-24 w-28 flex-shrink-0 rounded-z-md overflow-hidden bg-ink-line">
+                            <Image
+                              src={rp.coverImageUrl}
+                              alt={rp.name}
+                              fill
+                              sizes="112px"
+                              className="object-cover group-hover:scale-[1.04] transition-transform duration-z-med"
+                            />
+                          </div>
+                        ) : null}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-sans font-semibold text-ink text-z-body line-clamp-1 group-hover:underline decoration-1 underline-offset-2">
+                            {rp.name}
+                          </p>
+                          {rating > 0 && (
+                            <p className="font-sans text-z-caption text-ink-soft mt-1 inline-flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-ink text-ink" />
+                              {rating.toFixed(2)}
+                              {rp.googleReviewCount
+                                ? <span className="text-ink-muted"> ({rp.googleReviewCount})</span>
+                                : null}
+                            </p>
+                          )}
+                          {rp.address && (
+                            <p className="font-sans text-z-caption text-ink-muted mt-0.5 line-clamp-1">
+                              {rp.address}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
                 {sameCategoryTotal > sameCategoryProviders.length && (
                   <Link
-                    href={`/directory/${city.slug}/${category.slug}${area ? `/${area.slug}` : ""}`}
-                    className="inline-flex items-center gap-1.5 font-['Geist',sans-serif] text-sm text-[#006828] hover:text-[#004d1c] mt-4 transition-colors"
+                    href={`/directory/${city.slug}/${category.slug}`}
+                    className="mt-6 inline-flex items-center gap-1.5 font-sans text-z-body-sm font-semibold text-ink underline decoration-1 underline-offset-2"
                   >
-                    View all {sameCategoryTotal} {category.name} in {area?.name || city.name} <ArrowRight className="h-3.5 w-3.5" />
+                    See all {sameCategoryTotal + 1} {category.name.toLowerCase()} in {city.name}
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
-              </div>
-            )}
-
-            {/* Best page callout — only show when at least one provider has a rating */}
-            {sameCategoryProviders.some(p => Number(p.googleRating) > 0) && (
-              <Link
-                href={`/best/${city.slug}/${category.slug}`}
-                className="flex items-center justify-between border border-[#006828]/15 bg-[#006828]/[0.03] rounded-2xl p-5 mt-5 group hover:border-[#006828]/30 transition-colors"
-              >
-                <div>
-                  <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                    See the Best {category.name} in {city.name}
-                  </p>
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-0.5">Curated ranking based on ratings, reviews, and verification status</p>
-                </div>
-                <ArrowRight className="h-5 w-5 text-[#006828] flex-shrink-0" />
-              </Link>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-20 space-y-4">
-              <ProviderSidebarCta
-                providerName={provider.name}
-                providerSlug={provider.slug}
-                citySlug={city.slug}
-                categorySlug={category.slug}
-                providerId={provider.id}
-                isClaimed={provider.isClaimed}
-                phone={provider.phone}
-                website={provider.website}
-                address={provider.address}
-                directionsUrl={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(provider.name + ", " + provider.address)}`}
-              />
-
-              {nearbyProviders.length > 0 && (
-                <div className="border border-black/[0.06] rounded-2xl p-6">
-                  <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 tracking-tight">Nearby</h3>
-                  <div className="space-y-3">
-                    {nearbyProviders.map((np) => (
-                      <Link key={np.id} href={`/directory/${np.citySlug}/${np.categorySlug}/${np.slug}`} className="block font-['Geist',sans-serif] text-sm hover:text-[#006828] transition-colors">
-                        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight">{np.name}</p>
-                        {Number(np.googleRating) > 0 && (
-                          <p className="font-['Geist',sans-serif] text-xs text-black/30">{np.googleRating} stars</p>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Sticky mobile CTA — uses the proper StickyMobileCta component
-            (Item 9): scroll-reveal, analytics via trackEvent, a11y region,
-            honest gating (each CTA only renders when real data exists). */}
-        <StickyMobileCta
-          providerName={provider.name}
-          providerSlug={provider.slug}
-          citySlug={city.slug}
-          categorySlug={category.slug}
-          providerId={provider.id}
-          isClaimed={provider.isClaimed}
-          phoneE164={provider.phone}
-          directionsUrl={
-            hasValidCoords
-              ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-              : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  provider.name + ", " + provider.address,
-                )}`
+              </section>
+            ) : null
           }
-          websiteUrl={provider.website}
-          mode="provider-profile"
         />
-      </div>
+      </>
     );
   }
 
@@ -1964,17 +1428,40 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     const { providers, total, totalPages } = await getProviders({ citySlug: city.slug, categorySlug: category.slug, subcategorySlug: subcategory.slug, page: 1, limit: 20, sort: "rating" });
 
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: category.name, href: `/directory/${city.slug}/${category.slug}` }, { label: subcategory.name }]} />
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">{subcategory.name} in {city.name}</h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">{total} {total === 1 ? "provider" : "providers"}</p>
-        {providers.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {providers.map((p) => (<ProviderCard key={p.id} name={p.name} slug={p.slug} citySlug={p.citySlug} categorySlug={p.categorySlug} address={p.address} phone={p.phone} website={p.website} shortDescription={p.shortDescription} googleRating={p.googleRating} googleReviewCount={p.googleReviewCount} isClaimed={p.isClaimed} isVerified={p.isVerified} coverImageUrl={p.coverImageUrl} />))}
-          </div>
-        ) : (<div className="text-center py-12"><p className="text-black/40">No providers found yet.</p></div>)}
-        <Pagination currentPage={1} totalPages={totalPages} baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`} />
-      </div>
+      <ListingsTemplate
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: city.name, href: `/directory/${city.slug}` },
+          { label: category.name, href: `/directory/${city.slug}/${category.slug}` },
+          { label: subcategory.name },
+        ]}
+        eyebrow={`${subcategory.name} · ${category.name}`}
+        title={`${subcategory.name} in ${city.name}.`}
+        subtitle={`${total} ${total === 1 ? "provider" : "providers"} — a refined view of ${category.name.toLowerCase()} offering ${subcategory.name.toLowerCase()} in ${city.name}.`}
+        total={total}
+        providers={providers.map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: category.name,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        }))}
+        pagination={
+          <Pagination
+            currentPage={1}
+            totalPages={totalPages}
+            baseUrl={`/directory/${city.slug}/${category.slug}/${subcategory.slug}`}
+          />
+        }
+      />
     );
   }
 
@@ -1983,14 +1470,22 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     const proc = resolved.procedure;
     const pricing = proc.cityPricing[city.slug];
     const regulator = city.slug === "dubai" ? "Dubai Health Authority (DHA)" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "Department of Health Abu Dhabi (DOH)" : "Ministry of Health and Prevention (MOHAP)";
+    const regulatorShort = city.slug === "dubai" ? "DHA" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "DOH" : "MOHAP";
 
-    // Providers in this category
-    const { providers, total: providerCount } = await getProviders({
-      citySlug: city.slug,
-      categorySlug: proc.categorySlug,
-      limit: 12,
-      sort: "rating",
-    });
+    // Providers in this category (wrapped in safe())
+    type ProvidersResp = Awaited<ReturnType<typeof getProviders>>;
+    const providerResp = await safe<ProvidersResp>(
+      getProviders({
+        citySlug: city.slug,
+        categorySlug: proc.categorySlug,
+        limit: 12,
+        sort: "rating",
+      }),
+      { providers: [] as ProvidersResp["providers"], total: 0, page: 1, totalPages: 1 } as ProvidersResp,
+      "cityServiceProviders"
+    );
+    const providers = providerResp.providers;
+    const providerCount = providerResp.total;
 
     // City comparison
     const cityComparisons = CITIES.map((c) => {
@@ -2011,7 +1506,6 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       .slice(0, 8);
 
     const coverageLabel = proc.insuranceCoverage === "typically-covered" ? "Typically covered" : proc.insuranceCoverage === "partially-covered" ? "Partially covered" : proc.insuranceCoverage === "rarely-covered" ? "Rarely covered" : "Not covered";
-    const coverageBadge = proc.insuranceCoverage === "typically-covered" ? "bg-green-100 text-green-800" : proc.insuranceCoverage === "partially-covered" ? "bg-yellow-100 text-yellow-800" : proc.insuranceCoverage === "rarely-covered" ? "bg-orange-100 text-orange-800" : "bg-red-100 text-red-800";
 
     // FAQs
     const serviceFaqs = [
@@ -2043,255 +1537,111 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       },
     ];
 
+    const categoryName = (getCategoryBySlug(proc.categorySlug)?.name) ?? proc.categorySlug.replace(/-/g, " ");
+    const categoryNameLower = categoryName.toLowerCase();
+
+    const aeoAnswer = (
+      <>
+        Looking for {proc.name.toLowerCase()} in {city.name}? The UAE Open Healthcare Directory lists {providerCount}{" "}
+        {categoryNameLower} providers in {city.name} who may offer this procedure.
+        {pricing && (
+          <>
+            {" "}The typical cost is {formatAed(pricing.typical)} (range: {formatAed(pricing.min)}–{formatAed(pricing.max)}).
+          </>
+        )}
+        {" "}Providers below are ranked by patient ratings. All facilities are licensed by the {regulator}. {proc.description}
+      </>
+    );
+
+    const subtitle = (
+      <>
+        {providerCount} providers &middot; {proc.duration} &middot; {coverageLabel} by insurance
+        {pricing && <> &middot; Typical cost: {formatAed(pricing.typical)}</>} &middot; Updated March 2026
+      </>
+    );
+
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: proc.name }])} />
-        <JsonLd data={faqPageSchema(serviceFaqs)} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: proc.name }]} />
-
-        {/* Header */}
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          {proc.name} in {city.name}
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-6">
-          {providerCount} providers &middot; {proc.duration} &middot;{" "}
-          {coverageLabel} by insurance
-          {pricing && <> &middot; Typical cost: {formatAed(pricing.typical)}</>}
-          {" "}&middot; Updated March 2026
-        </p>
-
-        {/* Answer block */}
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            Looking for {proc.name.toLowerCase()} in {city.name}? The UAE Open Healthcare Directory lists {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name} who may offer this procedure.
-            {pricing && <> The typical cost is {formatAed(pricing.typical)} (range: {formatAed(pricing.min)}–{formatAed(pricing.max)}).</>}
-            {" "}Providers below are ranked by patient ratings. All facilities are licensed by the {regulator}. {proc.description}
-          </p>
-        </div>
-
-        {/* Quick info cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
-            <Clock className="h-4 w-4 text-[#006828] mb-1.5" />
-            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Duration</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50">{proc.duration}</p>
-          </div>
-          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
-            <Activity className="h-4 w-4 text-[#006828] mb-1.5" />
-            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Recovery</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50">{proc.recoveryTime}</p>
-          </div>
-          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-4">
-            <Shield className="h-4 w-4 text-[#006828] mb-1.5" />
-            <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Insurance</p>
-            <span className={`inline-block mt-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded ${coverageBadge}`}>{coverageLabel}</span>
-          </div>
-          {pricing && (
-            <div className="bg-[#006828]/[0.04] border border-[#006828]/20 rounded-xl p-4">
-              <MapPin className="h-4 w-4 text-[#006828] mb-1.5" />
-              <p className="font-['Bricolage_Grotesque',sans-serif] text-xs font-semibold text-[#1c1c1c] tracking-tight">Typical Cost</p>
-              <p className="font-['Geist',sans-serif] text-sm font-bold text-[#006828]">{formatAed(pricing.typical)}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Providers offering this service */}
-        {providers.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                Providers Offering {proc.name} in {city.name}
-              </h2>
-            </div>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-              {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name} may perform {proc.name.toLowerCase()}. Ranked by patient rating. Contact providers directly to confirm availability and pricing.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              {providers.slice(0, 9).map((p) => (
-                <ProviderCard
-                  key={p.id}
-                  name={p.name}
-                  slug={p.slug}
-                  citySlug={p.citySlug}
-                  categorySlug={p.categorySlug}
-                  address={p.address}
-                  phone={p.phone}
-                  website={p.website}
-                  shortDescription={p.shortDescription}
-                  googleRating={p.googleRating}
-                  googleReviewCount={p.googleReviewCount}
-                  isClaimed={p.isClaimed}
-                  isVerified={p.isVerified}
-                  coverImageUrl={p.coverImageUrl}
-                />
-              ))}
-            </div>
-            {providerCount > 9 && (
-              <Link
-                href={`/directory/${city.slug}/${proc.categorySlug}`}
-                className="inline-flex items-center gap-1 text-sm font-bold text-[#006828] hover:underline"
-              >
-                View all {providerCount} {proc.categorySlug.replace(/-/g, " ")} providers in {city.name}
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            )}
-          </section>
-        )}
-
-        {/* Price comparison across cities */}
-        {pricing && cityComparisons.length > 1 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-                {proc.name} Cost — UAE City Comparison
-              </h2>
-            </div>
-            <div className="overflow-x-auto -mx-4 sm:mx-0">
-              <table className="w-full min-w-[500px] text-sm border-collapse">
-                <thead>
-                  <tr className="bg-[#f8f8f6]">
-                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">City</th>
-                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">From</th>
-                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">Typical</th>
-                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]">Up to</th>
-                    <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-right px-3 py-3 border-b border-black/[0.08]"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cityComparisons.map((comp, idx) => (
-                    <tr key={comp.slug} className={`${comp.isCurrent ? "bg-[#006828]/[0.04] font-bold" : idx % 2 === 0 ? "bg-white" : "bg-[#fafaf9]"} border-b border-black/[0.04]`}>
-                      <td className="px-3 py-3 text-[#1c1c1c]">
-                        {comp.name}
-                        {comp.isCurrent && <span className="text-[9px] text-[#006828] ml-1">(current)</span>}
-                      </td>
-                      <td className="px-3 py-3 text-right text-black/40">{formatAed(comp.min)}</td>
-                      <td className="px-3 py-3 text-right font-bold text-[#1c1c1c]">{formatAed(comp.typical)}</td>
-                      <td className="px-3 py-3 text-right text-black/40">{formatAed(comp.max)}</td>
-                      <td className="px-3 py-3 text-right">
-                        {comp.isCurrent ? (
-                          <span className="text-xs text-black/30">Viewing</span>
-                        ) : (
-                          <Link href={`/directory/${comp.slug}/${proc.slug}`} className="text-xs text-[#006828] font-semibold hover:underline">View</Link>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-
-        {/* What to expect */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">What to Expect</h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed mb-3">
-            {proc.whatToExpect}
-          </p>
-          {proc.anaesthesia !== "none" && (
-            <p className="font-['Geist',sans-serif] text-sm text-black/50">
-              <strong>Anaesthesia:</strong> {proc.anaesthesia.charAt(0).toUpperCase() + proc.anaesthesia.slice(1)} anaesthesia is typically used for this procedure.
-            </p>
-          )}
-        </section>
-
-        {/* Insurance coverage */}
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Coverage</h2>
-          </div>
-          <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-5">
-            <span className={`inline-block px-2 py-1 text-xs font-bold rounded ${coverageBadge} mb-2`}>{coverageLabel}</span>
-            <p className="font-['Geist',sans-serif] text-sm text-black/50 leading-relaxed">{proc.insuranceNotes}</p>
-          </div>
-        </section>
-
-        {/* Related procedures in this city */}
-        {relatedProcs.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Related Procedures in {city.name}</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {relatedProcs.map((rp) => {
-                const rpPricing = rp.cityPricing[city.slug];
-                return (
-                  <Link
-                    key={rp.slug}
-                    href={`/directory/${city.slug}/${rp.slug}`}
-                    className="flex items-center justify-between border border-black/[0.06] rounded-xl px-4 py-3 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
-                  >
-                    <div>
-                      <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-medium text-[#1c1c1c] tracking-tight">{rp.name}</span>
-                      <p className="font-['Geist',sans-serif] text-xs text-black/40">{rp.duration}</p>
-                    </div>
-                    {rpPricing && (
-                      <span className="text-sm font-bold text-[#006828] whitespace-nowrap">{formatAed(rpPricing.typical)}</span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* More procedures in same category */}
-        {sameCategoryProcs.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More Procedures in {city.name}</h2>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-              {sameCategoryProcs.map((sp) => (
-                <Link
-                  key={sp.slug}
-                  href={`/directory/${city.slug}/${sp.slug}`}
-                  className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors"
-                >
-                  {sp.name}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Cross-links */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          {pricing && (
-            <Link
-              href={`/pricing/${proc.slug}/${city.slug}`}
-              className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
-            >
-              Detailed pricing breakdown &rarr;
-            </Link>
-          )}
-          <Link
-            href={`/directory/${city.slug}/${proc.categorySlug}`}
-            className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
-          >
-            All {proc.categorySlug.replace(/-/g, " ")} in {city.name} &rarr;
-          </Link>
-          <Link
-            href={`/best/${city.slug}/${proc.categorySlug}`}
-            className="inline-block border border-[#006828]/20 text-[#006828] rounded-full font-['Geist',sans-serif] px-3 py-1.5 text-sm hover:bg-[#006828]/[0.04] transition-colors"
-          >
-            Best {proc.categorySlug.replace(/-/g, " ")} in {city.name} &rarr;
-          </Link>
-        </div>
-
-        <FaqSection faqs={serviceFaqs} title={`${proc.name} in ${city.name} — FAQ`} />
-
-        {/* Disclaimer */}
-        <div className="border-t border-black/[0.06] pt-4 mt-6">
-          <p className="text-[11px] text-black/40 leading-relaxed">
-            <strong>Disclaimer:</strong> Pricing is indicative and based on DOH Mandatory Tariff methodology and market-observed ranges. Actual costs depend on facility type, clinical complexity, and insurance coverage. Always confirm pricing directly with the provider. Provider data is sourced from official {regulator} registers, last verified March 2026.
-          </p>
-        </div>
-      </div>
+      <ProcedurePricingTemplate
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: proc.name }])} />
+            <JsonLd data={faqPageSchema(serviceFaqs)} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+          </>
+        }
+        breadcrumbs={[
+          { label: "UAE", href: "/" },
+          { label: city.name, href: `/directory/${city.slug}` },
+          { label: proc.name },
+        ]}
+        eyebrow={`${regulatorShort} Verified · ${city.name}`}
+        title={`${proc.name} in ${city.name}`}
+        subtitle={subtitle}
+        aeoAnswer={aeoAnswer}
+        cityName={city.name}
+        regulatorShort={regulatorShort}
+        regulatorFull={regulator}
+        procedureName={proc.name}
+        categorySlug={proc.categorySlug}
+        categoryName={categoryName}
+        duration={proc.duration}
+        recoveryTime={proc.recoveryTime}
+        anaesthesia={proc.anaesthesia}
+        coverageLabel={coverageLabel}
+        coverageNotes={proc.insuranceNotes}
+        pricing={pricing ?? null}
+        cityComparison={cityComparisons.map((c) => ({
+          slug: c.slug,
+          name: c.name,
+          min: c.min,
+          max: c.max,
+          typical: c.typical,
+          isCurrent: c.isCurrent,
+          href: `/directory/${c.slug}/${proc.slug}`,
+        }))}
+        providers={providers.slice(0, 12).map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: categoryName,
+          address: p.address ?? null,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: (p as { photos?: string[] | null }).photos ?? [],
+          coverImageUrl: p.coverImageUrl ?? null,
+        }))}
+        providerTotal={providerCount}
+        viewAllProvidersHref={`/directory/${city.slug}/${proc.categorySlug}`}
+        relatedProcedures={relatedProcs.map((rp) => {
+          const rpPricing = rp.cityPricing[city.slug];
+          return {
+            slug: rp.slug,
+            name: rp.name,
+            href: `/directory/${city.slug}/${rp.slug}`,
+            duration: rp.duration,
+            typicalPrice: rpPricing ? formatAed(rpPricing.typical) : null,
+          };
+        })}
+        sameCategoryProcedures={sameCategoryProcs.map((sp) => ({
+          slug: sp.slug,
+          name: sp.name,
+          href: `/directory/${city.slug}/${sp.slug}`,
+        }))}
+        whatToExpect={proc.whatToExpect}
+        crossLinks={[
+          ...(pricing ? [{ label: "Detailed pricing breakdown", href: `/pricing/${proc.slug}/${city.slug}` }] : []),
+          { label: `All ${categoryNameLower} in ${city.name}`, href: `/directory/${city.slug}/${proc.categorySlug}` },
+          { label: `Best ${categoryNameLower} in ${city.name}`, href: `/best/${city.slug}/${proc.categorySlug}` },
+        ]}
+        faqs={serviceFaqs}
+        formatAed={formatAed}
+        lastVerified="March 2026"
+        arabicHref={`/ar/directory/${city.slug}/${proc.slug}`}
+      />
     );
   }
 

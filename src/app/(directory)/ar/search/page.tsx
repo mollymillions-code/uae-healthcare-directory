@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ArabicSearchPage() {
   return (
-    <div className="container-tc py-12 text-center">
+    <div dir="rtl" className="font-arabic container-tc py-12 text-center">
       <h1 className="text-2xl font-bold text-dark mb-4">{ar.search}</h1>
       <p className="text-muted mb-6">
         استخدم البحث للعثور على مقدمي الرعاية الصحية في الإمارات

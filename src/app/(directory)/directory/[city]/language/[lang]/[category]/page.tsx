@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -14,6 +12,8 @@ import {
   breadcrumbSchema, faqPageSchema, itemListSchema, speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 
 export const revalidate = 43200;
 // ISR: pages render on first visit and cache for 12h. No generateStaticParams —
@@ -37,7 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const allLangProviders = await getProvidersByLanguage(language.slug, city.slug);
+  const allLangProviders = await safe(
+    getProvidersByLanguage(language.slug, city.slug),
+    [] as Awaited<ReturnType<typeof getProvidersByLanguage>>,
+    "providersByLanguage-meta",
+  );
   const count = allLangProviders.filter((p) => p.categorySlug === category.slug).length;
   const base = getBaseUrl();
 
@@ -56,6 +60,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /* ─── Page ─── */
 
+const LISTING_CAP = 30;
+
 export default async function LanguageCategoryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
@@ -66,7 +72,11 @@ export default async function LanguageCategoryPage({ params }: Props) {
   const category = getCategoryBySlug(params.category);
   if (!category) notFound();
 
-  const allLangProviders = await getProvidersByLanguage(language.slug, city.slug);
+  const allLangProviders = await safe(
+    getProvidersByLanguage(language.slug, city.slug),
+    [] as Awaited<ReturnType<typeof getProvidersByLanguage>>,
+    "providersByLanguage",
+  );
   const providers = allLangProviders
     .filter((p) => p.categorySlug === category.slug)
     .sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
@@ -75,14 +85,20 @@ export default async function LanguageCategoryPage({ params }: Props) {
   if (count === 0) notFound();
 
   const base = getBaseUrl();
-  const capped = providers.slice(0, 30);
+  const capped = providers.slice(0, LISTING_CAP);
   const cappedForSchema = providers.slice(0, 20);
 
   // Other languages that have providers for this category in this city
   const allLanguages = getLanguagesList();
   const otherLanguagesRaw = allLanguages.filter((l) => l.slug !== language.slug);
   const otherLangProvidersList = await Promise.all(
-    otherLanguagesRaw.map((l) => getProvidersByLanguage(l.slug, city.slug))
+    otherLanguagesRaw.map((l) =>
+      safe(
+        getProvidersByLanguage(l.slug, city.slug),
+        [] as Awaited<ReturnType<typeof getProvidersByLanguage>>,
+        `providersByLanguage:${l.slug}`,
+      ),
+    ),
   );
   const otherLanguages = otherLanguagesRaw.filter((l, i) =>
     otherLangProvidersList[i].filter((p) => p.categorySlug === category.slug).length >= 2
@@ -99,7 +115,11 @@ export default async function LanguageCategoryPage({ params }: Props) {
   const totalLangProviders = allLangProviders.length;
 
   // Total category providers in city (for cross-link)
-  const totalCatProviders = await getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const totalCatProviders = await safe(
+    getProviderCountByCategoryAndCity(category.slug, city.slug),
+    0,
+    "catCountByCity",
+  );
 
   const faqs = [
     {
@@ -121,173 +141,164 @@ export default async function LanguageCategoryPage({ params }: Props) {
   ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* JSON-LD: BreadcrumbList */}
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-        { name: "Languages", url: `${base}/directory/${city.slug}/language` },
-        { name: language.name, url: `${base}/directory/${city.slug}/language/${language.slug}` },
-        { name: category.name },
-      ])} />
-
-      {/* JSON-LD: ItemList (cap 20) */}
-      {cappedForSchema.length > 0 && (
-        <JsonLd data={itemListSchema(
-          `${language.name}-Speaking ${category.name} in ${city.name}`,
-          cappedForSchema,
-          city.name,
-          base,
-        )} />
-      )}
-
-      {/* JSON-LD: FAQPage */}
-      <JsonLd data={faqPageSchema(faqs)} />
-
-      {/* JSON-LD: SpeakableSpecification */}
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      {/* Breadcrumb */}
-      <Breadcrumb items={[
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "Languages", href: `/directory/${city.slug}/language` },
         { label: language.name, href: `/directory/${city.slug}/language/${language.slug}` },
         { label: category.name },
-      ]} />
-
-      {/* Heading */}
-      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-        {language.name}-Speaking {category.name} in {city.name}
-      </h1>
-      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-        {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
-      </p>
-
-      {/* Answer block */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+      ]}
+      eyebrow={`${language.name} · ${category.name}`}
+      title={`${language.name}-Speaking ${category.name} in ${city.name}.`}
+      subtitle={
+        <>
+          {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
+        </>
+      }
+      aeoAnswer={
+        <>
           {count} {category.name.toLowerCase()} in {city.name} have staff who speak {language.name}, according to the UAE Open Healthcare Directory. The UAE&apos;s diverse healthcare workforce ensures patients can access specialist care in their preferred language. Providers are sorted by Google rating below. Data sourced from official government registers (DHA, DOH, MOHAP), last verified March 2026.
-        </p>
-      </div>
+        </>
+      }
+      total={count}
+      providers={capped.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: category.name,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema([
+            { name: "UAE", url: base },
+            { name: city.name, url: `${base}/directory/${city.slug}` },
+            { name: "Languages", url: `${base}/directory/${city.slug}/language` },
+            { name: language.name, url: `${base}/directory/${city.slug}/language/${language.slug}` },
+            { name: category.name },
+          ])} />
+          {cappedForSchema.length > 0 && (
+            <JsonLd data={itemListSchema(
+              `${language.name}-Speaking ${category.name} in ${city.name}`,
+              cappedForSchema,
+              city.name,
+              base,
+            )} />
+          )}
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {providers.length > LISTING_CAP && (
+            <div className="text-center">
+              <Link
+                href={`/search?city=${city.slug}&q=${language.name}+${category.name}`}
+                className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-4 py-2 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+              >
+                View all {count} providers
+              </Link>
+            </div>
+          )}
 
-      {/* Provider list — sorted by rating, cap 30 */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{language.name}-Speaking {category.name}</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {capped.map((p) => (
-            <ProviderCard
-              key={p.id}
-              name={p.name}
-              slug={p.slug}
-              citySlug={p.citySlug}
-              categorySlug={p.categorySlug}
-              address={p.address}
-              phone={p.phone}
-              website={p.website}
-              shortDescription={p.shortDescription}
-              googleRating={p.googleRating}
-              googleReviewCount={p.googleReviewCount}
-              isClaimed={p.isClaimed}
-              isVerified={p.isVerified}
-              coverImageUrl={p.coverImageUrl}
-            />
-          ))}
-        </div>
-        {providers.length > 30 && (
-          <div className="text-center mt-6 py-4 border-t border-black/[0.06]">
+          {/* Cross-link: all language providers in city */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              More {language.name}-speaking providers in {city.name}
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mb-3">
+              {totalLangProviders} total {language.name}-speaking healthcare providers in {city.name}.
+            </p>
             <Link
-              href={`/search?city=${city.slug}&q=${language.name}+${category.name}`}
-              className="btn-accent"
+              href={`/directory/${city.slug}/language/${language.slug}`}
+              className="inline-flex items-center font-sans text-z-body-sm font-medium text-accent-dark hover:underline"
             >
-              View all {count} providers
+              All {language.name}-speaking providers in {city.name} &rarr;
             </Link>
           </div>
-        )}
-      </div>
 
-      {/* Cross-links */}
-      <div className="mb-8 space-y-6">
-        {/* All language providers in city */}
-        <div>
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">More {language.name}-Speaking Providers in {city.name}</h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
-            {totalLangProviders} total {language.name}-speaking healthcare providers in {city.name}.
-          </p>
-          <Link
-            href={`/directory/${city.slug}/language/${language.slug}`}
-            className="text-sm font-medium text-[#006828] hover:underline"
-          >
-            All {language.name}-speaking providers in {city.name} &rarr;
-          </Link>
-        </div>
-
-        {/* All category providers in city */}
-        <div>
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All {category.name} in {city.name}</h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
-            {totalCatProviders} total {category.name.toLowerCase()} across all languages in {city.name}.
-          </p>
-          <Link
-            href={`/directory/${city.slug}/${category.slug}`}
-            className="text-sm font-medium text-[#006828] hover:underline"
-          >
-            All {category.name.toLowerCase()} in {city.name} &rarr;
-          </Link>
-        </div>
-
-        {/* Other languages for this category */}
-        {otherLanguages.length > 0 && (
+          {/* Cross-link: all category providers in city */}
           <div>
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Languages for {category.name} in {city.name}</h2>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {otherLanguages.slice(0, 12).map((l) => (
-                <Link
-                  key={l.slug}
-                  href={`/directory/${city.slug}/language/${l.slug}/${category.slug}`}
-                  className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]"
-                >
-                  {l.name}
-                </Link>
-              ))}
-            </div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              All {category.name} in {city.name}
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mb-3">
+              {totalCatProviders} total {category.name.toLowerCase()} across all languages in {city.name}.
+            </p>
+            <Link
+              href={`/directory/${city.slug}/${category.slug}`}
+              className="inline-flex items-center font-sans text-z-body-sm font-medium text-accent-dark hover:underline"
+            >
+              All {category.name.toLowerCase()} in {city.name} &rarr;
+            </Link>
           </div>
-        )}
 
-        {/* Other categories for this language */}
-        {otherCategories.length > 0 && (
+          {/* Other languages */}
+          {otherLanguages.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Other languages for {category.name} in {city.name}
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {otherLanguages.slice(0, 12).map((l) => (
+                  <li key={l.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/language/${l.slug}/${category.slug}`}
+                      className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {l.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Other categories */}
+          {otherCategories.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Other {language.name}-speaking specialties in {city.name}
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {otherCategories.slice(0, 12).map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/language/${language.slug}/${c.slug}`}
+                      className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {c.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* FAQ */}
           <div>
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other {language.name}-Speaking Specialties in {city.name}</h2>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {otherCategories.slice(0, 12).map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/directory/${city.slug}/language/${language.slug}/${c.slug}`}
-                  className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]"
-                >
-                  {c.name}
-                </Link>
-              ))}
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+              Good to know
+            </h2>
+            <div className="max-w-3xl">
+              <FaqSection
+                faqs={faqs}
+                title={`${language.name}-Speaking ${category.name} in ${city.name} — FAQ`}
+              />
             </div>
           </div>
-        )}
-      </div>
-
-      {/* FAQs */}
-      <FaqSection
-        faqs={faqs}
-        title={`${language.name}-Speaking ${category.name} in ${city.name} — FAQ`}
-      />
-    </div>
+        </>
+      }
+    />
   );
 }

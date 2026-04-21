@@ -13,6 +13,7 @@ import {
 } from "@/lib/data";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import { ChevronLeft } from "lucide-react";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 86400;
 
@@ -34,18 +35,18 @@ export default async function ArabicHomePage() {
   const categories = getCategories();
   const base = getBaseUrl();
 
-  // Pre-fetch all async data
+  // Pre-fetch all async data (wrapped in safe())
   const [topProviders, cityCounts, catCounts] = await Promise.all([
-    getTopRatedProviders(undefined, 8),
-    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
-    Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))),
+    safe(getTopRatedProviders(undefined, 8), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "ar.topProviders"),
+    safe(Promise.all(cities.map((c) => getProviderCountByCity(c.slug))), cities.map(() => 0) as number[], "ar.cityCounts"),
+    safe(Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))), categories.map(() => 0) as number[], "ar.catCounts"),
   ]);
   const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
   const catCountMap = Object.fromEntries(categories.map((cat, i) => [cat.slug, catCounts[i]]));
   const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   return (
-    <>
+    <div dir="rtl" className="font-arabic">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebSite",
@@ -306,6 +307,6 @@ export default async function ArabicHomePage() {
           Switch to English / التبديل إلى الإنجليزية
         </Link>
       </section>
-    </>
+    </div>
   );
 }

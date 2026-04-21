@@ -164,7 +164,7 @@ export default function ArBenchmarksPage() {
     <div
       dir="rtl"
       lang="ar"
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <JsonLd
         data={{

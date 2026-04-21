@@ -1,9 +1,8 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const metadata: Metadata = {
   title: "Healthcare Guide | UAE Open Healthcare Directory",
@@ -68,56 +67,57 @@ const GUIDE_LINKS = [
 export default function GuideHubPage() {
   const base = getBaseUrl();
 
+  const guideItems: HubItem[] = GUIDE_LINKS.map((guide) => ({
+    href: `/directory/guide/${guide.slug}`,
+    label: guide.title,
+    subLabel: guide.description,
+  }));
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "Home", url: base },
-          { name: "Healthcare Guide", url: `${base}/directory/guide` },
-        ])}
-      />
-
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Healthcare Guide" },
-        ]}
-      />
-
-      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-6">
-        UAE Healthcare Guide
-      </h1>
-
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-10" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed text-lg">
-          A comprehensive guide to navigating healthcare in the United Arab
-          Emirates. Learn how the regulatory system works, understand your
-          insurance options, find the right doctor, and know what to do in an
-          emergency. Each article is written for UAE residents and visitors
-          looking for clear, authoritative information.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">All Guides</h2>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        {GUIDE_LINKS.map((guide) => (
-          <Link
-            key={guide.slug}
-            href={`/directory/guide/${guide.slug}`}
-            className="border border-black/[0.06] p-5 hover:border-[#006828]/15 transition-colors group"
-          >
-            <h3 className="text-lg font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors mb-2">
-              {guide.title}
-            </h3>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40">
-              {guide.description}
-            </p>
-          </Link>
-        ))}
-      </div>
-    </div>
+    <HubPageTemplate
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Healthcare Guide" },
+      ]}
+      eyebrow="UAE healthcare guide"
+      title="UAE Healthcare Guide."
+      subtitle={
+        <>
+          A comprehensive guide to navigating healthcare in the United Arab Emirates. Learn how the
+          regulatory system works, understand your insurance options, find the right doctor, and know
+          what to do in an emergency. Each article is written for UAE residents and visitors looking
+          for clear, authoritative information.
+        </>
+      }
+      stats={[
+        { n: String(GUIDE_LINKS.length), l: "Guides" },
+        { n: "UAE", l: "All emirates" },
+      ]}
+      aeoAnswer={
+        <>
+          A comprehensive guide to navigating healthcare in the United Arab Emirates. Learn how the
+          regulatory system works (DHA, DOH, MOHAP), understand your insurance options, find the right
+          doctor, and know what to do in an emergency. Each article is written for UAE residents and
+          visitors looking for clear, authoritative information.
+        </>
+      }
+      schemas={
+        <JsonLd
+          data={breadcrumbSchema([
+            { name: "Home", url: base },
+            { name: "Healthcare Guide", url: `${base}/directory/guide` },
+          ])}
+        />
+      }
+      sections={[
+        {
+          title: "All guides",
+          eyebrow: "Browse by topic",
+          items: guideItems,
+          layout: "grid",
+          gridCols: "2",
+        },
+      ]}
+    />
   );
 }

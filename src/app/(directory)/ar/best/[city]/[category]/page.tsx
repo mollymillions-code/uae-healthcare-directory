@@ -119,7 +119,7 @@ export default async function ArabicBestCategoryInCityPage({ params }: Props) {
     .slice(0, 8);
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: ar.home, url: `${base}/ar` },
         { name: ar.bestProviders, url: `${base}/ar/best` },

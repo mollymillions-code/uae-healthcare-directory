@@ -2,8 +2,6 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -24,6 +22,8 @@ import {
   generateConditionFaqs,
 } from "@/lib/seo-conditions";
 import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
+import { safe } from "@/lib/safeData";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 
 export const revalidate = 21600;
 
@@ -113,12 +113,16 @@ async function getProvidersForCondition(
   const seen = new Set<string>();
   const result: LocalProvider[] = [];
   for (const catSlug of specialties) {
-    const { providers } = await getProviders({
-      citySlug,
-      categorySlug: catSlug,
-      limit: 30,
-      sort: "rating",
-    });
+    const { providers } = await safe(
+      getProviders({
+        citySlug,
+        categorySlug: catSlug,
+        limit: 30,
+        sort: "rating",
+      }),
+      { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+      `condition-providers:${catSlug}`,
+    );
     for (const p of providers) {
       if (!seen.has(p.id)) {
         seen.add(p.id);
@@ -168,12 +172,7 @@ export default async function ConditionPage({ params }: Props) {
   // Thin-content gate (Zocdoc roadmap P0 #11): if this condition is NOT
   // hand-authored AND has fewer than 10 matched providers across all
   // mapped specialties in the city, the page body is too thin to justify
-  // indexing. The page still renders (for the occasional direct visitor)
-  // but the metadata gate above already emitted `noindex,follow` via the
-  // facet-rules evaluateCombo call. We double-gate here by bailing early
-  // to 404 when the fallback detail + city produces <10 providers — this
-  // prevents templated thin content on ~96 fallback condition×city combos
-  // from leaking into the sitemap or getting crawled.
+  // indexing.
   if (!isHandAuthored && count < 10) notFound();
 
   const base = getBaseUrl();
@@ -187,7 +186,11 @@ export default async function ConditionPage({ params }: Props) {
   // Doctor cross-links — pull up to 4 doctors from each of the first 2 mapped specialties.
   const doctorCrossLinks: Awaited<ReturnType<typeof getProfessionalsIndexBySpecialty>>["professionals"] = [];
   for (const spec of detail.specialties.slice(0, 2)) {
-    const { professionals } = await getProfessionalsIndexBySpecialty(spec, { limit: 4 });
+    const { professionals } = await safe(
+      getProfessionalsIndexBySpecialty(spec, { limit: 4 }),
+      { professionals: [], total: 0 } as Awaited<ReturnType<typeof getProfessionalsIndexBySpecialty>>,
+      `doctorXlinks:${spec}`,
+    );
     doctorCrossLinks.push(...professionals);
   }
 
@@ -210,202 +213,192 @@ export default async function ConditionPage({ params }: Props) {
     locale: "en-AE",
   });
 
-  return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {schemaNodes.map((node, idx) => (
-        <JsonLd key={idx} data={node} />
-      ))}
-      <JsonLd data={speakableSchema([".answer-block"])} />
+  const displayProviders = providers.slice(0, 18);
 
-      <Breadcrumb items={[
+  return (
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "Conditions", href: `/directory/${city.slug}/condition` },
         { label: detail.name },
-      ]} />
+      ]}
+      eyebrow={`Condition · ${city.name}`}
+      title={`${detail.name} Treatment in ${city.name}.`}
+      subtitle={
+        <>
+          {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
+        </>
+      }
+      aeoAnswer={
+        <>
+          <p>{detail.introEn}</p>
+          {detail.introAr && (
+            <p dir="rtl" lang="ar" className="mt-3">{detail.introAr}</p>
+          )}
+        </>
+      }
+      total={count}
+      providers={displayProviders.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: null,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          {schemaNodes.map((node, idx) => (
+            <JsonLd key={idx} data={node} />
+          ))}
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {/* Symptoms + urgent signs */}
+          {(detail.symptomsEn?.length || detail.urgentSignsEn?.length) ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {detail.symptomsEn && detail.symptomsEn.length > 0 && (
+                <div className="bg-white rounded-z-md border border-ink-line p-5">
+                  <h2 className="font-display font-semibold text-ink text-z-h3 mb-3">
+                    Common symptoms
+                  </h2>
+                  <ul className="space-y-1.5">
+                    {detail.symptomsEn.map((s, idx) => (
+                      <li key={idx} className="font-sans text-z-body-sm text-ink-soft leading-relaxed">
+                        &middot; {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {detail.urgentSignsEn && detail.urgentSignsEn.length > 0 && (
+                <div className="bg-amber-50 rounded-z-md border border-amber-400/30 p-5" role="alert">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-4 w-4 text-amber-700" aria-hidden="true" />
+                    <h2 className="font-display font-semibold text-amber-900 text-z-h3">
+                      When to seek urgent care
+                    </h2>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {detail.urgentSignsEn.map((s, idx) => (
+                      <li key={idx} className="font-sans text-z-body-sm text-amber-800 leading-relaxed">
+                        &middot; {s}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="font-sans text-z-caption text-amber-700 mt-3">
+                    If you experience any of the above, go directly to the nearest {city.name} emergency department, or call 999. UAE-licensed emergency rooms triage life-threatening symptoms regardless of insurance status.
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : null}
 
-      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-        {detail.name} Treatment in {city.name}
-      </h1>
-      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-        {count} verified {count === 1 ? "provider" : "providers"} · Last updated March 2026
-      </p>
-
-      {/* ── (1) Condition intro ─────────────────────────────────────── */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/60 leading-relaxed">
-          {detail.introEn}
-        </p>
-      </div>
-
-      {/* Arabic intro mirror */}
-      {detail.introAr && (
-        <div dir="rtl" lang="ar" className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/60 leading-relaxed">
-            {detail.introAr}
-          </p>
-        </div>
-      )}
-
-      {/* Symptoms + urgent signs block */}
-      {(detail.symptomsEn?.length || detail.urgentSignsEn?.length) && (
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {detail.symptomsEn && detail.symptomsEn.length > 0 && (
-            <div className="bg-white rounded-xl border border-black/[0.06] p-5">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-base text-[#1c1c1c] tracking-tight mb-3">
-                Common symptoms
+          {/* Specialties that treat this condition */}
+          {relatedCats.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Specialties that treat {detail.name.toLowerCase()}
               </h2>
-              <ul className="space-y-1.5">
-                {detail.symptomsEn.map((s, idx) => (
-                  <li key={idx} className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-                    &middot; {s}
+              <ul className="flex flex-wrap gap-2">
+                {relatedCats.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/directory/${city.slug}/${cat.slug}`}
+                      className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {cat.name} in {city.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          {detail.urgentSignsEn && detail.urgentSignsEn.length > 0 && (
-            // ── (6) Urgent-care red banner ───────────────────────────
-            <div className="bg-amber-50 rounded-xl border border-amber-400/30 p-5" role="alert">
-              <div className="flex items-center gap-2 mb-3">
-                <AlertTriangle className="h-4 w-4 text-amber-700" aria-hidden="true" />
-                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-base text-amber-900 tracking-tight">
-                  When to seek urgent care
-                </h2>
+
+          {/* Individual specialists */}
+          {doctorCrossLinks.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Individual specialists for {detail.name.toLowerCase()}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {doctorCrossLinks.map((doc) => (
+                  <Link
+                    key={doc.id}
+                    href={`/find-a-doctor/${doc.specialtySlug}/${doc.slug}`}
+                    className="group block bg-white border border-ink-line rounded-z-md p-4 hover:border-ink transition-colors"
+                  >
+                    <h3 className="font-sans font-semibold text-ink text-z-body-sm group-hover:underline decoration-1 underline-offset-2 truncate">
+                      {doc.displayTitle}
+                    </h3>
+                    <p className="font-sans text-z-caption text-ink-muted mt-0.5 truncate">
+                      {doc.specialty}
+                    </p>
+                    {doc.primaryFacilityName && (
+                      <p className="font-sans text-z-caption text-ink-muted mt-0.5 truncate">
+                        {doc.primaryFacilityName}
+                      </p>
+                    )}
+                  </Link>
+                ))}
               </div>
-              <ul className="space-y-1.5">
-                {detail.urgentSignsEn.map((s, idx) => (
-                  <li key={idx} className="font-['Geist',sans-serif] text-sm text-amber-800 leading-relaxed">
-                    &middot; {s}
+            </div>
+          )}
+
+          {/* Related tests */}
+          {detail.relatedTests && detail.relatedTests.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Related diagnostic tests
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {detail.relatedTests.map((testSlug) => (
+                  <li key={testSlug}>
+                    <Link
+                      href={`/labs/test/${testSlug}`}
+                      className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
+                    >
+                      {testSlug.replace(/-/g, " ")}
+                    </Link>
                   </li>
                 ))}
               </ul>
-              <p className="font-['Geist',sans-serif] text-xs text-amber-700 mt-3">
-                If you experience any of the above, go directly to the nearest {city.name} emergency department, or call 999. UAE-licensed emergency rooms triage life-threatening symptoms regardless of insurance status.
+            </div>
+          )}
+
+          {/* Insurance note */}
+          {detail.insuranceNotesEn && (
+            <div className="bg-surface-cream rounded-z-md border border-ink-line p-5">
+              <h2 className="font-display font-semibold text-ink text-z-h3 mb-2">
+                Insurance coverage for {detail.name.toLowerCase()}
+              </h2>
+              <p className="font-sans text-z-body-sm text-ink-soft leading-relaxed">
+                {detail.insuranceNotesEn}
               </p>
             </div>
           )}
-        </section>
-      )}
 
-      {/* ── (2) Which specialties treat this condition ──────────────── */}
-      {relatedCats.length > 0 && (
-        <section className="mb-8">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-3 border-b-2 border-[#1c1c1c] pb-2">
-            Specialties that treat {detail.name.toLowerCase()}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {relatedCats.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/directory/${city.slug}/${cat.slug}`}
-                className="inline-block border border-[#006828]/20 text-[#006828] text-sm rounded-full font-['Geist',sans-serif] px-3 py-1.5 hover:bg-[#006828]/[0.04] transition-colors"
-              >
-                {cat.name} in {city.name}
-              </Link>
-            ))}
+          {/* FAQ */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+              Good to know
+            </h2>
+            <div className="max-w-3xl">
+              <FaqSection faqs={faqs} title={`${detail.name} Treatment in ${city.name} — FAQ`} />
+            </div>
           </div>
-        </section>
-      )}
-
-      {/* ── (3) Top relevant facilities ─────────────────────────────── */}
-      {providers.length > 0 && (
-        <section className="mb-10">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-4 border-b-2 border-[#1c1c1c] pb-2">
-            Top providers for {detail.name.toLowerCase()} in {city.name}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {providers.slice(0, 18).map((p) => (
-              <ProviderCard
-                key={p.id}
-                name={p.name}
-                slug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                address={p.address}
-                phone={p.phone}
-                website={p.website}
-                shortDescription={p.shortDescription}
-                googleRating={p.googleRating}
-                googleReviewCount={p.googleReviewCount}
-                isClaimed={p.isClaimed}
-                isVerified={p.isVerified}
-                coverImageUrl={p.coverImageUrl}
-                insurance={p.insurance}
-                languages={p.languages}
-                services={p.services}
-                operatingHours={p.operatingHours}
-                accessibilityOptions={p.accessibilityOptions}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── (4) Top relevant doctors ───────────────────────────────── */}
-      {doctorCrossLinks.length > 0 && (
-        <section className="mb-10">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-4 border-b-2 border-[#1c1c1c] pb-2">
-            Individual specialists for {detail.name.toLowerCase()}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {doctorCrossLinks.map((doc) => (
-              <Link
-                key={doc.id}
-                href={`/find-a-doctor/${doc.specialtySlug}/${doc.slug}`}
-                className="group block bg-white border border-black/[0.06] rounded-xl p-4 hover:border-[#006828]/15 hover:bg-[#006828]/[0.02] transition-colors"
-              >
-                <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] group-hover:text-[#006828] tracking-tight mb-1 truncate">
-                  {doc.displayTitle}
-                </h3>
-                <p className="font-['Geist',sans-serif] text-xs text-black/40 truncate">
-                  {doc.specialty}
-                </p>
-                {doc.primaryFacilityName && (
-                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5 truncate">
-                    {doc.primaryFacilityName}
-                  </p>
-                )}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── (5) Related tests / labs cross-link ─────────────────────── */}
-      {detail.relatedTests && detail.relatedTests.length > 0 && (
-        <section className="mb-10">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-4 border-b-2 border-[#1c1c1c] pb-2">
-            Related diagnostic tests
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {detail.relatedTests.map((testSlug) => (
-              <Link
-                key={testSlug}
-                href={`/labs/test/${testSlug}`}
-                className="inline-block bg-white text-[#1c1c1c] text-sm px-3 py-2 rounded-lg border border-black/[0.06] hover:border-[#006828]/20 hover:bg-[#006828]/[0.04] transition-colors font-['Geist',sans-serif]"
-              >
-                {testSlug.replace(/-/g, " ")}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── (7) Insurance coverage note ─────────────────────────────── */}
-      {detail.insuranceNotesEn && (
-        <section className="mb-10 bg-[#006828]/[0.03] rounded-xl p-5 border border-[#006828]/[0.08]">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-base text-[#006828] tracking-tight mb-2">
-            Insurance coverage for {detail.name.toLowerCase()}
-          </h2>
-          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            {detail.insuranceNotesEn}
-          </p>
-        </section>
-      )}
-
-      {/* ── (8) FAQ block ───────────────────────────────────────────── */}
-      <FaqSection faqs={faqs} title={`${detail.name} Treatment in ${city.name} — FAQ`} />
-    </div>
+        </>
+      }
+    />
   );
 }

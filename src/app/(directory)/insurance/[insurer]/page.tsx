@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Phone, Globe } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ArrowLeft, ArrowRight, ChevronRight, Phone, Globe, Sparkles } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { PlanCard } from "@/components/insurance/PlanCard";
@@ -16,8 +15,14 @@ import {
   formatLimit,
   getTierLabel,
 } from "@/lib/insurance";
-import { breadcrumbSchema, faqPageSchema, speakableSchema, insuranceAgencySchema } from "@/lib/seo";
+import {
+  breadcrumbSchema,
+  faqPageSchema,
+  speakableSchema,
+  insuranceAgencySchema,
+} from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -31,12 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) return {};
   const base = getBaseUrl();
-  let stats: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
-  try {
-    stats = await getInsurerNetworkStats(params.insurer);
-  } catch {
-    // Graceful degradation — metadata still works without network stats
-  }
+  const stats = await safe(
+    getInsurerNetworkStats(params.insurer),
+    undefined as Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined,
+    `insurer:metadataStats:${params.insurer}`,
+  );
 
   return {
     title: `${profile.name} Health Insurance UAE — Plans, Coverage & ${stats?.totalProviders.toLocaleString() || ""} Provider Network`,
@@ -55,16 +59,15 @@ export default async function InsurerDetailPage({ params }: Props) {
   const profile = getInsurerProfile(params.insurer);
   if (!profile) notFound();
 
-  let stats: Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined;
-  try {
-    stats = await getInsurerNetworkStats(params.insurer);
-  } catch (e) {
-    console.error(`[insurance/${params.insurer}] Failed to load network stats:`, e instanceof Error ? e.message : e);
-  }
+  const stats = await safe(
+    getInsurerNetworkStats(params.insurer),
+    undefined as Awaited<ReturnType<typeof getInsurerNetworkStats>> | undefined,
+    `insurer:stats:${params.insurer}`,
+  );
   const base = getBaseUrl();
 
   const cheapestPlan = [...profile.plans].sort(
-    (a, b) => a.premiumRange.min - b.premiumRange.min
+    (a, b) => a.premiumRange.min - b.premiumRange.min,
   )[0];
 
   const faqs = [
@@ -100,8 +103,30 @@ export default async function InsurerDetailPage({ params }: Props) {
     },
   ];
 
+  // "Other insurers to consider" — load stats once and derive from it
+  const allStats = await safe(
+    getAllInsurerNetworkStats(),
+    [] as Awaited<ReturnType<typeof getAllInsurerNetworkStats>>,
+    `insurer:allStats:${params.insurer}`,
+  );
+  const otherInsurers = allStats
+    .filter((s) => s.slug !== profile.slug && s.totalProviders > 0)
+    .sort((a, b) => {
+      const diff =
+        Math.abs(a.totalProviders - (stats?.totalProviders ?? 0)) -
+        Math.abs(b.totalProviders - (stats?.totalProviders ?? 0));
+      return diff;
+    })
+    .slice(0, 5);
+
+  const breadcrumbs = [
+    { label: "UAE", href: "/" },
+    { label: "Insurance Navigator", href: "/insurance" },
+    { label: profile.name },
+  ];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -113,274 +138,335 @@ export default async function InsurerDetailPage({ params }: Props) {
       <JsonLd data={speakableSchema([".answer-block"])} />
       <JsonLd data={insuranceAgencySchema(profile, stats ?? null)} />
 
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: "Insurance Navigator", href: "/insurance" },
-          { label: profile.name },
-        ]}
-      />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+          <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
+        </div>
 
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <div>
-            <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">{profile.name}</h1>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-1">
-              Est. {profile.foundedYear} · {profile.headquarters} ·{" "}
-              {profile.regulators.map((r) => r.toUpperCase()).join(", ")} regulated
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            {breadcrumbs.map((b, i) => {
+              const isLast = i === breadcrumbs.length - 1;
+              return (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {b.href && !isLast ? (
+                    <Link href={b.href} className="hover:text-ink transition-colors">
+                      {b.label}
+                    </Link>
+                  ) : (
+                    <span className={isLast ? "text-ink font-medium" : undefined}>
+                      {b.label}
+                    </span>
+                  )}
+                  {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
+                </span>
+              );
+            })}
+          </nav>
+
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" />
+            UAE insurer profile
+          </p>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="min-w-0">
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+                {profile.name}
+              </h1>
+              <p className="font-sans text-z-body-sm text-ink-muted mt-2">
+                Est. {profile.foundedYear} · {profile.headquarters} ·{" "}
+                {profile.regulators.map((r) => r.toUpperCase()).join(", ")} regulated
+              </p>
+            </div>
+            <span className="inline-flex items-center rounded-z-pill bg-accent-muted px-3 py-1 font-sans text-z-caption font-medium text-accent-dark shrink-0">
+              {profile.type}
+            </span>
+          </div>
+
+          <div
+            className="mt-6 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl"
+            data-answer-block="true"
+          >
+            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+              {profile.keyFacts[0]}. {profile.name} offers {profile.plans.length}{" "}
+              health insurance plan{profile.plans.length !== 1 ? "s" : ""} in the
+              UAE
+              {stats
+                ? `, accepted by ${stats.totalProviders.toLocaleString()} healthcare providers across ${stats.byCity.length} cities`
+                : ""}
+              . Data cross-referenced with the UAE Open Healthcare Directory.
             </p>
           </div>
-          <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{profile.type}</span>
+
+          <div className="mt-5 flex flex-wrap gap-4 font-sans text-z-body-sm text-ink-muted">
+            <span className="inline-flex items-center gap-1.5">
+              <Phone className="h-3.5 w-3.5" /> {profile.claimsPhone}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Globe className="h-3.5 w-3.5" /> {profile.website}
+            </span>
+          </div>
         </div>
+      </section>
 
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            {profile.keyFacts[0]}.{" "}
-            {profile.name} offers {profile.plans.length} health insurance plan
-            {profile.plans.length !== 1 ? "s" : ""} in the UAE
-            {stats ? `, accepted by ${stats.totalProviders.toLocaleString()} healthcare providers across ${stats.byCity.length} cities` : ""}.
-            Data cross-referenced with the UAE Open Healthcare Directory.
-          </p>
-        </div>
-
-        {/* Contact */}
-        <div className="flex flex-wrap gap-4 text-xs">
-          <span className="flex items-center gap-1.5 text-black/40">
-            <Phone className="w-3.5 h-3.5" /> {profile.claimsPhone}
-          </span>
-          <span className="flex items-center gap-1.5 text-black/40">
-            <Globe className="w-3.5 h-3.5" /> {profile.website}
-          </span>
-        </div>
-      </div>
-
-      {/* Key Facts */}
-      <div className="bg-[#f8f8f6] p-4 mb-8 border border-black/[0.06]">
-        <h2 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-3">Key Facts</h2>
-        <ul className="space-y-1.5">
-          {profile.keyFacts.map((fact) => (
-            <li key={fact} className="text-xs text-[#1c1c1c] flex items-start gap-2">
-              <span className="text-[#006828] mt-0.5 flex-shrink-0">▸</span>
-              {fact}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Coverage at a Glance */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Coverage at a Glance</h2>
-      </div>
-      <div className="mb-10 overflow-x-auto">
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="bg-[#1c1c1c] text-white">
-              <th className="px-3 py-2 text-left font-semibold">Plan</th>
-              <th className="px-3 py-2 text-left font-semibold">Tier</th>
-              <th className="px-3 py-2 text-left font-semibold">Premium / yr</th>
-              <th className="px-3 py-2 text-left font-semibold">Annual Limit</th>
-              <th className="px-3 py-2 text-left font-semibold">Co-pay</th>
-              <th className="px-3 py-2 text-center font-semibold">Dental</th>
-              <th className="px-3 py-2 text-center font-semibold">Optical</th>
-            </tr>
-          </thead>
-          <tbody>
-            {profile.plans.map((plan, i) => (
-              <tr
-                key={plan.id}
-                className={i % 2 === 0 ? "bg-white" : "bg-[#f8f8f6]"}
+      <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-14">
+        {/* Key Facts */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              At a glance
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Key facts.
+            </h2>
+          </header>
+          <ul className="rounded-z-md bg-white border border-ink-line p-6 space-y-3 max-w-3xl">
+            {profile.keyFacts.map((fact) => (
+              <li
+                key={fact}
+                className="flex items-start gap-2.5 font-sans text-z-body-sm text-ink leading-relaxed"
               >
-                <td className="px-3 py-2 font-medium text-[#1c1c1c] border-b border-black/[0.06]">
-                  {plan.name}
-                </td>
-                <td className="px-3 py-2 border-b border-black/[0.06]">
-                  <span
-                    className={`inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                      plan.tier === "vip"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : plan.tier === "premium"
-                        ? "bg-purple-100 text-purple-800"
-                        : plan.tier === "enhanced"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {getTierLabel(plan.tier)}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-black/40 border-b border-black/[0.06]">
-                  {formatPremium(plan.premiumRange)}
-                </td>
-                <td className="px-3 py-2 text-black/40 border-b border-black/[0.06]">
-                  {formatLimit(plan.annualLimit)}
-                </td>
-                <td className="px-3 py-2 text-black/40 border-b border-black/[0.06]">
-                  {plan.copayOutpatient === 0 ? "0%" : `${plan.copayOutpatient}%`}
-                </td>
-                <td className="px-3 py-2 text-center border-b border-black/[0.06]">
-                  {plan.coverage.dental ? (
-                    <span className="text-green-600 font-bold">✓</span>
-                  ) : (
-                    <span className="text-black/40">—</span>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-center border-b border-black/[0.06]">
-                  {plan.coverage.optical ? (
-                    <span className="text-green-600 font-bold">✓</span>
-                  ) : (
-                    <span className="text-black/40">—</span>
-                  )}
-                </td>
-              </tr>
+                <ArrowRight className="h-4 w-4 text-accent-dark mt-0.5 shrink-0" />
+                <span>{fact}</span>
+              </li>
             ))}
-          </tbody>
-        </table>
-        <p className="text-[10px] text-black/40 mt-1.5">
-          Co-pay shown is for outpatient visits. Premiums are indicative annual ranges.
-        </p>
-      </div>
+          </ul>
+        </section>
 
-      {/* Plans */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurance Plans</h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-        {profile.plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            insurerName={profile.name}
-            insurerSlug={profile.slug}
-            networkSize={stats?.totalProviders}
-          />
-        ))}
-      </div>
-
-      {/* Network Stats */}
-      {stats && stats.totalProviders > 0 && (
-        <>
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Provider Network</h2>
+        {/* Coverage at a Glance */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Coverage matrix
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Coverage at a glance.
+            </h2>
+          </header>
+          <div className="rounded-z-md bg-white border border-ink-line overflow-x-auto">
+            <table className="w-full font-sans text-z-body-sm">
+              <thead>
+                <tr className="border-b border-ink-line text-ink-soft text-z-caption uppercase tracking-[0.04em]">
+                  <th className="px-4 py-3 text-left font-medium">Plan</th>
+                  <th className="px-4 py-3 text-left font-medium">Tier</th>
+                  <th className="px-4 py-3 text-left font-medium">Premium / yr</th>
+                  <th className="px-4 py-3 text-left font-medium">Annual Limit</th>
+                  <th className="px-4 py-3 text-left font-medium">Co-pay</th>
+                  <th className="px-4 py-3 text-center font-medium">Dental</th>
+                  <th className="px-4 py-3 text-center font-medium">Optical</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profile.plans.map((plan) => (
+                  <tr key={plan.id} className="border-b border-ink-hairline last:border-b-0">
+                    <td className="px-4 py-3 font-medium text-ink">{plan.name}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center rounded-z-pill bg-accent-muted px-2.5 py-0.5 font-sans text-z-micro font-medium text-accent-dark">
+                        {getTierLabel(plan.tier)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-ink-soft">
+                      {formatPremium(plan.premiumRange)}
+                    </td>
+                    <td className="px-4 py-3 text-ink-soft">
+                      {formatLimit(plan.annualLimit)}
+                    </td>
+                    <td className="px-4 py-3 text-ink-soft">
+                      {plan.copayOutpatient === 0 ? "0%" : `${plan.copayOutpatient}%`}
+                    </td>
+                    <td className="px-4 py-3 text-center text-ink">
+                      {plan.coverage.dental ? "✓" : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-center text-ink">
+                      {plan.coverage.optical ? "✓" : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="mb-12">
-            <NetworkStats stats={stats} />
-          </div>
-        </>
-      )}
-
-      {/* Claims Process Answer Block */}
-      <div className="mb-10 bg-[#f8f8f6] border border-black/[0.06] p-5">
-        <h2 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
-          How claims work with {profile.name}
-        </h2>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-            <strong>Direct billing:</strong> Present your {profile.name} insurance card at any in-network
-            provider. The clinic or hospital bills {profile.name} directly — you pay only
-            your applicable co-pay ({profile.plans[0]?.copayOutpatient ?? 0}%–
-            {profile.plans[profile.plans.length - 1]?.copayOutpatient ?? 0}% outpatient) at the
-            point of care. No paperwork required.{" "}
-            <strong>Reimbursement claims:</strong> For out-of-network or emergency treatment, collect
-            itemised invoices and medical reports, then submit via {profile.website} or call{" "}
-            {profile.claimsPhone}. Standard reimbursement decisions are issued within 15–30 working
-            days. Pre-authorisation is required for planned inpatient admissions, surgeries, and
-            high-cost diagnostics — contact {profile.name} at least 48 hours in advance.
+          <p className="font-sans text-z-caption text-ink-muted mt-2">
+            Co-pay shown is for outpatient visits. Premiums are indicative annual ranges.
           </p>
-        </div>
-      </div>
+        </section>
 
-      {/* FAQ */}
-      <FaqSection faqs={faqs} title={`${profile.name} Insurance — FAQ`} />
+        {/* Plans */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Plan catalogue
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Insurance plans.
+            </h2>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {profile.plans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                plan={plan}
+                insurerName={profile.name}
+                insurerSlug={profile.slug}
+                networkSize={stats?.totalProviders}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* Other Insurers to Consider */}
-      {await (async () => {
-        let allStats: Awaited<ReturnType<typeof getAllInsurerNetworkStats>>;
-        try {
-          allStats = await getAllInsurerNetworkStats();
-        } catch (e) {
-          console.error(`[insurance/${params.insurer}] Failed to load all insurer stats:`, e instanceof Error ? e.message : e);
-          return null;
-        }
-        const others = allStats
-          .filter((s) => s.slug !== profile.slug && s.totalProviders > 0)
-          .sort((a, b) => {
-            const diff = Math.abs(a.totalProviders - (stats?.totalProviders ?? 0)) -
-                         Math.abs(b.totalProviders - (stats?.totalProviders ?? 0));
-            return diff;
-          })
-          .slice(0, 5);
-        if (others.length === 0) return null;
-        return (
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Insurers to Consider</h2>
+        {/* Network Stats */}
+        {stats && stats.totalProviders > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                Who accepts this
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Provider network.
+              </h2>
+            </header>
+            <NetworkStats stats={stats} />
+          </section>
+        )}
+
+        {/* Claims Process Answer Block */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              The claims flow
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              How claims work with {profile.name}.
+            </h2>
+          </header>
+          <div
+            className="rounded-z-md bg-white border border-ink-line p-6 max-w-4xl answer-block"
+            data-answer-block="true"
+          >
+            <div className="font-sans text-z-body-sm text-ink-soft leading-[1.75] space-y-3">
+              <p>
+                <strong className="text-ink">Direct billing.</strong> Present
+                your {profile.name} insurance card at any in-network provider.
+                The clinic or hospital bills {profile.name} directly — you pay
+                only your applicable co-pay ({profile.plans[0]?.copayOutpatient ?? 0}%–
+                {profile.plans[profile.plans.length - 1]?.copayOutpatient ?? 0}%
+                outpatient) at the point of care. No paperwork required.
+              </p>
+              <p>
+                <strong className="text-ink">Reimbursement claims.</strong> For
+                out-of-network or emergency treatment, collect itemised invoices
+                and medical reports, then submit via {profile.website} or call{" "}
+                {profile.claimsPhone}. Standard reimbursement decisions are
+                issued within 15–30 working days. Pre-authorisation is required
+                for planned inpatient admissions, surgeries, and high-cost
+                diagnostics — contact {profile.name} at least 48 hours in
+                advance.
+              </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {others.map((s) => {
-                const p = getInsurerProfile(s.slug)!;
+          </div>
+        </section>
+
+        {/* Other Insurers to Consider */}
+        {otherInsurers.length > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                Keep comparing
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Other insurers to consider.
+              </h2>
+            </header>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {otherInsurers.map((s) => {
+                const p = getInsurerProfile(s.slug);
+                if (!p) return null;
                 return (
                   <Link
                     key={s.slug}
                     href={`/insurance/${s.slug}`}
-                    className="block border border-black/[0.06] bg-white p-4 hover:border-[#006828]/15 hover:shadow-sm transition-all group"
+                    className="group flex flex-col rounded-z-md bg-white border border-ink-line p-5 hover:border-ink hover:shadow-z-card transition-all duration-z-base"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-1.5">
-                      <span className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <p className="font-sans font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
                         {s.name}
+                      </p>
+                      <span className="inline-flex items-center rounded-z-pill bg-accent-muted px-2.5 py-0.5 font-sans text-z-micro font-medium text-accent-dark shrink-0">
+                        {p.type}
                       </span>
-                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px] flex-shrink-0">{p.type}</span>
                     </div>
-                    <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-black/40">
-                      <span>{p.plans.length} plan{p.plans.length !== 1 ? "s" : ""}</span>
-                      <span>{s.totalProviders.toLocaleString()} providers</span>
-                      <span>{s.byCity.length} cities</span>
-                    </div>
-                    <p className="text-[11px] text-[#006828] font-semibold mt-2">
-                      View plans &rarr;
+                    <p className="font-sans text-z-caption text-ink-muted">
+                      {p.plans.length} plan{p.plans.length !== 1 ? "s" : ""} ·{" "}
+                      {s.totalProviders.toLocaleString()} providers · {s.byCity.length} cities
                     </p>
+                    <span className="mt-3 inline-flex items-center gap-1 font-sans text-z-caption font-medium text-accent-dark">
+                      View plans <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
                   </Link>
                 );
               })}
             </div>
-          </div>
-        );
-      })()}
+          </section>
+        )}
 
-      {/* Compare CTA */}
-      <div className="mt-8 bg-[#1c1c1c] text-white p-6 flex items-center justify-between">
-        <div>
-          <p className="font-bold text-sm">Compare {profile.name} with other insurers</p>
-          <p className="text-xs text-white/70 mt-1">
-            Side-by-side plan comparison across all {INSURER_PROFILES.length} UAE insurers
+        {/* Compare CTA */}
+        <section>
+          <div className="rounded-z-lg bg-ink text-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="font-display font-semibold text-z-h3">
+                Compare {profile.name} with other insurers
+              </p>
+              <p className="font-sans text-z-body-sm text-white/70 mt-1">
+                Side-by-side plan comparison across all {INSURER_PROFILES.length} UAE insurers
+              </p>
+            </div>
+            <Link
+              href="/insurance/compare"
+              className="inline-flex items-center gap-1.5 rounded-z-pill bg-accent-dark px-5 py-2.5 font-sans text-z-body-sm font-medium text-white hover:opacity-90 transition-opacity"
+            >
+              Compare plans <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      </div>
+
+      {/* FAQ */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About {profile.name}.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title={`${profile.name} Insurance — FAQ`} />
+        </div>
+
+        <div className="mt-8">
+          <Link
+            href="/insurance"
+            className="inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-accent-dark hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" /> All insurers
+          </Link>
+        </div>
+
+        <div className="mt-8 rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Disclaimer.</strong> Plan details
+            and premiums are indicative. Obtain a personalised quote from{" "}
+            {profile.name} or an authorised broker. Provider network data
+            sourced from the UAE Open Healthcare Directory, last verified March
+            2026.
           </p>
         </div>
-        <Link
-          href="/insurance/compare"
-          className="bg-[#006828] text-white px-4 py-2 text-xs font-bold hover:bg-[#004d1c] transition-colors flex-shrink-0"
-        >
-          Compare plans
-        </Link>
-      </div>
-
-      {/* Back */}
-      <div className="mt-6">
-        <Link
-          href="/insurance"
-          className="flex items-center gap-1.5 text-sm text-[#006828] font-bold hover:text-[#006828]-dark"
-        >
-          <ArrowLeft className="w-4 h-4" /> All insurers
-        </Link>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="mt-8 border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Plan details and premiums are indicative. Obtain a
-          personalised quote from {profile.name} or an authorised broker. Provider network
-          data sourced from the UAE Open Healthcare Directory, last verified March 2026.
-        </p>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

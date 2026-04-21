@@ -1,13 +1,12 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { getCityBySlug, getCities, getProviders } from "@/lib/data";
-import { ProviderCard } from "@/components/provider/ProviderCard";
-import { Truck, ArrowRight } from "lucide-react";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const revalidate = 43200;
 export const dynamicParams = true;
@@ -22,7 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
-  const { total } = await getProviders({ citySlug: city.slug, categorySlug: "pharmacy", limit: 1 });
+  const { total } = await safe(
+    getProviders({ citySlug: city.slug, categorySlug: "pharmacy", limit: 1 }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "pharmacy-delivery-meta",
+  );
   return {
     title: `Pharmacy Delivery Guide for ${city.name} — How to Get Medications Delivered`,
     description: `Guide to pharmacy delivery services in ${city.name}, UAE. ${total} pharmacies in the area — contact them to ask about home delivery options.`,
@@ -34,101 +37,101 @@ export default async function CityPharmacyDeliveryPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   const base = getBaseUrl();
-  const { providers, total } = await getProviders({ citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 20 });
+  const { providers, total } = await safe(
+    getProviders({ citySlug: city.slug, categorySlug: "pharmacy", sort: "rating", limit: 20 }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "pharmacy-delivery",
+  );
+
+  const pharmacyItems: HubItem[] = providers.map((p) => ({
+    href: `/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`,
+    label: p.name,
+    subLabel: p.address ?? undefined,
+    count: p.googleReviewCount > 0 ? p.googleReviewCount : null,
+  }));
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-        { name: "Pharmacy", url: `${base}/directory/${city.slug}/pharmacy` },
-        { name: "Delivery" },
-      ])} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-
-      <Breadcrumb items={[
+    <HubPageTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: city.name, href: `/directory/${city.slug}` },
         { label: "Pharmacy", href: `/directory/${city.slug}/pharmacy` },
         { label: "Delivery" },
-      ]} />
+      ]}
+      eyebrow={`${city.name} · Pharmacy delivery`}
+      title={`Pharmacy Delivery in ${city.name}.`}
+      subtitle={
+        <>
+          {total} registered pharmacies in {city.name}. Many UAE pharmacies offer home delivery —
+          contact individual pharmacies to ask about their delivery options, coverage area, and hours.
+          Prescription medications require a valid UAE prescription.
+        </>
+      }
+      stats={[
+        { n: String(total), l: "Pharmacies" },
+        { n: city.name, l: "Emirate" },
+      ]}
+      aeoAnswer={
+        <>
+          {city.name} has {total} registered pharmacies. Many UAE pharmacies offer home delivery — however,
+          we do not currently have structured delivery capability data per pharmacy. Contact individual
+          pharmacies below to ask about their delivery options, coverage area, and hours. Prescription
+          medications require a valid UAE prescription for delivery.
+        </>
+      }
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema([
+            { name: "UAE", url: base },
+            { name: city.name, url: `${base}/directory/${city.slug}` },
+            { name: "Pharmacy", url: `${base}/directory/${city.slug}/pharmacy` },
+            { name: "Delivery" },
+          ])} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      sections={[
+        {
+          title: `Pharmacies in ${city.name} — ask about delivery`,
+          eyebrow: "Top-rated pharmacies",
+          items: pharmacyItems,
+          layout: "grid",
+          gridCols: "3",
+        },
+      ]}
+      ctaBanner={
+        <>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <Link href={`/directory/${city.slug}/pharmacy`} className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">All pharmacies</Link>
+            <Link href={`/directory/${city.slug}/24-hour/pharmacy`} className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">24-hour</Link>
+            <Link href="/pharmacy/how-delivery-works" className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">How delivery works</Link>
+            <Link href="/medications" className="inline-flex items-center rounded-z-pill bg-white border border-ink-line px-3.5 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors">Medication directory</Link>
+          </div>
 
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <Truck className="h-8 w-8 text-[#006828]" />
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight">
-            Pharmacy Delivery in {city.name}
-          </h1>
-        </div>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-            {city.name} has {total} registered pharmacies. Many UAE pharmacies offer home delivery — however,
-            we do not currently have structured delivery capability data per pharmacy. Contact individual pharmacies
-            below to ask about their delivery options, coverage area, and hours.
-            Prescription medications require a valid UAE prescription for delivery.
-          </p>
-        </div>
-      </div>
+          <div className="rounded-z-md border border-ink-line bg-surface-cream p-6">
+            <h3 className="font-display font-semibold text-ink text-z-h3 mb-2">
+              Need a specific medication?
+            </h3>
+            <p className="font-sans text-z-body-sm text-ink-muted mb-3">
+              Search our medication directory to find which drugs are available in {city.name} pharmacies.
+            </p>
+            <Link
+              href="/medications"
+              className="inline-flex items-center font-sans text-z-body-sm font-semibold text-accent-dark hover:underline"
+            >
+              Browse medications &rarr;
+            </Link>
+          </div>
 
-      {/* Quick links */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <Link href={`/directory/${city.slug}/pharmacy`} className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">All Pharmacies</Link>
-        <Link href={`/directory/${city.slug}/24-hour/pharmacy`} className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">24-Hour</Link>
-        <Link href="/pharmacy/how-delivery-works" className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">How Delivery Works</Link>
-        <Link href="/medications" className="inline-flex items-center gap-1 bg-[#f8f8f6] border border-black/[0.06] text-sm px-3 py-1.5 rounded-lg hover:border-[#006828]/15 font-['Geist',sans-serif]">Medication Directory</Link>
-      </div>
-
-      {/* Pharmacy grid */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-            Pharmacies in {city.name} — Ask About Delivery
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {providers.map((p) => (
-            <ProviderCard
-              key={p.id}
-              name={p.name}
-              slug={p.slug}
-              citySlug={p.citySlug}
-              categorySlug={p.categorySlug}
-              address={p.address}
-              phone={p.phone}
-              website={p.website}
-              shortDescription={p.shortDescription}
-              googleRating={p.googleRating}
-              googleReviewCount={p.googleReviewCount}
-              isClaimed={p.isClaimed}
-              isVerified={p.isVerified}
-              coverImageUrl={p.coverImageUrl}
-              operatingHours={p.operatingHours}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Cross-links */}
-      <section className="rounded-2xl border border-[#006828]/20 bg-[#006828]/[0.04] p-6 mb-8">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c] tracking-tight mb-2">
-          Need a Specific Medication?
-        </h2>
-        <p className="font-['Geist',sans-serif] text-sm text-black/50 mb-3">
-          Search our medication directory to find which drugs are available in {city.name} pharmacies.
-        </p>
-        <Link href="/medications"
-          className="inline-flex items-center gap-2 bg-[#006828] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#005520] transition-colors font-['Geist',sans-serif]">
-          Browse Medications <ArrowRight className="h-4 w-4" />
-        </Link>
-      </section>
-
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-xl p-6">
-        <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-          <strong>Disclaimer.</strong> Delivery availability is not guaranteed for all pharmacies listed.
-          Contact the pharmacy directly to confirm delivery coverage in your area. Prescription medications
-          require a valid UAE prescription. Data from official UAE health authority registers.
-        </p>
-      </div>
-    </div>
+          <div className="mt-4 border-t border-ink-line pt-4">
+            <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+              <strong>Disclaimer.</strong> Delivery availability is not guaranteed for all pharmacies
+              listed. Contact the pharmacy directly to confirm delivery coverage in your area. Prescription
+              medications require a valid UAE prescription. Data from official UAE health authority registers.
+            </p>
+          </div>
+        </>
+      }
+    />
   );
 }

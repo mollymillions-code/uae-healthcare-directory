@@ -53,3 +53,6 @@ next-env.d.ts
 .env.local
 .env.prod-check
 .env.vercel-check
+
+# Claude Code local skills — not part of app build
+/.claude/skills/

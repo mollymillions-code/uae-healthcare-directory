@@ -120,7 +120,7 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
   ];
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       <JsonLd
         data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },

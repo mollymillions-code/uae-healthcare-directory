@@ -1,8 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Clock, Shield, DollarSign } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { getCityBySlug, getCities } from "@/lib/data";
@@ -13,6 +11,7 @@ import {
 } from "@/lib/constants/procedures";
 import { breadcrumbSchema, speakableSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const revalidate = 43200;
 
@@ -117,146 +116,95 @@ export default function ProcedureIndexPage({ params }: Props) {
     },
   ];
 
-  return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "UAE", url: base },
-          { name: city.name, url: `${base}/directory/${city.slug}` },
-          { name: "Procedures & Costs" },
-        ])}
-      />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
+  const sections = procsByCategory.map((cat) => ({
+    title: cat.name,
+    eyebrow: cat.description,
+    items: cat.procedures
+      .map((proc) => {
+        const pricing = proc.cityPricing[city.slug];
+        if (!pricing) return null;
+        return {
+          href: `/directory/${city.slug}/procedures/${proc.slug}`,
+          label: proc.name,
+          subLabel: `${formatAed(pricing.min)}–${formatAed(pricing.max)} · ${proc.duration}`,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => Boolean(x)),
+    layout: "grid" as const,
+    gridCols: "3" as const,
+  }));
 
-      <Breadcrumb
-        items={[
+  return (
+    <>
+      <HubPageTemplate
+        breadcrumbs={[
           { label: "UAE", href: "/" },
           { label: city.name, href: `/directory/${city.slug}` },
           { label: "Procedures & Costs" },
         ]}
+        eyebrow={`${city.name} · Pricing guide`}
+        title={`Medical Procedure Costs in ${city.name}.`}
+        subtitle={
+          <>
+            {procsInCity.length} procedures with verified pricing. Compare government, private, and
+            premium facilities. Last updated March 2026.
+          </>
+        }
+        stats={[
+          { n: String(procsInCity.length), l: "Procedures priced" },
+          { n: String(procsInCity.filter((p) => p.insuranceCoverage === "typically-covered").length), l: "Insurance covered" },
+          { n: String(procsInCity.filter((p) => p.setting === "outpatient").length), l: "Outpatient" },
+          { n: city.name, l: "Emirate" },
+        ]}
+        aeoAnswer={
+          <>
+            According to the UAE Open Healthcare Directory, {city.name} has verified pricing data for {procsInCity.length} common medical procedures. Costs range from basic consultations and blood tests starting at {formatAed(50)} to major surgeries exceeding {formatAed(40000)}. Healthcare in {city.name} is regulated by the {regulator}. All pricing reflects market-observed ranges across government, private, and premium facilities as of March 2026. Each procedure page includes a cost comparison table, insurance coverage information, and links to providers in {city.name}.
+          </>
+        }
+        schemas={
+          <>
+            <JsonLd data={breadcrumbSchema([
+              { name: "UAE", url: base },
+              { name: city.name, url: `${base}/directory/${city.slug}` },
+              { name: "Procedures & Costs" },
+            ])} />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+            <JsonLd data={faqPageSchema(faqs)} />
+          </>
+        }
+        sections={sections}
+        ctaBanner={
+          <div className="rounded-z-md bg-surface-cream border border-ink-line p-6">
+            <h3 className="font-display font-semibold text-ink text-z-h3 mb-2">
+              Compare prices across all UAE cities
+            </h3>
+            <p className="font-sans text-z-body-sm text-ink-muted mb-3">
+              See how {city.name} compares to Dubai, Abu Dhabi, Sharjah, and other emirates for each procedure.
+            </p>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center font-sans text-z-body-sm font-semibold text-accent-dark hover:underline"
+            >
+              View UAE Medical Pricing Hub &rarr;
+            </Link>
+          </div>
+        }
       />
 
-      <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-        Medical Procedure Costs in {city.name}
-      </h1>
-
-      <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-        {procsInCity.length} procedures with verified pricing &middot; Last
-        updated March 2026
-      </p>
-
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-          According to the UAE Open Healthcare Directory, {city.name} has
-          verified pricing data for {procsInCity.length} common medical
-          procedures. Costs range from basic consultations and blood tests
-          starting at {formatAed(50)} to major surgeries exceeding{" "}
-          {formatAed(40000)}. Healthcare in {city.name} is regulated by the{" "}
-          {regulator}. All pricing reflects market-observed ranges across
-          government, private, and premium facilities as of March 2026. Each
-          procedure page includes a cost comparison table, insurance coverage
-          information, and links to providers in {city.name}.
-        </p>
-      </div>
-
-      {/* Quick stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
-          <DollarSign className="h-5 w-5 text-[#006828] mb-2" />
-          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-            {procsInCity.length}
+      {/* FAQ */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
           </p>
-          <p className="font-['Geist',sans-serif] text-xs text-black/40">Procedures with pricing</p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            Medical costs in {city.name}.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title={`Medical Costs in ${city.name} — FAQ`} />
         </div>
-        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
-          <Shield className="h-5 w-5 text-[#006828] mb-2" />
-          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-            {procsInCity.filter((p) => p.insuranceCoverage === "typically-covered").length}
-          </p>
-          <p className="font-['Geist',sans-serif] text-xs text-black/40">Covered by insurance</p>
-        </div>
-        <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-5">
-          <Clock className="h-5 w-5 text-[#006828] mb-2" />
-          <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight">
-            {procsInCity.filter((p) => p.setting === "outpatient").length}
-          </p>
-          <p className="font-['Geist',sans-serif] text-xs text-black/40">Outpatient procedures</p>
-        </div>
-      </div>
-
-      {/* Procedure categories */}
-      {procsByCategory.map((cat) => (
-        <section key={cat.slug} className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{cat.name}</h2>
-          </div>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">{cat.description}</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {cat.procedures.map((proc) => {
-              const pricing = proc.cityPricing[city.slug];
-              if (!pricing) return null;
-
-              return (
-                <Link
-                  key={proc.slug}
-                  href={`/directory/${city.slug}/procedures/${proc.slug}`}
-                  className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
-                >
-                  <h3 className="font-bold text-[#1c1c1c] text-sm mb-1 group-hover:text-[#006828] transition-colors">
-                    {proc.name}
-                  </h3>
-                  <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-2 line-clamp-2">
-                    {proc.description.slice(0, 100)}...
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-[#006828]">
-                      {formatAed(pricing.min)}–{formatAed(pricing.max)}
-                    </span>
-                    <span className="text-[10px] text-black/40">
-                      {proc.duration}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    {proc.insuranceCoverage === "typically-covered" && (
-                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">
-                        Insurance covered
-                      </span>
-                    )}
-                    {proc.insuranceCoverage === "not-covered" && (
-                      <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Self-pay only</span>
-                    )}
-                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">{proc.setting}</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-
-      {/* Cross-link to full pricing hub */}
-      <div className="bg-[#f8f8f6] border border-black/[0.06] rounded-2xl p-6 mb-6">
-        <h3 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
-          Compare prices across all UAE cities
-        </h3>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-3">
-          See how {city.name} compares to Dubai, Abu Dhabi, Sharjah, and other
-          emirates for each procedure.
-        </p>
-        <Link
-          href="/pricing"
-          className="text-sm font-bold text-[#006828] hover:underline"
-        >
-          View UAE Medical Pricing Hub &rarr;
-        </Link>
-      </div>
-
-      <FaqSection
-        faqs={faqs}
-        title={`Medical Costs in ${city.name} — FAQ`}
-      />
-    </div>
+      </section>
+    </>
   );
 }

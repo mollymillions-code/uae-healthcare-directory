@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Home, Clock, MapPin, Award } from "lucide-react";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ArrowRight, ChevronRight, Sparkles, Home, Clock, MapPin, Award } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { PackageCard } from "@/components/labs/PackageCard";
@@ -67,6 +66,11 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
     pricesByCategory.get(cat)!.push(p);
   }
 
+  const cheapestPackage =
+    packages.length > 0
+      ? packages.reduce((min, p) => Math.min(min, p.price), Infinity)
+      : null;
+
   const faqs = [
     {
       question: `How much do blood tests cost at ${lab.name}?`,
@@ -76,7 +80,7 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
         `Common tests: CBC ${prices.find((p) => p.testSlug === "cbc") ? `AED ${prices.find((p) => p.testSlug === "cbc")!.price}` : "available"}, ` +
         `Vitamin D ${prices.find((p) => p.testSlug === "vitamin-d") ? `AED ${prices.find((p) => p.testSlug === "vitamin-d")!.price}` : "available"}, ` +
         `Thyroid Panel ${prices.find((p) => p.testSlug === "thyroid-panel") ? `AED ${prices.find((p) => p.testSlug === "thyroid-panel")!.price}` : "available"}. ` +
-        `Health check packages start from AED ${packages.length > 0 ? packages.reduce((min, p) => Math.min(min, p.price), Infinity) : "99"}.`,
+        `Health check packages start from AED ${cheapestPackage ?? "99"}.`,
     },
     {
       question: `Does ${lab.name} offer home collection?`,
@@ -103,8 +107,14 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
     },
   ];
 
+  const breadcrumbs = [
+    { label: "UAE", href: "/" },
+    { label: "Lab Test Comparison", href: "/labs" },
+    { label: lab.name },
+  ];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <JsonLd
         data={breadcrumbSchema([
           { name: "UAE", url: base },
@@ -144,176 +154,257 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
         }}
       />
 
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: "Lab Test Comparison", href: "/labs" },
-          { label: lab.name },
-        ]}
-      />
-
       {/* Hero */}
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">{lab.name}</h1>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{lab.description}</p>
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+          <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
         </div>
 
-        {/* Key info grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          {cheapest && (
-            <div className="bg-[#f8f8f6] p-3">
-              <p className="text-lg font-bold text-[#006828]">From AED {cheapest}</p>
-              <p className="text-[11px] text-black/40">{prices.length} tests listed</p>
-            </div>
-          )}
-          <div className="bg-[#f8f8f6] p-3">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Home className="w-4 h-4 text-[#006828]" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Home Collection</p>
-            </div>
-            <p className="text-[11px] text-black/40">
-              {lab.homeCollection
-                ? lab.homeCollectionFee === 0
-                  ? "Free"
-                  : `AED ${lab.homeCollectionFee}`
-                : "Not available"}
-            </p>
-          </div>
-          <div className="bg-[#f8f8f6] p-3">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-4 h-4 text-[#006828]" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Results</p>
-            </div>
-            <p className="text-[11px] text-black/40">{lab.turnaroundHours}h turnaround</p>
-          </div>
-          <div className="bg-[#f8f8f6] p-3">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Award className="w-4 h-4 text-[#006828]" />
-              <p className="text-xs font-bold text-[#1c1c1c]">Accreditations</p>
-            </div>
-            <p className="text-[11px] text-black/40">{lab.accreditations.join(", ") || "DHA Licensed"}</p>
-          </div>
-        </div>
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-10">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            {breadcrumbs.map((b, i) => {
+              const isLast = i === breadcrumbs.length - 1;
+              return (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {b.href && !isLast ? (
+                    <Link href={b.href} className="hover:text-ink transition-colors">
+                      {b.label}
+                    </Link>
+                  ) : (
+                    <span className={isLast ? "text-ink font-medium" : undefined}>
+                      {b.label}
+                    </span>
+                  )}
+                  {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
+                </span>
+              );
+            })}
+          </nav>
 
-        {/* Details row */}
-        <div className="flex flex-wrap gap-4 text-xs text-black/40">
-          {lab.branchCount > 0 && (
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              {lab.branchCount} branches in {lab.cities.map((c) => c.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())).join(", ")}
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" />
+            UAE diagnostic lab
+          </p>
+          <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+            {lab.name}
+          </h1>
+          <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-3xl leading-relaxed">
+            {lab.description}
+          </p>
+
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl">
+            {cheapest !== null && (
+              <div className="rounded-z-md bg-white border border-ink-line px-4 py-3">
+                <p className="font-display font-semibold text-ink text-z-h3 leading-none">
+                  From AED {cheapest}
+                </p>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">
+                  {prices.length} tests
+                </p>
+              </div>
+            )}
+            <div className="rounded-z-md bg-white border border-ink-line px-4 py-3">
+              <div className="inline-flex items-center gap-1.5 mb-1">
+                <Home className="h-3.5 w-3.5 text-accent-dark" />
+                <p className="font-sans text-z-caption text-ink-soft font-medium">
+                  Home collection
+                </p>
+              </div>
+              <p className="font-sans text-z-body-sm text-ink">
+                {lab.homeCollection
+                  ? lab.homeCollectionFee === 0
+                    ? "Free"
+                    : `AED ${lab.homeCollectionFee}`
+                  : "Not available"}
+              </p>
+            </div>
+            <div className="rounded-z-md bg-white border border-ink-line px-4 py-3">
+              <div className="inline-flex items-center gap-1.5 mb-1">
+                <Clock className="h-3.5 w-3.5 text-accent-dark" />
+                <p className="font-sans text-z-caption text-ink-soft font-medium">
+                  Results
+                </p>
+              </div>
+              <p className="font-sans text-z-body-sm text-ink">
+                {lab.turnaroundHours}h turnaround
+              </p>
+            </div>
+            <div className="rounded-z-md bg-white border border-ink-line px-4 py-3">
+              <div className="inline-flex items-center gap-1.5 mb-1">
+                <Award className="h-3.5 w-3.5 text-accent-dark" />
+                <p className="font-sans text-z-caption text-ink-soft font-medium">
+                  Accreditations
+                </p>
+              </div>
+              <p className="font-sans text-z-body-sm text-ink">
+                {lab.accreditations.join(", ") || "DHA Licensed"}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-4 font-sans text-z-caption text-ink-muted">
+            {lab.branchCount > 0 && (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5" />
+                {lab.branchCount} branches in{" "}
+                {lab.cities
+                  .map((c) => c.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()))
+                  .join(", ")}
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              {lab.operatingHours}
             </span>
-          )}
-          <span className="flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" />
-            {lab.operatingHours}
-          </span>
-          <span>Founded {lab.foundedYear}</span>
-          <span>Licensed by {lab.regulators.map((r) => r.toUpperCase()).join(", ")}</span>
-        </div>
-      </div>
-
-      {/* Highlights */}
-      {lab.highlights.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Key Highlights</h2>
+            <span>Founded {lab.foundedYear}</span>
+            <span>
+              Licensed by {lab.regulators.map((r) => r.toUpperCase()).join(", ")}
+            </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {lab.highlights.map((h) => (
-              <div key={h} className="flex items-center gap-2 text-sm text-[#1c1c1c] p-2 bg-[#f8f8f6]">
-                <ArrowRight className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
-                {h}
+        </div>
+      </section>
+
+      <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-14">
+        {/* Highlights */}
+        {lab.highlights.length > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                What sets it apart
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Key highlights.
+              </h2>
+            </header>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {lab.highlights.map((h) => (
+                <li
+                  key={h}
+                  className="flex items-start gap-2.5 rounded-z-md bg-white border border-ink-line p-4 font-sans text-z-body-sm text-ink leading-relaxed"
+                >
+                  <ArrowRight className="h-4 w-4 text-accent-dark mt-0.5 shrink-0" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Health Packages */}
+        {packages.length > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                Bundled tests
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Health check packages.
+              </h2>
+            </header>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {packages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Test Prices by Category */}
+        <section>
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              Pricebook
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              Test prices at {lab.name}.
+            </h2>
+            <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-3xl">
+              {lab.name} offers {prices.length} lab tests across{" "}
+              {pricesByCategory.size} categories. Prices are for walk-in
+              patients without insurance. Click any test to compare prices
+              across all UAE labs.
+            </p>
+          </header>
+
+          <div className="space-y-8">
+            {Array.from(pricesByCategory.entries()).map(([category, catPrices]) => (
+              <div key={category}>
+                <h3 className="font-display font-semibold text-ink text-z-h3 mb-3 capitalize">
+                  {category.replace(/-/g, " ")}
+                </h3>
+                <div className="rounded-z-md bg-white border border-ink-line overflow-x-auto">
+                  <table className="w-full font-sans text-z-body-sm">
+                    <thead>
+                      <tr className="border-b border-ink-line text-ink-soft text-z-caption uppercase tracking-[0.04em]">
+                        <th className="px-4 py-3 text-left font-medium">Test</th>
+                        <th className="px-4 py-3 text-right font-medium">Price</th>
+                        <th className="px-4 py-3 text-right font-medium" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {catPrices.map((p) => (
+                        <tr
+                          key={p.testSlug}
+                          className="border-b border-ink-hairline last:border-b-0"
+                        >
+                          <td className="px-4 py-3">
+                            <Link
+                              href={`/labs/test/${p.testSlug}`}
+                              className="text-ink hover:text-accent-dark hover:underline decoration-1 underline-offset-2"
+                            >
+                              {p.testName}
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-ink">
+                            {formatPrice(p.price)}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <Link
+                              href={`/labs/test/${p.testSlug}`}
+                              className="inline-flex items-center gap-1 font-sans text-z-caption font-medium text-accent-dark hover:underline"
+                            >
+                              Compare <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Health Packages */}
-      {packages.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Health Check Packages</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {packages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Test Prices by Category */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Test Prices at {lab.name}</h2>
+        </section>
       </div>
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
-        <p className="font-['Geist',sans-serif] text-xs text-black/40">
-          {lab.name} offers {prices.length} lab tests across {pricesByCategory.size} categories.
-          Prices are for walk-in patients without insurance. Click any test to compare
-          prices across all UAE labs.
-        </p>
-      </div>
-
-      {Array.from(pricesByCategory.entries()).map(([category, catPrices]) => (
-        <div key={category} className="mb-6">
-          <h3 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2 capitalize">
-            {category.replace(/-/g, " ")}
-          </h3>
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-black/[0.06]">
-                  <th className="text-left py-2 px-3 text-xs font-bold text-[#1c1c1c]">Test</th>
-                  <th className="text-right py-2 px-3 text-xs font-bold text-[#1c1c1c]">Price</th>
-                  <th className="text-right py-2 px-3 text-xs font-bold text-[#1c1c1c]" />
-                </tr>
-              </thead>
-              <tbody>
-                {catPrices.map((p, i) => (
-                  <tr key={p.testSlug} className={i % 2 === 0 ? "bg-[#f8f8f6]" : ""}>
-                    <td className="py-2 px-3">
-                      <Link
-                        href={`/labs/test/${p.testSlug}`}
-                        className="text-xs font-medium text-[#1c1c1c] hover:text-[#006828] transition-colors"
-                      >
-                        {p.testName}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-3 text-right text-xs font-bold text-[#1c1c1c]">
-                      {formatPrice(p.price)}
-                    </td>
-                    <td className="py-2 px-3 text-right">
-                      <Link
-                        href={`/labs/test/${p.testSlug}`}
-                        className="text-[11px] text-[#006828] hover:text-[#006828]-dark font-bold"
-                      >
-                        Compare →
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
 
       {/* FAQ */}
-      <div className="mt-12">
-        <FaqSection faqs={faqs} title={`${lab.name} — FAQ`} />
-      </div>
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About {lab.name}.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={faqs} title={`${lab.name} — FAQ`} />
+        </div>
 
-      {/* Disclaimer */}
-      <div className="mt-8 border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Prices shown for {lab.name} are indicative and based
-          on publicly available data. Actual prices may vary by branch, insurance, and
-          current promotions. Contact {lab.name} directly to confirm pricing before your
-          visit. Last verified March 2026.
-        </p>
-      </div>
-    </div>
+        <div className="mt-12 rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Disclaimer.</strong> Prices shown
+            for {lab.name} are indicative and based on publicly available data.
+            Actual prices may vary by branch, insurance, and current
+            promotions. Contact {lab.name} directly to confirm pricing before
+            your visit. Last verified March 2026.
+          </p>
+        </div>
+      </section>
+    </>
   );
 }

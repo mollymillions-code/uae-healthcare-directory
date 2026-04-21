@@ -1,13 +1,12 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ProviderCard } from "@/components/provider/ProviderCard";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   getCities,
   getCityBySlug,
+  getCategories,
   getEmergencyProviders,
 } from "@/lib/data";
 import {
@@ -17,6 +16,7 @@ import {
   speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
@@ -30,7 +30,7 @@ export async function generateStaticParams() {
   const params: { city: string }[] = [];
 
   for (const city of cities) {
-    const providers = await getEmergencyProviders(city.slug);
+    const providers = await safe(getEmergencyProviders(city.slug), [], "emergency:params");
     if (providers.length >= 3) {
       params.push({ city: city.slug });
     }
@@ -79,13 +79,14 @@ export default async function EmergencyCityPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
-  const providers = await getEmergencyProviders(city.slug);
+  const providers = await safe(getEmergencyProviders(city.slug), [], "emergency:city");
   if (providers.length < 3) notFound();
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const emergencyNumber = getEmergencyNumber();
   const count = providers.length;
+  const categories = getCategories();
 
   // Sort by rating descending
   const sorted = [...providers].sort((a, b) => {
@@ -121,142 +122,120 @@ export default async function EmergencyCityPage({ params }: Props) {
     },
   ];
 
-  const breadcrumbItems = [
+  const breadcrumbSchemaItems = [
     { name: "UAE", url: base },
     { name: city.name, url: `${base}/directory/${city.slug}` },
     { name: "Emergency", url: `${base}/directory/${city.slug}/emergency` },
   ];
 
+  const topRated = sorted[0];
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-      <JsonLd
-        data={itemListSchema(
-          `Emergency Healthcare in ${city.name}`,
-          sorted.slice(0, 20),
-          city.name,
-          base
-        )}
-      />
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "UAE", href: "/" },
+        { label: city.name, href: `/directory/${city.slug}` },
+        { label: "Emergency" },
+      ]}
+      eyebrow={`Emergency · ${city.name}`}
+      title={`Emergency healthcare in ${city.name}.`}
+      subtitle={
+        <span>
+          {count} emergency and urgent care facilities in {city.name}. Life-threatening emergency? Call {emergencyNumber}. All facilities regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count} healthcare facilities in {city.name} offering emergency or urgent care services. These include hospital emergency departments and dedicated urgent care centers. For life-threatening emergencies, call {emergencyNumber}. Emergency departments provide immediate triage for critical cases. Non-critical emergency visits are typically attended to within 30 to 120 minutes.
+          {topRated && Number(topRated.googleRating) > 0 && (
+            <>
+              {" "}The highest-rated facility is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star Google rating based on {topRated.googleReviewCount.toLocaleString()} patient reviews.
+            </>
+          )}{" "}
+          All listings are sourced from official {regulator} licensed facility registers.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd
+            data={itemListSchema(
+              `Emergency Healthcare in ${city.name}`,
+              sorted.slice(0, 20),
+              city.name,
+              base
+            )}
+          />
+        </>
+      }
+      belowGrid={
+        <>
+          <div className="rounded-z-md border border-ink-line bg-white p-5 sm:p-6">
+            <p className="font-sans text-z-caption uppercase tracking-wide text-ink-muted mb-1">
+              Life-threatening emergency? Call now
+            </p>
+            <p className="font-display font-semibold text-ink text-z-h1">
+              <a href="tel:998" className="hover:underline">998</a>{" "}
+              <span className="text-ink-muted font-sans font-normal text-z-body">(Ambulance)</span>
+              {" · "}
+              <a href="tel:999" className="hover:underline">999</a>{" "}
+              <span className="text-ink-muted font-sans font-normal text-z-body">(Police/Fire)</span>
+            </p>
+            <p className="font-sans text-z-caption text-ink-muted mt-1">
+              Dubai Health Authority hotline: <a href="tel:800342" className="underline">800-342</a>
+            </p>
+          </div>
 
-      <Breadcrumb
-        items={[
-          { label: "UAE", href: "/" },
-          { label: city.name, href: `/directory/${city.slug}` },
-          { label: "Emergency" },
-        ]}
-      />
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`24-hour healthcare in ${city.name}`}
+                href={`/directory/${city.slug}/24-hour`}
+                sub="Non-emergency overnight"
+              />
+              <ListingsCrossLink
+                label={`All healthcare in ${city.name}`}
+                href={`/directory/${city.slug}`}
+              />
+            </div>
+          </div>
 
-      <div className="mb-8">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">
-          Emergency Healthcare in {city.name}, UAE
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-          {count} emergency & urgent care facilities · Last updated March 2026
-        </p>
-
-        {/* Emergency callout */}
-        <div className="bg-red-50 border border-red-200 p-4 mb-6">
-          <p className="text-sm font-bold text-red-800 mb-1">
-            Life-threatening emergency? Call now:
-          </p>
-          <p className="text-lg font-bold text-red-900">
-            <a href="tel:998" className="hover:underline">
-              998
-            </a>{" "}
-            (Ambulance) &nbsp;|&nbsp;{" "}
-            <a href="tel:999" className="hover:underline">
-              999
-            </a>{" "}
-            (Police/Fire)
-          </p>
-          <p className="text-xs text-red-700 mt-1">
-            Dubai Health Authority hotline:{" "}
-            <a href="tel:800342" className="hover:underline">
-              800-342
-            </a>
-          </p>
-        </div>
-
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            According to the UAE Open Healthcare Directory, there are {count}{" "}
-            healthcare facilities in {city.name} offering emergency or urgent
-            care services. These include hospital emergency departments and
-            dedicated urgent care centers. For life-threatening emergencies, call{" "}
-            {emergencyNumber}. Emergency departments provide immediate triage for
-            critical cases. Non-critical emergency visits are typically attended
-            to within 30 to 120 minutes.
-            {sorted[0] && Number(sorted[0].googleRating) > 0 && (
-              <>
-                {" "}
-                The highest-rated facility is{" "}
-                <strong>{sorted[0].name}</strong> with a{" "}
-                {sorted[0].googleRating}-star Google rating based on{" "}
-                {sorted[0].googleReviewCount.toLocaleString()} patient reviews.
-              </>
-            )}{" "}
-            All listings are sourced from official {regulator} licensed facility
-            registers.
-          </p>
-        </div>
-      </div>
-
-      {/* Provider grid */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Emergency & Urgent Care Facilities in {city.name}</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((provider) => (
-            <ProviderCard
-              key={provider.id}
-              name={provider.name}
-              slug={provider.slug}
-              citySlug={provider.citySlug}
-              categorySlug={provider.categorySlug}
-              address={provider.address}
-              phone={provider.phone}
-              website={provider.website}
-              shortDescription={provider.shortDescription}
-              googleRating={provider.googleRating}
-              googleReviewCount={provider.googleReviewCount}
-              isClaimed={provider.isClaimed}
-              isVerified={provider.isVerified}
-              coverImageUrl={provider.coverImageUrl}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Cross-links */}
-      <section className="mb-10 space-y-2">
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Need 24-hour non-emergency care?{" "}
-          <Link
-            href={`/directory/${city.slug}/24-hour`}
-            className="text-[#006828] hover:underline font-medium"
-          >
-            24-hour healthcare in {city.name} &rarr;
-          </Link>
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Browse all providers?{" "}
-          <Link
-            href={`/directory/${city.slug}`}
-            className="text-[#006828] hover:underline font-medium"
-          >
-            All healthcare providers in {city.name} &rarr;
-          </Link>
-        </p>
-      </section>
-
-      <FaqSection
-        faqs={faqs}
-        title={`Emergency Healthcare in ${city.name} — FAQ`}
-      />
-    </div>
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Emergency healthcare in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

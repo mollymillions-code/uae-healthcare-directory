@@ -82,7 +82,7 @@ export default async function ReportPageAr({ params }: PageProps) {
   const schemaNodes = reportSchema(schemaRow, baseUrl);
 
   return (
-    <div dir="rtl" className="text-right">
+    <div dir="rtl" className="font-arabic text-right">
       {schemaNodes.map((node, i) => (
         <JsonLd key={`report-schema-ar-${i}`} data={node} />
       ))}
