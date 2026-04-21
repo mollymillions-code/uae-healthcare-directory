@@ -11,11 +11,14 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   images: {
-    // Serve WebP by default. Without this, Next.js sometimes falls back
-    // to JPEG even when the source is .webp — the optimizer was returning
-    // 500 when browsers sent Accept: image/webp, causing a JPEG fallback
-    // that was 3× larger and never cached by Cloudflare. Adding avif as
-    // a preferred format when browsers support it further reduces bytes.
+    // Disable the built-in image optimizer. All images are served as
+    // direct static URLs (R2 CDN, /public/, WebP/PNG assets) with standard
+    // <img>-equivalent delivery — no runtime proxy, no /_next/image
+    // transformation. This removes the per-request CPU + memory cost of
+    // re-encoding and lets Cloudflare cache every asset at the edge
+    // directly off the origin URL. `formats` + `remotePatterns` become
+    // no-ops when unoptimized=true but stay for documentation.
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "cdn.who.int" },
