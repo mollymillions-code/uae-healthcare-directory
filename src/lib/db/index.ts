@@ -20,9 +20,13 @@ import * as schema from "./schema";
 // Still 20% more than the original max=10 for runtime, so the cold-start
 // 500/502 finding from QA Round 4 still benefits. connectionTimeoutMillis
 // bumped from 5s to 10s independently so fresh JIT warmup doesn't trip it.
+// DB_POOL_MAX override lets runtime (PM2) set a higher cap than build (8
+// parallel workers × 12 = 96 stays under PG's max_connections=100), while
+// runtime (2-4 workers × 20 = 40-80) gets headroom for the catch-all's
+// Promise.allSettled fan-out (up to ~13 concurrent queries per cold render).
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
-  max: 12,
+  max: Number(process.env.DB_POOL_MAX) || 12,
   min: 2,
   // Short idleTimeoutMillis reclaims connections after 30s of idle so we
   // don't hold 12 open forever when traffic dips.
