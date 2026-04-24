@@ -1,10 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const MAX_FACILITY_ROUTE_SEGMENT_LENGTH = 200;
+const FACILITY_ROUTE_PREFIXES = [
+  "/professionals/facility/",
+  "/ar/professionals/facility/",
+] as const;
+const ROUTE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function hasInvalidFacilityRouteSegment(pathname: string): boolean {
+  const prefix = FACILITY_ROUTE_PREFIXES.find((value) =>
+    pathname.startsWith(value)
+  );
+  if (!prefix) return false;
+
+  const [facilitySlug, specialtySlug] = pathname.slice(prefix.length).split("/");
+  if (!facilitySlug) return false;
+
+  return [facilitySlug, specialtySlug].some((segment) => {
+    if (!segment) return false;
+    return (
+      segment.length > MAX_FACILITY_ROUTE_SEGMENT_LENGTH ||
+      !ROUTE_SLUG_PATTERN.test(segment)
+    );
+  });
+}
+
 /**
  * Middleware for:
  * 1. Legacy URL redirects (/uae → /directory, /journal → /intelligence)
  * 2. Dashboard auth protection
  * 3. Research pipeline API key enforcement
+ * 4. Professional facility route hardening
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
@@ -14,6 +40,10 @@ export function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+
+  if (hasInvalidFacilityRouteSegment(pathname)) {
+    return new NextResponse(null, { status: 404 });
+  }
 
   // Strip trailing slashes (Google treats /dubai/ and /dubai as separate URLs)
   if (pathname !== '/' && pathname.endsWith('/')) {

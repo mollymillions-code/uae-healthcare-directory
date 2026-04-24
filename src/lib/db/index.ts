@@ -13,17 +13,40 @@ import * as schema from "./schema";
 //   importing this module and creating its own Pool. With `max: 30` each,
 //   that's ~240 potential slots — overwhelmingly over budget.
 //
-// Safe per-process cap so build + runtime both fit under 100 total:
+// Safe per-process cap during next build:
 //   max=12. Build phase: ~8 workers × 12 = 96 (safely under 100).
-//   Runtime phase: ~2-4 PM2 workers × 12 = 24-48 (plenty of headroom).
-//
-// Still 20% more than the original max=10 for runtime, so the cold-start
-// 500/502 finding from QA Round 4 still benefits. connectionTimeoutMillis
-// bumped from 5s to 10s independently so fresh JIT warmup doesn't trip it.
+// Runtime can run higher because PM2 steady state is two web workers. Keep it
+// tunable through DB_POOL_MAX so EC2 can absorb post-redesign Arabic traffic
+// without requiring a code change.
+const BUILD_POOL_MAX = 12;
+const DEFAULT_RUNTIME_POOL_MAX = 25;
+
+function parsePositiveInteger(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const isNextBuild =
+  process.env.NEXT_PHASE === "phase-production-build" ||
+  process.env.npm_lifecycle_event === "build";
+
+const configuredPoolMax = parsePositiveInteger(
+  process.env.DB_POOL_MAX,
+  DEFAULT_RUNTIME_POOL_MAX
+);
+const poolMax = isNextBuild
+  ? Math.min(configuredPoolMax, BUILD_POOL_MAX)
+  : configuredPoolMax;
+const poolMin = Math.min(
+  parsePositiveInteger(process.env.DB_POOL_MIN, 2),
+  poolMax
+);
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
-  max: 12,
-  min: 2,
+  max: poolMax,
+  min: poolMin,
   // Short idleTimeoutMillis reclaims connections after 30s of idle so we
   // don't hold 12 open forever when traffic dips.
   idleTimeoutMillis: 30000,
