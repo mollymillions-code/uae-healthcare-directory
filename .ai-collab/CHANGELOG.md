@@ -1,5 +1,41 @@
 # Zavis Landing - Changelog
 
+## 2026-04-24 — [Codex] Production provider recovery + self-hosted deploy gate
+
+**Signed by:** Codex · 2026-04-24T19:45:00+05:30
+
+**What happened:**
+
+- Recovered production provider routes after stacked blue/green failures. Active slot is green on port 3201, blue is stopped, and `DB_POOL_MAX=25` is set on EC2.
+- Hardened the directory/media pipeline and provider route behavior across commits `46d2428`, `c6a60b9`, `9424815`, `95e204d`, and final remote state `20f6482`.
+- Added a slug-length guard for `/professionals/facility/[facility]` so long hash-like slugs return 404 instead of causing `ENAMETOOLONG` cache writes.
+- Added a directory media audit script and provider media normalization so directory pages avoid real-time image compression/path surprises.
+- Hardened EC2 deploy builds by defaulting `NEXT_PRIVATE_BUILD_WORKER_COUNT=1`.
+- Added self-hosted deploy gate:
+  - `scripts/ec2-deploy-infra/github-webhook-deploy.mjs`
+  - `scripts/ec2-deploy-infra/webhook-deploy.service`
+  - `scripts/ec2-deploy-infra/webhook.env.example`
+  - `scripts/ec2-deploy-infra/nginx-webhook-location.conf`
+  - `docs/ops/self-hosted-cicd.md`
+- Installed `zavis-webhook-deploy.service` on EC2, listening on `127.0.0.1:8787`, exposed through Nginx at `/hooks/github/live-deploy`.
+- Disabled automatic GitHub Actions deploy/schedule triggers; workflows now remain manual fallback only.
+- Added `Jenkinsfile` as a future separate-CI-host option that calls the same signed production deploy gate after lint/typecheck/build.
+
+**Verification:**
+
+- `node --check scripts/ec2-deploy-infra/github-webhook-deploy.mjs` passed.
+- Local webhook smoke test: valid signed ping returned 202; bad signature returned 401.
+- EC2/Nginx webhook tests: unsigned public POST returned 401; signed public push for `refs/heads/not-live` returned 202 ignored; GET returns 405.
+- Production origin checks: `/`, Bella Rose EN/AR, and Dental Hub routes return 200 with `Host: www.zavis.ai`; Dental Hub warmed in ~10.5s.
+- Public cache-busted checks: root, Bella Rose, and Dental Hub return 200.
+
+**Pending:**
+
+- GitHub webhook registration is blocked until an admin token with `admin:repo_hook` scope is available. Current `gh` token returned: `This API operation needs the "admin:repo_hook" scope`.
+- Cloudflare cache purge may still be required for exact URLs that were previously cached as 404 HITs.
+
+---
+
 ## 2026-04-22 — [Claude Code] Site-wide directory redesign: Airbnb UX archetype + Zavis visual identity
 
 **Signed by:** Claude Code · 2026-04-22T00:45:00+04:00
