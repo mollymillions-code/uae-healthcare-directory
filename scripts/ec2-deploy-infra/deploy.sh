@@ -197,7 +197,9 @@ ln -sfn "$SHARED_DIR/reports" "$TARGET_DIR/public/reports"
 log "build: next build (~4-5 min) — output in $BUILD_LOG"
 rm -rf "$TARGET_DIR/.next"
 mkdir -p "$TARGET_DIR/logs"
-if NODE_OPTIONS="--max-old-space-size=4096" npm run build > "$BUILD_LOG" 2>&1; then
+BUILD_WORKER_COUNT="${NEXT_PRIVATE_BUILD_WORKER_COUNT:-1}"
+log "build: NEXT_PRIVATE_BUILD_WORKER_COUNT=$BUILD_WORKER_COUNT"
+if NODE_OPTIONS="--max-old-space-size=4096" NEXT_PRIVATE_BUILD_WORKER_COUNT="$BUILD_WORKER_COUNT" npm run build > "$BUILD_LOG" 2>&1; then
   BUILD_ID=$(cat .next/BUILD_ID)
   log "build: SUCCESS (BUILD_ID=$BUILD_ID)"
 else

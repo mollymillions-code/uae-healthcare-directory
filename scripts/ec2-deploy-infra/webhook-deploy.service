@@ -1,0 +1,21 @@
+[Unit]
+Description=Zavis GitHub webhook deployer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/zavis-deploy
+EnvironmentFile=/home/ubuntu/zavis-deploy/webhook.env
+ExecStart=/usr/bin/node /home/ubuntu/zavis-deploy/github-webhook-deploy.mjs
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
