@@ -63,6 +63,10 @@ import {
   formatVerifiedDate,
   resolveSegments,
 } from "@/lib/directory-utils";
+import {
+  getPrimaryProviderImageUrl,
+  isUsableProviderImageUrl,
+} from "@/lib/media/provider-images";
 import { buildFaqDayLine, normalizeDayName, formatHoursRange } from "@/lib/hours-utils";
 import {
   ChevronRight,
@@ -919,6 +923,9 @@ export async function generateGccSegmentsMetadata(
     case "listing": {
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.category.slug, resolved.provider.slug)}`;
       const prov = resolved.provider;
+      const providerOgImage =
+        getPrimaryProviderImageUrl(prov, { absoluteOnly: true }) ??
+        getCategoryImageUrl(resolved.category.slug, base);
 
       // Clean legal/branch suffixes before title construction — matches UAE pattern.
       const cleanName = (name: string): string =>
@@ -1008,7 +1015,7 @@ export async function generateGccSegmentsMetadata(
           url,
           images: [
             {
-              url: getCategoryImageUrl(resolved.category.slug, base),
+              url: providerOgImage,
               width: 1200,
               height: 630,
               alt: `${prov.name} — ${resolved.category.name} in ${city.name}`,
@@ -1688,6 +1695,10 @@ export async function GccSegmentsPage({
       });
     }
 
+    const heroImageUrl = isUsableProviderImageUrl(provider.coverImageUrl)
+      ? provider.coverImageUrl
+      : getCategoryImagePath(category.slug);
+
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JsonLd
@@ -1745,9 +1756,7 @@ export async function GccSegmentsPage({
         {/* Listing hero banner with category image */}
         <div className="relative h-56 sm:h-64 w-full mb-8 overflow-hidden rounded-2xl">
           <Image
-            src={
-              provider.coverImageUrl || getCategoryImagePath(category.slug)
-            }
+            src={heroImageUrl}
             alt={`${provider.name} — ${category.name} in ${city.name}`}
             fill
             className="object-cover"

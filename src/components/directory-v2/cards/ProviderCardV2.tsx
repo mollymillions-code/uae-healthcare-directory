@@ -5,6 +5,7 @@ import { BadgeCheck, Star } from "lucide-react";
 import { PhotoCarousel } from "./PhotoCarousel";
 import { HeartButton } from "./HeartButton";
 import { cn } from "../shared/cn";
+import { collectProviderImageUrls } from "@/lib/media/provider-images";
 
 export interface ProviderCardV2Props {
   name: string;
@@ -37,9 +38,7 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
 
-  const photos: string[] = [];
-  if (p.coverImageUrl) photos.push(p.coverImageUrl);
-  if (p.photos && Array.isArray(p.photos)) photos.push(...p.photos.filter((x) => typeof x === "string"));
+  const photos = collectProviderImageUrls(p);
   if (photos.length === 0) photos.push("/images/placeholder-provider.svg");
 
   return (

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ChevronRight, Accessibility, ShieldCheck, BadgeCheck, Quote } from "lucide-react";
 import { getCategoryImagePath } from "@/lib/helpers";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { isUsableProviderImageUrl } from "@/lib/media/provider-images";
 
 function getCategoryBySlug(slug: string) {
   return CATEGORIES.find((c) => c.slug === slug);
@@ -213,6 +214,9 @@ export function ProviderCard({
   const counterpartAria = isArabicCard
     ? `View ${name} in English`
     : `عرض ${name} بالعربية`;
+  const cardImageUrl = isUsableProviderImageUrl(coverImageUrl)
+    ? coverImageUrl
+    : getCategoryImagePath(categorySlug);
 
   const openToneClass =
     openState?.tone === "green"
@@ -249,7 +253,7 @@ export function ProviderCard({
       <div className="flex items-start gap-3 pointer-events-none">
         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl">
           <Image
-            src={coverImageUrl || getCategoryImagePath(categorySlug)}
+            src={cardImageUrl}
             alt=""
             fill
             className="object-cover"

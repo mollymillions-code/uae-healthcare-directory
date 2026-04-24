@@ -26,7 +26,8 @@
     "auto:run-weekly": "node scripts/automation/orchestrator.mjs --mode weekly",
     "auto:run-daily": "node scripts/automation/orchestrator.mjs --mode daily --slot morning",
     "auto:run-review": "node scripts/automation/orchestrator.mjs --mode review",
-    "auto:health": "node scripts/automation/orchestrator.mjs --mode health"
+    "auto:health": "node scripts/automation/orchestrator.mjs --mode health",
+    "media:audit": "node scripts/audit-directory-media.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1012.0",

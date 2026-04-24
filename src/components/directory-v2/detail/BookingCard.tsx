@@ -96,7 +96,7 @@ export function BookingCard(p: BookingCardProps) {
           onClick={track(primaryType)}
           target={primaryHref.startsWith("http") ? "_blank" : undefined}
           rel={primaryHref.startsWith("http") ? "noopener" : undefined}
-          className="flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-md py-3.5 font-sans font-semibold text-z-body-sm transition-colors"
+          className="flex items-center justify-center gap-2 bg-accent-deep hover:bg-ink text-white rounded-z-md py-3.5 font-sans font-semibold text-z-body-sm transition-colors"
         >
           {primaryLabel}
         </Link>

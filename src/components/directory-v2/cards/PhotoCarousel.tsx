@@ -46,6 +46,8 @@ export function PhotoCarousel({
 
   const aspectClass =
     aspect === "card" ? "aspect-z-card" : aspect === "mosaic" ? "aspect-z-mosaic" : "aspect-z-wide";
+  const activeSrc = safePhotos[idx] ?? safePhotos[0] ?? fallbackSrc;
+  const activeEffective = failed[idx] ? fallbackSrc : activeSrc;
 
   return (
     <div
@@ -55,25 +57,17 @@ export function PhotoCarousel({
         rounded && "rounded-z-md"
       )}
     >
-      {safePhotos.map((src, i) => {
-        const effective = failed[i] ? fallbackSrc : src;
-        return (
-          <Image
-            key={src + i}
-            src={effective}
-            alt={`${alt}${safePhotos.length > 1 ? ` (${i + 1} of ${safePhotos.length})` : ""}`}
-            fill
-            sizes={sizes}
-            priority={priority && i === 0}
-            onError={() => setFailed((prev) => (prev[i] ? prev : { ...prev, [i]: true }))}
-            className={cn(
-              "object-cover transition-opacity duration-z-med ease-z-standard group-hover/carousel:scale-[1.03] transform-gpu",
-              i === idx ? "opacity-100" : "opacity-0 pointer-events-none"
-            )}
-            draggable={false}
-          />
-        );
-      })}
+      <Image
+        key={`${activeSrc}-${idx}`}
+        src={activeEffective}
+        alt={`${alt}${safePhotos.length > 1 ? ` (${idx + 1} of ${safePhotos.length})` : ""}`}
+        fill
+        sizes={sizes}
+        priority={priority && idx === 0}
+        onError={() => setFailed((prev) => (prev[idx] ? prev : { ...prev, [idx]: true }))}
+        className="object-cover transition-opacity duration-z-med ease-z-standard group-hover/carousel:scale-[1.03] transform-gpu"
+        draggable={false}
+      />
 
       {safePhotos.length > 1 && (
         <>

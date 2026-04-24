@@ -22,6 +22,11 @@ import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDateAr,
   resolveSegments,
 } from "@/lib/directory-utils";
+import {
+  collectProviderImageUrls,
+  getPrimaryProviderImageUrl,
+  isUsableProviderImageUrl,
+} from "@/lib/media/provider-images";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import Image from "next/image";
 import {
@@ -153,6 +158,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const enListingUrl = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       const arListingUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
+      const providerOgImage =
+        getPrimaryProviderImageUrl(resolved.provider, { absoluteOnly: true }) ??
+        getCategoryImageUrl(resolved.category.slug, base);
 
       // --- Arabic SEO title: hard 60-char cap, high-intent modifiers ---
       const arMaxTitleLen = 60;
@@ -208,7 +216,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           locale: 'ar_AE',
           siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
           url: arListingUrl,
-          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.provider.name} — ${catNameAr} في ${cityNameAr}` }],
+          images: [{ url: providerOgImage, width: 1200, height: 630, alt: `${resolved.provider.name} — ${catNameAr} في ${cityNameAr}` }],
         },
       };
     }
@@ -492,6 +500,10 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
     const areaNameAr = area?.nameAr || area?.name || "";
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
+    const providerPhotoUrls = collectProviderImageUrls(provider, { limit: 8 });
+    const attributedGalleryPhotos = (provider.galleryPhotos ?? []).filter((photo) =>
+      isUsableProviderImageUrl(photo.url)
+    );
 
     const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating && Number(provider.googleRating) > 0 ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`;
 
@@ -537,24 +549,24 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </div>
 
             {/* Photo gallery */}
-            {provider.galleryPhotos && provider.galleryPhotos.length > 1 && (
+            {providerPhotoUrls.length > 1 && (
               <div className="mb-6" data-section="gallery">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-semibold text-dark flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-accent" /> الصور
                   </h2>
                   <span className="text-xs text-muted">
-                    {provider.galleryPhotos.length} صور · عبر Google
+                    {providerPhotoUrls.length} صور
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {provider.galleryPhotos.slice(0, 8).map((photo, idx) => (
+                  {providerPhotoUrls.map((photoUrl, idx) => (
                     <div
-                      key={idx}
+                      key={`${photoUrl}-${idx}`}
                       className="relative aspect-square overflow-hidden border border-black/[0.06]"
                     >
                       <Image
-                        src={photo.url}
+                        src={photoUrl}
                         alt={`${provider.name} — صورة ${idx + 1}`}
                         fill
                         className="object-cover"
@@ -564,9 +576,9 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                     </div>
                   ))}
                 </div>
-                {provider.galleryPhotos.some((p) => p.attributions?.length > 0) && (
+                {attributedGalleryPhotos.some((p) => p.attributions?.length > 0) && (
                   <p className="text-[11px] text-muted mt-2">
-                    الصور من {Array.from(new Set(provider.galleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join("، ")} عبر خرائط Google
+                    الصور من {Array.from(new Set(attributedGalleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join("، ")} عبر خرائط Google
                   </p>
                 )}
               </div>

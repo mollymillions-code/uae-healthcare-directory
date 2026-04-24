@@ -25,10 +25,11 @@ export function AmenityGrid({ title, items, maxVisible = 10, onShowAll, classNam
   return (
     <section className={cn("py-8 border-b border-ink-line z-anchor", className)}>
       <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">{title}</h2>
-      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-10">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-10">
         {visible.map((it) => (
-          <div key={it.label} className="flex items-start gap-3">
+          <li key={it.label} className="flex items-start gap-3">
             <span
+              aria-hidden="true"
               className={cn(
                 "flex items-center justify-center h-6 w-6 flex-shrink-0 mt-0.5",
                 it.available === false ? "text-ink-muted" : "text-accent-deep"
@@ -40,17 +41,17 @@ export function AmenityGrid({ title, items, maxVisible = 10, onShowAll, classNam
                 it.icon ?? <Check className="h-4 w-4" strokeWidth={2.25} />
               )}
             </span>
-            <dt
+            <span
               className={cn(
                 "font-sans text-z-body text-ink",
                 it.available === false && "line-through text-ink-muted"
               )}
             >
               {it.label}
-            </dt>
-          </div>
+            </span>
+          </li>
         ))}
-      </dl>
+      </ul>
 
       {items.length > maxVisible && onShowAll && (
         <button

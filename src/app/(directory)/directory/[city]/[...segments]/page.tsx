@@ -49,6 +49,7 @@ import {
 } from "@/lib/constants/procedures";
 import { CITIES } from "@/lib/constants/cities";
 import { safe } from "@/lib/safeData";
+import { getPrimaryProviderImageUrl } from "@/lib/media/provider-images";
 
 // ISR: pages built on first visit, cached for 6 hours. No SSG pre-rendering.
 export const revalidate = 21600;
@@ -88,6 +89,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       const baseCategoryUrl = `${base}/directory/${city.slug}/${resolved.category.slug}`;
       const canonicalUrl = `${baseCategoryUrl}${pageSuffix}`;
       const arCanonicalUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}${pageSuffix}`;
+
       return {
         title: truncateTitle(`${total} Best ${resolved.category.name} in ${city.name} [${year}]${pageTitleSuffix}`),
         description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`),
@@ -278,6 +280,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           `${prov.name} is a ${resolved.category.name.toLowerCase()} in ${areaBit}${city.name}, UAE. Address, hours & directions on the UAE Open Healthcare Directory by Zavis.`
         );
       }
+      const providerOgImage =
+        getPrimaryProviderImageUrl(resolved.provider, { absoluteOnly: true }) ??
+        getCategoryImageUrl(resolved.category.slug, base);
 
       return {
         title: seoTitle,
@@ -300,7 +305,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
           url: listingCanonical,
-          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.provider.name} — ${resolved.category.name} in ${city.name}` }],
+          images: [{ url: providerOgImage, width: 1200, height: 630, alt: `${resolved.provider.name} — ${resolved.category.name} in ${city.name}` }],
         },
       };
     }

@@ -366,7 +366,11 @@ function transformResult(result, country, citySlug, cityName, fallbackCategory) 
     insurance: [],
     operatingHours: null,  // filled by Place Details
     reviewSummary: [],     // filled by Place Details
-    photos: result.photos?.length ? [result.photos[0].photo_reference] : [],
+    // Do not put Google photo_reference values in the public photos field.
+    // Provider renderers expect dereferenceable URLs only; refs belong in
+    // google_photo_url or gallery_photos after an upload-time R2 transform.
+    googlePhotoUrl: result.photos?.[0]?.photo_reference || null,
+    photos: [],
     facilityType: inferFacilityType(category, result.types),
     source: "Google Places",
     licenseNumber: null,

@@ -147,7 +147,7 @@ export default function ClaimPage() {
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a
                   href="#find-listing"
-                  className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors"
+                  className="inline-flex items-center gap-2 bg-accent-deep hover:bg-ink text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors"
                 >
                   Start claiming
                   <ArrowRight className="h-4 w-4" />
@@ -394,7 +394,7 @@ export default function ClaimPage() {
               </p>
               <a
                 href="#find-listing"
-                className="mt-7 inline-flex items-center gap-2 rounded-z-pill bg-accent hover:bg-accent-light text-white font-sans font-semibold text-z-body-sm px-6 py-3.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,200,83,0.5)]"
+                className="mt-7 inline-flex items-center gap-2 rounded-z-pill bg-accent-deep hover:bg-accent-dark text-white font-sans font-semibold text-z-body-sm px-6 py-3.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,104,40,0.35)]"
               >
                 Start claiming
                 <ArrowRight className="h-4 w-4" />

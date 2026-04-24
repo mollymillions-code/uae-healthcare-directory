@@ -8,6 +8,7 @@
 
 import { getBaseUrl } from "./helpers";
 import type { LocalProvider, LocalCategory, LocalCity, LocalArea } from "./data";
+import { collectProviderImageUrls } from "./media/provider-images";
 
 // ─── SEO Truncation Helpers ───────────────────────────────────────────────────
 
@@ -94,23 +95,11 @@ export function medicalOrganizationSchema(
   // coverImageUrl from the legacy enrichment pipeline) because they are
   // not dereferenceable by Google's structured-data crawler and produce
   // invalid `image` fields in JSON-LD.
-  const isValidImageUrl = (u: unknown): u is string =>
-    typeof u === "string" && /^https?:\/\//i.test(u);
-  const imageUrls: string[] = [];
-  if (isValidImageUrl(provider.logoUrl)) {
-    imageUrls.push(provider.logoUrl);
-  }
-  if (provider.galleryPhotos && provider.galleryPhotos.length > 0) {
-    for (const p of provider.galleryPhotos.slice(0, 6)) {
-      if (isValidImageUrl(p.url) && !imageUrls.includes(p.url)) imageUrls.push(p.url);
-    }
-  } else if (provider.photos && provider.photos.length > 0) {
-    for (const u of provider.photos.slice(0, 3)) {
-      if (isValidImageUrl(u) && !imageUrls.includes(u)) imageUrls.push(u);
-    }
-  } else if (isValidImageUrl(provider.coverImageUrl) && !imageUrls.includes(provider.coverImageUrl)) {
-    imageUrls.push(provider.coverImageUrl);
-  }
+  const imageUrls = collectProviderImageUrls(provider, {
+    limit: 6,
+    includeLogo: true,
+    absoluteOnly: true,
+  });
 
   // Build PostalAddress with only populated fields. Empty streetAddress /
   // addressLocality is worse than an absent field — Google flags it.

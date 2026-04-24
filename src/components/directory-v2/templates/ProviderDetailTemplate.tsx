@@ -9,6 +9,7 @@ import { AmenityGrid } from "../detail/AmenityGrid";
 import { ReviewDistribution } from "../detail/ReviewDistribution";
 import { HeartButton } from "../cards/HeartButton";
 import { FaqSection } from "@/components/seo/FaqSection";
+import { collectProviderImageUrls } from "@/lib/media/provider-images";
 
 
 const GoogleMapEmbed = dynamic(
@@ -99,13 +100,7 @@ export function ProviderDetailTemplate({
   aeoAnswer,
   arabicHref,
 }: Props) {
-  const photos: string[] = [];
-  if (p.coverImageUrl) photos.push(p.coverImageUrl);
-  if (Array.isArray(p.photos)) photos.push(...p.photos);
-  if (Array.isArray(p.galleryPhotos)) {
-    for (const g of p.galleryPhotos) photos.push(typeof g === "string" ? g : g.url);
-  }
-  const uniqPhotos = Array.from(new Set(photos.filter(Boolean)));
+  const uniqPhotos = collectProviderImageUrls(p);
 
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
@@ -207,6 +202,7 @@ export function ProviderDetailTemplate({
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               type="button"
+              aria-label={`Share ${p.name}`}
               className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-z-pill hover:bg-surface-cream font-sans text-z-body-sm text-ink"
             >
               <Share2 className="h-3.5 w-3.5" strokeWidth={2.5} />
