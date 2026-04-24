@@ -1,5 +1,45 @@
 # Zavis Landing - Changelog
 
+## 2026-04-24 — [Codex] Local Postgres backup hardening without moving DB
+
+**Signed by:** Codex · 2026-04-24T20:10:00+05:30
+
+**What happened:**
+
+- Verified current production Postgres state on `13.234.162.47`: PostgreSQL 16.13, local `zavis_landing`, 39 public tables, 16,941 providers, local dump size ~105 MB.
+- Confirmed existing local nightly backups in `/var/backups/zavis-landing`.
+- Added step-two hardening while keeping DB local:
+  - `scripts/ec2-deploy-infra/db-backup.sh`
+  - `scripts/ec2-deploy-infra/db-restore-smoke-test.sh`
+  - `scripts/ec2-deploy-infra/db-backup-health-check.sh`
+  - `scripts/ec2-deploy-infra/db-backup.env.example`
+  - `docs/ops/postgres-local-backup-hardening.md`
+- Installed scripts on EC2 under `/home/ubuntu/zavis-deploy/`.
+- Created `/home/ubuntu/zavis-deploy/db-backup.env` and `/home/ubuntu/zavis-deploy/db-backup-encryption.key`.
+- Enabled encrypted off-box R2 uploads under `database-backups/zavis-landing/`.
+- Added cron:
+  - daily backup at `02:17 UTC`
+  - weekly restore smoke test at `02:45 UTC` on Sundays
+  - daily health check at `03:05 UTC`
+- Backup/restore cron uses `/tmp/zavis-deploy.lock`, so it does not overlap with production deploy/build.
+- `pg_dump` and `pg_restore` now run with low CPU/I/O priority.
+
+**Verification:**
+
+- Manual backup produced local dump + checksum.
+- Encrypted R2 object uploaded successfully after forcing R2 region to `auto`.
+- Backup health check OK.
+- Restore smoke test OK: 39 tables, 16,941 providers.
+- Confirmed the throwaway restore DB was dropped.
+- After validation load, canceled stale `ClientWrite` app queries and verified origin `/` and Bella Rose returned 200.
+
+**Remaining risk:**
+
+- This does not add DB failover. App and DB are still on one box.
+- Encrypted remote backups are only useful for disaster recovery if the encryption key is kept outside the server.
+
+---
+
 ## 2026-04-24 — [Codex] Production provider recovery + self-hosted deploy gate
 
 **Signed by:** Codex · 2026-04-24T19:45:00+05:30

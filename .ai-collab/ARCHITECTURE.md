@@ -30,3 +30,21 @@
 - GitHub Actions automatic deploy/schedule triggers are disabled; workflows remain manual fallback only.
 - Jenkins is not installed on production. If added later, run Jenkins on a separate CI host and have it call the signed deploy gate after lint, type check, and build pass.
 - `Jenkinsfile` is present as the future separate-host CI contract.
+
+## Local Postgres Backup Hardening
+
+**Updated:** 2026-04-24T20:10:00+05:30 by Codex
+
+- Postgres remains local on the Lightsail app host.
+- Nightly logical dumps live under `/var/backups/zavis-landing`.
+- Backup script: `/home/ubuntu/zavis-deploy/db-backup.sh`.
+- Restore smoke test script: `/home/ubuntu/zavis-deploy/db-restore-smoke-test.sh`.
+- Health check script: `/home/ubuntu/zavis-deploy/db-backup-health-check.sh`.
+- Remote encrypted backup prefix: `database-backups/zavis-landing/` in configured R2 bucket.
+- Encryption key file: `/home/ubuntu/zavis-deploy/db-backup-encryption.key`.
+- Cron:
+  - `02:17 UTC` daily backup.
+  - `02:45 UTC` Sunday restore smoke test.
+  - `03:05 UTC` daily health check.
+- Backup and restore cron jobs acquire `/tmp/zavis-deploy.lock` to avoid overlapping app deploy/build.
+- `pg_dump` and `pg_restore` run with low CPU/I/O priority.
