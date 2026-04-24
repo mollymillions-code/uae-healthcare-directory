@@ -28,6 +28,7 @@ interface Props {
 
 /** Only generate pages for city x area combos with 3+ government providers */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
 

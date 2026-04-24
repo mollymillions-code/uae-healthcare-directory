@@ -31,6 +31,7 @@ export const revalidate = 43200;
 // ─── Static Params ─────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllLabLists().map((list) => ({ slug: list.slug }));
 }
 

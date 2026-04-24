@@ -32,6 +32,7 @@ async function getGovProviders(citySlug: string) {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const results: { city: string }[] = [];
   for (const c of cities) {

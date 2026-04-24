@@ -283,6 +283,7 @@ const GUIDE_ARTICLES: GuideArticle[] = [
 /* ─── Static params for pre-generation ─── */
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return GUIDE_ARTICLES.map((article) => ({ slug: article.slug }));
 }
 

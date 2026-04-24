@@ -22,6 +22,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllFacilities(20)
     .slice(0, 100)
     .map((f) => ({ slug: f.slug }));

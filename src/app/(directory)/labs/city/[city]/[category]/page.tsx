@@ -213,6 +213,7 @@ const CATEGORY_MEDICAL_CONTENT: Record<TestCategory, CategoryContent> = {
 // ─── Static params generation ────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { city: string; category: string }[] = [];
   for (const city of CITIES) {
     const citySlug = city.slug;

@@ -34,6 +34,7 @@ const WALK_IN_CATS = [
 
 /** Only generate for city x area x category combos with 3+ providers */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; area: string; category: string }[] = [];

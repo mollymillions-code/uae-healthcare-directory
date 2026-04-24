@@ -43,6 +43,7 @@ async function getProceduresWithProviders(citySlug: string, areaSlug: string): P
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
 

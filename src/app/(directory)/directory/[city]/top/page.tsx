@@ -19,6 +19,7 @@ interface Props {
 
 /** Return cities that have 5+ qualified providers */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const params: { city: string }[] = [];
 

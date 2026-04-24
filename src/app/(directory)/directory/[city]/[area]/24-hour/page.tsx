@@ -28,6 +28,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const params: { city: string; area: string }[] = [];
   for (const city of cities) {

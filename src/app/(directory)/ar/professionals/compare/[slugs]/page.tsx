@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const top15 = [...PHYSICIAN_SPECIALTIES]
     .sort((a, b) => b.count - a.count)
     .slice(0, 15);

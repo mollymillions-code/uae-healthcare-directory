@@ -20,6 +20,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   // Top 15 physician specialties by count, generate all unique pairs
   const top15 = [...PHYSICIAN_SPECIALTIES]
     .sort((a, b) => b.count - a.count)

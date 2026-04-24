@@ -28,6 +28,7 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 43200;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { procedure: string; city: string }[] = [];
   for (const proc of PROCEDURES) {
     for (const citySlug of Object.keys(proc.cityPricing)) {

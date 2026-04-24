@@ -32,6 +32,7 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 43200;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllJourneySlugs().map((slug) => ({ journey: slug }));
 }
 

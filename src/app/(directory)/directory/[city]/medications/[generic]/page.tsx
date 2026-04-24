@@ -17,6 +17,7 @@ interface Props { params: { city: string; generic: string } }
 
 // Only pre-generate for high-intent medications × UAE cities
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities().filter(c => c.country === "ae");
   const highIntent = await getHighIntentMedications(50);
   return cities.flatMap(city =>

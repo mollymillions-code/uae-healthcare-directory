@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getFacilitySpecialtyCombos(5).map((combo) => ({
     slug: combo.facilitySlug,
     specialty: combo.specialtySlug,

@@ -16,6 +16,7 @@ interface Props {
 
 /** Return categories that have 5+ qualified providers UAE-wide */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const categories = getCategories();
   const params: { category: string }[] = [];
 

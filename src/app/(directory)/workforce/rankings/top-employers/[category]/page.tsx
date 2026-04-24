@@ -20,6 +20,7 @@ interface Props {
 const CATEGORY_SLUGS = ["physicians", "dentists", "nurses", "allied-health"];
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return CATEGORY_SLUGS.map((category) => ({ category }));
 }
 

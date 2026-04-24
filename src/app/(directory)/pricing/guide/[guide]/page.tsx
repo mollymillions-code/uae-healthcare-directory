@@ -51,6 +51,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return PRICING_GUIDES.map((g) => ({ guide: g.slug }));
 }
 

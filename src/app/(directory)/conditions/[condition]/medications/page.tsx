@@ -19,6 +19,7 @@ function toTitle(slug: string): string {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const all = await getAllConditionsWithMedications();
   return all.filter((c) => c.medications.length >= 2).map((c) => ({ condition: c.slug }));
 }

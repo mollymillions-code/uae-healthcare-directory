@@ -48,6 +48,7 @@ function getRegulatorShort(citySlug: string): string {
 // ─── generateStaticParams ───────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().map((c) => ({ city: c.slug }));
 }
 

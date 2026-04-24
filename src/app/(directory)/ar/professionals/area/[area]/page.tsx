@@ -24,6 +24,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAreaStats()
     .filter((a) => a.count >= 10)
     .map((a) => ({ area: a.slug }));

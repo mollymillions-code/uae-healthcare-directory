@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const top10 = getTopAreas(10);
   const params: { slugs: string }[] = [];
   for (let i = 0; i < top10.length; i++) {

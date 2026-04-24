@@ -20,6 +20,7 @@ import { ar } from "@/lib/i18n";
 export const revalidate = 43200;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return TEST_CATEGORIES.map((cat) => ({ category: cat.slug }));
 }
 

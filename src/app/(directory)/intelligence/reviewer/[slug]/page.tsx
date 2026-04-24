@@ -39,6 +39,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const reviewers = await getAllActiveReviewers();
   return reviewers.map((r) => ({ slug: r.slug }));
 }

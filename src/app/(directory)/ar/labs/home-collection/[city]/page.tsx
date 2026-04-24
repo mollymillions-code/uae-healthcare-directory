@@ -33,6 +33,7 @@ import { getArabicCityName } from "@/lib/i18n";
 // ─── Static Params ────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return CITIES.filter((city) =>
     getLabsByCity(city.slug).some((l) => l.homeCollection)
   ).map((city) => ({ city: city.slug }));

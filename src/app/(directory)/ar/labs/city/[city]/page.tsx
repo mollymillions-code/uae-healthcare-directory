@@ -33,6 +33,7 @@ import { ar, getArabicCityName } from "@/lib/i18n";
 // ─── Static Params ────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return CITIES.map((city) => ({ city: city.slug }));
 }
 

@@ -36,6 +36,7 @@ const PAGE_SIZE = 24;
 const MAX_STATIC_SPECIALTIES = 50;
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const slugs = await safe(
     getAllSpecialtySlugs(),
     [] as string[],

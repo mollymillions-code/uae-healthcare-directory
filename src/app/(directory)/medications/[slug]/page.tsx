@@ -24,6 +24,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const slugs = await getAllMedicationSlugs();
   return slugs.map((slug) => ({ slug }));
 }

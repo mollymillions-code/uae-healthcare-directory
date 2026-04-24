@@ -128,6 +128,7 @@ function parseComparison(param: string): [string, string] | null {
 // ─── generateStaticParams ─────────────────────────────────────────────────────
 
 export function generateStaticParams(): { comparison: string }[] {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const pairs = buildAllPairs();
   const params: { comparison: string }[] = [];
 

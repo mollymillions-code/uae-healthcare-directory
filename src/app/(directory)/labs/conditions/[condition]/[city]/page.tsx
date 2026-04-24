@@ -461,6 +461,7 @@ function getCheapestEstimate(
 // ─── Static Params ─────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { condition: string; city: string }[] = [];
 
   for (const conditionSlug of Object.keys(CONDITIONS)) {

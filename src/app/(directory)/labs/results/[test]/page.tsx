@@ -515,6 +515,7 @@ const TEST_INTERPRETATIONS: Record<string, TestInterpretation> = {
 const RESULT_SLUGS = Object.keys(TEST_INTERPRETATIONS);
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return RESULT_SLUGS.map((test) => ({ test }));
 }
 

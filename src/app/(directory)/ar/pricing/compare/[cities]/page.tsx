@@ -142,6 +142,7 @@ function analysePricing(cityASlug: string, cityBSlug: string) {
 // ─── Generate Static Params ───────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllCityPairs().map(({ cityA, cityB }) => ({
     cities: `${cityA}-vs-${cityB}`,
   }));

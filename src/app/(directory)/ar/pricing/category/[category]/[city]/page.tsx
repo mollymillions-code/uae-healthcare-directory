@@ -23,6 +23,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { category: string; city: string }[] = [];
   for (const cat of PROCEDURE_CATEGORIES) {
     const procs = getProceduresByCategory(cat.slug);

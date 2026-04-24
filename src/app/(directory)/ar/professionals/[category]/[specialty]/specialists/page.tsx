@@ -27,6 +27,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const specialties = getSpecialtiesWithBothLevels();
   return specialties
     .map((s) => {

@@ -154,6 +154,7 @@ const TEST_MEDICAL_CONTENT_AR: Record<string, TestMedicalContentAr> = {
 // ─── generateStaticParams ──────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return LAB_TESTS.map((test) => ({ test: test.slug }));
 }
 

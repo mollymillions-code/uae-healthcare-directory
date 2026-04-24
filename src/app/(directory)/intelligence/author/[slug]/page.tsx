@@ -35,6 +35,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   // Pre-generate every active author. The masthead is small enough that we
   // never need to fall back to on-demand ISR for this route. On a fresh
   // clone with empty tables, this returns [] and the route stays on-demand.

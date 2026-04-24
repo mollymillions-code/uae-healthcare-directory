@@ -23,6 +23,7 @@ interface Props { params: { city: string; area: string; category: string } }
 
 /** Return all city × area × category combos that have 5+ rated providers */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; area: string; category: string }[] = [];

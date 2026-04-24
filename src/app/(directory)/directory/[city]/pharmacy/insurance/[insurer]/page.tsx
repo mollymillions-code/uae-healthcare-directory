@@ -15,6 +15,7 @@ export const dynamicParams = true;
 interface Props { params: { city: string; insurer: string } }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities().filter(c => c.country === "ae");
   const insurers = INSURANCE_PROVIDERS.slice(0, 15);
   return cities.flatMap(city =>

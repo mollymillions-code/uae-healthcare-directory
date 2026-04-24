@@ -176,6 +176,7 @@ const GUIDES: InsuranceGuide[] = [
 /* ─── Static params ─── */
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return GUIDES.map((g) => ({ slug: g.slug }));
 }
 

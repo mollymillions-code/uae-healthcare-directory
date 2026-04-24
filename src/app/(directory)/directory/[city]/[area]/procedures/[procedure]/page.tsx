@@ -38,6 +38,7 @@ function getRegulatorName(citySlug: string): string {
  * the procedure's related category has providers in that area.
  */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const params: { city: string; area: string; procedure: string }[] = [];
 

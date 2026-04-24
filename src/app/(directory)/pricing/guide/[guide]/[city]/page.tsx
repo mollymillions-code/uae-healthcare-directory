@@ -51,6 +51,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { guide: string; city: string }[] = [];
   for (const guide of PRICING_GUIDES) {
     for (const city of CITIES) {

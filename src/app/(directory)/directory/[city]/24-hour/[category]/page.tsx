@@ -27,6 +27,7 @@ interface Props {
 
 /** Only generate pages for city x category combos with 3+ 24-hour providers */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];

@@ -22,6 +22,7 @@ function toTitle(slug: string): string {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cats = getCategories();
   return cats.map((c) => ({ specialty: c.slug }));
 }

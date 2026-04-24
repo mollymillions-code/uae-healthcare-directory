@@ -20,6 +20,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const top20 = getTopFacilities(20);
   const params: { slugs: string }[] = [];
   for (let i = 0; i < top20.length; i++) {

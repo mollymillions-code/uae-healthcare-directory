@@ -22,6 +22,7 @@ interface Props {
 const DOCTOR_CATEGORIES = new Set(["physicians", "dentists"]);
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllFacilities(5)
     .slice(0, 50)
     .map((f) => ({ slug: f.slug }));

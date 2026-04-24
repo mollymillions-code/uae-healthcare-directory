@@ -21,6 +21,7 @@ interface Props { params: { city: string; category: string } }
 
 /** Return all city × category combos that have 10+ providers with rating > 0 and reviewCount > 10 */
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];

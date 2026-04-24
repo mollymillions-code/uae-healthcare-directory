@@ -767,6 +767,7 @@ function getGuideObj(slug: string) {
 // ─── Static Params ──────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { guide: string; city: string }[] = [];
   const guideSlugs = Object.keys(GUIDE_DATA);
   const citySlugs = CITIES.map((c) => c.slug);

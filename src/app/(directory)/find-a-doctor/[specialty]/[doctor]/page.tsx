@@ -38,6 +38,7 @@ interface Props {
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   // Pre-generate the top ~1,000 well-formed doctors per session. Remaining
   // doctors are generated on-demand via ISR. During build on an empty DB,
   // this function safely returns [] and the route becomes pure on-demand.

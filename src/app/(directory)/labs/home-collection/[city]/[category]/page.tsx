@@ -28,6 +28,7 @@ import { getBaseUrl } from "@/lib/helpers";
 // ─── Static Params ────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const params: { city: string; category: string }[] = [];
 
   for (const city of CITIES) {

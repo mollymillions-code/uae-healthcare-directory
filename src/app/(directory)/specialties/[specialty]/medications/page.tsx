@@ -20,6 +20,7 @@ function toTitle(slug: string): string {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const all = await getAllSpecialtiesWithMedications();
   return all.filter((s) => s.medications.length >= 2).map((s) => ({ specialty: s.slug }));
 }

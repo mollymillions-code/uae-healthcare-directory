@@ -19,6 +19,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return CITIES.map((c) => ({ city: c.slug }));
 }
 
