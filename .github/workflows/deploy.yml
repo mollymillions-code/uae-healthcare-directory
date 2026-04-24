@@ -1,8 +1,10 @@
 name: Deploy to EC2
 
 on:
-  push:
-    branches: [live]
+  # Automatic production deploys are handled by the self-hosted EC2 deploy gate.
+  # Keep this workflow manual only as an emergency fallback while GitHub Actions
+  # is being phased out.
+  workflow_dispatch:
 
 concurrency:
   group: deploy-live

@@ -2,8 +2,9 @@
 
 ## Decision
 
-Use a small GitHub webhook deployer on the EC2 host instead of GitHub Actions,
-Jenkins, or a full CI server.
+Use a small deploy gate on the EC2 host instead of GitHub Actions as the
+production cutover mechanism. The deploy gate can be triggered directly by
+GitHub webhooks now and by Jenkins later if a separate CI host is added.
 
 The deployer receives GitHub `push` webhooks for the `live` branch, verifies the
 `X-Hub-Signature-256` HMAC signature, filters the repository and branch, then
@@ -13,12 +14,16 @@ swap, PM2 scaling, and sitemap generation.
 
 ## Why this shape
 
-- Jenkins is too heavyweight for a single production app: JVM runtime, plugin
-  upkeep, exposed UI, credential administration, and a larger security surface.
+- Jenkins should not run on the production EC2 host. It is stable as a CI
+  product, but it brings JVM/runtime overhead, plugin upkeep, an admin UI,
+  credential administration, and a larger security surface.
 - Woodpecker and similar lightweight CI tools are cleaner than Jenkins, but
   still add a server, agents, OAuth/app setup, secrets, and pipeline syntax.
 - Zavis already has a production-grade blue-green deploy script. The missing
   piece is a reliable trigger, not a second orchestration layer.
+- A `Jenkinsfile` is included for the long-term version: Jenkins can run tests
+  on a separate CI host and call the same HMAC-protected deploy gate only after
+  lint, type check, and build pass.
 
 ## Safety properties
 
@@ -35,6 +40,7 @@ swap, PM2 scaling, and sitemap generation.
 
 ## Files
 
+- `Jenkinsfile`
 - `scripts/ec2-deploy-infra/github-webhook-deploy.mjs`
 - `scripts/ec2-deploy-infra/webhook-deploy.service`
 - `scripts/ec2-deploy-infra/webhook.env.example`
@@ -83,6 +89,26 @@ Create a GitHub repository webhook:
 - Content type: `application/json`
 - Secret: the same value as `WEBHOOK_SECRET`
 - Events: `push` only
+
+Disable automatic GitHub Actions triggers so they cannot compete with the
+self-hosted deployment path. Existing workflows may stay available through
+`workflow_dispatch` as manual fallbacks until removed.
+
+## Optional Jenkins host
+
+If Jenkins is added later, run it on a separate CI instance, not on the
+production app host. Configure these Jenkins credentials:
+
+- `zavis-deploy-webhook-url`: `https://www.zavis.ai/hooks/github/live-deploy`
+- `zavis-deploy-webhook-secret`: the same `WEBHOOK_SECRET` from EC2
+
+The included `Jenkinsfile` runs:
+
+- `npm ci`
+- `npm run lint`
+- `npx tsc --noEmit --pretty false`
+- `npm run build`
+- signed deploy-gate trigger only for the `live` branch
 
 ## Operations
 
