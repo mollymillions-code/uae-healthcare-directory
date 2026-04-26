@@ -10,7 +10,7 @@ import {
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema, truncateTitle, truncateDescription } from "@/lib/seo";
-import { getBaseUrl } from "@/lib/helpers";
+import { getBaseUrl, getCityImagePath } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
 import { ProviderCardV2 } from "@/components/directory-v2/cards/ProviderCardV2";
 import { CategoryRail } from "@/components/directory-v2/rails/CategoryRail";
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: "en_AE",
       siteName: "UAE Open Healthcare Directory",
       url: `${getBaseUrl()}/directory/${city.slug}`,
-      images: [{ url: `${getBaseUrl()}/images/cities/${city.slug}.webp`, width: 1200, height: 630, alt: `Healthcare in ${city.name}, UAE` }],
+      images: [{ url: `${getBaseUrl()}${getCityImagePath(city.slug)}`, width: 1200, height: 630, alt: `Healthcare in ${city.name}, UAE` }],
     },
   };
 }

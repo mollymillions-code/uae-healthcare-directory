@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { speakableSchema } from "@/lib/seo";
-import { getBaseUrl } from "@/lib/helpers";
+import { getBaseUrl, getCityImagePath } from "@/lib/helpers";
 import {
   getCities,
   getCategories,
@@ -138,21 +138,18 @@ export default async function ArabicHomePage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {cities.map((city) => {
             const count = cityCountMap[city.slug] ?? 0;
-            const hasImage = ["dubai", "abu-dhabi", "sharjah", "ajman", "al-ain", "ras-al-khaimah", "fujairah", "umm-al-quwain"].includes(city.slug);
             return (
               <Link
                 key={city.slug}
                 href={`/ar/directory/${city.slug}`}
                 className="group card-hero min-h-[160px] sm:min-h-[200px]"
               >
-                {hasImage && (
-                  <Image
-                    src={`/images/cities/${city.slug}.webp`}
-                    alt={getArabicCityName(city.slug)}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                )}
+                <Image
+                  src={getCityImagePath(city.slug)}
+                  alt={getArabicCityName(city.slug)}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit text-[10px]">{count} {ar.providers}</span>

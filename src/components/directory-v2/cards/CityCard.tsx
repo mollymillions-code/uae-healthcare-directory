@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "../shared/cn";
+import { getCityImagePath } from "@/lib/helpers";
 
 interface CityCardProps {
   slug: string;
@@ -32,7 +33,7 @@ export function CityCard({ slug, name, href, providerCount, regulator, size = "m
       aria-label={`Browse healthcare providers in ${name}`}
     >
       <Image
-        src={`/images/cities/${slug}.webp`}
+        src={getCityImagePath(slug)}
         alt={`${name} healthcare`}
         fill
         sizes={size === "lg" ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
