@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isRemovedProviderPath } from "@/lib/provider-removals";
 
 const MAX_FACILITY_ROUTE_SEGMENT_LENGTH = 200;
 const FACILITY_ROUTE_PREFIXES = [
@@ -40,6 +41,15 @@ export function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+
+  if (isRemovedProviderPath(pathname)) {
+    return new NextResponse(null, {
+      status: 410,
+      headers: {
+        "X-Robots-Tag": "noindex, noarchive",
+      },
+    });
+  }
 
   if (hasInvalidFacilityRouteSegment(pathname)) {
     return new NextResponse(null, { status: 404 });

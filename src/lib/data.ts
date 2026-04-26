@@ -25,10 +25,16 @@ import {
   sanitizeProviderForPublic,
 } from "./data-quality";
 import type { ProviderFilterScope } from "./data-quality";
+import {
+  REMOVED_PROVIDER_SLUGS,
+  isRemovedProviderRecord,
+  isRemovedProviderSlug,
+} from "./provider-removals";
 
 export {
   getProviderCountry,
   getProviderStableKey,
+  isRemovedProviderRecord,
   isProviderPubliclyListable,
   isProviderSuspect,
 };
@@ -37,15 +43,6 @@ export {
 
 let HAS_DB = !!process.env.DATABASE_URL;
 let _dbVerified = false;
-
-// ─── Hidden providers ───────────────────────────────────────────────────────
-// Provider slugs in this list are excluded from every public-facing path:
-// detail page (getProviderBySlug → 404), listing pages, search/sitemap APIs
-// (getProviders / dbSelectProviders → filtered out). The DB row stays intact;
-// remove the slug from the array to restore the listing.
-const HIDDEN_PROVIDER_SLUGS: readonly string[] = [
-  "ghasaq-medical-center-sharjah",
-];
 
 /**
  * Check if DB actually has providers. If not (empty table, connection error),
@@ -258,6 +255,16 @@ export interface LocalProvider {
   businessStatus?: string;
 }
 
+function preparePublicProviders(
+  providers: LocalProvider[],
+  scope?: ProviderFilterScope
+): LocalProvider[] {
+  return prepareProvidersForPublic(
+    providers.filter((provider) => !isRemovedProviderRecord(provider)),
+    scope
+  );
+}
+
 // ─── Query Cache (5-min TTL, bounded LRU, max 500 entries) ─────────────────────
 // Uses a Map which maintains insertion order. On get-hit we delete+re-insert to
 // move the entry to the end (most-recently-used). On set we evict the oldest
@@ -392,7 +399,7 @@ function loadFallback(): void {
     const jsonPath = path.join(process.cwd(), "src/lib/providers-scraped.json");
     const raw = fs.readFileSync(jsonPath, "utf-8");
     const scraped = JSON.parse(raw) as Record<string, unknown>[];
-    FALLBACK_ALL_PROVIDERS = prepareProvidersForPublic(
+    FALLBACK_ALL_PROVIDERS = preparePublicProviders(
       scraped.map((p: Record<string, unknown>) => ({
         ...(p as unknown as LocalProvider),
         country: (p.country as string | undefined) || getProviderCountry(p as unknown as LocalProvider),
@@ -976,13 +983,13 @@ async function dbSelectProviders(filters?: {
   }
   if (scope?.areaSlug) conditions.push(_eq!(t.areaSlug, scope.areaSlug));
   if (scope?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, scope.subcategorySlug));
-  if (HIDDEN_PROVIDER_SLUGS.length > 0) {
-    conditions.push(_notInArray!(t.slug, HIDDEN_PROVIDER_SLUGS as string[]));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
   }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
   const rows = await _db!.select().from(t).where(where);
-  return prepareProvidersForPublic(rows.map(rowToProvider), scope);
+  return preparePublicProviders(rows.map(rowToProvider), scope);
 }
 
 export async function getProviders(filters?: {
@@ -1027,10 +1034,7 @@ export async function getProviders(filters?: {
     if (normalizedFilters?.subcategorySlug) {
       filtered = filtered.filter((p) => p.subcategorySlug === normalizedFilters.subcategorySlug);
     }
-    if (HIDDEN_PROVIDER_SLUGS.length > 0) {
-      filtered = filtered.filter((p) => !HIDDEN_PROVIDER_SLUGS.includes(p.slug));
-    }
-    filtered = prepareProvidersForPublic(filtered, scope);
+    filtered = preparePublicProviders(filtered, scope);
 
     if (normalizedFilters?.query) {
       const q = normalizedFilters.query.toLowerCase();
@@ -1092,8 +1096,8 @@ export async function getProviders(filters?: {
       )
     );
   }
-  if (HIDDEN_PROVIDER_SLUGS.length > 0) {
-    conditions.push(_notInArray!(t.slug, HIDDEN_PROVIDER_SLUGS as string[]));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
   }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
@@ -1103,7 +1107,7 @@ export async function getProviders(filters?: {
   const offset = (page - 1) * limit;
 
   const rows = await _db!.select().from(t).where(where);
-  let filtered = prepareProvidersForPublic(rows.map(rowToProvider), scope);
+  let filtered = preparePublicProviders(rows.map(rowToProvider), scope);
   if (normalizedFilters?.sort === "rating") {
     filtered = [...filtered].sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
   } else if (normalizedFilters?.sort === "name") {
@@ -1122,7 +1126,7 @@ export async function getProviders(filters?: {
 }
 
 export async function getProviderBySlug(slug: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
-  if (HIDDEN_PROVIDER_SLUGS.includes(slug)) return undefined;
+  if (isRemovedProviderSlug(slug)) return undefined;
   const scope = canonicalizeProviderFilterScope(expectedScope);
   if (!isProviderFilterScopeValid(scope)) return undefined;
 
@@ -1131,7 +1135,7 @@ export async function getProviderBySlug(slug: string, expectedScope?: ProviderFi
   if (!HAS_DB) {
     loadFallback();
     const provider = fallbackBySlug!.get(slug);
-    if (provider) return prepareProvidersForPublic([provider], scope)[0];
+    if (provider) return preparePublicProviders([provider], scope)[0];
     return findProviderBySlugAlias(slug, FALLBACK_ALL_PROVIDERS ?? [], scope);
   }
 
@@ -1142,7 +1146,10 @@ export async function getProviderBySlug(slug: string, expectedScope?: ProviderFi
   await ensureDbModules();
   const t = _providersTable!;
   const rows = await _db!.select().from(t).where(_eq!(t.slug, slug)).limit(1);
-  let provider = rows.length > 0 ? sanitizeProviderForPublic(rowToProvider(rows[0])) : undefined;
+  let provider =
+    rows.length > 0 && !isRemovedProviderRecord(rows[0])
+      ? sanitizeProviderForPublic(rowToProvider(rows[0]))
+      : undefined;
   if (!provider) {
     const candidates = await dbSelectProviders({
       country: scope?.country,
@@ -1152,7 +1159,7 @@ export async function getProviderBySlug(slug: string, expectedScope?: ProviderFi
     provider = findProviderBySlugAlias(slug, candidates, scope);
   }
   if (!provider || !isProviderPubliclyListable(provider)) return undefined;
-  if (prepareProvidersForPublic([provider], scope).length === 0) return undefined;
+  if (preparePublicProviders([provider], scope).length === 0) return undefined;
   setCache(cacheKey, provider);
   return provider;
 }
@@ -1304,7 +1311,7 @@ function findProviderBySlugAlias(
 ): LocalProvider | undefined {
   const requested = normalizeSlugLookup(slug);
   const requestedStem = withoutCitySuffix(requested, expectedScope?.citySlug);
-  return prepareProvidersForPublic(providers, expectedScope).find((provider) => {
+  return preparePublicProviders(providers, expectedScope).find((provider) => {
     const aliases = providerSlugAliases(provider);
     return aliases.has(requested) || aliases.has(requestedStem);
   });

@@ -1,0 +1,35 @@
+{
+  "providers": [
+    {
+      "slug": "ghasaq-medical-center-sharjah",
+      "aliases": [
+        "ghassaq-medical-center-sharjah",
+        "ghsaq-medical-center-sharjah",
+        "ghasaq-medical-centre-sharjah",
+        "ghassaq-medical-centre-sharjah"
+      ],
+      "names": [
+        "Ghasaq Medical Center",
+        "Ghassaq Medical Center",
+        "Ghsaq Medical Center",
+        "Ghasaq Medical Centre",
+        "Ghassaq Medical Centre"
+      ],
+      "citySlug": "sharjah",
+      "categorySlug": "clinics",
+      "paths": [
+        "/directory/sharjah/clinics/ghasaq-medical-center-sharjah",
+        "/directory/sharjah/clinics/ghassaq-medical-center-sharjah",
+        "/directory/sharjah/clinics/ghsaq-medical-center-sharjah",
+        "/directory/sharjah/clinics/ghasaq-medical-centre-sharjah",
+        "/directory/sharjah/clinics/ghassaq-medical-centre-sharjah",
+        "/ar/directory/sharjah/clinics/ghasaq-medical-center-sharjah",
+        "/ar/directory/sharjah/clinics/ghassaq-medical-center-sharjah",
+        "/ar/directory/sharjah/clinics/ghsaq-medical-center-sharjah",
+        "/ar/directory/sharjah/clinics/ghasaq-medical-centre-sharjah",
+        "/ar/directory/sharjah/clinics/ghassaq-medical-centre-sharjah"
+      ],
+      "reason": "Provider opt-out request received 2026-04-27"
+    }
+  ]
+}
