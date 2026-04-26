@@ -14,6 +14,39 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const markCopied = useCallback(() => {
+    setCopied(true);
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = setTimeout(() => setCopied(false), 1600);
+  }, []);
+
+  const copyText = useCallback(async (value: string): Promise<boolean> => {
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      // Continue to the textarea fallback below.
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = value;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.top = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      return document.execCommand("copy");
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }, []);
+
   const handleShare = useCallback(async () => {
     const url = window.location.href;
     const shareText = text ?? title;
@@ -24,24 +57,20 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
     try {
       if (canUseNativeShare) {
         await navigator.share({ title, text: shareText, url });
-        setCopied(true);
-        if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-        resetTimerRef.current = setTimeout(() => setCopied(false), 1600);
+        markCopied();
         return;
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
     }
 
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-      resetTimerRef.current = setTimeout(() => setCopied(false), 1600);
-    } catch {
-      window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${shareText}\n${url}`)}`;
+    if (await copyText(url)) {
+      markCopied();
+      return;
     }
-  }, [text, title]);
+
+    window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${shareText}\n${url}`)}`;
+  }, [copyText, markCopied, text, title]);
 
   return (
     <button
