@@ -160,6 +160,162 @@ export function parseReasonToCondition(text: string | undefined): string | null 
   return cond?.slug ?? null;
 }
 
+function uniqueNonEmpty(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[.,/_()[\]{}]+/g, " ")
+    .replace(/\b(?:l\s*l\s*c|llc|ltd|limited|fz\s*llc|f\s*z\s*l\s*l\s*c|fze|fzco|dmcc|psc|pjsc|sole\s+proprietorship|branch)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getFacilityQueryVariants(query: string | undefined): string[] {
+  if (!query) return [];
+
+  const raw = query.trim();
+  if (!raw) return [];
+
+  const punctuationNormalized = raw
+    .replace(/&/g, " and ")
+    .replace(/[.,/_()[\]{}]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const legalSuffixNormalized = normalizeSearchText(raw);
+
+  return uniqueNonEmpty([raw, punctuationNormalized, legalSuffixNormalized]);
+}
+
+function tokenizeSearchQuery(query: string | undefined): string[] {
+  if (!query) return [];
+  const stopWords = new Set([
+    "a", "an", "and", "at", "by", "for", "in", "near", "of", "the", "to",
+    "uae", "llc", "ltd", "limited", "centre", "center", "medical",
+  ]);
+  return normalizeSearchText(query)
+    .split(" ")
+    .filter((token) => token.length >= 2 && !stopWords.has(token));
+}
+
+function rankProviderForQuery(provider: LocalProvider, query: string | undefined): number {
+  const normalizedQuery = normalizeSearchText(query || "");
+  if (!normalizedQuery) return 0;
+
+  const tokens = tokenizeSearchQuery(query);
+  const name = normalizeSearchText(provider.name);
+  const address = normalizeSearchText(provider.address || "");
+  const description = normalizeSearchText(provider.shortDescription || provider.description || "");
+
+  let score = 0;
+  if (name === normalizedQuery) score += 1000;
+  if (name.startsWith(normalizedQuery)) score += 800;
+  if (name.includes(normalizedQuery)) score += 650;
+  if (tokens.length > 0 && tokens.every((token) => name.includes(token))) score += 500;
+
+  for (const token of tokens) {
+    if (name.split(" ").includes(token)) score += 70;
+    else if (name.includes(token)) score += 45;
+    if (address.includes(token)) score += 12;
+    if (description.includes(token)) score += 8;
+  }
+
+  score += Math.min(Number(provider.googleRating) || 0, 5) * 2;
+  score += Math.min(provider.googleReviewCount || 0, 500) / 250;
+  return score;
+}
+
+interface GeminiSearchIntent {
+  providerName?: string;
+  correctedQuery?: string;
+  specialty?: string;
+  city?: string;
+  entityType?: "doctor" | "facility" | "both";
+}
+
+const geminiIntentCache = new Map<string, GeminiSearchIntent | null>();
+
+async function getGeminiSearchIntent(q: HealthcareSearchQuery): Promise<GeminiSearchIntent | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const rawQuery = q.query?.trim();
+  if (!apiKey || !rawQuery || rawQuery.length < 3) return null;
+
+  const cacheKey = JSON.stringify({
+    query: rawQuery,
+    city: q.city || "",
+    specialty: q.specialty || "",
+    reason: q.reason || "",
+  });
+  if (geminiIntentCache.has(cacheKey)) return geminiIntentCache.get(cacheKey) ?? null;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    Number(process.env.GEMINI_SEARCH_TIMEOUT_MS || 1200)
+  );
+
+  try {
+    const model = process.env.GEMINI_SEARCH_MODEL || "gemini-3.1-flash-lite";
+    const specialties = CATEGORIES.map((c) => c.slug).join(", ");
+    const prompt = [
+      "Return only JSON for a UAE healthcare directory search intent.",
+      "If the text looks like a clinic/facility/person name, put the cleaned name in providerName and do not infer specialty from words inside the name.",
+      "Use specialty only for actual specialty intent like dentist, pediatrics, IVF, pharmacy, lab, MRI.",
+      `Allowed specialty slugs: ${specialties}.`,
+      'Shape: {"providerName":"","correctedQuery":"","specialty":"","city":"","entityType":"both"}.',
+      `User query: ${rawQuery}`,
+      `Selected city slug: ${q.city || ""}`,
+      `Selected specialty slug: ${q.specialty || ""}`,
+    ].join("\n");
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0,
+            responseMimeType: "application/json",
+          },
+        }),
+      }
+    );
+    if (!response.ok) return null;
+
+    const body = await response.json().catch(() => null);
+    const text = body?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text || typeof text !== "string") return null;
+
+    const parsed = JSON.parse(text) as GeminiSearchIntent;
+    const intent: GeminiSearchIntent = {};
+    if (typeof parsed.providerName === "string") intent.providerName = parsed.providerName.trim();
+    if (typeof parsed.correctedQuery === "string") intent.correctedQuery = parsed.correctedQuery.trim();
+    if (
+      typeof parsed.specialty === "string" &&
+      CATEGORIES.some((c) => c.slug === parsed.specialty)
+    ) {
+      intent.specialty = parsed.specialty;
+    }
+    if (parsed.entityType === "doctor" || parsed.entityType === "facility" || parsed.entityType === "both") {
+      intent.entityType = parsed.entityType;
+    }
+    geminiIntentCache.set(cacheKey, intent);
+    return intent;
+  } catch {
+    geminiIntentCache.set(cacheKey, null);
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // ── Result mappers ─────────────────────────────────────────────────────────
 
 function facilityToResult(p: LocalProvider): HealthcareSearchResult {
@@ -222,10 +378,21 @@ export async function searchHealthcare(
 ): Promise<HealthcareSearchResults> {
   const limit = Math.max(1, Math.min(opts.limit ?? 12, 50));
   const entityType = q.entityType ?? "both";
+  const aiIntent = await getGeminiSearchIntent(q);
+  const searchText =
+    aiIntent?.providerName ||
+    aiIntent?.correctedQuery ||
+    q.query;
 
   // ── Derive structured filters from the query ───────────────────────────
-  const parsedSpecialty =
-    q.specialty || parseReasonToSpecialty(q.reason) || parseReasonToSpecialty(q.query);
+  const providerNameSearch = Boolean(aiIntent?.providerName);
+  const explicitSpecialty =
+    q.specialty ||
+    parseReasonToSpecialty(q.reason) ||
+    (!providerNameSearch ? aiIntent?.specialty : undefined);
+  const queryInferredSpecialty =
+    !providerNameSearch ? parseReasonToSpecialty(q.query) : null;
+  const parsedSpecialty = explicitSpecialty || queryInferredSpecialty;
   const parsedCondition =
     q.condition || parseReasonToCondition(q.reason) || parseReasonToCondition(q.query);
 
@@ -241,17 +408,63 @@ export async function searchHealthcare(
   let facilityRows: LocalProvider[] = [];
   let totalFacilities = 0;
   if (entityType === "facility" || entityType === "both") {
-    const { providers, total } = await getProviders({
-      query: q.query,
-      citySlug: q.city,
-      categorySlug: specialty ?? undefined,
-      areaSlug: q.area,
-      page: q.page && q.page > 0 ? q.page : 1,
-      limit,
-      sort: "rating",
-    });
-    facilityRows = providers;
-    totalFacilities = total;
+    const page = q.page && q.page > 0 ? q.page : 1;
+    const queryVariants = getFacilityQueryVariants(searchText);
+
+    if (queryVariants.length > 0) {
+      const { providers: candidateProviders } = await getProviders({
+        citySlug: q.city,
+        categorySlug: explicitSpecialty ?? undefined,
+        areaSlug: q.area,
+        page: 1,
+        limit: 20000,
+        sort: "rating",
+      });
+
+      const ranked = candidateProviders
+        .map((provider) => ({
+          provider,
+          score: Math.max(
+            ...queryVariants.map((query) => rankProviderForQuery(provider, query))
+          ),
+        }))
+        .filter((entry) => entry.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      totalFacilities = ranked.length;
+      facilityRows = ranked
+        .slice((page - 1) * limit, page * limit)
+        .map((entry) => entry.provider);
+    } else {
+      const { providers, total } = await getProviders({
+        citySlug: q.city,
+        categorySlug: specialty ?? undefined,
+        areaSlug: q.area,
+        page,
+        limit,
+        sort: "rating",
+      });
+      facilityRows = providers;
+      totalFacilities = total;
+    }
+
+    if (
+      facilityRows.length === 0 &&
+      totalFacilities === 0 &&
+      queryInferredSpecialty &&
+      !explicitSpecialty
+    ) {
+      const { providers, total } = await getProviders({
+        citySlug: q.city,
+        categorySlug: queryInferredSpecialty,
+        areaSlug: q.area,
+        page: 1,
+        limit,
+        sort: "rating",
+      });
+      facilityRows = providers;
+      totalFacilities = total;
+    }
 
     // Client-side insurance + language + emergency filters. These are cheap
     // to apply in JS after the DB narrows by city/specialty; the alternative

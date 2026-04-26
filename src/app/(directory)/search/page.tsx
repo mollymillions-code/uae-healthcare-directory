@@ -147,8 +147,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     query.insurance || query.language || query.emergency
   );
 
-  const totalResults =
+  const visibleResults =
     results.facilities.length + results.doctors.length +
+    results.conditions.length + results.insuranceHubs.length;
+  const totalResults =
+    results.totalFacilities + results.totalDoctors +
     results.conditions.length + results.insuranceHubs.length;
   const pageSize = 12;
   const totalPages = Math.max(
@@ -210,7 +213,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </div>
         )}
 
-        {totalResults > 0 ? (
+        {visibleResults > 0 ? (
           <div className="space-y-12">
             <ResultGroup
               title="Doctors"
@@ -235,6 +238,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <ResultGroup title="Care guides" kind="condition" results={results.conditions} />
             <ResultGroup title="Insurance networks" kind="insurance" results={results.insuranceHubs} />
 
+            <Pagination currentPage={page} totalPages={totalPages} baseUrl={baseUrl} />
+          </div>
+        ) : totalResults > 0 ? (
+          <div className="space-y-8">
+            <EmptyStateV2
+              title="No results on this page."
+              description="Use the pagination below to go back to an earlier results page."
+            />
             <Pagination currentPage={page} totalPages={totalPages} baseUrl={baseUrl} />
           </div>
         ) : (
