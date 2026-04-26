@@ -21,6 +21,7 @@ import {
 } from "@/lib/data";
 import { CONDITIONS } from "@/lib/constants/conditions";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { CITIES } from "@/lib/constants/cities";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import {
@@ -164,6 +165,17 @@ function uniqueNonEmpty(values: string[]): string[] {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
+const SEARCH_TOKEN_STOP_WORDS = new Set([
+  "a", "an", "and", "at", "by", "for", "in", "near", "of", "the", "to",
+  "uae", "llc", "ltd", "limited", "centre", "center", "medical",
+]);
+
+const FACILITY_GENERIC_TOKENS = new Set([
+  "clinic", "clinics", "hospital", "hospitals", "pharmacy", "pharmacies",
+  "centre", "center", "medical", "health", "healthcare", "care", "group",
+  "branch", "br", "l", "llc", "ltd", "limited", "uae", "near", "me",
+]);
+
 function normalizeSearchText(value: string): string {
   return value
     .toLowerCase()
@@ -193,13 +205,55 @@ function getFacilityQueryVariants(query: string | undefined): string[] {
 
 function tokenizeSearchQuery(query: string | undefined): string[] {
   if (!query) return [];
-  const stopWords = new Set([
-    "a", "an", "and", "at", "by", "for", "in", "near", "of", "the", "to",
-    "uae", "llc", "ltd", "limited", "centre", "center", "medical",
-  ]);
   return normalizeSearchText(query)
     .split(" ")
-    .filter((token) => token.length >= 2 && !stopWords.has(token));
+    .filter((token) => token.length >= 2 && !SEARCH_TOKEN_STOP_WORDS.has(token));
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  if (!a) return b.length;
+  if (!b) return a.length;
+
+  const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  const curr = new Array<number>(b.length + 1);
+  for (let i = 1; i <= a.length; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(
+        curr[j - 1] + 1,
+        prev[j] + 1,
+        prev[j - 1] + cost
+      );
+    }
+    for (let j = 0; j <= b.length; j++) prev[j] = curr[j];
+  }
+  return prev[b.length];
+}
+
+function tokenSimilarity(queryToken: string, targetToken: string): number {
+  if (queryToken === targetToken) return 1;
+  if (queryToken.length >= 3 && targetToken.startsWith(queryToken)) return 0.92;
+  if (queryToken.length >= 3 && targetToken.includes(queryToken)) return 0.84;
+  if (targetToken.length >= 3 && queryToken.includes(targetToken)) return 0.78;
+
+  const minLen = Math.min(queryToken.length, targetToken.length);
+  if (minLen < 2) return 0;
+
+  const distance = levenshteinDistance(queryToken, targetToken);
+  const ratio = 1 - distance / Math.max(queryToken.length, targetToken.length);
+  if (minLen >= 5 && distance <= 2) return Math.max(0.68, ratio);
+  if (minLen >= 3 && distance <= 1) return Math.max(0.72, ratio);
+  if (minLen === 2 && distance <= 1) return 0.66;
+  return 0;
+}
+
+function bestTokenSimilarity(queryToken: string, targetTokens: string[]): number {
+  return targetTokens.reduce(
+    (best, targetToken) => Math.max(best, tokenSimilarity(queryToken, targetToken)),
+    0
+  );
 }
 
 function rankProviderForQuery(provider: LocalProvider, query: string | undefined): number {
@@ -208,25 +262,112 @@ function rankProviderForQuery(provider: LocalProvider, query: string | undefined
 
   const tokens = tokenizeSearchQuery(query);
   const name = normalizeSearchText(provider.name);
-  const address = normalizeSearchText(provider.address || "");
-  const description = normalizeSearchText(provider.shortDescription || provider.description || "");
+  const nameTokens = name.split(" ").filter(Boolean);
+  if (tokens.length === 0 || nameTokens.length === 0) return 0;
+
+  const tokenScores = tokens.map((token) => bestTokenSimilarity(token, nameTokens));
+  const matchedTokens = tokenScores.filter((score) => score >= 0.66).length;
+  const requiredMatches = tokens.length <= 2 ? tokens.length : Math.ceil(tokens.length * 0.75);
+  if (matchedTokens < requiredMatches) return 0;
 
   let score = 0;
   if (name === normalizedQuery) score += 1000;
   if (name.startsWith(normalizedQuery)) score += 800;
   if (name.includes(normalizedQuery)) score += 650;
-  if (tokens.length > 0 && tokens.every((token) => name.includes(token))) score += 500;
-
-  for (const token of tokens) {
-    if (name.split(" ").includes(token)) score += 70;
-    else if (name.includes(token)) score += 45;
-    if (address.includes(token)) score += 12;
-    if (description.includes(token)) score += 8;
+  if (tokens.every((token) => nameTokens.some((nameToken) => tokenSimilarity(token, nameToken) >= 0.84))) {
+    score += 500;
   }
+
+  score += tokenScores.reduce((sum, tokenScore) => sum + tokenScore * 90, 0);
 
   score += Math.min(Number(provider.googleRating) || 0, 5) * 2;
   score += Math.min(provider.googleReviewCount || 0, 500) / 250;
   return score;
+}
+
+function tokensFor(value: string | undefined): string[] {
+  return normalizeSearchText(value || "")
+    .split(" ")
+    .filter((token) => token.length >= 2);
+}
+
+function coerceCitySlug(value: string | undefined): string | undefined {
+  const normalized = normalizeSearchText(value || "");
+  if (!normalized) return undefined;
+
+  const city = CITIES.filter((c) => c.country === "ae").find((c) => {
+    const candidates = uniqueNonEmpty([
+      c.slug,
+      c.name,
+      c.emirate,
+      c.name.replace(/^Umm Al /i, "Umm "),
+    ]).map(normalizeSearchText);
+    return candidates.some(
+      (candidate) => normalized === candidate || normalized.includes(candidate)
+    );
+  });
+  return city?.slug;
+}
+
+function buildResidualQuery(
+  rawQuery: string | undefined,
+  citySlug: string | undefined,
+  specialty: string | null | undefined,
+  condition: string | null | undefined
+): string | undefined {
+  const rawTokens = tokensFor(rawQuery);
+  if (rawTokens.length === 0) return undefined;
+
+  const removeTokens = new Set(FACILITY_GENERIC_TOKENS);
+
+  const city = citySlug ? CITIES.find((c) => c.slug === citySlug) : undefined;
+  for (const token of tokensFor(city?.name)) removeTokens.add(token);
+  for (const token of tokensFor(city?.slug)) removeTokens.add(token);
+  for (const token of tokensFor(city?.emirate)) removeTokens.add(token);
+
+  const category = specialty ? CATEGORIES.find((c) => c.slug === specialty) : undefined;
+  for (const token of tokensFor(category?.name)) removeTokens.add(token);
+  for (const token of tokensFor(category?.slug)) removeTokens.add(token);
+  for (const [keyword, slug] of Object.entries(REASON_TO_SPECIALTY)) {
+    if (slug === specialty) {
+      for (const token of tokensFor(keyword)) removeTokens.add(token);
+    }
+  }
+
+  const conditionRecord = condition ? CONDITIONS.find((c) => c.slug === condition) : undefined;
+  for (const token of tokensFor(conditionRecord?.name)) removeTokens.add(token);
+  for (const token of tokensFor(conditionRecord?.slug)) removeTokens.add(token);
+
+  const residual = rawTokens.filter((token) => !removeTokens.has(token));
+  return residual.length > 0 ? residual.join(" ") : undefined;
+}
+
+function applyFacilityPostFilters(providers: LocalProvider[], q: HealthcareSearchQuery): LocalProvider[] {
+  let rows = providers;
+
+  if (q.insurance) {
+    const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === q.insurance);
+    if (insurer) {
+      const needle = insurer.name.toLowerCase();
+      rows = rows.filter((p) =>
+        p.insurance.some((ins) => ins.toLowerCase().includes(needle))
+      );
+    }
+  }
+  if (q.language) {
+    const lang = LANGUAGES.find((l) => l.slug === q.language);
+    if (lang) {
+      const needle = lang.name.toLowerCase();
+      rows = rows.filter((p) =>
+        p.languages.some((l) => l.toLowerCase() === needle)
+      );
+    }
+  }
+  if (q.emergency) {
+    rows = rows.filter((p) => isEmergencyProvider(p) || is24HourProvider(p));
+  }
+
+  return rows;
 }
 
 interface GeminiSearchIntent {
@@ -383,6 +524,10 @@ export async function searchHealthcare(
     aiIntent?.providerName ||
     aiIntent?.correctedQuery ||
     q.query;
+  const effectiveCitySlug =
+    q.city ||
+    coerceCitySlug(aiIntent?.city) ||
+    coerceCitySlug(q.query);
 
   // ── Derive structured filters from the query ───────────────────────────
   const providerNameSearch = Boolean(aiIntent?.providerName);
@@ -403,18 +548,28 @@ export async function searchHealthcare(
     const cond = CONDITIONS.find((c) => c.slug === parsedCondition);
     specialty = cond?.relatedCategories[0] ?? null;
   }
+  const residualFacilityQuery = buildResidualQuery(
+    searchText,
+    effectiveCitySlug,
+    !providerNameSearch ? specialty : undefined,
+    parsedCondition
+  );
+  const facilityQuery = providerNameSearch
+    ? searchText
+    : residualFacilityQuery;
+  const hasPostFilters = Boolean(q.insurance || q.language || q.emergency);
 
   // ── Facility pool ──────────────────────────────────────────────────────
   let facilityRows: LocalProvider[] = [];
   let totalFacilities = 0;
   if (entityType === "facility" || entityType === "both") {
     const page = q.page && q.page > 0 ? q.page : 1;
-    const queryVariants = getFacilityQueryVariants(searchText);
+    const queryVariants = getFacilityQueryVariants(facilityQuery);
 
     if (queryVariants.length > 0) {
       const { providers: candidateProviders } = await getProviders({
-        citySlug: q.city,
-        categorySlug: explicitSpecialty ?? undefined,
+        citySlug: effectiveCitySlug,
+        categorySlug: q.specialty,
         areaSlug: q.area,
         page: 1,
         limit: 20000,
@@ -431,21 +586,27 @@ export async function searchHealthcare(
         .filter((entry) => entry.score > 0)
         .sort((a, b) => b.score - a.score);
 
-      totalFacilities = ranked.length;
-      facilityRows = ranked
-        .slice((page - 1) * limit, page * limit)
-        .map((entry) => entry.provider);
+      const filteredProviders = applyFacilityPostFilters(
+        ranked.map((entry) => entry.provider),
+        q
+      );
+      totalFacilities = filteredProviders.length;
+      facilityRows = filteredProviders.slice((page - 1) * limit, page * limit);
     } else {
+      const providerLimit = hasPostFilters ? 20000 : limit;
       const { providers, total } = await getProviders({
-        citySlug: q.city,
+        citySlug: effectiveCitySlug,
         categorySlug: specialty ?? undefined,
         areaSlug: q.area,
-        page,
-        limit,
+        page: hasPostFilters ? 1 : page,
+        limit: providerLimit,
         sort: "rating",
       });
-      facilityRows = providers;
-      totalFacilities = total;
+      const filteredProviders = applyFacilityPostFilters(providers, q);
+      facilityRows = hasPostFilters
+        ? filteredProviders.slice((page - 1) * limit, page * limit)
+        : filteredProviders;
+      totalFacilities = hasPostFilters ? filteredProviders.length : total;
     }
 
     if (
@@ -453,9 +614,10 @@ export async function searchHealthcare(
       totalFacilities === 0 &&
       queryInferredSpecialty &&
       !explicitSpecialty
+      && !facilityQuery
     ) {
       const { providers, total } = await getProviders({
-        citySlug: q.city,
+        citySlug: effectiveCitySlug,
         categorySlug: queryInferredSpecialty,
         areaSlug: q.area,
         page: 1,
@@ -465,50 +627,25 @@ export async function searchHealthcare(
       facilityRows = providers;
       totalFacilities = total;
     }
-
-    // Client-side insurance + language + emergency filters. These are cheap
-    // to apply in JS after the DB narrows by city/specialty; the alternative
-    // is a much more complicated SQL path for a non-indexed surface.
-    if (q.insurance) {
-      const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === q.insurance);
-      if (insurer) {
-        const needle = insurer.name.toLowerCase();
-        facilityRows = facilityRows.filter((p) =>
-          p.insurance.some((ins) => ins.toLowerCase().includes(needle))
-        );
-      }
-    }
-    if (q.language) {
-      const lang = LANGUAGES.find((l) => l.slug === q.language);
-      if (lang) {
-        const needle = lang.name.toLowerCase();
-        facilityRows = facilityRows.filter((p) =>
-          p.languages.some((l) => l.toLowerCase() === needle)
-        );
-      }
-    }
-    if (q.emergency) {
-      facilityRows = facilityRows.filter(
-        (p) => isEmergencyProvider(p) || is24HourProvider(p)
-      );
-    }
   }
 
   // ── Doctor pool ────────────────────────────────────────────────────────
   let doctorRows: ProfessionalIndexRecord[] = [];
   let totalDoctors = 0;
   if (entityType === "doctor" || entityType === "both") {
+    const page = q.page && q.page > 0 ? q.page : 1;
+    const offset = (page - 1) * limit;
     if (specialty) {
       const { professionals, total } = await getProfessionalsIndexBySpecialty(
         specialty,
-        { limit, offset: 0 }
+        { limit, offset }
       );
       doctorRows = professionals;
       totalDoctors = total;
-    } else if (q.city) {
-      const { professionals, total } = await getProfessionalsIndexByCity(q.city, {
+    } else if (effectiveCitySlug) {
+      const { professionals, total } = await getProfessionalsIndexByCity(effectiveCitySlug, {
         limit,
-        offset: 0,
+        offset,
       });
       doctorRows = professionals;
       totalDoctors = total;
@@ -532,7 +669,7 @@ export async function searchHealthcare(
   if (
     facilityRows.length === 0 &&
     doctorRows.length === 0 &&
-    (q.city || specialty)
+    (effectiveCitySlug || specialty)
   ) {
     // Drop the most restrictive filters and re-try: keep the city or the
     // specialty, drop everything else.
@@ -546,9 +683,9 @@ export async function searchHealthcare(
       });
       facilityRows = providers;
       totalFacilities = total;
-    } else if (q.city && (entityType === "facility" || entityType === "both")) {
+    } else if (effectiveCitySlug && (entityType === "facility" || entityType === "both")) {
       const { providers, total } = await getProviders({
-        citySlug: q.city,
+        citySlug: effectiveCitySlug,
         page: 1,
         limit,
         sort: "rating",
