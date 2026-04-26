@@ -551,16 +551,18 @@ export async function searchHealthcare(
     const queryVariants = getFacilityQueryVariants(facilityQuery);
 
     if (queryVariants.length > 0) {
-      const { providers: candidateProviders } = await getProviders({
+      const directFacilityQuery = facilityQuery || searchText;
+      const { providers: directProviders } = await getProviders({
         citySlug: effectiveCitySlug,
         categorySlug: q.specialty,
         areaSlug: q.area,
+        query: directFacilityQuery,
         page: 1,
-        limit: 20000,
+        limit: 500,
         sort: "rating",
       });
 
-      const ranked = candidateProviders
+      let ranked = directProviders
         .map((provider) => ({
           provider,
           score: Math.max(
@@ -569,6 +571,27 @@ export async function searchHealthcare(
         }))
         .filter((entry) => entry.score > 0)
         .sort((a, b) => b.score - a.score);
+
+      if (ranked.length === 0) {
+        const { providers: candidateProviders } = await getProviders({
+          citySlug: effectiveCitySlug,
+          categorySlug: q.specialty,
+          areaSlug: q.area,
+          page: 1,
+          limit: 20000,
+          sort: "rating",
+        });
+
+        ranked = candidateProviders
+          .map((provider) => ({
+            provider,
+            score: Math.max(
+              ...queryVariants.map((query) => rankProviderForQuery(provider, query))
+            ),
+          }))
+          .filter((entry) => entry.score > 0)
+          .sort((a, b) => b.score - a.score);
+      }
 
       const filteredProviders = applyFacilityPostFilters(
         ranked.map((entry) => entry.provider),
@@ -652,6 +675,7 @@ export async function searchHealthcare(
   if (
     facilityRows.length === 0 &&
     doctorRows.length === 0 &&
+    !facilityQuery &&
     (effectiveCitySlug || specialty)
   ) {
     // Drop the most restrictive filters and re-try: keep the city or the

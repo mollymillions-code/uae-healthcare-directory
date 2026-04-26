@@ -68,6 +68,10 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     {
       ...canonicalResults,
+      providers: canonicalResults.facilities,
+      total: totalResults,
+      page,
+      totalPages,
       query: { ...query, page },
       pagination: {
         page,
