@@ -17,6 +17,7 @@ import {
   getProviders,
   is24HourProvider,
   isEmergencyProvider,
+  searchProvidersByName,
   type LocalProvider,
 } from "@/lib/data";
 import { CONDITIONS } from "@/lib/constants/conditions";
@@ -551,15 +552,14 @@ export async function searchHealthcare(
     const queryVariants = getFacilityQueryVariants(facilityQuery);
 
     if (queryVariants.length > 0) {
-      const directFacilityQuery = facilityQuery || searchText;
-      const { providers: directProviders } = await getProviders({
+      const directFacilityQuery = facilityQuery || searchText || queryVariants[0];
+      const { providers: directProviders } = await searchProvidersByName({
         citySlug: effectiveCitySlug,
         categorySlug: q.specialty,
         areaSlug: q.area,
         query: directFacilityQuery,
         page: 1,
         limit: 500,
-        sort: "rating",
       });
 
       let ranked = directProviders

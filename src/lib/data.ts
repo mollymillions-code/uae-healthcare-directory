@@ -1170,6 +1170,97 @@ export async function getProviders(filters?: {
   };
 }
 
+export async function searchProvidersByName(filters: {
+  query: string;
+  citySlug?: string;
+  categorySlug?: string;
+  areaSlug?: string;
+  page?: number;
+  limit?: number;
+  country?: string;
+}): Promise<{ providers: LocalProvider[]; total: number; page: number; totalPages: number }> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  const normalizedFilters = { ...filters, ...scope };
+  const page = normalizedFilters.page || 1;
+  const limit = normalizedFilters.limit || 20;
+  const rawQuery = String(normalizedFilters.query || "").trim();
+
+  if (!rawQuery || !isProviderFilterScopeValid(scope)) {
+    return { providers: [], total: 0, page, totalPages: 0 };
+  }
+
+  await verifyDbHasData();
+
+  if (!HAS_DB) {
+    loadFallback();
+    let filtered = FALLBACK_ALL_PROVIDERS!;
+    if (normalizedFilters.citySlug) {
+      filtered = fallbackByCity!.get(normalizedFilters.citySlug) || [];
+    }
+    if (normalizedFilters.categorySlug) {
+      const variants = categorySlugVariants(normalizedFilters.categorySlug);
+      filtered = filtered.filter((provider) => variants.includes(provider.categorySlug));
+    }
+    if (normalizedFilters.areaSlug) {
+      filtered = filtered.filter((provider) => provider.areaSlug === normalizedFilters.areaSlug);
+    }
+    const q = rawQuery.toLowerCase();
+    filtered = preparePublicProviders(filtered, scope).filter((provider) =>
+      provider.name.toLowerCase().includes(q)
+    );
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    return { providers: filtered.slice(start, start + limit), total, page, totalPages };
+  }
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (normalizedFilters.country) {
+    conditions.push(_eq!(t.country, normalizedFilters.country));
+  } else if (!normalizedFilters.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  if (normalizedFilters.citySlug) conditions.push(_eq!(t.citySlug, normalizedFilters.citySlug));
+  if (normalizedFilters.categorySlug) {
+    const variants = categorySlugVariants(normalizedFilters.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (normalizedFilters.areaSlug) conditions.push(_eq!(t.areaSlug, normalizedFilters.areaSlug));
+  conditions.push(_ilike!(t.name, `%${rawQuery}%`));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const where = _and!(...conditions);
+  const offset = (page - 1) * limit;
+  const [rows, countRows] = await Promise.all([
+    _db!
+      .select()
+      .from(t)
+      .where(where)
+      .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount))
+      .limit(Math.max(limit * 2, limit))
+      .offset(offset),
+    _db!.select({ count: _countFn!() }).from(t).where(where),
+  ]);
+
+  const providers = preparePublicProviders(rows.map(rowToProvider), scope).slice(0, limit);
+  const total = Number(countRows[0]?.count ?? providers.length);
+  return {
+    providers,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
 export async function getProviderBySlug(slug: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
   if (isRemovedProviderSlug(slug)) return undefined;
   const scope = canonicalizeProviderFilterScope(expectedScope);
