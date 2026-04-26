@@ -1,12 +1,13 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { ChevronRight, Star, Share2, MapPin as MapPinIcon, BadgeCheck, Clock, Languages as LangIcon, ShieldCheck, Quote, Accessibility, Stethoscope } from "lucide-react";
+import { ChevronRight, Star, MapPin as MapPinIcon, BadgeCheck, Clock, Languages as LangIcon, ShieldCheck, Quote, Accessibility, Stethoscope } from "lucide-react";
 import { PhotoMosaic } from "../detail/PhotoMosaic";
 import { BookingCard } from "../detail/BookingCard";
 import { StickyBottomBar } from "../detail/StickyBottomBar";
 import { HostCard } from "../detail/HostCard";
 import { AmenityGrid } from "../detail/AmenityGrid";
 import { ReviewDistribution } from "../detail/ReviewDistribution";
+import { ShareButton } from "../detail/ShareButton";
 import { HeartButton } from "../cards/HeartButton";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
@@ -200,14 +201,7 @@ export function ProviderDetailTemplate({
             )}
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              type="button"
-              aria-label={`Share ${p.name}`}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-z-pill hover:bg-surface-cream font-sans text-z-body-sm text-ink"
-            >
-              <Share2 className="h-3.5 w-3.5" strokeWidth={2.5} />
-              <span className="hidden sm:inline">Share</span>
-            </button>
+            <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
             <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
               <HeartButton size="sm" ariaLabel={`Save ${p.name}`} />
               <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>

@@ -45,6 +45,8 @@ export function BookingCard(p: BookingCardProps) {
     p.primaryCtaHref ??
     (hasPhone ? `tel:${p.phone}` : hasWhatsApp ? `https://wa.me/${(p.whatsapp ?? "").replace(/[^\d]/g, "")}` : p.website ?? "#");
   const primaryType: CtaType = p.primaryCtaType ?? (hasPhone ? "call" : hasWhatsApp ? "whatsapp" : p.website ? "website" : "claim_listing");
+  const showSecondaryCall = hasPhone && primaryType !== "call";
+  const showSecondaryActions = showSecondaryCall || hasWhatsApp || p.website || p.googleMapsUri || p.directionsUrl;
 
   // Analytics hook — fire on each CTA click. Preserves the upstream
   // trackProviderCta() contract so GA4 events stay consistent across surfaces.
@@ -101,54 +103,56 @@ export function BookingCard(p: BookingCardProps) {
           {primaryLabel}
         </Link>
 
-        <div className="grid grid-cols-2 gap-2">
-          {hasPhone && (
-            <a
-              href={`tel:${p.phone}`}
-              onClick={track("call")}
-              className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
-            >
-              <Phone className="h-3.5 w-3.5" strokeWidth={2.5} />
-              Call
-            </a>
-          )}
-          {hasWhatsApp && (
-            <a
-              href={`https://wa.me/${(p.whatsapp ?? "").replace(/[^\d]/g, "")}`}
-              onClick={track("whatsapp")}
-              target="_blank"
-              rel="noopener"
-              className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
-            >
-              <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.5} />
-              WhatsApp
-            </a>
-          )}
-          {p.website && (
-            <a
-              href={p.website}
-              onClick={track("website")}
-              target="_blank"
-              rel="noopener"
-              className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
-            >
-              <Globe className="h-3.5 w-3.5" strokeWidth={2.5} />
-              Website
-            </a>
-          )}
-          {(p.googleMapsUri || p.directionsUrl) && (
-            <a
-              href={p.googleMapsUri ?? p.directionsUrl ?? "#"}
-              onClick={track("directions")}
-              target="_blank"
-              rel="noopener"
-              className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
-            >
-              <MapPin className="h-3.5 w-3.5" strokeWidth={2.5} />
-              Directions
-            </a>
-          )}
-        </div>
+        {showSecondaryActions && (
+          <div className="grid grid-cols-2 gap-2">
+            {showSecondaryCall && (
+              <a
+                href={`tel:${p.phone}`}
+                onClick={track("call")}
+                className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
+              >
+                <Phone className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Call
+              </a>
+            )}
+            {hasWhatsApp && (
+              <a
+                href={`https://wa.me/${(p.whatsapp ?? "").replace(/[^\d]/g, "")}`}
+                onClick={track("whatsapp")}
+                target="_blank"
+                rel="noopener"
+                className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
+              >
+                <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.5} />
+                WhatsApp
+              </a>
+            )}
+            {p.website && (
+              <a
+                href={p.website}
+                onClick={track("website")}
+                target="_blank"
+                rel="noopener"
+                className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
+              >
+                <Globe className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Website
+              </a>
+            )}
+            {(p.googleMapsUri || p.directionsUrl) && (
+              <a
+                href={p.googleMapsUri ?? p.directionsUrl ?? "#"}
+                onClick={track("directions")}
+                target="_blank"
+                rel="noopener"
+                className="flex items-center justify-center gap-2 bg-white border border-ink-hairline hover:border-ink rounded-z-md py-2.5 font-sans font-medium text-z-body-sm text-ink transition-colors"
+              >
+                <MapPin className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Directions
+              </a>
+            )}
+          </div>
+        )}
       </div>
 
       {!p.isClaimed && (

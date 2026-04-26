@@ -281,7 +281,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-sm"
             variants={fade}
             initial="hidden"
             animate="show"
