@@ -134,8 +134,8 @@ export default async function LanguageProviderPage({ params }: Props) {
             { name: "Languages", url: `${base}/directory/${city.slug}/language` },
             { name: language.name },
           ])} />
-          {providers.length > 0 && (
-            <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, providers, city.name, base)} />
+          {capped.length > 0 && (
+            <JsonLd data={itemListSchema(`${language.name}-Speaking Healthcare Providers in ${city.name}`, capped.slice(0, 20), city.name, base)} />
           )}
           <JsonLd data={faqPageSchema(faqs)} />
           <JsonLd data={speakableSchema([".answer-block"])} />

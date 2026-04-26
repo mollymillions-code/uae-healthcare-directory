@@ -20,10 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ),
     alternates: {
       canonical: `${base}/specialties`,
-      languages: {
-        "en-AE": `${base}/specialties`,
-        "ar-AE": `${base}/ar/specialties`,
-      },
+      languages: { "en-AE": `${base}/specialties` },
     },
     openGraph: {
       title: "UAE Medical Specialties — Directory of Care",
@@ -128,7 +125,6 @@ export default async function SpecialtiesHubPage() {
             that field. Use this hub to navigate care by what you need, not by location.
           </>
         }
-        arabicHref="/ar/specialties"
         schemas={
           <>
             <JsonLd data={breadcrumbSchema([

@@ -82,7 +82,7 @@ export function StickyBottomBar({
           initial="hidden"
           animate="show"
           exit="exit"
-          className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-ink-line shadow-z-sticky"
+          className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-ink-line shadow-z-sticky lg:hidden"
         >
           <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
             <div className="min-w-0">

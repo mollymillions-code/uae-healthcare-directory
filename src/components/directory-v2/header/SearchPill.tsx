@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { getSearchFacetDisplayLabel } from "@/lib/search/normalization";
 import { cn } from "../shared/cn";
 
 export type SearchSegment = "specialty" | "city" | "date" | "insurance";
@@ -46,8 +47,10 @@ export function SearchPill({
   return (
     <div
       className={cn(
-        "inline-flex items-stretch bg-white rounded-z-search border border-ink-hairline",
-        isExpanded ? "h-[68px] shadow-z-pill" : "h-[48px] shadow-z-card",
+        "items-stretch bg-white rounded-z-search border border-ink-hairline",
+        isExpanded
+          ? "flex w-full max-w-[calc(100vw-2rem)] flex-col p-1 shadow-z-pill sm:inline-flex sm:h-[68px] sm:w-auto sm:max-w-none sm:flex-row sm:p-0"
+          : "inline-flex h-[48px] shadow-z-card",
         className
       )}
     >
@@ -55,14 +58,14 @@ export function SearchPill({
         const isActive = activeSegment === seg.key;
         const prevActive = activeSegment === SEGMENTS[i - 1]?.key;
         const showDivider = i > 0 && !isActive && !prevActive;
-        const displayValue = state[seg.key];
+        const displayValue = getSearchFacetDisplayLabel(seg.key, state[seg.key]);
 
         return (
-          <div key={seg.key} className="relative flex items-stretch">
+          <div key={seg.key} className={cn("relative flex items-stretch", isExpanded && "w-full sm:w-auto")}>
             {showDivider && (
               <div
                 className={cn(
-                  "w-px bg-ink-hairline self-center",
+                  "hidden w-px bg-ink-hairline self-center sm:block",
                   isExpanded ? "h-8" : "h-6"
                 )}
               />
@@ -73,12 +76,12 @@ export function SearchPill({
               className={cn(
                 "group relative flex flex-col justify-center text-left transition-all duration-z-base ease-z-standard",
                 "rounded-z-search",
-                isExpanded ? "px-6 py-2" : "px-4 py-1.5",
+                isExpanded ? "w-full min-w-0 px-4 py-3 sm:w-auto sm:px-6 sm:py-2" : "px-4 py-1.5",
                 isActive
                   ? "bg-white shadow-z-pill z-10"
                   : "hover:bg-ink-line/60",
                 // Width control per segment — give each some breathing room
-                isExpanded ? "min-w-[140px]" : "min-w-[96px]"
+                isExpanded ? "sm:min-w-[140px]" : "min-w-[96px]"
               )}
             >
               {isExpanded && (
@@ -101,20 +104,20 @@ export function SearchPill({
       })}
 
       {/* Submit — circular icon, expands with label when any segment active */}
-      <div className={cn("flex items-center", isExpanded ? "pr-2" : "pr-1.5")}>
+      <div className={cn("flex items-center", isExpanded ? "px-1 pb-1 sm:pb-0 sm:pl-0 sm:pr-2" : "pr-1.5")}>
         <button
           type="button"
           onClick={onSubmit}
           aria-label="Search"
           className={cn(
             "inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill transition-all duration-z-base ease-z-standard",
-            isExpanded ? "h-12" : "h-9",
+            isExpanded ? "h-11 w-full sm:h-12" : "h-9",
             activeSegment
               ? isExpanded
                 ? "px-5"
                 : "px-4"
               : isExpanded
-                ? "w-12"
+                ? "sm:w-12"
                 : "w-9"
           )}
         >

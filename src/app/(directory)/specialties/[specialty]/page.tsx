@@ -40,10 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ),
     alternates: {
       canonical: `${base}/specialties/${params.specialty}`,
-      languages: {
-        "en-AE": `${base}/specialties/${params.specialty}`,
-        "ar-AE": `${base}/ar/specialties/${params.specialty}`,
-      },
+      languages: { "en-AE": `${base}/specialties/${params.specialty}` },
     },
     openGraph: {
       title: `${specName} Specialists in the UAE`,
@@ -165,7 +162,6 @@ export default async function SpecialtyDetailPage({ params }: Props) {
             {" "}Use this page to browse clinics by emirate, compare ratings and accepted insurance, and review typical prescribing.
           </>
         }
-        arabicHref={`/ar/specialties/${params.specialty}`}
         schemas={
           <>
             <JsonLd data={breadcrumbSchema([

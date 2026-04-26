@@ -32,6 +32,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import {
   getCitiesByCountry,
   cityBelongsToCountry,
+  countryDirectoryBasePath,
   COUNTRY_NAMES,
   COUNTRY_LOCALES,
   type GccCountryCode,
@@ -103,11 +104,11 @@ async function getFilteredProviders(filter: FilterKind, citySlug: string): Promi
 
 // ── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateGccFilterMetadata({
+export async function generateGccFilterMetadata({
   countryCode,
   citySlug,
   filter,
-}: Props): Metadata {
+}: Props): Promise<Metadata> {
   const cities = getCitiesByCountry(countryCode);
   const city = cities.find((c) => c.slug === citySlug);
   if (!city) return {};
@@ -120,11 +121,17 @@ export function generateGccFilterMetadata({
 
   const title = `${label.title} in ${city.name}, ${countryName} | Open Now`;
   const description = `Find ${label.description} in ${city.name}, ${countryName}. All facilities verified against official health authority registers. Updated 2026.`;
+  const providers = await safe(
+    getFilteredProviders(filter, city.slug),
+    [] as LocalProvider[],
+    "gccFilterMetadataProviders"
+  );
 
   return {
     title,
     description,
     alternates: { canonical: url },
+    ...(providers.length < 3 && { robots: { index: false, follow: true } }),
     openGraph: {
       title,
       description,
@@ -150,7 +157,6 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
     [] as LocalProvider[],
     "gccFilterProviders"
   );
-  if (providers.length < 3) notFound();
 
   const countryName = COUNTRY_NAMES[countryCode];
   const regulator = REGULATORS[countryCode];
@@ -269,7 +275,8 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
           `${label.title} in ${city.name}`,
           sorted.slice(0, 20),
           city.name,
-          base
+          base,
+          { countryCode, countryPrefix: countryCode }
         )}
       />
 
@@ -303,6 +310,7 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
           photos: p.photos ?? [],
           coverImageUrl: p.coverImageUrl ?? null,
         }))}
+        providerBasePath={countryDirectoryBasePath(countryCode)}
         total={count}
         belowGrid={
           <>
@@ -369,7 +377,7 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
   );
 }
 
-/** Build static params for cities with 3+ providers of the given filter type */
+/** Build static params for cities with at least one provider of the given filter type */
 export async function generateGccFilterStaticParams(
   countryCode: GccCountryCode,
   filter: FilterKind
@@ -379,7 +387,7 @@ export async function generateGccFilterStaticParams(
 
   for (const city of cities) {
     const providers = await getFilteredProviders(filter, city.slug);
-    if (providers.length >= 3) {
+    if (providers.length >= 1) {
       params.push({ city: city.slug });
     }
   }

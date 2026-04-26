@@ -70,7 +70,7 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
 
         {/* Heart — above overlay link */}
         <div className="absolute top-3 right-3 z-30">
-          <HeartButton ariaLabel={`Save ${p.name}`} size="sm" />
+          <HeartButton ariaLabel={`Save ${p.name}`} size="sm" storageKey={`zavis:saved:${p.slug}`} />
         </div>
       </div>
 

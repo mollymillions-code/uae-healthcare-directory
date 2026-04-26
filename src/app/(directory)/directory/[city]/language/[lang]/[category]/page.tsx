@@ -88,21 +88,10 @@ export default async function LanguageCategoryPage({ params }: Props) {
   const capped = providers.slice(0, LISTING_CAP);
   const cappedForSchema = providers.slice(0, 20);
 
-  // Other languages that have providers for this category in this city
-  const allLanguages = getLanguagesList();
-  const otherLanguagesRaw = allLanguages.filter((l) => l.slug !== language.slug);
-  const otherLangProvidersList = await Promise.all(
-    otherLanguagesRaw.map((l) =>
-      safe(
-        getProvidersByLanguage(l.slug, city.slug),
-        [] as Awaited<ReturnType<typeof getProvidersByLanguage>>,
-        `providersByLanguage:${l.slug}`,
-      ),
-    ),
-  );
-  const otherLanguages = otherLanguagesRaw.filter((l, i) =>
-    otherLangProvidersList[i].filter((p) => p.categorySlug === category.slug).length >= 2
-  );
+  // Avoid N additional provider scans on every request. Category and language
+  // cross-links below still give users clear escape routes without turning this
+  // facet page into an expensive aggregate query.
+  const otherLanguages: Array<{ slug: string; name: string }> = [];
 
   // All categories for this language in this city (for cross-links)
   const allCategories = getCategories();

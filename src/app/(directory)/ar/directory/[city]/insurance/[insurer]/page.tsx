@@ -14,6 +14,8 @@ import {
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
+import { DUO_FACET_MIN_PROVIDERS, getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 21600;
 
@@ -51,11 +53,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
   if (!insurer) return {};
-  const count = await getProviderCountByInsurance(insurer.slug, city.slug);
+  const count = await safe(
+    getProviderCountByInsurance(insurer.slug, city.slug),
+    0,
+    "ar-ins-count-meta",
+  );
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
   const regulatorAr = getArabicRegulator(city.slug);
   const canonicalUrl = `${base}/ar/directory/${city.slug}/insurance/${insurer.slug}`;
+  const geoEligible = getInsurancePlansByGeo(city.slug).some((p) => p.slug === insurer.slug);
+  const isIndexable = geoEligible && count >= DUO_FACET_MIN_PROVIDERS;
 
   const title = `عيادات تقبل تأمين ${insurer.name} في ${cityNameAr} | ${count} ${ar.provider}`;
   const description = `ابحث عن ${count} مقدم رعاية صحية مرخص من ${regulatorAr} في ${cityNameAr} يقبلون تأمين ${insurer.name}. تشمل المستشفيات والعيادات وطب الأسنان والأمراض الجلدية والمزيد. قوائم موثقة مع تقييمات وتفاصيل التواصل. آخر تحقق مارس 2026.`;
@@ -64,12 +72,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        "en-AE": `${base}/directory/${city.slug}/insurance/${insurer.slug}`,
-        "ar-AE": canonicalUrl,
-      },
+      canonical: isIndexable ? canonicalUrl : `${base}/ar/insurance/${insurer.slug}`,
+      ...(isIndexable
+        ? {
+            languages: {
+              "en-AE": `${base}/directory/${city.slug}/insurance/${insurer.slug}`,
+              "ar-AE": canonicalUrl,
+            },
+          }
+        : {}),
     },
+    robots: isIndexable ? undefined : { index: false, follow: true },
     openGraph: {
       title: `تأمين ${insurer.name} — ${count} ${ar.provider} في ${cityNameAr}`,
       description: `${count} مقدم خدمة صحية منظَّم لدى ${regulatorAr} في ${cityNameAr} يقبلون ${insurer.name}. تصفح المستشفيات والعيادات والمتخصصين — جميعها موثقة مارس 2026.`,
@@ -89,7 +102,11 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
   const insurer = allInsurers.find((i) => i.slug === params.insurer);
   if (!insurer) notFound();
 
-  const providers = await getProvidersByInsurance(insurer.slug, city.slug);
+  const providers = await safe(
+    getProvidersByInsurance(insurer.slug, city.slug),
+    [] as Awaited<ReturnType<typeof getProvidersByInsurance>>,
+    "ar-providersByInsurance",
+  );
   const count = providers.length;
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
@@ -119,7 +136,9 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
   // ─── Other cities this insurer is accepted in ────────────────────────────────
   const otherCitiesRaw = getCities().filter((c) => c.slug !== city.slug);
   const otherCityCounts = await Promise.all(
-    otherCitiesRaw.map((c) => getProviderCountByInsurance(insurer.slug, c.slug))
+    otherCitiesRaw.map((c) =>
+      safe(getProviderCountByInsurance(insurer.slug, c.slug), 0, `ar-other-city:${c.slug}`)
+    )
   );
   const otherCities = otherCitiesRaw
     .map((c, i) => ({ ...c, count: otherCityCounts[i] }))
@@ -133,7 +152,9 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
     .filter((i) => i.slug !== insurer.slug && popularSlugs.includes(i.slug))
     .slice(0, 5);
   const relatedInsurerCounts = await Promise.all(
-    relatedInsurersRaw.map((i) => getProviderCountByInsurance(i.slug, city.slug))
+    relatedInsurersRaw.map((i) =>
+      safe(getProviderCountByInsurance(i.slug, city.slug), 0, `ar-related:${i.slug}`)
+    )
   );
   const relatedInsurers = relatedInsurersRaw
     .map((i, idx) => ({ ...i, count: relatedInsurerCounts[idx] }))

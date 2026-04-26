@@ -1,22 +1,26 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { ar } from "@/lib/i18n";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: ar.search,
+  title: "بحث",
   robots: { index: false, follow: true },
 };
 
-export default function ArabicSearchPage() {
-  return (
-    <div dir="rtl" className="font-arabic container-tc py-12 text-center">
-      <h1 className="text-2xl font-bold text-dark mb-4">{ar.search}</h1>
-      <p className="text-muted mb-6">
-        استخدم البحث للعثور على مقدمي الرعاية الصحية في الإمارات
-      </p>
-      <Link href="/search" className="btn-accent">
-        {ar.search} / Search
-      </Link>
-    </div>
-  );
+interface Props {
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+export default function ArabicSearchPage({ searchParams }: Props) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams ?? {})) {
+    if (Array.isArray(value)) {
+      for (const item of value) params.append(key, item);
+    } else if (value !== undefined) {
+      params.set(key, value);
+    }
+  }
+
+  const query = params.toString();
+  redirect(query ? `/search?${query}` : "/search");
 }

@@ -98,7 +98,8 @@ export async function GET() {
         `</url>`
     );
 
-    // City best pages + city+category best combos from constants
+    // City best pages from constants. Category best pages are DB-gated below
+    // because `/[country]/best/[city]/[category]` rejects unrated categories.
     for (const city of countryCities) {
       const cityBestUrl = escapeXml(
         `${baseUrl}/${COUNTRY_CODE}/best/${city.slug}`
@@ -111,20 +112,6 @@ export async function GET() {
           `<priority>0.7</priority>` +
           `</url>`
       );
-
-      for (const cat of CATEGORIES) {
-        const catBestUrl = escapeXml(
-          `${baseUrl}/${COUNTRY_CODE}/best/${city.slug}/${cat.slug}`
-        );
-        entries.push(
-          `  <url>` +
-            `<loc>${catBestUrl}</loc>` +
-            `<lastmod>${today}</lastmod>` +
-            `<changefreq>weekly</changefreq>` +
-            `<priority>0.8</priority>` +
-            `</url>`
-        );
-      }
     }
 
     // --- Best pages (DB-backed: only combos with >= 3 rated providers) ---
@@ -150,9 +137,6 @@ export async function GET() {
     const structuralBestSet = new Set<string>();
     for (const city of countryCities) {
       structuralBestSet.add(`${city.slug}`);
-      for (const cat of CATEGORIES) {
-        structuralBestSet.add(`${city.slug}/${cat.slug}`);
-      }
     }
 
     // Add DB-only combos not already covered by structural constants
@@ -199,8 +183,8 @@ export async function GET() {
     }
 
     // --- Filter pages (24-hour, emergency, walk-in) ---
-    // Include these for every city in the country — the pages themselves
-    // return 404 if fewer than 3 providers match, so Google will drop thin pages.
+    // Include these for every city in the country. Low-inventory filter pages
+    // render noindex empty states instead of 404s.
     const FILTER_SEGMENTS = ["24-hour", "emergency", "walk-in"];
     for (const city of countryCities) {
       for (const segment of FILTER_SEGMENTS) {

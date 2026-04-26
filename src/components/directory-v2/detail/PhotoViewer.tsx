@@ -87,7 +87,7 @@ export function PhotoViewer({ open, onClose, photos, startIndex = 0, alt }: Phot
                   <span className="hidden sm:inline">Share</span>
                 </button>
                 <div className="p-2 rounded-full hover:bg-surface-cream transition-colors">
-                  <HeartButton size="sm" ariaLabel={`Save ${alt}`} />
+                  <HeartButton size="sm" ariaLabel={`Save ${alt}`} storageKey={`zavis:saved:${alt}`} />
                 </div>
               </div>
             </div>

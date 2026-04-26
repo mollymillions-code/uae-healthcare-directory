@@ -41,6 +41,11 @@ export function countryDirectoryUrl(countryCode: string, ...segments: string[]):
   return `/${countryCode}/directory${segments.length > 0 ? "/" + segments.join("/") : ""}`;
 }
 
+/** Build the provider-card base path for country-prefixed directory listings */
+export function countryDirectoryBasePath(countryCode: string): string {
+  return countryDirectoryUrl(countryCode);
+}
+
 /** Build a best-of URL with country prefix */
 export function countryBestUrl(countryCode: string, ...segments: string[]): string {
   return `/${countryCode}/best${segments.length > 0 ? "/" + segments.join("/") : ""}`;

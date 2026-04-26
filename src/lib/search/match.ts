@@ -34,6 +34,7 @@ import type {
   HealthcareSearchResult,
   HealthcareSearchResults,
 } from "./types";
+import { normalizeCitySlug, normalizeHealthcareSearchQuery } from "./normalization";
 
 // ── Intent parsing ─────────────────────────────────────────────────────────
 
@@ -291,24 +292,6 @@ function tokensFor(value: string | undefined): string[] {
     .filter((token) => token.length >= 2);
 }
 
-function coerceCitySlug(value: string | undefined): string | undefined {
-  const normalized = normalizeSearchText(value || "");
-  if (!normalized) return undefined;
-
-  const city = CITIES.filter((c) => c.country === "ae").find((c) => {
-    const candidates = uniqueNonEmpty([
-      c.slug,
-      c.name,
-      c.emirate,
-      c.name.replace(/^Umm Al /i, "Umm "),
-    ]).map(normalizeSearchText);
-    return candidates.some(
-      (candidate) => normalized === candidate || normalized.includes(candidate)
-    );
-  });
-  return city?.slug;
-}
-
 function buildResidualQuery(
   rawQuery: string | undefined,
   citySlug: string | undefined,
@@ -514,10 +497,12 @@ export interface SearchHealthcareOptions {
 }
 
 export async function searchHealthcare(
-  q: HealthcareSearchQuery,
+  rawQuery: HealthcareSearchQuery,
   opts: SearchHealthcareOptions = {}
 ): Promise<HealthcareSearchResults> {
+  const q = normalizeHealthcareSearchQuery(rawQuery);
   const limit = Math.max(1, Math.min(opts.limit ?? 12, 50));
+  const page = q.page ?? 1;
   const entityType = q.entityType ?? "both";
   const aiIntent = await getGeminiSearchIntent(q);
   const searchText =
@@ -526,8 +511,8 @@ export async function searchHealthcare(
     q.query;
   const effectiveCitySlug =
     q.city ||
-    coerceCitySlug(aiIntent?.city) ||
-    coerceCitySlug(q.query);
+    normalizeCitySlug(aiIntent?.city) ||
+    normalizeCitySlug(q.query);
 
   // ── Derive structured filters from the query ───────────────────────────
   const providerNameSearch = Boolean(aiIntent?.providerName);
@@ -563,7 +548,6 @@ export async function searchHealthcare(
   let facilityRows: LocalProvider[] = [];
   let totalFacilities = 0;
   if (entityType === "facility" || entityType === "both") {
-    const page = q.page && q.page > 0 ? q.page : 1;
     const queryVariants = getFacilityQueryVariants(facilityQuery);
 
     if (queryVariants.length > 0) {
@@ -633,7 +617,6 @@ export async function searchHealthcare(
   let doctorRows: ProfessionalIndexRecord[] = [];
   let totalDoctors = 0;
   if (entityType === "doctor" || entityType === "both") {
-    const page = q.page && q.page > 0 ? q.page : 1;
     const offset = (page - 1) * limit;
     if (specialty) {
       const { professionals, total } = await getProfessionalsIndexBySpecialty(

@@ -45,7 +45,6 @@ import {
   getProviderCountByCategoryAndCity,
   getProviderCountByAreaAndCity,
   getProviders,
-  getInsuranceProviders,
 } from "@/lib/data";
 import { safe } from "@/lib/safeData";
 import {
@@ -54,6 +53,7 @@ import {
   getCitiesByCountry,
   cityBelongsToCountry,
   countryDirectoryUrl,
+  countryDirectoryBasePath,
   countryBestUrl,
   COUNTRY_LOCALES,
 } from "@/lib/country-directory-utils";
@@ -777,6 +777,7 @@ export async function GccCityPage({
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
+                  basePath={countryDirectoryBasePath(country.code)}
                   priority={i < 4}
                 />
               );
@@ -1154,6 +1155,7 @@ export async function GccSegmentsPage({
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
+          providerBasePath={countryDirectoryBasePath(country.code)}
           total={total}
           pagination={
             <Suspense fallback={null}>
@@ -1163,6 +1165,7 @@ export async function GccSegmentsPage({
                 totalCount={total}
                 pageSize={20}
                 baseUrl={countryDirectoryUrl(country.code, city.slug, category.slug)}
+                basePath={countryDirectoryBasePath(country.code)}
                 emptyMessage={`No ${category.name.toLowerCase()} found in ${city.name} yet.`}
               />
             </Suspense>
@@ -1348,6 +1351,7 @@ export async function GccSegmentsPage({
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
+          providerBasePath={countryDirectoryBasePath(country.code)}
           total={total}
           belowGrid={
             <>
@@ -1495,6 +1499,7 @@ export async function GccSegmentsPage({
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
+          providerBasePath={countryDirectoryBasePath(country.code)}
           total={total}
           belowGrid={
             <>
@@ -1553,12 +1558,6 @@ export async function GccSegmentsPage({
       .slice(0, 6);
     const sameCategoryTotal =
       sameCategoryResult.total > 0 ? sameCategoryResult.total - 1 : 0;
-
-    const allInsurers = getInsuranceProviders();
-    const insurerSlugMap = new Map<string, string>();
-    for (const ins of allInsurers) {
-      insurerSlugMap.set(ins.name.toLowerCase(), ins.slug);
-    }
 
     const hasValidRating = Number(provider.googleRating) > 0;
     const areaName = area?.name || "";
@@ -1655,7 +1654,7 @@ export async function GccSegmentsPage({
         question: `Which insurance plans does ${provider.name} accept?`,
         answer:
           provider.insurance.length > 0
-            ? `${provider.name} accepts the following insurance plans: ${provider.insurance.map((insName) => { const slug = insurerSlugMap.get(insName.toLowerCase()); return slug ? `<a href="/insurance/${slug}">${insName}</a>` : insName; }).join(", ")}. Always confirm coverage details directly with the provider before your visit.`
+            ? `${provider.name} accepts the following insurance plans: ${provider.insurance.join(", ")}. Always confirm coverage details directly with the provider before your visit.`
             : `Contact ${provider.name} directly to confirm which insurance plans are currently accepted.`,
       },
       {
@@ -1956,25 +1955,14 @@ export async function GccSegmentsPage({
                   {provider.name} accepts these insurance plans:
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {provider.insurance.map((i) => {
-                    const insurerSlug = insurerSlugMap.get(i.toLowerCase());
-                    return insurerSlug ? (
-                      <Link
-                        key={i}
-                        href={`/insurance/${insurerSlug}`}
-                        className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06] hover:border-[#006828]/30 hover:text-[#006828] transition-colors"
-                      >
-                        {i}
-                      </Link>
-                    ) : (
-                      <span
-                        key={i}
-                        className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]"
-                      >
-                        {i}
-                      </span>
-                    );
-                  })}
+                  {provider.insurance.map((i) => (
+                    <span
+                      key={i}
+                      className="inline-block font-['Geist',sans-serif] bg-[#f8f8f6] text-[#1c1c1c] text-sm px-3 py-1.5 rounded-lg border border-black/[0.06]"
+                    >
+                      {i}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}

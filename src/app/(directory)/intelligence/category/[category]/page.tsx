@@ -44,6 +44,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const { articles, total } = getArticles({
     category: params.category as JournalCategory,
+    limit: 12,
   });
   const events = getUpcomingEvents(4);
   const tags = getAllTags();

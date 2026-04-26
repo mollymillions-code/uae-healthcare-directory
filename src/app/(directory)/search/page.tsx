@@ -1,12 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Pagination } from "@/components/shared/Pagination";
 import { searchHealthcare } from "@/lib/search/match";
 import type {
-  HealthcareEntityType,
   HealthcareSearchQuery,
   HealthcareSearchResult,
 } from "@/lib/search/types";
+import {
+  buildSearchUrl,
+  normalizeHealthcareSearchQuery,
+  SEARCH_PAGE_SIZE,
+} from "@/lib/search/normalization";
 import { getCityBySlug, getCategoryBySlug } from "@/lib/data";
 import { EmptyStateV2 } from "@/components/directory-v2/shared/EmptyStateV2";
 import { SearchControls } from "./_components/SearchControls";
@@ -34,28 +39,6 @@ interface SearchPageProps {
     reason?: string;
     page?: string;
   };
-}
-
-function coerceEntityType(raw?: string): HealthcareEntityType {
-  if (raw === "doctor" || raw === "facility") return raw;
-  return "both";
-}
-
-function buildBaseUrl(sp: SearchPageProps["searchParams"]): string {
-  const params = new URLSearchParams();
-  if (sp.q) params.set("q", sp.q);
-  if (sp.city) params.set("city", sp.city);
-  if (sp.specialty) params.set("specialty", sp.specialty);
-  else if (sp.category) params.set("specialty", sp.category);
-  if (sp.condition) params.set("condition", sp.condition);
-  if (sp.insurance) params.set("insurance", sp.insurance);
-  if (sp.language) params.set("language", sp.language);
-  if (sp.area) params.set("area", sp.area);
-  if (sp.entityType && sp.entityType !== "both") params.set("entityType", sp.entityType);
-  if (sp.emergency) params.set("emergency", sp.emergency);
-  if (sp.reason) params.set("reason", sp.reason);
-  const qs = params.toString();
-  return qs ? `/search?${qs}` : "/search";
 }
 
 const RESULT_ICONS: Record<string, React.ElementType> = {
@@ -118,26 +101,24 @@ function ResultGroup({
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const rawPage = Number(searchParams.page ?? "1");
-  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
-  const specialty = searchParams.specialty || searchParams.category;
-
-  const query: HealthcareSearchQuery = {
-    query: searchParams.q,
+  const query: HealthcareSearchQuery = normalizeHealthcareSearchQuery({
+    q: searchParams.q,
     city: searchParams.city,
-    specialty,
+    specialty: searchParams.specialty ?? searchParams.category,
     condition: searchParams.condition,
     insurance: searchParams.insurance,
     language: searchParams.language,
     area: searchParams.area,
-    entityType: coerceEntityType(searchParams.entityType),
-    emergency: searchParams.emergency === "true" || searchParams.emergency === "1",
+    entityType: searchParams.entityType,
+    emergency: searchParams.emergency,
     reason: searchParams.reason,
-    page,
-  };
+    page: searchParams.page,
+  });
+  const page = query.page ?? 1;
+  const specialty = query.specialty;
 
   const results = await searchHealthcare(query);
-  const baseUrl = buildBaseUrl(searchParams);
+  const baseUrl = buildSearchUrl({ ...query, page: 1 });
 
   const cityName = query.city ? getCityBySlug(query.city)?.name : undefined;
   const specialtyName = specialty ? getCategoryBySlug(specialty)?.name : undefined;
@@ -153,11 +134,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const totalResults =
     results.totalFacilities + results.totalDoctors +
     results.conditions.length + results.insuranceHubs.length;
-  const pageSize = 12;
+  const pageSize = SEARCH_PAGE_SIZE;
   const totalPages = Math.max(
     1,
     Math.ceil(Math.max(results.totalFacilities, results.totalDoctors, 1) / pageSize)
   );
+  if (page > totalPages) {
+    redirect(buildSearchUrl({ ...query, page: totalPages }));
+  }
 
   return (
     <>

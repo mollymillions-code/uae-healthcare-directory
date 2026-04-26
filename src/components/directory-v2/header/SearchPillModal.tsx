@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fade, scaleIn } from "../shared/motion";
 import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
 import { SegmentFlyout } from "./SegmentFlyout";
@@ -69,7 +69,7 @@ export function SearchPillModal({
 
           {/* Content stack */}
           <motion.div
-            className="relative flex flex-col items-center gap-4"
+            className="relative flex w-full max-w-[calc(100vw-2rem)] flex-col items-center gap-4 sm:w-auto sm:max-w-none"
             variants={scaleIn}
           >
             <SearchPill
@@ -90,8 +90,8 @@ export function SearchPillModal({
                 key={active}
                 segment={active}
                 value={state[active]}
-                onSelect={(v, l) => {
-                  onChange({ ...state, [active]: l });
+                onSelect={(v) => {
+                  onChange({ ...state, [active]: v });
                   // Auto-advance to next segment for guided flow
                   const order: SearchSegment[] = ["specialty", "city", "date", "insurance"];
                   const idx = order.indexOf(active);
@@ -108,10 +108,9 @@ export function SearchPillModal({
 }
 
 // tiny local hook: reset on every open
-import { useState, useEffect as useEffectAlias } from "react";
 function useReactive<T>(initial: T, trigger: boolean): [T, (v: T) => void] {
   const [v, setV] = useState(initial);
-  useEffectAlias(() => {
+  useEffect(() => {
     if (trigger) setV(initial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trigger]);

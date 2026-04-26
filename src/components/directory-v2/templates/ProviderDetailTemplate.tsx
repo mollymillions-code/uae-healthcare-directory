@@ -101,7 +101,9 @@ export function ProviderDetailTemplate({
   aeoAnswer,
   arabicHref,
 }: Props) {
-  const uniqPhotos = collectProviderImageUrls(p);
+  const uniqPhotos = collectProviderImageUrls(p).filter(
+    (url) => !url.includes("/images/categories/") && !url.includes("placeholder-provider"),
+  );
 
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
@@ -203,7 +205,7 @@ export function ProviderDetailTemplate({
           <div className="flex items-center gap-1 flex-shrink-0">
             <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
             <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
-              <HeartButton size="sm" ariaLabel={`Save ${p.name}`} />
+              <HeartButton size="sm" ariaLabel={`Save ${p.name}`} storageKey={`zavis:saved:${p.id || p.slug}`} />
               <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>
             </div>
           </div>
@@ -430,8 +432,6 @@ export function ProviderDetailTemplate({
               isVerified={p.isVerified}
               languages={p.languages}
               facilityType={p.facilityType ?? undefined}
-              contactHref={primaryCtaHref}
-              contactLabel={primaryCtaLabel}
             />
 
             {/* Things to know / FAQ */}
@@ -462,6 +462,11 @@ export function ProviderDetailTemplate({
               isClaimed={p.isClaimed}
               address={p.address}
               googleMapsUri={p.googleMapsUri}
+              directionsUrl={
+                p.address
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name} ${p.address}`)}`
+                  : undefined
+              }
               primaryCtaLabel={primaryCtaLabel}
               primaryCtaHref={primaryCtaHref}
               primaryCtaType={p.phone ? "call" : p.whatsapp ? "whatsapp" : p.website ? "website" : "claim_listing"}

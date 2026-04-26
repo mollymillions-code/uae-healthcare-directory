@@ -9,6 +9,7 @@ import {
 import { breadcrumbSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicRegulator } from "@/lib/i18n";
+import { safe } from "@/lib/safeData";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 43200;
@@ -46,7 +47,9 @@ export default async function ArabicInsuranceIndexPage({ params }: Props) {
   const regulator = getArabicRegulator(city.slug);
 
   const insurerCounts = await Promise.all(
-    insurers.map((ins) => getProviderCountByInsurance(ins.slug, city.slug))
+    insurers.map((ins) =>
+      safe(getProviderCountByInsurance(ins.slug, city.slug), 0, `ar-ins-count:${ins.slug}`)
+    )
   );
   const insurersWithCounts = insurers.map((ins, i) => ({ ...ins, count: insurerCounts[i] }));
 

@@ -19,9 +19,8 @@ interface PhotoMosaicProps {
  * 8px gutters. Click any tile → PhotoViewer modal with shared-element transition.
  */
 export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/images/placeholder-provider.svg" }: PhotoMosaicProps) {
-  const safe = photos.length > 0 ? photos.slice(0, 5) : [fallbackSrc, fallbackSrc, fallbackSrc, fallbackSrc, fallbackSrc];
-  // Pad to 5 if fewer — repeat the main image
-  while (safe.length < 5) safe.push(safe[0]);
+  const safe = photos.length > 0 ? photos.slice(0, 5) : [fallbackSrc];
+  const hasRealPhotos = photos.length > 0;
 
   const [viewerOpen, setViewerOpen] = useState(false);
   const [failed, setFailed] = useState<Record<number, boolean>>({});
@@ -40,7 +39,11 @@ export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/im
           <button
             type="button"
             onClick={() => openAt(0)}
-            className="relative md:col-span-2 md:row-span-2 group overflow-hidden bg-ink-line"
+            aria-label={hasRealPhotos ? `Open photo 1 of ${safe.length} for ${alt}` : `Open image for ${alt}`}
+            className={cn(
+              "relative md:row-span-2 group overflow-hidden bg-ink-line",
+              safe.length === 1 ? "md:col-span-4" : "md:col-span-2",
+            )}
           >
             <Image
               src={failed[0] ? fallbackSrc : safe[0]}
@@ -54,11 +57,14 @@ export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/im
           </button>
 
           {/* Tiles 1–4 — hidden on mobile */}
-          {[1, 2, 3, 4].map((i) => (
+          {safe.slice(1).map((_, offset) => {
+            const i = offset + 1;
+            return (
             <button
               key={i}
               type="button"
               onClick={() => openAt(i)}
+              aria-label={`Open photo ${i + 1} of ${safe.length} for ${alt}`}
               className="relative hidden md:block group overflow-hidden bg-ink-line"
             >
               <Image
@@ -70,27 +76,30 @@ export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/im
                 className="object-cover group-hover:brightness-95 transition-all duration-z-base"
               />
             </button>
-          ))}
+            );
+          })}
         </div>
 
         {/* Show all photos CTA */}
-        <button
-          type="button"
-          onClick={() => openAt(0)}
-          className={cn(
-            "absolute bottom-4 right-4 inline-flex items-center gap-1.5 bg-white border border-ink-hairline",
-            "rounded-z-sm px-3.5 py-2 font-sans text-z-body-sm font-semibold text-ink hover:bg-surface-cream shadow-z-card transition-colors"
-          )}
-        >
-          <Grid3x3 className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Show all photos
-        </button>
+        {safe.length > 1 && (
+          <button
+            type="button"
+            onClick={() => openAt(0)}
+            className={cn(
+              "absolute bottom-4 right-4 inline-flex items-center gap-1.5 bg-white border border-ink-hairline",
+              "rounded-z-sm px-3.5 py-2 font-sans text-z-body-sm font-semibold text-ink hover:bg-surface-cream shadow-z-card transition-colors"
+            )}
+          >
+            <Grid3x3 className="h-3.5 w-3.5" strokeWidth={2.5} />
+            Show all photos
+          </button>
+        )}
       </div>
 
       <PhotoViewer
         open={viewerOpen}
         onClose={() => setViewerOpen(false)}
-        photos={photos.length > 0 ? photos : safe}
+        photos={safe}
         startIndex={viewerStart}
         alt={alt}
       />

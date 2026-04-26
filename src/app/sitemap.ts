@@ -1,8 +1,20 @@
 import { MetadataRoute } from "next";
-import { getCities, getCategories, getAreasByCity } from "@/lib/data";
+import {
+  getCities,
+  getCategories,
+  getAreasByCity,
+  get24HourProviders,
+  getEmergencyProviders,
+  getProviders,
+  getProviderCountByInsurance,
+  getProviderCountByLanguage,
+  isGovernmentProvider,
+  type LocalProvider,
+} from "@/lib/data";
 import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
-import { getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import { DUO_FACET_MIN_PROVIDERS, getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import { safe } from "@/lib/safeData";
 import {
   TRI_FACET_INSURER_ALLOW,
   TRI_FACET_CATEGORY_ALLOW,
@@ -149,10 +161,146 @@ const NEIGHBORHOOD_HUB_TOP_SPECIALTIES = [
   "gynecology",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
+function comboKey(citySlug: string, slug: string): string {
+  return `${citySlug}:${slug}`;
+}
+
+function qualifiedTopProviders(providers: LocalProvider[]): LocalProvider[] {
+  return providers.filter(
+    (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10,
+  );
+}
+
+function dedupeSitemapEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  const byUrl = new Map<string, SitemapEntry>();
+
+  for (const entry of entries) {
+    const existing = byUrl.get(entry.url);
+    if (!existing) {
+      byUrl.set(entry.url, entry);
+      continue;
+    }
+
+    const existingPriority = existing.priority ?? 0;
+    const nextPriority = entry.priority ?? 0;
+    byUrl.set(entry.url, {
+      ...existing,
+      ...entry,
+      priority: Math.max(existingPriority, nextPriority),
+      alternates: entry.alternates ?? existing.alternates,
+    });
+  }
+
+  return Array.from(byUrl.values());
+}
+
+async function getSitemapEligibility(
+  cities: ReturnType<typeof getCities>,
+  categories: ReturnType<typeof getCategories>,
+) {
+  const bestCityCategory = new Set<string>();
+  const topCityCategory = new Set<string>();
+  const topUaeCategory = new Set<string>();
+  const cityInsurance = new Set<string>();
+  const cityLanguage = new Set<string>();
+  const city24Hour = new Set<string>();
+  const cityEmergency = new Set<string>();
+  const cityGovernment = new Set<string>();
+  const cityWalkIn = new Set<string>();
+
+  await Promise.all([
+    ...categories.map(async (cat) => {
+      const result = await safe(
+        getProviders({ categorySlug: cat.slug, limit: 99999 }),
+        { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+        `sitemap:top-uae:${cat.slug}`,
+      );
+      if (qualifiedTopProviders(result.providers).length >= 5) {
+        topUaeCategory.add(cat.slug);
+      }
+    }),
+    ...cities.map(async (city) => {
+      const [
+        providers24h,
+        emergencyProviders,
+        cityProvidersResult,
+        walkInResult,
+      ] = await Promise.all([
+        safe(get24HourProviders(city.slug), [] as LocalProvider[], `sitemap:24h:${city.slug}`),
+        safe(getEmergencyProviders(city.slug), [] as LocalProvider[], `sitemap:emergency:${city.slug}`),
+        safe(
+          getProviders({ citySlug: city.slug, limit: 99999 }),
+          { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+          `sitemap:city-providers:${city.slug}`,
+        ),
+        safe(
+          getProviders({ citySlug: city.slug, categorySlug: "clinics", limit: 1 }),
+          { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+          `sitemap:walk-in:${city.slug}`,
+        ),
+      ]);
+
+      if (providers24h.length >= 3) city24Hour.add(city.slug);
+      if (emergencyProviders.length >= 3) cityEmergency.add(city.slug);
+      if (cityProvidersResult.providers.some(isGovernmentProvider)) cityGovernment.add(city.slug);
+      if (walkInResult.total > 0) cityWalkIn.add(city.slug);
+
+      await Promise.all([
+        ...categories.map(async (cat) => {
+          const result = await safe(
+            getProviders({ citySlug: city.slug, categorySlug: cat.slug, limit: 99999 }),
+            { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+            `sitemap:city-cat:${city.slug}:${cat.slug}`,
+          );
+          const ratedCount = result.providers.filter((p) => Number(p.googleRating) > 0).length;
+          const qualifiedCount = qualifiedTopProviders(result.providers).length;
+          if (ratedCount > 0) bestCityCategory.add(comboKey(city.slug, cat.slug));
+          if (qualifiedCount >= 10) topCityCategory.add(comboKey(city.slug, cat.slug));
+        }),
+        ...INSURANCE_PROVIDERS.map(async (insurer) => {
+          const geoEligible = getInsurancePlansByGeo(city.slug).some((p) => p.slug === insurer.slug);
+          if (!geoEligible) return;
+          const count = await safe(
+            getProviderCountByInsurance(insurer.slug, city.slug),
+            0,
+            `sitemap:ins:${city.slug}:${insurer.slug}`,
+          );
+          if (count >= DUO_FACET_MIN_PROVIDERS) {
+            cityInsurance.add(comboKey(city.slug, insurer.slug));
+          }
+        }),
+        ...LANGUAGES.map(async (lang) => {
+          const count = await safe(
+            getProviderCountByLanguage(lang.slug, city.slug),
+            0,
+            `sitemap:lang:${city.slug}:${lang.slug}`,
+          );
+          if (count > 0) cityLanguage.add(comboKey(city.slug, lang.slug));
+        }),
+      ]);
+    }),
+  ]);
+
+  return {
+    bestCityCategory,
+    topCityCategory,
+    topUaeCategory,
+    cityInsurance,
+    cityLanguage,
+    city24Hour,
+    cityEmergency,
+    cityGovernment,
+    cityWalkIn,
+  };
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl();
   const cities = getCities();
   const categories = getCategories();
+  const eligibility = await getSitemapEligibility(cities, categories);
   const entries: MetadataRoute.Sitemap = [];
 
   // Homepage
@@ -193,7 +341,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }
     }
     // Special filter pages
-    entries.push({ url: `${baseUrl}/directory/${city.slug}/24-hours`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+    if (eligibility.city24Hour.has(city.slug)) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/24-hour`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+    }
     entries.push({ url: `${baseUrl}/directory/${city.slug}/insurance`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     entries.push({ url: `${baseUrl}/directory/${city.slug}/language`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     entries.push({ url: `${baseUrl}/directory/${city.slug}/condition`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
@@ -204,6 +354,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const cityInsurancePlans = getInsurancePlansByGeo(city.slug);
     for (const insurer of INSURANCE_PROVIDERS) {
       if (!cityInsurancePlans.some((p) => p.slug === insurer.slug)) continue;
+      if (!eligibility.cityInsurance.has(comboKey(city.slug, insurer.slug))) continue;
       entries.push({ url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     }
 
@@ -220,6 +371,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const insurer of INSURANCE_PROVIDERS) {
       if (!TRI_FACET_INSURER_ALLOW.has(insurer.slug)) continue;
       if (!cityInsurancePlans.some((p) => p.slug === insurer.slug)) continue;
+      if (!eligibility.cityInsurance.has(comboKey(city.slug, insurer.slug))) continue;
       for (const cat of categories) {
         if (!TRI_FACET_CATEGORY_ALLOW.has(cat.slug)) continue;
         entries.push({
@@ -232,6 +384,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
     // Language per city
     for (const lang of LANGUAGES) {
+      if (!eligibility.cityLanguage.has(comboKey(city.slug, lang.slug))) continue;
       entries.push({ url: `${baseUrl}/directory/${city.slug}/language/${lang.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
     }
     // Condition per city — Item 4 Part D. The `ar-AE` alternate is ONLY
@@ -271,13 +424,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       entries.push({ url: `${baseUrl}/directory/${city.slug}/${proc.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
     }
     // Walk-in clinics per city
-    entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    if (eligibility.cityWalkIn.has(city.slug)) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/walk-in`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
     // Emergency facilities per city
-    entries.push({ url: `${baseUrl}/directory/${city.slug}/emergency`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    if (eligibility.cityEmergency.has(city.slug)) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/emergency`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
     // Government facilities per city
-    entries.push({ url: `${baseUrl}/directory/${city.slug}/government`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    if (eligibility.cityGovernment.has(city.slug)) {
+      entries.push({ url: `${baseUrl}/directory/${city.slug}/government`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+    }
     // Top providers per city×category
     for (const cat of categories) {
+      if (!eligibility.topCityCategory.has(comboKey(city.slug, cat.slug))) continue;
       entries.push({ url: `${baseUrl}/directory/${city.slug}/top/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
     }
 
@@ -365,6 +525,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const city of cities) {
     entries.push({ url: `${baseUrl}/best/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
     for (const cat of categories) {
+      if (!eligibility.bestCityCategory.has(comboKey(city.slug, cat.slug))) continue;
       entries.push({ url: `${baseUrl}/best/${city.slug}/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
     }
   }
@@ -372,6 +533,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Top 10
   entries.push({ url: `${baseUrl}/directory/top`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.9 });
   for (const cat of categories) {
+    if (!eligibility.topUaeCategory.has(cat.slug)) continue;
     entries.push({ url: `${baseUrl}/directory/top/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
   }
   for (const city of cities) {
@@ -954,6 +1116,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const cityInsurancePlansAr = getInsurancePlansByGeo(city.slug);
     for (const insurer of INSURANCE_PROVIDERS) {
       if (!cityInsurancePlansAr.some((p) => p.slug === insurer.slug)) continue;
+      if (!eligibility.cityInsurance.has(comboKey(city.slug, insurer.slug))) continue;
       entries.push({
         url: `${baseUrl}/ar/directory/${city.slug}/insurance/${insurer.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.6,
         alternates: { languages: { en: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}`, ar: `${baseUrl}/ar/directory/${city.slug}/insurance/${insurer.slug}` } },
@@ -1151,6 +1314,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: { languages: { en: `${baseUrl}/best/${city.slug}`, ar: `${baseUrl}/ar/best/${city.slug}` } },
     });
     for (const cat of categories) {
+      if (!eligibility.bestCityCategory.has(comboKey(city.slug, cat.slug))) continue;
       entries.push({
         url: `${baseUrl}/ar/best/${city.slug}/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7,
         alternates: { languages: { en: `${baseUrl}/best/${city.slug}/${cat.slug}`, ar: `${baseUrl}/ar/best/${city.slug}/${cat.slug}` } },
@@ -1417,6 +1581,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     alternates: { languages: { en: `${baseUrl}/directory/top`, ar: `${baseUrl}/ar/directory/top` } },
   });
   for (const cat of categories) {
+    if (!eligibility.topUaeCategory.has(cat.slug)) continue;
     entries.push({
       url: `${baseUrl}/ar/directory/top/${cat.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.65,
       alternates: { languages: { en: `${baseUrl}/directory/top/${cat.slug}`, ar: `${baseUrl}/ar/directory/top/${cat.slug}` } },
@@ -1437,5 +1602,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push({ url: `${baseUrl}/guides/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.85 });
   }
 
-  return entries;
+  return dedupeSitemapEntries(entries);
 }

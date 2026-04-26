@@ -41,6 +41,8 @@ interface ListingsTemplateProps {
   activeRailSlug?: string;
   /** Provider grid. */
   providers: ListingsTemplateProvider[];
+  /** Directory root used to build provider card URLs. Defaults to /directory. */
+  providerBasePath?: string;
   /** Total count for "X providers found" label. */
   total?: number;
   /** Pagination element if present. */
@@ -67,6 +69,7 @@ export function ListingsTemplate({
   railItems,
   activeRailSlug,
   providers,
+  providerBasePath,
   total,
   pagination,
   belowGrid,
@@ -191,6 +194,7 @@ export function ListingsTemplate({
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
+                  basePath={providerBasePath}
                   priority={i < 4}
                 />
               ))}

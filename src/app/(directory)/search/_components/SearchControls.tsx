@@ -10,6 +10,7 @@ import { CATEGORIES } from "@/lib/constants/categories";
 import { CONDITIONS } from "@/lib/constants/conditions";
 import { LANGUAGES } from "@/lib/constants/languages";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
+import { buildSearchUrl, normalizeHealthcareSearchQuery } from "@/lib/search/normalization";
 import { FilterDrawer } from "@/components/directory-v2/filters/FilterDrawer";
 import { cn } from "@/components/directory-v2/shared/cn";
 
@@ -40,28 +41,33 @@ export function SearchControls(props: Props) {
 
   const buildHref = useCallback(
     (overrides: Partial<Record<string, string | null | boolean>> = {}): string => {
-      const params = new URLSearchParams();
-      const setParam = (k: string, v: string | null | boolean | undefined) => {
-        if (v === null || v === undefined || v === "" || v === false) return;
-        params.set(k, String(v));
-      };
-      setParam("q", (overrides.q as string | null | undefined) ?? query);
-      setParam("city", (overrides.city as string | null | undefined) ?? city);
-      setParam("specialty", (overrides.specialty as string | null | undefined) ?? specialty);
-      setParam("condition", (overrides.condition as string | null | undefined) ?? condition);
-      setParam("insurance", (overrides.insurance as string | null | undefined) ?? insurance);
-      setParam("language", (overrides.language as string | null | undefined) ?? language);
-      const et = (overrides.entityType as string | undefined) ?? entityType;
-      if (et && et !== "both") params.set("entityType", et);
-      const em = (overrides.emergency as boolean | undefined) ?? emergency;
-      if (em) params.set("emergency", "true");
-      return `/search?${params.toString()}`;
+      const pick = (key: string, current: string) =>
+        Object.prototype.hasOwnProperty.call(overrides, key)
+          ? (overrides[key] as string | null | undefined) ?? ""
+          : current;
+      const pickBoolean = (key: string, current: boolean) =>
+        Object.prototype.hasOwnProperty.call(overrides, key)
+          ? Boolean(overrides[key])
+          : current;
+
+      return buildSearchUrl(
+        normalizeHealthcareSearchQuery({
+          q: pick("q", query),
+          city: pick("city", city),
+          specialty: pick("specialty", specialty),
+          condition: pick("condition", condition),
+          insurance: pick("insurance", insurance),
+          language: pick("language", language),
+          entityType: pick("entityType", entityType),
+          emergency: pickBoolean("emergency", emergency),
+        })
+      );
     },
     [query, city, specialty, condition, insurance, language, entityType, emergency]
   );
 
   const submit = useCallback(
-    (e?: React.FormEvent) => {
+    (e?: React.SyntheticEvent) => {
       e?.preventDefault();
       router.push(buildHref());
     },
@@ -91,6 +97,10 @@ export function SearchControls(props: Props) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") submit(e);
+              }}
+              enterKeyHint="search"
               placeholder="e.g. back pain, Dr. Ahmed…"
               className="w-full bg-transparent outline-none font-sans text-z-body-sm text-ink placeholder:text-ink-muted mt-0.5 truncate"
             />

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
-import { SearchBar } from "@/components/search/SearchBar";
+import { ClaimProviderSearch } from "@/components/claim/ClaimProviderSearch";
 import { faqPageSchema, speakableSchema, breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
@@ -60,7 +60,7 @@ const FAQS = [
   {
     question: "What if I can't find my clinic?",
     answer:
-      "We cover every DHA, DOH, and MOHAP-licensed facility — but listings get added on a rolling schedule. If yours isn't there yet, email claims@zavis.ai with your licence number and we&apos;ll add it within 24 hours, then walk you through claiming.",
+      "Use the request listing form if your clinic is missing. Include your country, city, category, Google Business Profile link, trade licence, regulator licence, and proof that you are authorised to request the listing.",
   },
   {
     question: "Can I remove my listing?",
@@ -247,7 +247,7 @@ export default function ClaimPage() {
         </div>
       </section>
 
-      {/* ─── Provider lookup form (preserves existing SearchBar logic) ─── */}
+      {/* ─── Provider lookup form ─── */}
       <section
         id="find-listing"
         className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20"
@@ -262,24 +262,18 @@ export default function ClaimPage() {
               Find your clinic.
             </h2>
             <p className="font-sans text-z-body text-ink-soft mt-2 max-w-2xl leading-relaxed">
-              Search by clinic name, doctor, or licence number. When you land on your
-              listing page, click the &ldquo;Claim this listing&rdquo; button to start verification.
+              Search by clinic name, address, or licence number. Choose the matching
+              provider below to open the claim form for that listing.
             </p>
           </header>
 
-          <SearchBar compact />
+          <ClaimProviderSearch />
 
           <div className="mt-5 flex items-start gap-2 font-sans text-z-caption text-ink-muted">
             <Clock className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
             <p>
-              Can&apos;t find your clinic? Email{" "}
-              <a
-                href="mailto:claims@zavis.ai"
-                className="font-medium text-ink underline underline-offset-2 hover:text-ink-soft"
-              >
-                claims@zavis.ai
-              </a>{" "}
-              with your DHA/DOH/MOHAP licence number and we&apos;ll add it within 24 hours.
+              Can&apos;t find your clinic? Use the request listing form and include your
+              licence number, regulator, and proof of authority.
             </p>
           </div>
         </div>

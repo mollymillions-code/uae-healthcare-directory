@@ -203,8 +203,11 @@ export async function resolveSegments(citySlug: string, segments: string[]) {
   if (segments.length === 2) {
     const cat1 = getCategoryBySlug(seg1);
     if (cat1) {
-      const provider = await getProviderBySlug(seg2);
-      if (provider) return { type: "listing" as const, category: cat1, provider };
+      const provider = await getProviderBySlug(seg2, { citySlug });
+      if (provider) {
+        const providerCategory = getCategoryBySlug(provider.categorySlug) ?? cat1;
+        return { type: "listing" as const, category: providerCategory, provider };
+      }
       const subcats = getSubcategoriesByCategory(cat1.slug);
       const sub = subcats.find((s) => s.slug === seg2);
       if (sub)
@@ -229,9 +232,11 @@ export async function resolveSegments(citySlug: string, segments: string[]) {
   if (segments.length === 3) {
     const area = getAreaBySlug(citySlug, seg1);
     const cat = getCategoryBySlug(seg2);
-    const provider = await getProviderBySlug(seg3);
-    if (area && cat && provider)
-      return { type: "listing" as const, area, category: cat, provider };
+    const provider = area ? await getProviderBySlug(seg3, { citySlug, areaSlug: area.slug }) : undefined;
+    if (area && cat && provider) {
+      const providerCategory = getCategoryBySlug(provider.categorySlug) ?? cat;
+      return { type: "listing" as const, area, category: providerCategory, provider };
+    }
     return null;
   }
 

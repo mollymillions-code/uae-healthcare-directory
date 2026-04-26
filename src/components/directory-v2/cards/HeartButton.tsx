@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "../shared/cn";
 
 interface HeartButtonProps {
@@ -10,6 +10,7 @@ interface HeartButtonProps {
   onToggle?: (saved: boolean) => void;
   className?: string;
   ariaLabel?: string;
+  storageKey?: string;
 }
 
 /**
@@ -22,9 +23,19 @@ export function HeartButton({
   onToggle,
   className,
   ariaLabel = "Save provider",
+  storageKey,
 }: HeartButtonProps) {
+  const normalizedStorageKey = useMemo(
+    () => storageKey?.replace(/[^a-zA-Z0-9:_-]/g, "-"),
+    [storageKey],
+  );
   const [saved, setSaved] = useState(initial);
   const [animKey, setAnimKey] = useState(0);
+
+  useEffect(() => {
+    if (!normalizedStorageKey || typeof window === "undefined") return;
+    setSaved(window.localStorage.getItem(normalizedStorageKey) === "1");
+  }, [normalizedStorageKey]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -32,10 +43,14 @@ export function HeartButton({
       e.stopPropagation();
       const next = !saved;
       setSaved(next);
+      if (normalizedStorageKey && typeof window !== "undefined") {
+        if (next) window.localStorage.setItem(normalizedStorageKey, "1");
+        else window.localStorage.removeItem(normalizedStorageKey);
+      }
       setAnimKey((k) => k + 1);
       onToggle?.(next);
     },
-    [saved, onToggle]
+    [normalizedStorageKey, onToggle, saved]
   );
 
   return (

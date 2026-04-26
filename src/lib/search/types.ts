@@ -49,6 +49,8 @@ export interface HealthcareSearchResult {
   title: string;
   subtitle?: string;
   url: string;
+  /** Absolute public URL, used by API clients. */
+  canonicalUrl?: string;
   entityId?: string | number;
 }
 
