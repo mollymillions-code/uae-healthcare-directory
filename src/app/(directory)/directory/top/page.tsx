@@ -3,12 +3,13 @@ import Link from "next/link";
 import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCategories, getProviders, LocalProvider } from "@/lib/data";
+import { getCategories, getTopRatedProviders } from "@/lib/data";
 import { faqPageSchema, breadcrumbSchema, speakableSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
@@ -35,9 +36,9 @@ export function generateMetadata(): Metadata {
 export default async function TopUAEPage() {
   const base = getBaseUrl();
 
-  const { providers: allProviders } = await safe(
-    getProviders({ limit: 99999, sort: "rating" }),
-    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+  const allProviders = await safe(
+    getTopRatedProviders(undefined, 100),
+    [],
     "top-uae:page",
   );
 

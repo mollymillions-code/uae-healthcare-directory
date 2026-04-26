@@ -12,6 +12,7 @@ import { safe } from "@/lib/safeData";
 import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();

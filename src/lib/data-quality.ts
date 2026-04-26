@@ -192,6 +192,41 @@ function compactText(parts: unknown[]): string {
   return cleanText(parts.filter(Boolean).join(" "));
 }
 
+function toStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item ?? "").trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith("{") && trimmed.endsWith("}"))
+    ) {
+      try {
+        return toStringArray(JSON.parse(trimmed));
+      } catch {
+        // Fall through to delimiter splitting.
+      }
+    }
+
+    return trimmed
+      .split(/[,;|]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.values(value as Record<string, unknown>)
+      .flatMap((item) => toStringArray(item))
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 export function normalizeProviderKeyPart(value: unknown): string {
   return cleanText(value).replace(/\b(llc|l l c|co|company|branch|br)\b/g, "").replace(/\s+/g, " ").trim();
 }
@@ -254,8 +289,8 @@ export function assessProviderQuality(provider: ProviderLike): ProviderQualitySt
     provider.shortDescription,
     provider.facilityType,
     provider.website,
-    ...(provider.googleTypes ?? []),
-    ...(provider.services ?? []),
+    ...toStringArray(provider.googleTypes),
+    ...toStringArray(provider.services),
   ]);
   const hasHealthcareSignal = HEALTHCARE_RE.test(searchableText);
 
@@ -304,10 +339,10 @@ export function sanitizeProviderForPublic<T extends ProviderLike>(provider: T): 
     ...provider,
     categorySlug: canonicalizeCategorySlug(provider.categorySlug),
     subcategorySlug: canonicalizeSubcategorySlug(provider.subcategorySlug),
-    services: (provider.services ?? []).filter(Boolean),
-    languages: (provider.languages ?? []).filter(Boolean),
-    insurance: (provider.insurance ?? []).filter(Boolean),
-    amenities: (provider.amenities ?? []).filter(Boolean),
+    services: toStringArray(provider.services),
+    languages: toStringArray(provider.languages),
+    insurance: toStringArray(provider.insurance),
+    amenities: toStringArray(provider.amenities),
   };
 
   if (!quality.isSuspect) return cleaned;

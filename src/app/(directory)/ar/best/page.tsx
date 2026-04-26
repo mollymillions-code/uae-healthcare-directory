@@ -10,6 +10,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicCategoryName } from "@/lib/i18n";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();

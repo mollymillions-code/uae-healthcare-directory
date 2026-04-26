@@ -75,6 +75,9 @@ let _areasTable: typeof import("@/lib/db/schema")["areas"] | null = null;
 let _citiesTable: typeof import("@/lib/db/schema")["cities"] | null = null;
 let _eq: typeof import("drizzle-orm")["eq"] | null = null;
 let _and: typeof import("drizzle-orm")["and"] | null = null;
+let _countFn: typeof import("drizzle-orm")["count"] | null = null;
+let _desc: typeof import("drizzle-orm")["desc"] | null = null;
+let _gt: typeof import("drizzle-orm")["gt"] | null = null;
 let _ilike: typeof import("drizzle-orm")["ilike"] | null = null;
 let _or: typeof import("drizzle-orm")["or"] | null = null;
 let _notInArray: typeof import("drizzle-orm")["notInArray"] | null = null;
@@ -94,6 +97,9 @@ async function ensureDbModules() {
   _citiesTable = schemaMod.cities;
   _eq = ormMod.eq;
   _and = ormMod.and;
+  _countFn = ormMod.count;
+  _desc = ormMod.desc;
+  _gt = ormMod.gt;
   _ilike = ormMod.ilike;
   _or = ormMod.or;
   _notInArray = ormMod.notInArray;
@@ -992,6 +998,45 @@ async function dbSelectProviders(filters?: {
   return preparePublicProviders(rows.map(rowToProvider), scope);
 }
 
+async function dbCountProviders(filters?: {
+  citySlug?: string;
+  categorySlug?: string;
+  areaSlug?: string;
+  subcategorySlug?: string;
+  country?: string;
+}): Promise<number> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  if (!isProviderFilterScopeValid(scope)) return 0;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (scope?.country) {
+    conditions.push(_eq!(t.country, scope.country));
+  } else if (!scope?.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  if (scope?.citySlug) conditions.push(_eq!(t.citySlug, scope.citySlug));
+  if (scope?.categorySlug) {
+    const variants = categorySlugVariants(scope.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (scope?.areaSlug) conditions.push(_eq!(t.areaSlug, scope.areaSlug));
+  if (scope?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, scope.subcategorySlug));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
+  const rows = await _db!.select({ count: _countFn!() }).from(t).where(where);
+  return Number(rows[0]?.count ?? 0);
+}
+
 export async function getProviders(filters?: {
   citySlug?: string;
   categorySlug?: string;
@@ -1174,7 +1219,7 @@ export async function getProviderCountByCity(citySlug: string): Promise<number> 
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const count = (await dbSelectProviders({ citySlug })).length;
+  const count = await dbCountProviders({ citySlug });
   setCache(cacheKey, count);
   return count;
 }
@@ -1190,7 +1235,7 @@ export async function getProviderCountByCategoryAndCity(categorySlug: string, ci
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const count = (await dbSelectProviders({ categorySlug: canonicalCategorySlug, citySlug })).length;
+  const count = await dbCountProviders({ categorySlug: canonicalCategorySlug, citySlug });
   setCache(cacheKey, count);
   return count;
 }
@@ -1212,7 +1257,7 @@ export async function getProviderCountByCategory(categorySlug: string): Promise<
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const count = (await dbSelectProviders({ categorySlug: canonicalCategorySlug, country: "ae" })).length;
+  const count = await dbCountProviders({ categorySlug: canonicalCategorySlug, country: "ae" });
   setCache(cacheKey, count);
   return count;
 }
@@ -1227,7 +1272,7 @@ export async function getProviderCountByAreaAndCity(areaSlug: string, citySlug: 
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  const count = (await dbSelectProviders({ areaSlug, citySlug })).length;
+  const count = await dbCountProviders({ areaSlug, citySlug });
   setCache(cacheKey, count);
   return count;
 }
@@ -1252,8 +1297,30 @@ export async function getTopRatedProviders(citySlug?: string, limit = 5): Promis
   const cached = getCached<LocalProvider[]>(cacheKey);
   if (cached) return cached;
 
-  const source = await dbSelectProviders(citySlug ? { citySlug } : { country: "ae" });
-  const result = source
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+  if (citySlug) {
+    conditions.push(_eq!(t.citySlug, citySlug));
+  } else {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  conditions.push(_gt!(t.googleRating, "0"));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const rows = await _db!
+    .select()
+    .from(t)
+    .where(_and!(...conditions))
+    .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount))
+    .limit(Math.max(limit * 4, limit));
+
+  const result = preparePublicProviders(
+    rows.map(rowToProvider),
+    citySlug ? { citySlug } : { country: "ae" }
+  )
     .filter((p) => Number(p.googleRating) > 0)
     .sort((a, b) => {
       const ratingDiff = Number(b.googleRating) - Number(a.googleRating);

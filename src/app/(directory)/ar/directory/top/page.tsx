@@ -3,12 +3,13 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getProviders } from "@/lib/data";
+import { getTopRatedProviders } from "@/lib/data";
 import { faqPageSchema, breadcrumbSchema, speakableSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { getArabicCategoryName } from "@/lib/i18n";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
@@ -42,7 +43,7 @@ export function generateMetadata(): Metadata {
 export default async function ArTopUAEPage() {
   const base = getBaseUrl();
 
-  const { providers: allProviders } = await getProviders({ limit: 99999, sort: "rating" });
+  const allProviders = await getTopRatedProviders(undefined, 100);
 
   const top10 = allProviders
     .filter((p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10)
