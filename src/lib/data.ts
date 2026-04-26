@@ -17,6 +17,15 @@ import { CONDITIONS, Condition } from "./constants/conditions";
 let HAS_DB = !!process.env.DATABASE_URL;
 let _dbVerified = false;
 
+// ─── Hidden providers ───────────────────────────────────────────────────────
+// Provider slugs in this list are excluded from every public-facing path:
+// detail page (getProviderBySlug → 404), listing pages, search/sitemap APIs
+// (getProviders / dbSelectProviders → filtered out). The DB row stays intact;
+// remove the slug from the array to restore the listing.
+const HIDDEN_PROVIDER_SLUGS: readonly string[] = [
+  "ghasaq-medical-center-sharjah",
+];
+
 /**
  * Check if DB actually has providers. If not (empty table, connection error),
  * fall back to JSON. This handles the case where DATABASE_URL is set on EC2
@@ -54,6 +63,7 @@ let _gt: typeof import("drizzle-orm")["gt"] | null = null;
 let _ilike: typeof import("drizzle-orm")["ilike"] | null = null;
 let _or: typeof import("drizzle-orm")["or"] | null = null;
 let _sql: typeof import("drizzle-orm")["sql"] | null = null;
+let _notInArray: typeof import("drizzle-orm")["notInArray"] | null = null;
 
 let _dbModulesLoaded = false;
 
@@ -76,6 +86,7 @@ async function ensureDbModules() {
   _ilike = ormMod.ilike;
   _or = ormMod.or;
   _sql = ormMod.sql;
+  _notInArray = ormMod.notInArray;
   _dbModulesLoaded = true;
 }
 
@@ -927,6 +938,9 @@ async function dbSelectProviders(filters?: {
   if (filters?.categorySlug) conditions.push(_eq!(t.categorySlug, filters.categorySlug));
   if (filters?.areaSlug) conditions.push(_eq!(t.areaSlug, filters.areaSlug));
   if (filters?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, filters.subcategorySlug));
+  if (HIDDEN_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, HIDDEN_PROVIDER_SLUGS as string[]));
+  }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
   const rows = await _db!.select().from(t).where(where);
@@ -966,6 +980,9 @@ export async function getProviders(filters?: {
 
     if (filters?.subcategorySlug) {
       filtered = filtered.filter((p) => p.subcategorySlug === filters.subcategorySlug);
+    }
+    if (HIDDEN_PROVIDER_SLUGS.length > 0) {
+      filtered = filtered.filter((p) => !HIDDEN_PROVIDER_SLUGS.includes(p.slug));
     }
     if (filters?.query) {
       const q = filters.query.toLowerCase();
@@ -1020,6 +1037,9 @@ export async function getProviders(filters?: {
       )
     );
   }
+  if (HIDDEN_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, HIDDEN_PROVIDER_SLUGS as string[]));
+  }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
 
@@ -1055,6 +1075,8 @@ export async function getProviders(filters?: {
 }
 
 export async function getProviderBySlug(slug: string): Promise<LocalProvider | undefined> {
+  if (HIDDEN_PROVIDER_SLUGS.includes(slug)) return undefined;
+
   if (!HAS_DB) {
     loadFallback();
     return fallbackBySlug!.get(slug);

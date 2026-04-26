@@ -1,5 +1,43 @@
 # Zavis Landing - Changelog
 
+## 2026-04-26 — [Claude Code] Hide Ghasaq Medical Center (Sharjah) from the public site
+
+**Signed by:** Claude Code · 2026-04-26T00:00:00+04:00
+
+**What:** Added a `HIDDEN_PROVIDER_SLUGS` exclusion list in `src/lib/data.ts`.
+Slugs in the list are filtered out of every public-facing read path:
+
+- `getProviderBySlug(slug)` returns `undefined` → detail page renders 404.
+- `getProviders(...)` adds a `notInArray(providers.slug, HIDDEN_PROVIDER_SLUGS)`
+  condition on the DB path and a `.filter` on the JSON-fallback path → cards
+  drop out of every listing, search result, and `/api/providers`/`/api/search`
+  payload.
+- `dbSelectProviders(...)` adds the same `notInArray` so every helper that
+  flows through it (city/area/category counters, top-N selectors) is consistent.
+
+**Why:** Need to remove `Ghasaq Medical Center` (Sharjah, slug
+`ghasaq-medical-center-sharjah`, MOHAP id `mohap_03388`) from the public
+directory without deleting the row. The chokepoint approach keeps the
+underlying data, makes the change reversible (delete the slug from the
+array), and avoids touching the 42+ pages that call these functions.
+
+**Scope of change:**
+- `src/lib/data.ts` only — 7 small insertions:
+  1. New `HIDDEN_PROVIDER_SLUGS` constant block (top of file).
+  2. New lazy-loaded `_notInArray` reference.
+  3. `_notInArray = ormMod.notInArray` in `ensureDbModules`.
+  4. Filter in `dbSelectProviders`.
+  5. Filter in `getProviders` JSON-fallback path.
+  6. Filter in `getProviders` DB path.
+  7. Early-return in `getProviderBySlug`.
+
+**Not touched:** schema, migrations, GCC sitemap routes (already filter
+`status='active'`, and Ghasaq is in UAE so it never appears in those), admin
+endpoints (auth-gated), the DB row itself.
+
+**Reversal:** remove `"ghasaq-medical-center-sharjah"` from the array and
+redeploy.
+
 ## 2026-04-24 — [Codex] Local Postgres backup hardening without moving DB
 
 **Signed by:** Codex · 2026-04-24T20:10:00+05:30
