@@ -17,10 +17,16 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
   const handleShare = useCallback(async () => {
     const url = window.location.href;
     const shareText = text ?? title;
+    const canUseNativeShare =
+      typeof navigator.share === "function" &&
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     try {
-      if (navigator.share) {
+      if (canUseNativeShare) {
         await navigator.share({ title, text: shareText, url });
+        setCopied(true);
+        if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+        resetTimerRef.current = setTimeout(() => setCopied(false), 1600);
         return;
       }
     } catch (error) {
