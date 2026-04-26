@@ -43,7 +43,7 @@ Next.js 14 (App Router)
 | **NeonDB** | PostgreSQL — leads, pipeline state | `DATABASE_URL` |
 | **Postiz** | Social media scheduling (LinkedIn, Facebook) | `localhost:4007` (Docker) |
 | **Plunk** | Transactional & marketing email | `PLUNK_API_KEY` |
-| **Vercel** | Hosting & deployment | Auto-deploy on push |
+| **EC2 + Cloudflare** | Hosting & edge routing | Branch-based deploy |
 | **Remotion** | React-based video rendering | `npm run video:studio` |
 | **ElevenLabs** | AI voiceover generation (5 narrator profiles) | `ELEVENLABS_API_KEY` |
 | **Puppeteer** | Report slide screenshots | `scripts/screenshot-slides.mjs` |

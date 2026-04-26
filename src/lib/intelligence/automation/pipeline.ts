@@ -11,7 +11,7 @@
  *  7. Send daily briefing newsletter
  *
  * Designed to run as:
- *  - Vercel Cron Job (every 2 hours for feeds, daily for newsletter)
+ *  - Scheduled job (every 2 hours for feeds, daily for newsletter)
  *  - Manual trigger via API route
  */
 
@@ -341,7 +341,7 @@ export async function runContentPipeline(): Promise<PipelineResult> {
   }
 
   // Serverless batch limit: generate only the top 3 articles per pipeline run.
-  //   - 3 articles fits within the 60-second serverless function timeout (Vercel/API route).
+  //   - 3 articles fits within the 60-second serverless/API route timeout.
   //   - Each article requires a 3-pass generation pipeline (~15-20s per article).
   //   - For bulk generation (10-25 articles), use the GitHub Actions workflow which has
   //     no timeout constraint and includes a full editorial review pass.
