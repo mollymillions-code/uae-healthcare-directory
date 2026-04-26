@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ProviderCard } from "@/components/provider/ProviderCard";
@@ -55,7 +56,13 @@ function parsePage(searchParams: Props["searchParams"]): number {
 
 // No generateStaticParams — pages render on-demand via ISR.
 
+function shouldBypassIsr(segments: string[]): boolean {
+  // Provider/detail-like routes must not cache a transient miss as a 404.
+  return segments.length >= 2;
+}
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const resolved = await resolveSegments(city.slug, params.segments);
@@ -226,6 +233,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
+  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

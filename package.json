@@ -23,6 +23,7 @@
     "auto:start": "node scripts/automation/install-plists.mjs --load",
     "auto:stop": "node scripts/automation/uninstall-plists.mjs",
     "auto:status": "node scripts/automation/status.mjs",
+    "cache:directory": "node scripts/revalidate-directory-cache.mjs",
     "auto:run-weekly": "node scripts/automation/orchestrator.mjs --mode weekly",
     "auto:run-daily": "node scripts/automation/orchestrator.mjs --mode daily --slot morning",
     "auto:run-review": "node scripts/automation/orchestrator.mjs --mode review",

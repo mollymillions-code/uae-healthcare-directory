@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
@@ -72,7 +73,13 @@ function parsePage(raw: string | undefined): number {
 // No generateStaticParams — pages render on-demand via ISR.
 // Google discovers them via sitemap.xml and internal links.
 
+function shouldBypassIsr(segments: string[]): boolean {
+  // Provider/detail-like routes must not cache a transient miss as a 404.
+  return segments.length >= 2;
+}
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const resolved = await resolveSegments(city.slug, params.segments);
@@ -354,6 +361,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function CatchAllPage({ params, searchParams }: Props) {
+  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
