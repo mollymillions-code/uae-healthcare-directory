@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/landing/layout/Navbar";
 import { Footer } from "@/components/landing/layout/Footer";
 import LenisProvider from "@/components/landing/layout/LenisProvider";
-import ChatwootWidget from "@/components/widgets/ChatwootWidget";
+import WhatsAppBubble from "@/components/widgets/WhatsAppBubble";
 
 export default function LandingLayout({
   children,
@@ -15,7 +15,7 @@ export default function LandingLayout({
         {children}
       </LenisProvider>
       <Footer />
-      <ChatwootWidget />
+      <WhatsAppBubble />
     </div>
   );
 }
