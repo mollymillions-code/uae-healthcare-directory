@@ -58,7 +58,7 @@ function normalizeFromList<T extends { slug: string; name: string }>(
   const exact = items.find(
     (item) => item.slug === raw.toLowerCase() || item.slug === key || keyFor(item.name) === key
   );
-  return exact?.slug ?? key;
+  return exact?.slug;
 }
 
 export function normalizeSpecialtySlug(value: SearchParamValue): string | undefined {
