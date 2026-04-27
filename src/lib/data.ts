@@ -1153,19 +1153,52 @@ export async function getProviders(filters?: {
   const limit = normalizedFilters?.limit || 20;
   const offset = (page - 1) * limit;
 
-  const rows = await _db!.select().from(t).where(where);
-  let filtered = preparePublicProviders(rows.map(rowToProvider), scope);
+  const candidateLimit = limit >= 1000 ? limit : Math.max(limit * 2, limit);
+
+  const rowsPromise =
+    normalizedFilters?.sort === "rating"
+      ? _db!
+          .select()
+          .from(t)
+          .where(where)
+          .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount), t.name)
+          .limit(candidateLimit)
+          .offset(offset)
+      : normalizedFilters?.sort === "name"
+        ? _db!
+            .select()
+            .from(t)
+            .where(where)
+            .orderBy(t.name)
+            .limit(candidateLimit)
+            .offset(offset)
+        : _db!
+            .select()
+            .from(t)
+            .where(where)
+            .limit(candidateLimit)
+            .offset(offset);
+
+  const [rows, countRows] = await Promise.all([
+    rowsPromise,
+    _db!.select({ count: _countFn!() }).from(t).where(where),
+  ]);
+  let providers = preparePublicProviders(rows.map(rowToProvider), scope);
   if (normalizedFilters?.sort === "rating") {
-    filtered = [...filtered].sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
+    providers = [...providers].sort((a, b) => {
+      const rd = Number(b.googleRating) - Number(a.googleRating);
+      if (rd !== 0) return rd;
+      return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+    });
   } else if (normalizedFilters?.sort === "name") {
-    filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+    providers = [...providers].sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  const total = filtered.length;
+  const total = Number(countRows[0]?.count ?? providers.length);
   const totalPages = Math.ceil(total / limit);
 
   return {
-    providers: filtered.slice(offset, offset + limit),
+    providers: providers.slice(0, limit),
     total,
     page,
     totalPages,
