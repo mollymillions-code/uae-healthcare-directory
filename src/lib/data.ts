@@ -81,6 +81,7 @@ let _gt: typeof import("drizzle-orm")["gt"] | null = null;
 let _ilike: typeof import("drizzle-orm")["ilike"] | null = null;
 let _or: typeof import("drizzle-orm")["or"] | null = null;
 let _notInArray: typeof import("drizzle-orm")["notInArray"] | null = null;
+let _sql: typeof import("drizzle-orm")["sql"] | null = null;
 
 let _dbModulesLoaded = false;
 
@@ -103,6 +104,7 @@ async function ensureDbModules() {
   _ilike = ormMod.ilike;
   _or = ormMod.or;
   _notInArray = ormMod.notInArray;
+  _sql = ormMod.sql;
   _dbModulesLoaded = true;
 }
 
@@ -1545,6 +1547,59 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
   const count = (await dbSelectProviders({ citySlug })).filter((p) =>
     p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
   ).length;
+  setCache(cacheKey, count);
+  return count;
+}
+
+export async function getProviderCountByInsuranceCategory(
+  insurerSlug: string,
+  citySlug: string,
+  categorySlug: string
+): Promise<number> {
+  if (!HAS_DB) {
+    loadFallback();
+    const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+    if (!insurer) return 0;
+    const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+    const source = fallbackByCity!.get(citySlug) || [];
+    return source.filter(
+      (p) =>
+        p.categorySlug === categorySlug &&
+        p.insurance.some((ins) =>
+          matchTerms.some((term) => ins.toLowerCase().includes(term))
+        )
+    ).length;
+  }
+
+  const cacheKey = `count:ins-cat:${insurerSlug}:${citySlug}:${categorySlug}`;
+  const cached = getCached<number>(cacheKey);
+  if (cached !== undefined) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+  if (!insurer) {
+    setCache(cacheKey, 0);
+    return 0;
+  }
+
+  const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+  const likePatterns = matchTerms.map((term) => `%${term}%`);
+  const orClauses = likePatterns
+    .map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`)
+    .join(" OR ");
+
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    _eq!(t.categorySlug, categorySlug),
+    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`,
+  ];
+
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...conditions));
+  const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
 }
