@@ -67,6 +67,43 @@ const REMOVED_PROVIDER_NAME_KEYS = REMOVED_PROVIDER_ENTRIES.map((entry) => ({
   names: new Set((entry.names ?? []).map(normalizeName)),
 }));
 
+const GENERIC_PROVIDER_QUERY_TOKENS = new Set([
+  "al",
+  "and",
+  "br",
+  "branch",
+  "center",
+  "centre",
+  "clinic",
+  "clinics",
+  "hospital",
+  "l",
+  "llc",
+  "medical",
+  "of",
+  "polyclinic",
+  "the",
+]);
+
+const REMOVED_PROVIDER_SEARCH_PHRASES = new Set(
+  REMOVED_PROVIDER_ENTRIES.flatMap((entry) => [
+    entry.slug,
+    ...(entry.aliases ?? []),
+    ...(entry.names ?? []),
+  ])
+    .map(normalizeName)
+    .filter(Boolean)
+);
+
+const REMOVED_PROVIDER_DISTINCTIVE_TOKENS = new Set(
+  Array.from(REMOVED_PROVIDER_SEARCH_PHRASES)
+    .flatMap((phrase) => phrase.split(" "))
+    .filter(
+      (token) =>
+        token.length >= 4 && !GENERIC_PROVIDER_QUERY_TOKENS.has(token)
+    )
+);
+
 export function isRemovedProviderSlug(value: unknown): boolean {
   return REMOVED_PROVIDER_SLUGS.includes(normalizeSlug(value));
 }
@@ -98,4 +135,27 @@ export function isRemovedProviderRecord(
     }
     return entry.names.has(providerName);
   });
+}
+
+export function isRemovedProviderSearchQuery(value: unknown): boolean {
+  const query = normalizeName(value);
+  if (!query) return false;
+  if (REMOVED_PROVIDER_SEARCH_PHRASES.has(query)) return true;
+
+  const queryTokens = new Set(query.split(" ").filter(Boolean));
+  const hasDistinctiveRemovedToken = Array.from(queryTokens).some((token) =>
+    REMOVED_PROVIDER_DISTINCTIVE_TOKENS.has(token)
+  );
+
+  for (const phrase of Array.from(REMOVED_PROVIDER_SEARCH_PHRASES)) {
+    if (!phrase) continue;
+    if (query.includes(phrase)) return true;
+    if (hasDistinctiveRemovedToken && phrase.includes(query)) return true;
+  }
+
+  for (const token of Array.from(REMOVED_PROVIDER_DISTINCTIVE_TOKENS)) {
+    if (queryTokens.has(token)) return true;
+  }
+
+  return false;
 }

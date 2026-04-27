@@ -30,6 +30,7 @@ import {
   getProfessionalsIndexBySpecialty,
   type ProfessionalIndexRecord,
 } from "@/lib/professionals";
+import { isRemovedProviderSearchQuery } from "@/lib/provider-removals";
 import type {
   HealthcareSearchQuery,
   HealthcareSearchResult,
@@ -497,11 +498,30 @@ export interface SearchHealthcareOptions {
   limit?: number;
 }
 
+function emptySearchResults(): HealthcareSearchResults {
+  return {
+    totalFacilities: 0,
+    totalDoctors: 0,
+    facilities: [],
+    doctors: [],
+    conditions: [],
+    insuranceHubs: [],
+    widened: false,
+  };
+}
+
 export async function searchHealthcare(
   rawQuery: HealthcareSearchQuery,
   opts: SearchHealthcareOptions = {}
 ): Promise<HealthcareSearchResults> {
   const q = normalizeHealthcareSearchQuery(rawQuery);
+  if (
+    isRemovedProviderSearchQuery(q.query) ||
+    isRemovedProviderSearchQuery(q.reason)
+  ) {
+    return emptySearchResults();
+  }
+
   const limit = Math.max(1, Math.min(opts.limit ?? 12, 50));
   const page = q.page ?? 1;
   const entityType = q.entityType ?? "both";
