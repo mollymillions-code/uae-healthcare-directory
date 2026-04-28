@@ -56,8 +56,8 @@ import {
   getProviderCountByCategoryAndCity,
   getProviderCountByAreaAndCity,
   getProviderCountByInsurance,
+  getProviderCountByInsuranceCategory,
   getProviderCountByLanguage,
-  getProvidersByInsurance,
 } from "@/lib/data";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -584,10 +584,12 @@ export async function getProviderCountForCombo(
         : 0;
     case "city|specialty|insurance":
     case "city|category|insurance": {
-      // No single-query helper — filter by category on the JS side.
       if (!citySlug || !insurerSlug || !specialtySlug) return 0;
-      const providers = await getProvidersByInsurance(insurerSlug, citySlug);
-      return providers.filter((p) => p.categorySlug === specialtySlug).length;
+      return getProviderCountByInsuranceCategory(
+        insurerSlug,
+        citySlug,
+        specialtySlug,
+      );
     }
     case "city|condition": {
       // A condition maps to N specialties via condition-specialty-map.

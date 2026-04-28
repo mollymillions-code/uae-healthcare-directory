@@ -12,6 +12,7 @@ import { Pagination } from "@/components/shared/Pagination";
 import {
   getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug,
+  getSubcategoriesByCategory,
   getProviders,
   getInsuranceProviders,
   getNeighborhoodsByCity,
@@ -73,17 +74,29 @@ function parsePage(raw: string | undefined): number {
 // No generateStaticParams — pages render on-demand via ISR.
 // Google discovers them via sitemap.xml and internal links.
 
-function shouldBypassIsr(segments: string[]): boolean {
-  // Provider/detail-like routes must not cache a transient miss as a 404.
-  return segments.length >= 2;
+function isPotentialListingRoute(citySlug: string, segments: string[]): boolean {
+  const [seg1, seg2, seg3] = segments;
+
+  if (segments.length === 2) {
+    const category = getCategoryBySlug(seg1);
+    if (!category) return false;
+    return !getSubcategoriesByCategory(category.slug).some((sub) => sub.slug === seg2);
+  }
+
+  if (segments.length === 3) {
+    return Boolean(seg3 && getAreaBySlug(citySlug, seg1) && getCategoryBySlug(seg2));
+  }
+
+  return false;
 }
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
-  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) return {};
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
+  if (resolved.type === "listing") noStore();
   const base = getBaseUrl();
   const page = parsePage(searchParams?.page);
   const pageSuffix = page > 1 ? `?page=${page}` : "";
@@ -361,12 +374,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function CatchAllPage({ params, searchParams }: Props) {
-  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) notFound();
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
+  if (resolved.type === "listing") noStore();
 
   const base = getBaseUrl();
   // Item 0.5 + Item 22 — thread searchParams.page end-to-end so the ~136

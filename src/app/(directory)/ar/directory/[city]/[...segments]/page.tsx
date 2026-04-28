@@ -9,8 +9,9 @@ import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
-  getCityBySlug, getCategories,
+  getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug, getAreasByCity,
+  getSubcategoriesByCategory,
   getProviders, getTopRatedProviders,
 } from "@/lib/data";
 import {
@@ -56,17 +57,29 @@ function parsePage(searchParams: Props["searchParams"]): number {
 
 // No generateStaticParams — pages render on-demand via ISR.
 
-function shouldBypassIsr(segments: string[]): boolean {
-  // Provider/detail-like routes must not cache a transient miss as a 404.
-  return segments.length >= 2;
+function isPotentialListingRoute(citySlug: string, segments: string[]): boolean {
+  const [seg1, seg2, seg3] = segments;
+
+  if (segments.length === 2) {
+    const category = getCategoryBySlug(seg1);
+    if (!category) return false;
+    return !getSubcategoriesByCategory(category.slug).some((sub) => sub.slug === seg2);
+  }
+
+  if (segments.length === 3) {
+    return Boolean(seg3 && getAreaBySlug(citySlug, seg1) && getCategoryBySlug(seg2));
+  }
+
+  return false;
 }
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
-  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) return {};
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
+  if (resolved.type === "listing") noStore();
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
   const page = parsePage(searchParams);
@@ -233,12 +246,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
-  if (shouldBypassIsr(params.segments)) noStore();
   const city = getCityBySlug(params.city);
   if (!city) notFound();
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
+  if (resolved.type === "listing") noStore();
 
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);

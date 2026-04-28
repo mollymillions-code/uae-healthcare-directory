@@ -108,6 +108,89 @@ async function ensureDbModules() {
   _dbModulesLoaded = true;
 }
 
+type ProvidersTable = typeof import("@/lib/db/schema")["providers"];
+
+function providerListColumns(t: ProvidersTable) {
+  return {
+    id: t.id,
+    name: t.name,
+    slug: t.slug,
+    nameAr: t.nameAr,
+    categoryId: t.categoryId,
+    categorySlug: t.categorySlug,
+    subcategoryId: t.subcategoryId,
+    subcategorySlug: t.subcategorySlug,
+    facilityType: t.facilityType,
+    country: t.country,
+    cityId: t.cityId,
+    citySlug: t.citySlug,
+    areaId: t.areaId,
+    areaSlug: t.areaSlug,
+    address: t.address,
+    addressAr: t.addressAr,
+    latitude: t.latitude,
+    longitude: t.longitude,
+    googlePlaceId: t.googlePlaceId,
+    phone: t.phone,
+    email: t.email,
+    website: t.website,
+    description: t.description,
+    descriptionAr: t.descriptionAr,
+    shortDescription: t.shortDescription,
+    reviewSummary: t.reviewSummary,
+    reviewSummaryAr: t.reviewSummaryAr,
+    services: t.services,
+    languages: t.languages,
+    insurance: t.insurance,
+    operatingHours: t.operatingHours,
+    amenities: t.amenities,
+    yearEstablished: t.yearEstablished,
+    licenseNumber: t.licenseNumber,
+    googleRating: t.googleRating,
+    googleReviewCount: t.googleReviewCount,
+    logoUrl: t.logoUrl,
+    coverImageUrl: t.coverImageUrl,
+    photos: t.photos,
+    editorialSummary: t.editorialSummary,
+    editorialSummaryLang: t.editorialSummaryLang,
+    accessibilityOptions: t.accessibilityOptions,
+    googleTypes: t.googleTypes,
+    plusCodeGlobal: t.plusCodeGlobal,
+    plusCodeCompound: t.plusCodeCompound,
+    googleMapsUri: t.googleMapsUri,
+    priceLevel: t.priceLevel,
+    currentOpeningHours: t.currentOpeningHours,
+    googleFetchedAt: t.googleFetchedAt,
+    isClaimed: t.isClaimed,
+    isVerified: t.isVerified,
+    updatedAt: t.updatedAt,
+  };
+}
+
+function categoryWhereCondition(t: ProvidersTable, categorySlug: string) {
+  const variants = categorySlugVariants(categorySlug);
+  return variants.length === 1
+    ? _eq!(t.categorySlug, variants[0])
+    : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)));
+}
+
+function jsonbTextArrayContainsAny(
+  column: unknown,
+  terms: string[],
+  mode: "contains" | "equals" = "contains"
+) {
+  const clauses = terms
+    .map((term) => term.trim().toLowerCase())
+    .filter(Boolean)
+    .map((term) =>
+      mode === "contains"
+        ? _sql!`lower(elem) LIKE ${`%${term}%`}`
+        : _sql!`lower(elem) = ${term}`
+    );
+  if (clauses.length === 0) return undefined;
+  return _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${column}) elem WHERE ${_sql!.join(clauses, _sql!` OR `)})`;
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
 export interface LocalCity {
@@ -996,7 +1079,7 @@ async function dbSelectProviders(filters?: {
   }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
-  const rows = await _db!.select().from(t).where(where);
+  const rows = await _db!.select(providerListColumns(t)).from(t).where(where);
   return preparePublicProviders(rows.map(rowToProvider), scope);
 }
 
@@ -1158,7 +1241,7 @@ export async function getProviders(filters?: {
   const rowsPromise =
     normalizedFilters?.sort === "rating"
       ? _db!
-          .select()
+          .select(providerListColumns(t))
           .from(t)
           .where(where)
           .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount), t.name)
@@ -1166,14 +1249,14 @@ export async function getProviders(filters?: {
           .offset(offset)
       : normalizedFilters?.sort === "name"
         ? _db!
-            .select()
+            .select(providerListColumns(t))
             .from(t)
             .where(where)
             .orderBy(t.name)
             .limit(candidateLimit)
             .offset(offset)
         : _db!
-            .select()
+            .select(providerListColumns(t))
             .from(t)
             .where(where)
             .limit(candidateLimit)
@@ -1277,7 +1360,7 @@ export async function searchProvidersByName(filters: {
   const offset = (page - 1) * limit;
   const [rows, countRows] = await Promise.all([
     _db!
-      .select()
+      .select(providerListColumns(t))
       .from(t)
       .where(where)
       .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount))
@@ -1522,8 +1605,18 @@ export async function getProviderSlugsByCity(citySlug: string): Promise<{ catego
   const cached = getCached<{ categorySlug: string; slug: string }[]>(cacheKey);
   if (cached) return cached;
 
-  const result = (await dbSelectProviders({ citySlug })).map((p) => ({
-    categorySlug: p.categorySlug,
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [_eq!(t.citySlug, citySlug)];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const rows = await _db!
+    .select({ categorySlug: t.categorySlug, slug: t.slug })
+    .from(t)
+    .where(_and!(...conditions));
+  const result = rows.map((p) => ({
+    categorySlug: canonicalizeCategorySlug(p.categorySlug),
     slug: p.slug,
   }));
   setCache(cacheKey, result);
@@ -1550,9 +1643,22 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
   const cached = getCached<LocalProvider[]>(cacheKey);
   if (cached) return cached;
 
-  const result = (await dbSelectProviders(citySlug ? { citySlug } : undefined)).filter((p) =>
-    p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
-  );
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
+    jsonbTextArrayContainsAny(t.insurance, matchTerms, "contains"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const rows = await _db!
+    .select(providerListColumns(t))
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])))
+    .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount));
+  const result = preparePublicProviders(rows.map(rowToProvider), citySlug ? { citySlug } : { country: "ae" });
   setCache(cacheKey, result);
   return result;
 }
@@ -1577,9 +1683,21 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
   if (!insurer) { setCache(cacheKey, 0); return 0; }
 
   const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
-  const count = (await dbSelectProviders({ citySlug })).filter((p) =>
-    p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
-  ).length;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    jsonbTextArrayContainsAny(t.insurance, matchTerms, "contains"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])));
+  const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
 }
@@ -1624,9 +1742,12 @@ export async function getProviderCountByInsuranceCategory(
 
   const conditions = [
     _eq!(t.citySlug, citySlug),
-    _eq!(t.categorySlug, categorySlug),
+    categoryWhereCondition(t, categorySlug),
     _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`,
   ];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
   const result = await _db!
     .select({ count: _countFn!() })
@@ -1653,9 +1774,21 @@ export async function getProvidersByLanguage(languageSlug: string, citySlug?: st
     );
   }
 
-  return (await dbSelectProviders(citySlug ? { citySlug } : undefined)).filter((p) =>
-    p.languages.some((lang) => lang.toLowerCase() === matchName)
-  );
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
+    jsonbTextArrayContainsAny(t.languages, [matchName], "equals"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const rows = await _db!
+    .select(providerListColumns(t))
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])))
+    .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount));
+  return preparePublicProviders(rows.map(rowToProvider), citySlug ? { citySlug } : { country: "ae" });
 }
 
 export async function getProviderCountByLanguage(languageSlug: string, citySlug: string): Promise<number> {
@@ -1678,9 +1811,21 @@ export async function getProviderCountByLanguage(languageSlug: string, citySlug:
   if (!language) { setCache(cacheKey, 0); return 0; }
 
   const matchName = language.name.toLowerCase();
-  const count = (await dbSelectProviders({ citySlug })).filter((p) =>
-    p.languages.some((lang) => lang.toLowerCase() === matchName)
-  ).length;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    jsonbTextArrayContainsAny(t.languages, [matchName], "equals"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])));
+  const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
 }
