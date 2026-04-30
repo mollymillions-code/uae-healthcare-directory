@@ -27,6 +27,7 @@ import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import {
   getProfessionalsIndexByCity,
+  getProfessionalsIndexBySpecialtyAndCity,
   getProfessionalsIndexBySpecialty,
   type ProfessionalIndexRecord,
 } from "@/lib/professionals";
@@ -162,6 +163,30 @@ export function parseReasonToCondition(text: string | undefined): string | null 
       lower.includes(c.name.toLowerCase())
   );
   return cond?.slug ?? null;
+}
+
+function parseCityFromText(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  const normalized = ` ${normalizeSearchText(text).replace(/-/g, " ")} `;
+  const cityVariants = CITIES.flatMap((city) => {
+    const variants = [
+      city.slug.replace(/-/g, " "),
+      city.name,
+      city.emirate,
+    ];
+    if (city.slug === "ras-al-khaimah") variants.push("rak", "ras al khaima");
+    if (city.slug === "umm-al-quwain") variants.push("uaq", "um al quwain");
+    if (city.slug === "abu-dhabi") variants.push("abudhabi");
+    return variants
+      .map((variant) => ({
+        slug: city.slug,
+        text: normalizeSearchText(variant).replace(/-/g, " "),
+      }))
+      .filter((variant) => variant.text.length > 0);
+  });
+
+  cityVariants.sort((a, b) => b.text.length - a.text.length);
+  return cityVariants.find((variant) => normalized.includes(` ${variant.text} `))?.slug;
 }
 
 function uniqueNonEmpty(values: string[]): string[] {
@@ -533,7 +558,8 @@ export async function searchHealthcare(
   const effectiveCitySlug =
     q.city ||
     normalizeCitySlug(aiIntent?.city) ||
-    normalizeCitySlug(q.query);
+    parseCityFromText(q.query) ||
+    parseCityFromText(q.reason);
 
   // ── Derive structured filters from the query ───────────────────────────
   const providerNameSearch = Boolean(aiIntent?.providerName);
@@ -661,7 +687,15 @@ export async function searchHealthcare(
   let totalDoctors = 0;
   if (entityType === "doctor" || entityType === "both") {
     const offset = (page - 1) * limit;
-    if (specialty) {
+    if (specialty && effectiveCitySlug) {
+      const { professionals, total } = await getProfessionalsIndexBySpecialtyAndCity(
+        specialty,
+        effectiveCitySlug,
+        { limit, offset }
+      );
+      doctorRows = professionals;
+      totalDoctors = total;
+    } else if (specialty) {
       const { professionals, total } = await getProfessionalsIndexBySpecialty(
         specialty,
         { limit, offset }
@@ -677,8 +711,8 @@ export async function searchHealthcare(
       totalDoctors = total;
     }
     // Narrow further by free-text against name/displayTitle if provided.
-    if (q.query) {
-      const needle = q.query.trim().toLowerCase();
+    if (facilityQuery) {
+      const needle = facilityQuery.trim().toLowerCase();
       if (needle) {
         doctorRows = doctorRows.filter(
           (d) =>
@@ -686,6 +720,7 @@ export async function searchHealthcare(
             d.displayTitle.toLowerCase().includes(needle) ||
             d.specialty.toLowerCase().includes(needle)
         );
+        totalDoctors = doctorRows.length;
       }
     }
   }

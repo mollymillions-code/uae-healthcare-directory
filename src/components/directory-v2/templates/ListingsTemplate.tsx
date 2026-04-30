@@ -45,8 +45,12 @@ interface ListingsTemplateProps {
   providerBasePath?: string;
   /** Total count for "X providers found" label. */
   total?: number;
+  /** Optional noun phrase under the total count. Defaults to provider/providers found. */
+  totalLabel?: string;
   /** Pagination element if present. */
   pagination?: React.ReactNode;
+  /** Custom empty state for routes where another result type should be shown. */
+  emptyState?: React.ReactNode;
   /** Related sections to show below the grid. */
   belowGrid?: React.ReactNode;
   /** Optional structured-data JSON-LD children (passed through SSR). */
@@ -71,7 +75,9 @@ export function ListingsTemplate({
   providers,
   providerBasePath,
   total,
+  totalLabel,
   pagination,
+  emptyState,
   belowGrid,
   schemas,
   arabicHref,
@@ -143,7 +149,7 @@ export function ListingsTemplate({
                     {total.toLocaleString()}
                   </p>
                   <p className="font-sans text-z-caption text-ink-muted mt-1">
-                    {total === 1 ? "provider" : "providers"} found
+                    {totalLabel ?? `${total === 1 ? "provider" : "providers"} found`}
                   </p>
                 </div>
               </div>
@@ -170,12 +176,14 @@ export function ListingsTemplate({
       {/* Provider grid */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-12">
         {providers.length === 0 ? (
-          <EmptyStateV2
-            title="No providers match those filters."
-            description="Try adjusting your filters or browse all providers in this city."
-            actionLabel="Clear filters"
-            onAction={undefined}
-          />
+          emptyState ?? (
+            <EmptyStateV2
+              title="No providers match those filters."
+              description="Try adjusting your filters or browse all providers in this city."
+              actionLabel="Clear filters"
+              onAction={undefined}
+            />
+          )
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">

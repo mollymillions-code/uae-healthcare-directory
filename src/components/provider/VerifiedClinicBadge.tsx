@@ -7,7 +7,7 @@ interface VerifiedClinicBadgeProps {
 
 const base =
   "inline-flex shrink-0 items-center font-['Geist',sans-serif] font-semibold";
-const verificationFinePrint =
+export const VERIFIED_CLINIC_EXPLANATION =
   "Verified means Zavis has collaborated with this clinic and confirmed that the information on this profile is accurate.";
 
 export function VerifiedClinicBadge({
@@ -19,7 +19,7 @@ export function VerifiedClinicBadge({
       <span
         className={`${base} gap-2 rounded-full border border-white/50 bg-white px-3.5 py-1.5 text-xs text-[#006828] shadow-[0_16px_36px_rgba(0,104,40,0.28)] ring-1 ring-[#006828]/20 ${className}`}
         aria-label="Verified clinic profile"
-        title={verificationFinePrint}
+        title={VERIFIED_CLINIC_EXPLANATION}
       >
         <span className="grid h-6 w-6 place-items-center rounded-full bg-[#006828] text-white shadow-[0_0_0_4px_rgba(0,104,40,0.14)]">
           <BadgeCheck className="h-4 w-4" aria-hidden="true" />
@@ -34,7 +34,7 @@ export function VerifiedClinicBadge({
       <span
         className={`${base} justify-center gap-1 rounded-full border border-[#006828]/15 bg-[#006828]/[0.07] px-2 py-0.5 text-[9px] uppercase tracking-wide text-[#006828] ${className}`}
         aria-label="Verified clinic profile"
-        title={verificationFinePrint}
+        title={VERIFIED_CLINIC_EXPLANATION}
       >
         <BadgeCheck className="h-3 w-3" aria-hidden="true" />
         Verified
@@ -47,7 +47,7 @@ export function VerifiedClinicBadge({
       <span
         className={`${base} gap-1 rounded-full bg-[#006828]/[0.08] px-2 py-0.5 text-[9px] text-[#006828] ${className}`}
         aria-label="Verified clinic profile"
-        title={verificationFinePrint}
+        title={VERIFIED_CLINIC_EXPLANATION}
       >
         <BadgeCheck className="h-3 w-3" aria-hidden="true" />
         Verified
@@ -59,7 +59,7 @@ export function VerifiedClinicBadge({
     <span
       className={`${base} gap-1 rounded-full border border-[#006828]/15 bg-[#006828]/[0.08] px-2 py-0.5 text-[9px] text-[#006828] shadow-[0_8px_18px_rgba(0,104,40,0.12)] ${className}`}
       aria-label="Verified clinic profile"
-      title={verificationFinePrint}
+      title={VERIFIED_CLINIC_EXPLANATION}
     >
       <span className="grid h-3.5 w-3.5 place-items-center rounded-full bg-[#006828] text-white">
         <BadgeCheck className="h-2.5 w-2.5" aria-hidden="true" />
@@ -103,7 +103,7 @@ export function VerifiedClinicTrustStrip({ className = "" }: { className?: strin
               Verified
             </p>
             <p className="mt-1 max-w-2xl font-['Geist',sans-serif] text-xs leading-relaxed text-black/50">
-              {verificationFinePrint}
+              {VERIFIED_CLINIC_EXPLANATION}
             </p>
           </div>
         </div>

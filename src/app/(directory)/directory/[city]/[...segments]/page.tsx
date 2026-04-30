@@ -24,7 +24,7 @@ import {
   getInsurancePlansByGeo,
   isTriFacetEligible,
 } from "@/lib/insurance-facets/data";
-import { getProfessionalsIndexBySpecialty } from "@/lib/professionals";
+import { getProfessionalsIndexBySpecialtyAndCity } from "@/lib/professionals";
 import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 import { neighborhoodHubSchema } from "@/lib/seo-neighborhoods";
 import {
@@ -105,14 +105,26 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   switch (resolved.type) {
     case "city-category": {
       const { total } = await getProviders({ citySlug: city.slug, categorySlug: resolved.category.slug, limit: 1 });
+      const doctorCount =
+        total === 0
+          ? (await getProfessionalsIndexBySpecialtyAndCity(resolved.category.slug, city.slug, { limit: 1 })).total
+          : 0;
+      const displayCount = total > 0 ? total : doctorCount;
+      const resultLabel = total > 0
+        ? resolved.category.name
+        : `${resolved.category.name} Doctors`;
       const year = new Date().getFullYear();
       const baseCategoryUrl = `${base}/directory/${city.slug}/${resolved.category.slug}`;
       const canonicalUrl = `${baseCategoryUrl}${pageSuffix}`;
       const arCanonicalUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}${pageSuffix}`;
 
       return {
-        title: truncateTitle(`${total} Best ${resolved.category.name} in ${city.name} [${year}]${pageTitleSuffix}`),
-        description: truncateDescription(`Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`),
+        title: truncateTitle(`${displayCount} Best ${resultLabel} in ${city.name} [${year}]${pageTitleSuffix}`),
+        description: truncateDescription(
+          total > 0
+            ? `Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`
+            : `Browse ${doctorCount} licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}, UAE. Facility listings for this specialty are being expanded.`
+        ),
         alternates: {
           canonical: canonicalUrl,
           languages: {
@@ -122,8 +134,10 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           },
         },
         openGraph: {
-          title: `${resolved.category.name} in ${city.name}, UAE${pageTitleSuffix}`,
-          description: `${total} ${resolved.category.name.toLowerCase()} in ${city.name}. Browse verified listings.`,
+          title: `${resultLabel} in ${city.name}, UAE${pageTitleSuffix}`,
+          description: total > 0
+            ? `${total} ${resolved.category.name.toLowerCase()} in ${city.name}. Browse verified listings.`
+            : `${doctorCount} licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}.`,
           type: 'website',
           locale: 'en_AE',
           siteName: 'UAE Open Healthcare Directory',
@@ -481,7 +495,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
           }
         }),
       ),
-      getProfessionalsIndexBySpecialty(category.slug, { limit: 8 }),
+      getProfessionalsIndexBySpecialtyAndCity(category.slug, city.slug, { limit: 9 }),
     ]);
 
     // ── Sibling neighborhood grid (DB-first, ≥3 providers gated) ────
@@ -517,6 +531,15 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       doctorCrossLinksRes.status === "fulfilled"
         ? doctorCrossLinksRes.value.professionals
         : [];
+    const doctorTotal =
+      doctorCrossLinksRes.status === "fulfilled"
+        ? doctorCrossLinksRes.value.total
+        : 0;
+    const displayedTotal = total > 0 ? total : doctorTotal;
+    const displayedTotalLabel =
+      total > 0
+        ? `${total === 1 ? "provider" : "providers"} found`
+        : `${doctorTotal === 1 ? "doctor" : "doctors"} found`;
 
     // ── Top-rated module (deterministic daily rotation) ──────────────
     const topRatedPool = [...providers]
@@ -600,7 +623,11 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
           title={`${category.name} in ${city.name}.`}
           subtitle={
             <>
-              {editorial?.en ? (
+              {total === 0 && doctorTotal > 0 ? (
+                <span>
+                  {city.name} has {doctorTotal.toLocaleString()} licensed {category.name.toLowerCase()} doctors in the Zavis professional index. Facility-level clinic listings for this specialty are still being expanded, so start with the doctor results below or browse all clinics in {city.name}.
+                </span>
+              ) : editorial?.en ? (
                 <span>{editorial.en}</span>
               ) : (
                 <>
@@ -611,8 +638,19 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
               )}
             </>
           }
-          aeoAnswer={generateFacetAnswerBlock(city, category, null, total, providers[0])}
-          total={total}
+          aeoAnswer={
+            total === 0 && doctorTotal > 0 ? (
+              <>
+                According to the UAE Open Healthcare Directory, there are{" "}
+                <span className="font-semibold text-ink">{doctorTotal.toLocaleString()} licensed {category.name.toLowerCase()} doctors</span>{" "}
+                associated with {city.name}. Facility-level clinic listings for this exact specialty are still being expanded; browse the doctors below or view all clinics in {city.name}.
+              </>
+            ) : (
+              generateFacetAnswerBlock(city, category, null, total, providers[0])
+            )
+          }
+          total={displayedTotal}
+          totalLabel={displayedTotalLabel}
           providers={providers.map((p) => ({
             id: p.id,
             name: p.name,
@@ -628,6 +666,48 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
             photos: p.photos ?? null,
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
+          emptyState={
+            doctorTotal > 0 ? (
+              <div className="rounded-z-lg border border-ink-line bg-white p-6 sm:p-8">
+                <div className="max-w-3xl">
+                  <p className="font-display text-z-h1 font-semibold text-ink">
+                    Browse doctors for this specialty.
+                  </p>
+                  <p className="mt-2 font-sans text-z-body text-ink-soft leading-relaxed">
+                    We do not have facility cards tagged directly as {category.name.toLowerCase()} in {city.name} yet, but the professional index has {doctorTotal.toLocaleString()} matching doctors.
+                  </p>
+                </div>
+                <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {doctorCrossLinks.slice(0, 9).map((d) => (
+                    <Link
+                      key={d.slug}
+                      href={`/find-a-doctor/${d.specialtySlug || category.slug}/${d.slug}`}
+                      className="rounded-z-md border border-ink-line px-4 py-3 font-sans text-z-body-sm font-semibold text-ink transition-colors hover:border-ink hover:bg-surface-cream"
+                    >
+                      {d.name}
+                      <span className="mt-1 block text-z-caption font-normal text-ink-muted">
+                        {d.displayTitle}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    href={`/find-a-doctor/${category.slug}`}
+                    className="inline-flex items-center rounded-z-pill bg-accent text-white px-4 py-2.5 font-sans text-z-body-sm font-semibold hover:bg-accent-dark"
+                  >
+                    See all doctors
+                  </Link>
+                  <Link
+                    href={`/directory/${city.slug}/clinics`}
+                    className="inline-flex items-center rounded-z-pill border border-ink text-ink px-4 py-2.5 font-sans text-z-body-sm font-semibold hover:bg-surface-cream"
+                  >
+                    Browse clinics in {city.name}
+                  </Link>
+                </div>
+              </div>
+            ) : undefined
+          }
           pagination={
             <Pagination
               currentPage={currentPage}
@@ -739,7 +819,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                     {doctorCrossLinks.slice(0, 9).map((d) => (
                       <li key={d.slug}>
                         <Link
-                          href={`/professionals/${d.slug}`}
+                          href={`/find-a-doctor/${d.specialtySlug || category.slug}/${d.slug}`}
                           className="font-sans text-z-body text-ink hover:underline decoration-1 underline-offset-2"
                         >
                           {d.name}

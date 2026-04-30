@@ -16,6 +16,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ClaimProviderSearch } from "@/components/claim/ClaimProviderSearch";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
+import { VERIFIED_CLINIC_EXPLANATION } from "@/components/provider/VerifiedClinicBadge";
 import { faqPageSchema, speakableSchema, breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
@@ -166,6 +167,12 @@ export default function ClaimPage() {
                   variant="secondary"
                 />
               </div>
+              <p className="mt-3 font-sans text-z-caption text-ink-muted leading-relaxed">
+                You will be asked to confirm you own or manage the clinic before WhatsApp opens.
+              </p>
+              <p className="mt-1 font-sans text-z-caption text-ink-muted leading-relaxed">
+                {VERIFIED_CLINIC_EXPLANATION}
+              </p>
             </div>
 
             {/* Stats */}

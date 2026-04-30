@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { ClaimForm } from "@/components/claim/ClaimForm";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
-import { getProviderBySlug } from "@/lib/data";
+import { getProviderByIdOrSlug } from "@/lib/data";
 
 interface ClaimFormPageProps {
   params: { listingId: string };
@@ -13,7 +13,7 @@ interface ClaimFormPageProps {
 export async function generateMetadata({
   params,
 }: ClaimFormPageProps): Promise<Metadata> {
-  const provider = await getProviderBySlug(params.listingId);
+  const provider = await getProviderByIdOrSlug(params.listingId);
 
   if (!provider) {
     return {
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }
 
 export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
-  const provider = await getProviderBySlug(params.listingId);
+  const provider = await getProviderByIdOrSlug(params.listingId);
 
   if (!provider) {
     notFound();

@@ -768,6 +768,52 @@ export async function getProfessionalsIndexBySpecialty(
   }
 }
 
+/** List professionals for a given specialty and primary city. */
+export async function getProfessionalsIndexBySpecialtyAndCity(
+  specialtySlug: string,
+  citySlug: string,
+  opts: { limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb() || !specialtySlug || !citySlug) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, count } = _ormMod!;
+    const where = and(
+      eq(professionalsIndex.specialtySlug, specialtySlug),
+      eq(professionalsIndex.primaryCitySlug, citySlug),
+      eq(professionalsIndex.status, "active")
+    );
+    const [countRows, rows] = await Promise.all([
+      db
+        .select({ total: count() })
+        .from(professionalsIndex)
+        .where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    return {
+      total: Number(countRows[0]?.total ?? 0),
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexBySpecialtyAndCity failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
 /** List professionals at a given facility (soft slug ref). */
 export async function getProfessionalsIndexByFacility(
   facilitySlug: string,

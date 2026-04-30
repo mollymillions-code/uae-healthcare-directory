@@ -1433,6 +1433,42 @@ export async function getProviderBySlug(slug: string, expectedScope?: ProviderFi
   return provider;
 }
 
+export async function getProviderByIdOrSlug(identifier: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
+  const key = identifier.trim();
+  if (!key || isRemovedProviderSlug(key)) return undefined;
+
+  const bySlug = await getProviderBySlug(key, expectedScope);
+  if (bySlug) return bySlug;
+
+  const scope = canonicalizeProviderFilterScope(expectedScope);
+  if (!isProviderFilterScopeValid(scope)) return undefined;
+
+  await verifyDbHasData();
+
+  if (!HAS_DB) {
+    loadFallback();
+    const provider = (FALLBACK_ALL_PROVIDERS ?? []).find((p) => p.id === key);
+    return provider ? preparePublicProviders([provider], scope)[0] : undefined;
+  }
+
+  const cacheKey = `id-or-slug:${key}:${scope ? JSON.stringify(scope) : ""}`;
+  const cached = getCached<LocalProvider>(cacheKey);
+  if (cached) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const rows = await _db!.select().from(t).where(_eq!(t.id, key)).limit(1);
+  const provider =
+    rows.length > 0 && !isRemovedProviderRecord(rows[0])
+      ? sanitizeProviderForPublic(rowToProvider(rows[0]))
+      : undefined;
+
+  if (!provider || !isProviderPubliclyListable(provider)) return undefined;
+  if (preparePublicProviders([provider], scope).length === 0) return undefined;
+  setCache(cacheKey, provider);
+  return provider;
+}
+
 export async function getProviderCountByCity(citySlug: string): Promise<number> {
   if (!HAS_DB) {
     loadFallback();
