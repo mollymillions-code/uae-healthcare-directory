@@ -24,7 +24,10 @@ import {
   getInsurancePlansByGeo,
   isTriFacetEligible,
 } from "@/lib/insurance-facets/data";
-import { getProfessionalsIndexBySpecialtyAndCity } from "@/lib/professionals";
+import {
+  getProfessionalsIndexBySpecialty,
+  getProfessionalsIndexBySpecialtyAndCity,
+} from "@/lib/professionals";
 import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 import { neighborhoodHubSchema } from "@/lib/seo-neighborhoods";
 import {
@@ -483,6 +486,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       neighborhoodsRes,
       insurerEligibilityRes,
       doctorCrossLinksRes,
+      allSpecialtyDoctorsRes,
     ] = await Promise.allSettled([
       getNeighborhoodsByCity(city.slug, { minProviders: 3 }),
       Promise.all(
@@ -500,6 +504,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
         }),
       ),
       getProfessionalsIndexBySpecialtyAndCity(category.slug, city.slug, { limit: 9 }),
+      getProfessionalsIndexBySpecialty(category.slug, { limit: 9 }),
     ]);
 
     // ── Sibling neighborhood grid (DB-first, ≥3 providers gated) ────
@@ -539,6 +544,16 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       doctorCrossLinksRes.status === "fulfilled"
         ? doctorCrossLinksRes.value.total
         : 0;
+    const allSpecialtyDoctors =
+      allSpecialtyDoctorsRes.status === "fulfilled"
+        ? allSpecialtyDoctorsRes.value.professionals
+        : [];
+    const allSpecialtyDoctorTotal =
+      allSpecialtyDoctorsRes.status === "fulfilled"
+        ? allSpecialtyDoctorsRes.value.total
+        : 0;
+    const fallbackDoctorLinks = doctorTotal > 0 ? doctorCrossLinks : allSpecialtyDoctors;
+    const fallbackDoctorTotal = doctorTotal > 0 ? doctorTotal : allSpecialtyDoctorTotal;
     const displayedTotal = total > 0 ? total : doctorTotal;
     const displayedTotalLabel =
       total > 0
@@ -730,6 +745,32 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
                     We do not have facility cards tagged directly as {category.name.toLowerCase()} in {city.name}. Continue with all clinics in {city.name}, or search this specialty across the directory.
                   </p>
                 </div>
+                {fallbackDoctorTotal > 0 && fallbackDoctorLinks.length > 0 && (
+                  <div className="mt-6">
+                    <p className="font-display text-z-h2 font-semibold text-ink">
+                      Browse doctors for this specialty.
+                    </p>
+                    <p className="mt-1 font-sans text-z-body-sm text-ink-soft">
+                      {doctorTotal > 0
+                        ? `${doctorTotal.toLocaleString()} matching doctors are associated with ${city.name}.`
+                        : `${allSpecialtyDoctorTotal.toLocaleString()} matching doctors are available in the UAE professional index.`}
+                    </p>
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {fallbackDoctorLinks.slice(0, 9).map((d) => (
+                        <Link
+                          key={d.slug}
+                          href={`/find-a-doctor/${d.specialtySlug || category.slug}/${d.slug}`}
+                          className="rounded-z-md border border-ink-line px-4 py-3 font-sans text-z-body-sm font-semibold text-ink transition-colors hover:border-ink hover:bg-surface-cream"
+                        >
+                          {d.name}
+                          <span className="mt-1 block text-z-caption font-normal text-ink-muted">
+                            {d.displayTitle}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     href={`/directory/${city.slug}/clinics`}
