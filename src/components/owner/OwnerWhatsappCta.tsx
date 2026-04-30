@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { MessageCircle, X } from "lucide-react";
 import { recordConsumerEvent } from "@/lib/consumer-intent-client";
 
@@ -104,7 +105,10 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [step, setStep] = useState<"role" | "confirm">("role");
   const [selectedRole, setSelectedRole] = useState<OwnerRole | null>(null);
+  const [mounted, setMounted] = useState(false);
   const label = props.label || defaultLabel(props.action);
+
+  useEffect(() => setMounted(true), []);
 
   const variantClass =
     props.variant === "link"
@@ -214,9 +218,9 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
         {label}
       </button>
 
-      {confirmOpen && (
-        <div className="fixed inset-0 z-[95] flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+      {confirmOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/35 px-4 py-20 sm:items-center sm:py-8" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl max-h-[calc(100vh-6rem)] overflow-y-auto">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-['Bricolage_Grotesque',sans-serif] text-2xl font-medium tracking-tight text-[#1c1c1c]">
@@ -305,7 +309,8 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

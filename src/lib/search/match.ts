@@ -26,11 +26,15 @@ import { CITIES } from "@/lib/constants/cities";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import {
+  getProfessionalsIndex,
   getProfessionalsIndexByCity,
+  getProfessionalsIndexBySpecialties,
   getProfessionalsIndexBySpecialtyAndCity,
   getProfessionalsIndexBySpecialty,
+  searchProfessionalsIndex,
   type ProfessionalIndexRecord,
 } from "@/lib/professionals";
+import { ALL_SPECIALTIES, getSpecialtyBySlug } from "@/lib/constants/professionals";
 import { isRemovedProviderSearchQuery } from "@/lib/provider-removals";
 import type {
   HealthcareSearchQuery,
@@ -535,6 +539,21 @@ function emptySearchResults(): HealthcareSearchResults {
   };
 }
 
+function resolveProfessionalSpecialtySlugs(specialtySlug: string | null | undefined): string[] {
+  if (!specialtySlug) return [];
+  if (getSpecialtyBySlug(specialtySlug)) return [specialtySlug];
+
+  const mapped = ALL_SPECIALTIES
+    .filter((specialty) => specialty.relatedDirectoryCategory === specialtySlug)
+    .map((specialty) => specialty.slug);
+
+  if (specialtySlug === "clinics") {
+    mapped.push("general-practitioner", "family-medicine", "internal-medicine");
+  }
+
+  return Array.from(new Set(mapped));
+}
+
 export async function searchHealthcare(
   rawQuery: HealthcareSearchQuery,
   opts: SearchHealthcareOptions = {}
@@ -687,17 +706,35 @@ export async function searchHealthcare(
   let totalDoctors = 0;
   if (entityType === "doctor" || entityType === "both") {
     const offset = (page - 1) * limit;
-    if (specialty && effectiveCitySlug) {
+    const doctorSpecialtySlugs = resolveProfessionalSpecialtySlugs(specialty);
+
+    if (facilityQuery) {
+      const { professionals, total } = await searchProfessionalsIndex(facilityQuery, {
+        citySlug: effectiveCitySlug,
+        specialtySlugs: doctorSpecialtySlugs,
+        limit,
+        offset,
+      });
+      doctorRows = professionals;
+      totalDoctors = total;
+    } else if (doctorSpecialtySlugs.length > 1) {
+      const { professionals, total } = await getProfessionalsIndexBySpecialties(
+        doctorSpecialtySlugs,
+        { citySlug: effectiveCitySlug, limit, offset }
+      );
+      doctorRows = professionals;
+      totalDoctors = total;
+    } else if (doctorSpecialtySlugs.length === 1 && effectiveCitySlug) {
       const { professionals, total } = await getProfessionalsIndexBySpecialtyAndCity(
-        specialty,
+        doctorSpecialtySlugs[0],
         effectiveCitySlug,
         { limit, offset }
       );
       doctorRows = professionals;
       totalDoctors = total;
-    } else if (specialty) {
+    } else if (doctorSpecialtySlugs.length === 1) {
       const { professionals, total } = await getProfessionalsIndexBySpecialty(
-        specialty,
+        doctorSpecialtySlugs[0],
         { limit, offset }
       );
       doctorRows = professionals;
@@ -709,19 +746,10 @@ export async function searchHealthcare(
       });
       doctorRows = professionals;
       totalDoctors = total;
-    }
-    // Narrow further by free-text against name/displayTitle if provided.
-    if (facilityQuery) {
-      const needle = facilityQuery.trim().toLowerCase();
-      if (needle) {
-        doctorRows = doctorRows.filter(
-          (d) =>
-            d.name.toLowerCase().includes(needle) ||
-            d.displayTitle.toLowerCase().includes(needle) ||
-            d.specialty.toLowerCase().includes(needle)
-        );
-        totalDoctors = doctorRows.length;
-      }
+    } else if (entityType === "doctor") {
+      const { professionals, total } = await getProfessionalsIndex({ limit, offset });
+      doctorRows = professionals;
+      totalDoctors = total;
     }
   }
 
@@ -765,12 +793,22 @@ export async function searchHealthcare(
       totalFacilities = total;
     }
     if (specialty && !effectiveCitySlug && (entityType === "doctor" || entityType === "both")) {
-      const { professionals, total } = await getProfessionalsIndexBySpecialty(
-        specialty,
-        { limit, offset: 0 }
-      );
-      doctorRows = professionals;
-      totalDoctors = total;
+      const doctorSpecialtySlugs = resolveProfessionalSpecialtySlugs(specialty);
+      if (doctorSpecialtySlugs.length > 1) {
+        const { professionals, total } = await getProfessionalsIndexBySpecialties(
+          doctorSpecialtySlugs,
+          { limit, offset: 0 }
+        );
+        doctorRows = professionals;
+        totalDoctors = total;
+      } else if (doctorSpecialtySlugs.length === 1) {
+        const { professionals, total } = await getProfessionalsIndexBySpecialty(
+          doctorSpecialtySlugs[0],
+          { limit, offset: 0 }
+        );
+        doctorRows = professionals;
+        totalDoctors = total;
+      }
     }
   }
 

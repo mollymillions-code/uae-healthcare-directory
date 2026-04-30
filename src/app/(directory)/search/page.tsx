@@ -125,7 +125,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   const hasAnyActive = Boolean(
     query.query || query.city || query.specialty || query.condition ||
-    query.insurance || query.language || query.emergency
+    query.insurance || query.language || query.emergency ||
+    (query.entityType && query.entityType !== "both")
   );
 
   const visibleResults =

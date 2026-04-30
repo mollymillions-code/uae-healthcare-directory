@@ -386,4 +386,23 @@
   .byline .author {
     @apply font-semibold text-accent;
   }
+
+  .zavis-search-focus {
+    animation: zavis-search-focus-pulse 1.4s ease-out;
+  }
+
+  @keyframes zavis-search-focus-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.42), 0 18px 46px rgba(28, 28, 28, 0.14);
+      transform: translateY(-1px);
+    }
+    70% {
+      box-shadow: 0 0 0 12px rgba(0, 200, 83, 0), 0 18px 46px rgba(28, 28, 28, 0.14);
+      transform: translateY(-1px);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(0, 200, 83, 0), 0 8px 28px rgba(28, 28, 28, 0.08);
+      transform: translateY(0);
+    }
+  }
 }

@@ -12,6 +12,7 @@ import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPi
 import { SearchPillModal } from "./SearchPillModal";
 import { fade, tStandard } from "../shared/motion";
 import { cn } from "../shared/cn";
+import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
 
 interface ZavisHeaderProps {
   /** When true, the hero will render its own expanded pill — header starts
@@ -59,6 +60,32 @@ function getArabicPath(pathname: string): string | null {
   if (pathname === "/" || pathname.startsWith("/directory") || pathname.startsWith("/best"))
     return `/ar${pathname}`;
   return null;
+}
+
+function focusPageSearch(segment: SearchSegment | "query" = "query"): boolean {
+  if (typeof document === "undefined") return false;
+
+  const root = document.querySelector<HTMLElement>("[data-zavis-search-root='true']");
+  if (!root) return false;
+
+  root.scrollIntoView({ behavior: "smooth", block: "center" });
+  root.classList.remove("zavis-search-focus");
+  window.requestAnimationFrame(() => root.classList.add("zavis-search-focus"));
+  window.setTimeout(() => root.classList.remove("zavis-search-focus"), 1800);
+
+  const fieldMap: Record<string, string> = {
+    query: "[data-zavis-search-query='true']",
+    specialty: "[data-zavis-search-specialty='true']",
+    city: "[data-zavis-search-city='true']",
+    insurance: "[data-zavis-search-insurance='true']",
+    date: "[data-zavis-search-query='true']",
+  };
+  const selector = fieldMap[segment] || fieldMap.query;
+  const field = root.matches(selector)
+    ? root
+    : root.querySelector<HTMLElement>(selector);
+  window.setTimeout(() => field?.focus({ preventScroll: true }), 250);
+  return true;
 }
 
 export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) {
@@ -121,6 +148,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
     if (searchState.city) params.set("city", searchState.city);
     if (searchState.date) params.set("when", searchState.date);
     if (searchState.insurance) params.set("insurance", searchState.insurance);
+    dispatchRouteLoadingStart();
     router.push(`/search?${params.toString()}`);
   }, [router, searchState]);
 
@@ -128,6 +156,11 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
     setInitialSegment(seg);
     setModalOpen(true);
   }, []);
+
+  const handleSearchIntent = useCallback((seg: SearchSegment | "query" = "query") => {
+    if (focusPageSearch(seg)) return;
+    openModal(seg === "query" ? "specialty" : seg);
+  }, [openModal]);
 
   return (
     <>
@@ -165,8 +198,8 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                     <SearchPill
                       variant="compact"
                       state={searchState}
-                      onSegmentClick={(seg) => openModal(seg)}
-                      onSubmit={() => openModal("specialty")}
+                      onSegmentClick={(seg) => handleSearchIntent(seg)}
+                      onSubmit={() => handleSearchIntent("query")}
                     />
                   </motion.div>
                 ) : (
@@ -208,7 +241,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
             <div className="md:hidden flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => openModal("specialty")}
+                onClick={() => handleSearchIntent("query")}
                 aria-label="Search"
                 className="px-4 py-2 border border-ink-hairline rounded-z-pill font-sans text-z-body-sm text-ink shadow-z-card"
               >

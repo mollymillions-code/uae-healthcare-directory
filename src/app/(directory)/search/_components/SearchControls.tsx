@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, MapPin, Stethoscope, SlidersHorizontal, X, ChevronDown, Siren,
 } from "lucide-react";
@@ -13,6 +13,7 @@ import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { buildSearchUrl, normalizeHealthcareSearchQuery } from "@/lib/search/normalization";
 import { FilterDrawer } from "@/components/directory-v2/filters/FilterDrawer";
 import { cn } from "@/components/directory-v2/shared/cn";
+import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
 
 interface Props {
   initialQuery: string;
@@ -28,6 +29,7 @@ interface Props {
 
 export function SearchControls(props: Props) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [query, setQuery] = useState(props.initialQuery);
   const [city, setCity] = useState(props.initialCity);
@@ -38,6 +40,29 @@ export function SearchControls(props: Props) {
   const [entityType, setEntityType] = useState<"doctor" | "facility" | "both">(props.initialEntityType);
   const [emergency, setEmergency] = useState(props.initialEmergency);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  useEffect(() => {
+    setQuery(props.initialQuery);
+    setCity(props.initialCity);
+    setSpecialty(props.initialSpecialty);
+    setCondition(props.initialCondition);
+    setInsurance(props.initialInsurance);
+    setLanguage(props.initialLanguage);
+    setEntityType(props.initialEntityType);
+    setEmergency(props.initialEmergency);
+    setIsNavigating(false);
+  }, [
+    props.initialQuery,
+    props.initialCity,
+    props.initialSpecialty,
+    props.initialCondition,
+    props.initialInsurance,
+    props.initialLanguage,
+    props.initialEntityType,
+    props.initialEmergency,
+    pathname,
+  ]);
 
   const buildHref = useCallback(
     (overrides: Partial<Record<string, string | null | boolean>> = {}): string => {
@@ -66,12 +91,21 @@ export function SearchControls(props: Props) {
     [query, city, specialty, condition, insurance, language, entityType, emergency]
   );
 
+  const navigate = useCallback(
+    (href: string) => {
+      setIsNavigating(true);
+      dispatchRouteLoadingStart();
+      router.push(href);
+    },
+    [router]
+  );
+
   const submit = useCallback(
     (e?: React.SyntheticEvent) => {
       e?.preventDefault();
-      router.push(buildHref());
+      navigate(buildHref());
     },
-    [buildHref, router]
+    [buildHref, navigate]
   );
 
   const cityName = useMemo(() => CITIES.find((c) => c.slug === city)?.name, [city]);
@@ -88,6 +122,7 @@ export function SearchControls(props: Props) {
       <form
         onSubmit={submit}
         className="bg-white rounded-z-search border border-ink-hairline shadow-z-pill flex items-stretch h-[68px] max-w-[860px] mx-auto"
+        data-zavis-search-root="true"
       >
         <label className="flex-1 min-w-0 flex items-center gap-3 px-5 py-2.5 border-r border-ink-hairline">
           <Search className="h-4 w-4 text-ink-muted flex-shrink-0" strokeWidth={2} />
@@ -100,6 +135,7 @@ export function SearchControls(props: Props) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") submit(e);
               }}
+              data-zavis-search-query="true"
               enterKeyHint="search"
               placeholder="e.g. back pain, Dr. Ahmed…"
               className="w-full bg-transparent outline-none font-sans text-z-body-sm text-ink placeholder:text-ink-muted mt-0.5 truncate"
@@ -113,6 +149,7 @@ export function SearchControls(props: Props) {
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
+              data-zavis-search-city="true"
               className="bg-transparent outline-none font-sans text-z-body-sm text-ink mt-0.5 appearance-none cursor-pointer truncate"
             >
               <option value="">Any city</option>
@@ -129,6 +166,7 @@ export function SearchControls(props: Props) {
             <select
               value={specialty}
               onChange={(e) => setSpecialty(e.target.value)}
+              data-zavis-search-specialty="true"
               className="bg-transparent outline-none font-sans text-z-body-sm text-ink mt-0.5 appearance-none cursor-pointer truncate"
             >
               <option value="">Any specialty</option>
@@ -143,12 +181,20 @@ export function SearchControls(props: Props) {
             type="submit"
             aria-label="Search"
             className="inline-flex items-center gap-2 h-12 px-5 rounded-z-pill bg-accent hover:bg-accent-dark text-white font-sans font-semibold text-z-body-sm transition-colors"
+            disabled={isNavigating}
           >
-            <Search className="h-4 w-4" strokeWidth={2.5} />
-            <span className="hidden sm:inline">Search</span>
+            <Search className={cn("h-4 w-4", isNavigating && "animate-spin")} strokeWidth={2.5} />
+            <span className="hidden sm:inline">{isNavigating ? "Searching" : "Search"}</span>
           </button>
         </div>
       </form>
+
+      {isNavigating && (
+        <div className="mt-4 flex items-center justify-center gap-2 font-sans text-z-body-sm font-medium text-ink-soft">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
+          Updating results
+        </div>
+      )}
 
       {/* ─── Row 2: Filter bar with clear visual hierarchy ─── */}
       <div className="mt-5 max-w-[1000px] mx-auto">
@@ -156,7 +202,7 @@ export function SearchControls(props: Props) {
           {/* Primary: entity type segmented toggle */}
           <EntityTypeToggle
             value={entityType}
-            onChange={(v) => { setEntityType(v); router.push(buildHref({ entityType: v })); }}
+            onChange={(v) => { setEntityType(v); navigate(buildHref({ entityType: v })); }}
           />
 
           {/* Thin divider on desktop */}
@@ -169,35 +215,35 @@ export function SearchControls(props: Props) {
               value={insurance}
               valueLabel={insuranceName}
               options={INSURANCE_PROVIDERS.map((i) => ({ value: i.slug, label: i.name }))}
-              onChange={(v) => { setInsurance(v); router.push(buildHref({ insurance: v || null })); }}
+              onChange={(v) => { setInsurance(v); navigate(buildHref({ insurance: v || null })); }}
             />
             <SelectChip
               label="Language"
               value={language}
               valueLabel={languageName}
               options={LANGUAGES.map((l) => ({ value: l.slug, label: l.name }))}
-              onChange={(v) => { setLanguage(v); router.push(buildHref({ language: v || null })); }}
+              onChange={(v) => { setLanguage(v); navigate(buildHref({ language: v || null })); }}
             />
             <SelectChip
               label="Condition"
               value={condition}
               valueLabel={conditionName}
               options={CONDITIONS.map((c) => ({ value: c.slug, label: c.name }))}
-              onChange={(v) => { setCondition(v); router.push(buildHref({ condition: v || null })); }}
+              onChange={(v) => { setCondition(v); navigate(buildHref({ condition: v || null })); }}
             />
             <SelectChip
               label="City"
               value={city}
               valueLabel={cityName}
               options={CITIES.filter((c) => c.country === "ae").map((c) => ({ value: c.slug, label: c.name }))}
-              onChange={(v) => { setCity(v); router.push(buildHref({ city: v || null })); }}
+              onChange={(v) => { setCity(v); navigate(buildHref({ city: v || null })); }}
             />
             <SelectChip
               label="Specialty"
               value={specialty}
               valueLabel={specialtyName}
               options={CATEGORIES.map((c) => ({ value: c.slug, label: c.name }))}
-              onChange={(v) => { setSpecialty(v); router.push(buildHref({ specialty: v || null })); }}
+              onChange={(v) => { setSpecialty(v); navigate(buildHref({ specialty: v || null })); }}
             />
           </div>
 
@@ -205,7 +251,7 @@ export function SearchControls(props: Props) {
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               type="button"
-              onClick={() => { const next = !emergency; setEmergency(next); router.push(buildHref({ emergency: next })); }}
+              onClick={() => { const next = !emergency; setEmergency(next); navigate(buildHref({ emergency: next })); }}
               aria-pressed={emergency}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-z-pill px-3.5 py-1.5 font-sans text-z-body-sm whitespace-nowrap transition-colors",
@@ -246,7 +292,7 @@ export function SearchControls(props: Props) {
           <div className="mt-3 flex items-center justify-end">
             <button
               type="button"
-              onClick={() => router.push("/search")}
+              onClick={() => navigate("/search")}
               className="font-sans text-z-caption font-medium text-ink-soft hover:text-ink underline underline-offset-2"
             >
               Clear all filters
@@ -259,8 +305,8 @@ export function SearchControls(props: Props) {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title="All filters"
-        onSubmit={() => router.push(buildHref())}
-        onClearAll={() => router.push("/search")}
+        onSubmit={() => navigate(buildHref())}
+        onClearAll={() => navigate("/search")}
         matchCount={props.totalResults}
       >
         <DrawerSection label="City">

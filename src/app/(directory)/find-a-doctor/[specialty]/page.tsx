@@ -25,7 +25,9 @@ import { truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const revalidate = 0;
 
 interface Props {
   params: { specialty: string };
