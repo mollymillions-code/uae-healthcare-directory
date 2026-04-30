@@ -736,7 +736,16 @@ export async function searchHealthcare(
     // Drop the most restrictive filters and re-try: keep the city or the
     // specialty, drop everything else.
     widened = true;
-    if (specialty && (entityType === "facility" || entityType === "both")) {
+    if (specialty && effectiveCitySlug && (entityType === "facility" || entityType === "both")) {
+      const { providers, total } = await getProviders({
+        citySlug: effectiveCitySlug,
+        page: 1,
+        limit,
+        sort: "rating",
+      });
+      facilityRows = providers;
+      totalFacilities = total;
+    } else if (specialty && (entityType === "facility" || entityType === "both")) {
       const { providers, total } = await getProviders({
         categorySlug: specialty,
         page: 1,
@@ -755,7 +764,7 @@ export async function searchHealthcare(
       facilityRows = providers;
       totalFacilities = total;
     }
-    if (specialty && (entityType === "doctor" || entityType === "both")) {
+    if (specialty && !effectiveCitySlug && (entityType === "doctor" || entityType === "both")) {
       const { professionals, total } = await getProfessionalsIndexBySpecialty(
         specialty,
         { limit, offset: 0 }
