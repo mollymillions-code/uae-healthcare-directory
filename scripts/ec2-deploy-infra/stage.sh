@@ -173,7 +173,14 @@ ln -sfn "$SHARED_DIR/reports" "$TARGET_DIR/public/reports"
 log "build: next build with staged verification overrides"
 rm -rf "$TARGET_DIR/.next"
 mkdir -p "$TARGET_DIR/logs"
-if ZAVIS_VERIFIED_PROVIDER_IDS="$VERIFIED_OVERRIDES" NODE_OPTIONS="--max-old-space-size=4096" npm run build > "$BUILD_LOG" 2>&1; then
+BUILD_WORKER_COUNT="${NEXT_PRIVATE_BUILD_WORKER_COUNT:-1}"
+BUILD_DB_POOL_MAX="${DB_POOL_MAX:-1}"
+log "build: NEXT_PRIVATE_BUILD_WORKER_COUNT=$BUILD_WORKER_COUNT DB_POOL_MAX=$BUILD_DB_POOL_MAX"
+if ZAVIS_VERIFIED_PROVIDER_IDS="$VERIFIED_OVERRIDES" \
+  NODE_OPTIONS="--max-old-space-size=4096" \
+  NEXT_PRIVATE_BUILD_WORKER_COUNT="$BUILD_WORKER_COUNT" \
+  DB_POOL_MAX="$BUILD_DB_POOL_MAX" \
+  npm run build > "$BUILD_LOG" 2>&1; then
   BUILD_ID=$(cat .next/BUILD_ID)
   log "build: SUCCESS (BUILD_ID=$BUILD_ID)"
 else

@@ -14,11 +14,14 @@ import * as schema from "./schema";
 //   that's ~240 potential slots — overwhelmingly over budget.
 //
 // Safe per-process cap during next build:
-//   max=12. Build phase: ~8 workers × 12 = 96 (safely under 100).
+//   max=2 by default, and deploy scripts normally force DB_POOL_MAX=1.
+//   Build phase can fan out across many Next workers, so each worker must
+//   hold only a tiny pool or PostgreSQL will reject the build with
+//   "too many clients already".
 // Runtime can run higher because PM2 steady state is two web workers. Keep it
 // tunable through DB_POOL_MAX so EC2 can absorb post-redesign Arabic traffic
 // without requiring a code change.
-const BUILD_POOL_MAX = 12;
+const BUILD_POOL_MAX = 2;
 const DEFAULT_RUNTIME_POOL_MAX = 25;
 
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
