@@ -58,7 +58,7 @@ kill_orphan_build_workers() {
   local orphans
   orphans=$(ps -eo pid,ppid,cmd 2>/dev/null | awk '$2==1 && /next.dist.compiled.jest-worker/' | wc -l)
   if [ "$orphans" -gt 0 ]; then
-    log "preflight: killing $orphans orphan jest-worker children"
+    log "preflight: killing $orphans orphan jest-worker children" >&2
     pkill -9 -f 'next/dist/compiled/jest-worker' 2>/dev/null || true
     sleep 2
   fi
@@ -154,6 +154,7 @@ log "preflight: live slot direct health = HTTP $live_health"
 log "--- build target $TARGET_SLOT ---"
 cd "$TARGET_DIR"
 git checkout -- .
+git clean -fd -e node_modules -e .next
 checkout_ref "$DEPLOY_REF"
 TARGET_COMMIT=$(git rev-parse --short HEAD)
 log "build: at commit $TARGET_COMMIT"
