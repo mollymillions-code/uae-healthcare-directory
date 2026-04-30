@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appendFile } from "fs/promises";
 import path from "path";
+import { readJsonObject } from "@/lib/http/read-json";
 
 export const dynamic = "force-dynamic";
 
@@ -86,7 +87,10 @@ async function forwardLeadToInternalApi(lead: DemoLead) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const parsed = await readJsonObject(req);
+    if (parsed.error) return parsed.error;
+
+    const body = parsed.data;
     const { name, email, phone, company, team, website } = body;
 
     if (!name || !email || !phone || !company || !team) {
