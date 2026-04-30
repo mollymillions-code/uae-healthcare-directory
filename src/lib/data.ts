@@ -44,6 +44,20 @@ export {
 let HAS_DB = !!process.env.DATABASE_URL;
 let _dbVerified = false;
 
+const verifiedProviderOverrides = new Set(
+  (process.env.ZAVIS_VERIFIED_PROVIDER_IDS || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+function hasVerifiedProviderOverride(row: Record<string, unknown>): boolean {
+  if (verifiedProviderOverrides.size === 0) return false;
+  const id = typeof row.id === "string" ? row.id.toLowerCase() : "";
+  const slug = typeof row.slug === "string" ? row.slug.toLowerCase() : "";
+  return verifiedProviderOverrides.has(id) || verifiedProviderOverrides.has(slug);
+}
+
 /**
  * Check if DB actually has providers. If not (empty table, connection error),
  * fall back to JSON. This handles the case where DATABASE_URL is set on EC2
@@ -419,7 +433,7 @@ function rowToProvider(row: any): LocalProvider {
     latitude: String(row.latitude ?? "0"),
     longitude: String(row.longitude ?? "0"),
     isClaimed: Boolean(row.isClaimed ?? row.is_claimed ?? false),
-    isVerified: Boolean(row.isVerified ?? row.is_verified ?? false),
+    isVerified: Boolean(row.isVerified ?? row.is_verified ?? false) || hasVerifiedProviderOverride(row),
     services: row.services ?? [],
     languages: row.languages ?? [],
     insurance: row.insurance ?? [],
@@ -493,6 +507,7 @@ function loadFallback(): void {
     FALLBACK_ALL_PROVIDERS = preparePublicProviders(
       scraped.map((p: Record<string, unknown>) => ({
         ...(p as unknown as LocalProvider),
+        isVerified: Boolean(p.isVerified) || hasVerifiedProviderOverride(p),
         country: (p.country as string | undefined) || getProviderCountry(p as unknown as LocalProvider),
         categorySlug: canonicalizeCategorySlug((p.categorySlug as string | undefined) ?? (p.category_slug as string | undefined)),
         subcategorySlug: canonicalizeSubcategorySlug((p.subcategorySlug as string | undefined) ?? (p.subcategory_slug as string | undefined)),

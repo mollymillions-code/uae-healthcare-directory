@@ -76,19 +76,18 @@ export function HomePageClient() {
               <div className="inline-flex items-center gap-2 bg-[#006828]/[0.08] rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#006828]" />
                 <span className="font-['Geist',sans-serif] font-medium text-[#006828] text-sm">
-                  AI Patient Success Platform
+                  AI front desk for growing clinics
                 </span>
               </div>
               <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[34px] sm:text-[46px] lg:text-[60px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em] mb-6">
-                The AI Patient Success Platform{" "}
-                <span className="text-[#006828]">for Healthcare Providers</span>
+                Keep your schedule full with{" "}
+                <span className="text-[#006828]">AI patient operations</span>
               </h1>
               <p className="font-['Geist',sans-serif] font-medium text-base sm:text-lg text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
-                Zavis connects every patient channel into one platform,
-                deploys AI agents that book appointments around the clock,
-                and automates reminders, follow-ups, and recall campaigns.
-                The result: more revenue per patient, fewer no-shows,
-                and measurably higher satisfaction scores.
+                Zavis helps UAE clinics respond faster, book more visits,
+                recover missed calls, send reminders, collect payments, and
+                bring patients back for follow-up. Your team gets one place
+                to manage the work around every appointment.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <ShimmerLink
@@ -100,7 +99,7 @@ export function HomePageClient() {
                   <ArrowRight className="w-4 h-4" />
                 </ShimmerLink>
                 <span className="font-['Geist',sans-serif] text-sm text-black/40">
-                  First AI workflow live by Day 3
+                  First workflow live in days, not months
                 </span>
               </div>
             </AnimatedSection>
@@ -123,10 +122,10 @@ export function HomePageClient() {
           {/* Client Logo Ticker */}
           <div className="mt-16 lg:mt-24 bg-white/60 rounded-2xl sm:rounded-3xl border border-black/[0.06] py-8 sm:py-10 px-6">
             <p className="text-center font-['Bricolage_Grotesque',sans-serif] font-medium text-sm sm:text-base text-[#1c1c1c] tracking-tight mb-2">
-              Trusted by leading healthcare brands across the UAE
+              Built for UAE private healthcare teams
             </p>
             <p className="text-center font-['Geist',sans-serif] text-xs text-black/40 mb-8">
-              Dental chains, dermatology clinics, wellness centers, and multi-specialty hospitals
+              Dental, dermatology, aesthetics, wellness, and multi-specialty clinics
             </p>
             <div
               ref={marqueeContainerRef}
@@ -184,13 +183,12 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-12 lg:mb-16">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight mb-5 max-w-3xl mx-auto leading-[1.1]">
-              Increase Revenue. Reduce No-Shows. Elevate Patient Satisfaction.
+              More booked visits. Fewer missed calls. Less front-desk drag.
             </h2>
             <p className="font-['Geist',sans-serif] font-medium text-sm sm:text-base text-black/50 leading-relaxed max-w-2xl mx-auto">
-              AI agents that respond instantly and book appointments 24/7.
-              Automated reminders that reduce no-shows consistently.
-              Seamless omnichannel communication that makes patients feel
-              known and cared for at every touchpoint.
+              Patients expect quick replies on WhatsApp, phone, and social.
+              Zavis gives your team AI support, booking workflows, reminders,
+              payment nudges, and recall campaigns in one operating system.
             </p>
           </AnimatedSection>
 
@@ -198,10 +196,10 @@ export function HomePageClient() {
           <AnimatedSection delay={0.1}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { value: "24/7", label: "AI agents booking appointments around the clock" },
-                { value: "Most", label: "Routine patient queries handled without staff" },
-                { value: "Day 3", label: "First AI workflow live and booking patients" },
-                { value: "Full", label: "Ad spend attributed to collected revenue" },
+                { value: "24/7", label: "AI replies for common patient requests" },
+                { value: "1 inbox", label: "WhatsApp, calls, web, and social together" },
+                { value: "Fast", label: "Booking, reminder, and recall workflows" },
+                { value: "Clear", label: "Lead source tied to booked and paid visits" },
               ].map((stat, i) => (
                 <div
                   key={i}
@@ -225,7 +223,7 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-10 lg:mb-14">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight leading-[1.1]">
-              One Platform for the Entire Patient Journey
+              One system for the work around every visit
             </h2>
           </AnimatedSection>
 
@@ -257,10 +255,10 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection>
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-center text-black tracking-tight mb-4 max-w-3xl mx-auto leading-[1.1]">
-              How Each Capability Drives Your Outcomes
+              How Zavis keeps patient work moving
             </h2>
             <p className="text-center font-['Geist',sans-serif] font-medium text-sm text-black/40 mb-10 lg:mb-12">
-              See how Zavis increases revenue, reduces no-shows, and improves satisfaction across every workflow.
+              Start with the patient channel that leaks the most time, then connect booking, reminders, recall, and reporting.
             </p>
           </AnimatedSection>
 
@@ -333,12 +331,11 @@ export function HomePageClient() {
                   </p>
                 </div>
                 <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-                  Patient inquiries arrive across WhatsApp, Instagram, phone,
-                  and web forms. Each channel lives in a separate tool. Leads
-                  go cold before coordinators can respond. No-shows pile up
-                  because reminders are manual. Ad spend cannot be traced to
-                  actual revenue. Staff spend most of their day on routine
-                  queries instead of complex patient care.
+                  A patient sends a WhatsApp message, another calls after
+                  hours, and a third fills a lead form. The team checks
+                  separate tools, copies details into the EMR, chases
+                  confirmations by hand, and guesses which campaigns produced
+                  real bookings.
                 </p>
               </div>
               {/* With Zavis */}
@@ -350,13 +347,11 @@ export function HomePageClient() {
                   </p>
                 </div>
                 <p className="font-['Geist',sans-serif] font-medium text-sm text-black/70 leading-relaxed">
-                  Every channel feeds into one patient timeline. AI agents
-                  respond instantly, qualify intent, and book directly into
-                  your EMR. Automated reminders at 24h and 12h cut no-shows.
-                  Post-visit follow-ups and recall campaigns drive retention
-                  and repeat revenue. Every booking is attributed from the
-                  original ad click to collected payment. Staff focus on
-                  complex care while AI handles the volume.
+                  Zavis brings those conversations into one patient timeline.
+                  AI handles common questions, missed-call follow-up, and
+                  intake details. Staff book from clean context, reminders go
+                  out on schedule, payment links follow visits, and recall
+                  campaigns bring patients back.
                 </p>
               </div>
             </div>

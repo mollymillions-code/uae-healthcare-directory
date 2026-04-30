@@ -19,7 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const handleLogout = async () => {
     await fetch('/api/research/auth', { method: 'DELETE' })
-    router.push('/login')
+    router.push('/dashboard-auth')
   }
 
   return (

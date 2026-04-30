@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Phone, MessageCircle, Globe, MapPin, Star } from "lucide-react";
 import { cn } from "../shared/cn";
 import { trackProviderCta, type CtaType } from "@/lib/provider-tracking";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 
 interface BookingCardProps {
   providerName: string;
@@ -155,18 +156,20 @@ export function BookingCard(p: BookingCardProps) {
         )}
       </div>
 
-      {!p.isClaimed && (
-        <div className="mt-5 pt-5 border-t border-ink-line">
-          <p className="font-sans text-z-caption text-ink-muted mb-2">Work here?</p>
-          <Link
-            href={`/claim/${p.providerId}`}
-            onClick={track("claim_listing")}
-            className="font-sans font-semibold text-z-body-sm text-accent-dark hover:text-accent underline underline-offset-2"
-          >
-            Claim this listing →
-          </Link>
-        </div>
-      )}
+      <div className="mt-5 pt-5 border-t border-ink-line">
+        <p className="font-sans text-z-caption text-ink-muted mb-2">Work here?</p>
+        <OwnerWhatsappCta
+          action={p.isClaimed ? "edit" : "claim"}
+          surface="provider_detail_booking_card"
+          providerId={p.providerId}
+          providerName={p.providerName}
+          providerSlug={p.providerSlug}
+          citySlug={p.citySlug}
+          categorySlug={p.categorySlug}
+          label={p.isClaimed ? "Edit via WhatsApp" : "Claim or edit via WhatsApp"}
+          variant="link"
+        />
+      </div>
     </aside>
   );
 }

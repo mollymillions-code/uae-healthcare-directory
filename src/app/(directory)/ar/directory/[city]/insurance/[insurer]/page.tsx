@@ -336,6 +336,7 @@ export default async function ArabicInsuranceProviderPage({ params }: Props) {
               {providers.slice(0, 60).map((p) => (
                 <ProviderCard
                   key={p.id}
+                  providerId={p.id}
                   name={p.name}
                   slug={p.slug}
                   citySlug={p.citySlug}

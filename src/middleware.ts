@@ -85,7 +85,7 @@ export function middleware(request: NextRequest) {
     const dashboardKey = process.env.DASHBOARD_KEY || '';
 
     if (authCookie?.value !== dashboardKey) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/dashboard-auth', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }

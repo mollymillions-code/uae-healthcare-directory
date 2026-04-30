@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Accessibility, ShieldCheck, BadgeCheck, Quote } from "lucide-react";
+import { ChevronRight, Accessibility, ShieldCheck, Quote } from "lucide-react";
 import { getCategoryImagePath } from "@/lib/helpers";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { isUsableProviderImageUrl } from "@/lib/media/provider-images";
+import { SaveProviderButton } from "@/components/account/SaveProviderButton";
+import { VerifiedClinicBadge } from "@/components/provider/VerifiedClinicBadge";
 
 function getCategoryBySlug(slug: string) {
   return CATEGORIES.find((c) => c.slug === slug);
@@ -15,6 +17,7 @@ function getCategoryBySlug(slug: string) {
 // same minimal set. New decision-card fields are all optional.
 
 interface ProviderCardProps {
+  providerId?: string;
   name: string;
   slug: string;
   citySlug: string;
@@ -172,7 +175,7 @@ function computeOpenNow(
 // ─── Component ─────────────────────────────────────────────────────────────
 
 export function ProviderCard({
-  name, slug, citySlug, categorySlug, address, phone,
+  providerId, name, slug, citySlug, categorySlug, address, phone,
   shortDescription, googleRating, googleReviewCount, isClaimed, isVerified,
   insurance, languages, services, operatingHours, accessibilityOptions,
   reviewSnippet, coverImageUrl,
@@ -232,22 +235,40 @@ export function ProviderCard({
     // cross-language crawl anchor — nested <a> is invalid HTML and
     // React would either strip it or throw a hydration error.
     <article
-      className="group relative bg-white rounded-2xl p-5 border border-black/[0.06] hover:shadow-card hover:border-[#006828]/15 hover:-translate-y-0.5 transition-all duration-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-[#006828] focus-within:ring-offset-2"
+      className={`group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-[#006828] focus-within:ring-offset-2 ${
+        isVerified
+          ? "border-[#006828]/25 bg-[#f5fbf7] shadow-[0_16px_42px_rgba(0,104,40,0.10)] ring-1 ring-[#006828]/10 hover:-translate-y-0.5 hover:border-[#006828]/40 hover:shadow-[0_20px_52px_rgba(0,104,40,0.14)]"
+          : "border-black/[0.06] bg-white hover:-translate-y-0.5 hover:border-[#006828]/15 hover:shadow-card"
+      }`}
     >
+      {isVerified && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[#006828]" aria-hidden="true" />
+      )}
+
       {/* Top row: facility tag + rating badge */}
       <div className="flex items-center justify-between gap-2 mb-2 pointer-events-none">
         <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">
           {categoryName}
         </span>
-        {showStars && (
-          <span
-            className="inline-flex items-center gap-1 bg-[#006828] text-white text-[10px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif]"
-            aria-label={`${googleRating} out of 5 based on ${reviewCount.toLocaleString()} Google reviews`}
-          >
-            <span aria-hidden="true">{googleRating}</span>
-            <span aria-hidden="true">★</span>
-          </span>
-        )}
+        <div className="relative z-10 flex items-center gap-1.5 pointer-events-auto">
+          {showStars && (
+            <span
+              className="inline-flex items-center gap-1 bg-[#006828] text-white text-[10px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif]"
+              aria-label={`${googleRating} out of 5 based on ${reviewCount.toLocaleString()} Google reviews`}
+            >
+              <span aria-hidden="true">{googleRating}</span>
+              <span aria-hidden="true">★</span>
+            </span>
+          )}
+          {providerId && (
+            <SaveProviderButton
+              providerId={providerId}
+              providerName={name}
+              surface="provider_card"
+              compact
+            />
+          )}
+        </div>
       </div>
 
       <div className="flex items-start gap-3 pointer-events-none">
@@ -277,15 +298,7 @@ export function ProviderCard({
                 {name}
               </Link>
             </h3>
-            {isVerified && (
-              <span
-                className="inline-flex items-center gap-0.5 bg-[#006828]/[0.08] text-[#006828] text-[9px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif]"
-                aria-label="Verified by Zavis"
-              >
-                <BadgeCheck className="h-2.5 w-2.5" aria-hidden="true" />
-                Verified
-              </span>
-            )}
+            {isVerified && <VerifiedClinicBadge />}
             {isClaimed && !isVerified && (
               <span
                 className="inline-flex items-center gap-0.5 bg-black/[0.05] text-black/60 text-[9px] font-medium px-2 py-0.5 rounded-full font-['Geist',sans-serif]"

@@ -22,6 +22,7 @@ import { sendDailyBriefing } from "./newsletter";
 import { getLatestArticles } from "../data";
 import type { JournalArticle } from "../types";
 import { nanoid } from "nanoid";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 // ─── DB Persistence ─────────────────────────────────────────────────────────────
 
@@ -178,60 +179,177 @@ const CATEGORY_SCENE: Record<string, string> = {
   "social-pulse": "a smartphone showing healthcare social media posts, clean minimalist desk, coffee cup",
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function generateArticleImage(title: string, category: string): Promise<string | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
+// ─── R2 Upload Helper ─────────────────────────────────────────────────────────
 
-  const scene = CATEGORY_SCENE[category] || "a modern UAE hospital with clean minimalist architecture and natural light";
+function getR2Client(): S3Client | null {
+  if (
+    !process.env.R2_ACCESS_KEY_ID ||
+    !process.env.R2_SECRET_ACCESS_KEY ||
+    !process.env.R2_ENDPOINT
+  ) {
+    return null;
+  }
+  return new S3Client({
+    region: "auto",
+    endpoint: process.env.R2_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
+}
 
-  // Use article title for unique context — no two articles get the same image
+async function uploadImageToR2(
+  base64Data: string,
+  slug: string
+): Promise<string | null> {
+  const r2 = getR2Client();
+  if (!r2 || !process.env.R2_BUCKET || !process.env.R2_PUBLIC_URL) {
+    console.warn("[Pipeline] R2 not configured — cannot upload generated image");
+    return null;
+  }
+
+  const buffer = Buffer.from(base64Data, "base64");
+  const key = `intelligence/${slug}.webp`;
+
+  await r2.send(
+    new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: "image/webp",
+    })
+  );
+
+  const publicUrl = process.env.R2_PUBLIC_URL.replace(/\/$/, "");
+  return `${publicUrl}/${key}`;
+}
+
+// ─── OpenRouter Nano Banana Image Generation ─────────────────────────────────
+
+async function generateArticleImage(
+  title: string,
+  category: string,
+  slug: string
+): Promise<string | null> {
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_KEY;
+  if (!apiKey) {
+    console.warn("[Pipeline] No OPENROUTER_API_KEY — skipping image generation");
+    return null;
+  }
+
+  const scene =
+    CATEGORY_SCENE[category] ||
+    "a modern UAE hospital with clean minimalist architecture and natural light";
+
   const prompt = `Professional editorial photograph for a healthcare news article titled "${title}". Scene: ${scene}. Style: photojournalistic, shallow depth of field, natural lighting, cinematic color grading. No text overlay, no watermarks, no logos. UAE/Middle East context. High resolution, 16:9 aspect ratio.`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseModalities: ["IMAGE", "TEXT"],
-            responseMimeType: "image/png",
-          },
-        }),
-        signal: AbortSignal.timeout(30000),
-      }
-    );
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-image-preview",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+
+    if (!response.ok) {
+      console.error(`[Pipeline] OpenRouter image gen failed: ${response.status}`);
+      return null;
+    }
 
     const data = await response.json();
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    for (const part of parts) {
-      if (part.inlineData?.mimeType?.startsWith("image/")) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+    const message = data?.choices?.[0]?.message;
+
+    // Extract base64 image from the response
+    const images = message?.images;
+    if (images && images.length > 0) {
+      const dataUrl: string = images[0]?.image_url?.url || "";
+      const base64Match = dataUrl.match(/^data:image\/\w+;base64,(.+)$/);
+      if (base64Match?.[1]) {
+        const r2Url = await uploadImageToR2(base64Match[1], slug);
+        if (r2Url) {
+          console.log(`[Pipeline] Image (generated+R2): ${slug}`);
+          return r2Url;
+        }
       }
     }
+
     return null;
-  } catch {
+  } catch (error) {
+    console.error(`[Pipeline] Image generation error: ${String(error)}`);
     return null;
   }
 }
 
+// Pool of fallback images — rotated by index so articles in the same category
+// don't all show the same thumbnail.  Every image here already exists on R2.
+const FALLBACK_IMAGE_POOL: Record<string, string[]> = {
+  regulatory: [
+    `${R2_PUBLIC}/intelligence/uae-stiffens-penalties-for-controlled-substances.webp`,
+    `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+  ],
+  financial: [
+    `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
+    `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
+    `${R2_PUBLIC}/intelligence/aster-dm-mega-clinic-dubai-hills.webp`,
+  ],
+  technology: [
+    `${R2_PUBLIC}/intelligence/mediclinic-middle-east-digital-front-door.webp`,
+    `${R2_PUBLIC}/intelligence/ai-diagnostics-uae-hospitals-opinion.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+  ],
+  "new-openings": [
+    `${R2_PUBLIC}/intelligence/aster-dm-mega-clinic-dubai-hills.webp`,
+    `${R2_PUBLIC}/intelligence/mediclinic-middle-east-digital-front-door.webp`,
+    `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
+  ],
+  "market-intelligence": [
+    `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
+    `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+  ],
+  workforce: [
+    `${R2_PUBLIC}/intelligence/uae-nursing-shortage-5000-positions.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+    `${R2_PUBLIC}/intelligence/ai-diagnostics-uae-hospitals-opinion.webp`,
+  ],
+  events: [
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+    `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
+    `${R2_PUBLIC}/intelligence/mediclinic-middle-east-digital-front-door.webp`,
+  ],
+  "thought-leadership": [
+    `${R2_PUBLIC}/intelligence/ai-diagnostics-uae-hospitals-opinion.webp`,
+    `${R2_PUBLIC}/intelligence/uae-stiffens-penalties-for-controlled-substances.webp`,
+    `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
+  ],
+  "social-pulse": [
+    `${R2_PUBLIC}/intelligence/social-pulse-march-2026-week-2.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+    `${R2_PUBLIC}/intelligence/mediclinic-middle-east-digital-front-door.webp`,
+  ],
+};
+
+const fallbackCounters: Record<string, number> = {};
+
 function getCategoryFallbackImage(category: string): string {
-  // Pre-existing R2 images by category — guaranteed to exist
-  const fallbacks: Record<string, string> = {
-    regulatory: `${R2_PUBLIC}/intelligence/uae-stiffens-penalties-for-controlled-substances.webp`,
-    financial: `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
-    technology: `${R2_PUBLIC}/intelligence/mediclinic-middle-east-digital-front-door.webp`,
-    "new-openings": `${R2_PUBLIC}/intelligence/aster-dm-mega-clinic-dubai-hills.webp`,
-    "market-intelligence": `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
-    workforce: `${R2_PUBLIC}/intelligence/uae-nursing-shortage-5000-positions.webp`,
-    events: `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
-    "thought-leadership": `${R2_PUBLIC}/intelligence/ai-diagnostics-uae-hospitals-opinion.webp`,
-    "social-pulse": `${R2_PUBLIC}/intelligence/social-pulse-march-2026-week-2.webp`,
-  };
-  return fallbacks[category] || `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`;
+  const pool = FALLBACK_IMAGE_POOL[category] ?? [
+    `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`,
+    `${R2_PUBLIC}/intelligence/arab-health-2026-key-takeaways.webp`,
+    `${R2_PUBLIC}/intelligence/gcc-medical-tourism-uae-market-share.webp`,
+  ];
+  const idx = (fallbackCounters[category] ?? 0) % pool.length;
+  fallbackCounters[category] = idx + 1;
+  return pool[idx];
 }
 
 export interface PipelineResult {
@@ -368,9 +486,12 @@ export async function runContentPipeline(): Promise<PipelineResult> {
       } catch { /* best effort */ }
     }
 
-    // Try 2: Gemini generation is skipped in serverless — returns base64 which
-    // can't be stored as a URL. Gemini images are generated in the local/GH Actions
-    // script which can upload to R2. In serverless, go straight to fallback.
+    // Try 2: Generate via OpenRouter Nano Banana → upload to R2
+    if (!imageUrl) {
+      try {
+        imageUrl = await generateArticleImage(article.title, article.category, article.slug);
+      } catch { /* best effort */ }
+    }
 
     // Try 3: Use a category-default R2 image
     if (!imageUrl) {

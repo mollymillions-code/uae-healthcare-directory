@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Search, Menu, X } from "lucide-react";
 import { CITIES } from "@/lib/constants/cities";
 import { COUNTRIES } from "@/lib/constants/countries";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 
 const UAE_CITY_LINKS = [
   { label: "Dubai", href: "/directory/dubai" },
@@ -56,6 +58,7 @@ function getArabicPath(pathname: string): string | null {
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const countryCtx = useCountryContext(pathname);
 
   const cityLinks = countryCtx ? countryCtx.cityLinks : UAE_CITY_LINKS;
@@ -114,12 +117,28 @@ export function Header() {
                   {pathname.startsWith('/ar') ? 'EN' : 'عربي'}
                 </Link>
               )}
-              <Link
-                href="/claim"
-                className="inline-flex items-center bg-transparent border border-white/20 hover:border-white/40 text-white text-[13px] font-semibold px-5 py-2 rounded-full transition-colors whitespace-nowrap font-['Geist',sans-serif]"
-              >
-                Claim Listing
-              </Link>
+              <OwnerWhatsappCta
+                action="get_listed"
+                surface="directory_header_owner_cta"
+                label="Get listed"
+                compact
+                className="border-white/20 bg-transparent text-white hover:border-white/40 hover:bg-white/5"
+              />
+              {status === "authenticated" ? (
+                <Link
+                  href="/account"
+                  className="font-['Geist',sans-serif] text-[14px] font-semibold text-white/60 hover:text-white transition-colors"
+                >
+                  Account
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="font-['Geist',sans-serif] text-[14px] font-semibold text-white/60 hover:text-white transition-colors"
+                >
+                  Log in
+                </Link>
+              )}
               <Link href="/find-a-doctor" aria-label="Find a doctor" className="p-2 text-white/60 hover:text-white transition-colors">
                 <Search className="h-5 w-5" />
               </Link>
@@ -208,7 +227,15 @@ export function Header() {
               <Link href="/labs" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Labs</Link>
               <Link href="/intelligence" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Insights</Link>
               <Link href="/research" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Research</Link>
-              <Link href="/claim" className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>Claim Listing</Link>
+              <OwnerWhatsappCta
+                action="get_listed"
+                surface="directory_mobile_header_owner_cta"
+                label="Get listed or edit"
+                variant="link"
+              />
+              <Link href={session?.user ? "/account" : "/login"} className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>
+                {session?.user ? "Account" : "Log in"}
+              </Link>
               <Link href="/about" className="font-['Geist',sans-serif] text-sm text-white/60" onClick={() => setMobileOpen(false)}>About</Link>
               {getArabicPath(pathname) && (
                 <Link href={getArabicPath(pathname)!} className="font-['Geist',sans-serif] text-sm font-medium text-[#006828]" onClick={() => setMobileOpen(false)}>

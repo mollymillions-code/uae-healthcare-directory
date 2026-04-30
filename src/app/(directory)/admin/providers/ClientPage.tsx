@@ -168,8 +168,8 @@ export default function ProvidersAdminPage() {
         body: JSON.stringify({
           isVerified: nextValue,
           reason: nextValue
-            ? "Zavis Verified badge enabled from admin panel"
-            : "Zavis Verified badge disabled from admin panel",
+            ? "Verified badge enabled from admin panel"
+            : "Verified badge disabled from admin panel",
         }),
       });
       if (!res.ok) throw new Error("Failed to update verification");
@@ -179,7 +179,7 @@ export default function ProvidersAdminPage() {
       if (editing?.id === provider.id) {
         setEditing({ ...editing, isVerified: nextValue });
       }
-      showToast("success", nextValue ? "Zavis Verified badge enabled" : "Zavis Verified badge removed");
+      showToast("success", nextValue ? "Verified badge enabled" : "Verified badge removed");
     } catch (err) {
       showToast("error", err instanceof Error ? err.message : "Verification update failed");
     } finally {
@@ -532,7 +532,7 @@ export default function ProvidersAdminPage() {
                 </label>
               </div>
 
-              {/* Zavis Verified toggle */}
+              {/* Verified toggle */}
               <button
                 type="button"
                 onClick={() => updateField("isVerified", !editing.isVerified)}
@@ -556,10 +556,10 @@ export default function ProvidersAdminPage() {
                     </div>
                     <div>
                       <p className="font-['Bricolage_Grotesque',sans-serif] text-lg font-medium tracking-tight text-[#1c1c1c]">
-                        Zavis Verified badge
+                        Verified badge
                       </p>
                       <p className="mt-1 font-['Geist',sans-serif] text-sm leading-relaxed text-black/50">
-                        Toggle this on to show the Zavis green verified badge, premium profile strip, and verified card treatment across the directory.
+                        Toggle this on to show the green verified badge, premium profile strip, and verified card treatment across the directory.
                       </p>
                     </div>
                   </div>

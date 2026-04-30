@@ -7,6 +7,8 @@ interface VerifiedClinicBadgeProps {
 
 const base =
   "inline-flex shrink-0 items-center font-['Geist',sans-serif] font-semibold";
+const verificationFinePrint =
+  "Verified means Zavis has collaborated with this clinic and confirmed that the information on this profile is accurate.";
 
 export function VerifiedClinicBadge({
   variant = "card",
@@ -15,14 +17,14 @@ export function VerifiedClinicBadge({
   if (variant === "hero") {
     return (
       <span
-        className={`${base} gap-2 rounded-full border border-white/35 bg-white px-3 py-1.5 text-xs text-[#006828] shadow-[0_12px_30px_rgba(0,104,40,0.26)] ring-1 ring-[#006828]/20 ${className}`}
-        aria-label="Zavis Verified clinic profile"
-        title="Zavis Verified clinic profile"
+        className={`${base} gap-2 rounded-full border border-white/50 bg-white px-3.5 py-1.5 text-xs text-[#006828] shadow-[0_16px_36px_rgba(0,104,40,0.28)] ring-1 ring-[#006828]/20 ${className}`}
+        aria-label="Verified clinic profile"
+        title={verificationFinePrint}
       >
-        <span className="grid h-5 w-5 place-items-center rounded-full bg-[#006828] text-white shadow-[0_0_0_3px_rgba(0,104,40,0.14)]">
-          <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="grid h-6 w-6 place-items-center rounded-full bg-[#006828] text-white shadow-[0_0_0_4px_rgba(0,104,40,0.14)]">
+          <BadgeCheck className="h-4 w-4" aria-hidden="true" />
         </span>
-        Zavis Verified
+        Verified
       </span>
     );
   }
@@ -31,8 +33,8 @@ export function VerifiedClinicBadge({
     return (
       <span
         className={`${base} justify-center gap-1 rounded-full border border-[#006828]/15 bg-[#006828]/[0.07] px-2 py-0.5 text-[9px] uppercase tracking-wide text-[#006828] ${className}`}
-        aria-label="Zavis Verified"
-        title="Zavis Verified"
+        aria-label="Verified clinic profile"
+        title={verificationFinePrint}
       >
         <BadgeCheck className="h-3 w-3" aria-hidden="true" />
         Verified
@@ -44,8 +46,8 @@ export function VerifiedClinicBadge({
     return (
       <span
         className={`${base} gap-1 rounded-full bg-[#006828]/[0.08] px-2 py-0.5 text-[9px] text-[#006828] ${className}`}
-        aria-label="Zavis Verified"
-        title="Zavis Verified"
+        aria-label="Verified clinic profile"
+        title={verificationFinePrint}
       >
         <BadgeCheck className="h-3 w-3" aria-hidden="true" />
         Verified
@@ -55,14 +57,14 @@ export function VerifiedClinicBadge({
 
   return (
     <span
-      className={`${base} gap-1 rounded-full border border-[#006828]/15 bg-[#006828]/[0.07] px-2 py-0.5 text-[9px] text-[#006828] shadow-[0_6px_16px_rgba(0,104,40,0.10)] ${className}`}
-      aria-label="Zavis Verified clinic profile"
-      title="Zavis Verified clinic profile"
+      className={`${base} gap-1 rounded-full border border-[#006828]/15 bg-[#006828]/[0.08] px-2 py-0.5 text-[9px] text-[#006828] shadow-[0_8px_18px_rgba(0,104,40,0.12)] ${className}`}
+      aria-label="Verified clinic profile"
+      title={verificationFinePrint}
     >
       <span className="grid h-3.5 w-3.5 place-items-center rounded-full bg-[#006828] text-white">
         <BadgeCheck className="h-2.5 w-2.5" aria-hidden="true" />
       </span>
-      Zavis Verified
+      Verified
     </span>
   );
 }
@@ -71,37 +73,37 @@ export function VerifiedClinicTrustStrip({ className = "" }: { className?: strin
   const items = [
     {
       icon: BadgeCheck,
-      label: "Verified profile",
-      helper: "This clinic has been marked verified in Zavis.",
+      label: "Clinic collaboration",
+      helper: "The clinic has worked with Zavis to review this profile.",
     },
     {
       icon: ClipboardCheck,
-      label: "Details reviewed",
-      helper: "Core listing details are checked before the mark is shown.",
+      label: "Information confirmed",
+      helper: "Core details such as location, contact routes, services, and photos have been checked.",
     },
     {
       icon: ShieldCheck,
-      label: "Authorized updates",
-      helper: "Clinic edits are routed through an owner or approved representative.",
+      label: "Owner-led updates",
+      helper: "Future profile edits are routed through the clinic owner or an approved representative.",
     },
   ];
 
   return (
     <section
-      className={`rounded-2xl border border-[#006828]/15 bg-[#f5fbf7] p-4 shadow-[0_16px_40px_rgba(0,104,40,0.08)] ${className}`}
-      aria-label="Zavis Verified clinic signals"
+      className={`rounded-2xl border border-[#006828]/20 bg-[linear-gradient(135deg,#f3fbf6_0%,#ffffff_58%,#eef9f2_100%)] p-5 shadow-[0_18px_48px_rgba(0,104,40,0.12)] ${className}`}
+      aria-label="Verified clinic profile"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#006828] text-white shadow-[0_0_0_5px_rgba(0,104,40,0.10)]">
-            <BadgeCheck className="h-5 w-5" aria-hidden="true" />
+          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#006828] text-white shadow-[0_0_0_6px_rgba(0,104,40,0.11),0_14px_28px_rgba(0,104,40,0.22)]">
+            <BadgeCheck className="h-8 w-8" aria-hidden="true" />
           </div>
           <div>
-            <p className="font-['Bricolage_Grotesque',sans-serif] text-lg font-medium tracking-tight text-[#1c1c1c]">
-              Zavis Verified clinic
+            <p className="font-['Bricolage_Grotesque',sans-serif] text-2xl font-medium tracking-tight text-[#1c1c1c]">
+              Verified
             </p>
-            <p className="font-['Geist',sans-serif] text-sm text-black/50">
-              A higher-trust profile signal for clinics that complete verification.
+            <p className="mt-1 max-w-2xl font-['Geist',sans-serif] text-xs leading-relaxed text-black/50">
+              {verificationFinePrint}
             </p>
           </div>
         </div>

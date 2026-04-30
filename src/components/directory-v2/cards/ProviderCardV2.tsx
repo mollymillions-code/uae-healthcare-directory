@@ -6,6 +6,7 @@ import { PhotoCarousel } from "./PhotoCarousel";
 import { HeartButton } from "./HeartButton";
 import { cn } from "../shared/cn";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
+import { VerifiedClinicBadge } from "@/components/provider/VerifiedClinicBadge";
 
 export interface ProviderCardV2Props {
   name: string;
@@ -56,15 +57,19 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
         {/* Top-left ribbon — non-interactive, allow overlay link clicks through */}
         {(p.ribbon || p.isVerified) && (
           <div className="absolute top-3 left-3 pointer-events-none z-20">
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 rounded-z-pill bg-white/95 backdrop-blur px-2.5 py-1",
-                "font-sans text-z-micro text-ink uppercase tracking-[0.04em] shadow-[0_1px_4px_rgba(0,0,0,0.12)]"
-              )}
-            >
-              {p.isVerified && <BadgeCheck className="h-3 w-3 text-accent-deep" strokeWidth={2.5} />}
-              {p.ribbon ?? "Verified"}
-            </span>
+            {p.isVerified && !p.ribbon ? (
+              <VerifiedClinicBadge variant="inline" />
+            ) : (
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-z-pill bg-white/95 backdrop-blur px-2.5 py-1",
+                  "font-sans text-z-micro text-ink uppercase tracking-[0.04em] shadow-[0_1px_4px_rgba(0,0,0,0.12)]"
+                )}
+              >
+                {p.isVerified && <BadgeCheck className="h-3 w-3 text-accent-deep" strokeWidth={2.5} />}
+                {p.ribbon}
+              </span>
+            )}
           </div>
         )}
 

@@ -32,6 +32,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 3200,
+        NEXTAUTH_URL: "https://www.zavis.ai",
         ZAVIS_VERIFIED_PROVIDER_IDS: process.env.ZAVIS_VERIFIED_PROVIDER_IDS || "",
       },
       error_file: "/home/ubuntu/zavis-landing-blue/logs/error.log",
@@ -48,6 +49,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 3201,
+        NEXTAUTH_URL: "https://www.zavis.ai",
         ZAVIS_VERIFIED_PROVIDER_IDS: process.env.ZAVIS_VERIFIED_PROVIDER_IDS || "",
       },
       error_file: "/home/ubuntu/zavis-landing-green/logs/error.log",

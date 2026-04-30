@@ -31,7 +31,7 @@ export default function CtaSection() {
           <Link
             // href="https://wa.me/971555312595?text=I%20checked%20the%20website%2C%20and%20I%20have%20a%20few%20questions%20to%20ask"
             // target="_blank"
-              href={"book-a-demo"}
+              href="/book-a-demo"
             rel="noopener noreferrer"
           >
             <Button

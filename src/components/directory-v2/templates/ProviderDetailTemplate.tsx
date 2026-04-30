@@ -11,6 +11,10 @@ import { ShareButton } from "../detail/ShareButton";
 import { HeartButton } from "../cards/HeartButton";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
+import {
+  VerifiedClinicBadge,
+  VerifiedClinicTrustStrip,
+} from "@/components/provider/VerifiedClinicBadge";
 
 
 const GoogleMapEmbed = dynamic(
@@ -122,7 +126,7 @@ export function ProviderDetailTemplate({
         : "Claim this listing";
 
   const highlights: { icon: React.ReactNode; title: string; sub: string }[] = [];
-  if (p.isVerified) highlights.push({ icon: <BadgeCheck className="h-5 w-5 text-accent-deep" />, title: "Verified by Zavis", sub: "Contact details reviewed and confirmed" });
+  if (p.isVerified) highlights.push({ icon: <BadgeCheck className="h-5 w-5 text-accent-deep" />, title: "Verified", sub: "Zavis has collaborated with this clinic and confirmed the profile details" });
   if (p.languages && p.languages.length > 0) highlights.push({ icon: <LangIcon className="h-5 w-5 text-accent-deep" />, title: `Speaks ${p.languages.slice(0, 3).join(", ")}`, sub: p.languages.length > 3 ? `+${p.languages.length - 3} more languages` : "Multilingual staff" });
   if (p.operatingHours && Object.keys(p.operatingHours).length > 0) highlights.push({ icon: <Clock className="h-5 w-5 text-accent-deep" />, title: "Published hours", sub: "Confirmed opening times" });
   if (p.insurance && p.insurance.length > 0) highlights.push({ icon: <ShieldCheck className="h-5 w-5 text-accent-deep" />, title: `${p.insurance.length} insurers accepted`, sub: "Direct billing on select plans" });
@@ -155,9 +159,12 @@ export function ProviderDetailTemplate({
         {/* Title row */}
         <header className="flex items-start justify-between gap-6 mb-5">
           <div className="min-w-0">
-            <h1 className="font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
-              {p.name}
-            </h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
+                {p.name}
+              </h1>
+              {p.isVerified && <VerifiedClinicBadge variant="hero" />}
+            </div>
             <div className="mt-2 flex items-center gap-2 flex-wrap font-sans text-z-body-sm text-ink-soft">
               {hasRating && (
                 <span className="inline-flex items-center gap-1 text-ink font-semibold">
@@ -218,6 +225,8 @@ export function ProviderDetailTemplate({
           priorityCount={1}
           fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
         />
+
+        {p.isVerified && <VerifiedClinicTrustStrip className="mt-6" />}
 
         {/* Two-column layout */}
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16" id="detail-grid">

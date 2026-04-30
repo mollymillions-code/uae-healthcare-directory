@@ -14,9 +14,6 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const ZAVIS_API_URL = process.env.NEXT_PUBLIC_ZAVIS_API_URL || "https://clientops.zavisinternaltools.in";
-const LEADS_WEBHOOK_SECRET = process.env.NEXT_PUBLIC_LEADS_WEBHOOK_SECRET || "";
-
 const teamOptions = [
   "Marketing",
   "Sales",
@@ -94,20 +91,21 @@ export function ContactPageClient() {
     const fbp = getCookie("_fbp");
     const fbc = getCookie("_fbc");
 
-    fetch(`${ZAVIS_API_URL}/api/leads/website`, {
+    const leadPayload = {
+      name: formData.name,
+      email: formData.email,
+      company: formData.company,
+      website: formData.website || null,
+      team: formData.team,
+      phone: formData.phone,
+    };
+
+    fetch("/api/notify-demo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-webhook-secret": LEADS_WEBHOOK_SECRET,
       },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        company: formData.company,
-        website: formData.website || null,
-        team: formData.team,
-        phone: formData.phone,
-      }),
+      body: JSON.stringify(leadPayload),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Submission failed");
@@ -128,21 +126,7 @@ export function ContactPageClient() {
         trackTwitterLead();
         trackLinkedInConversion();
 
-        // Email notification to team — fire and forget
-        fetch("/api/notify-demo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.company,
-            team: formData.team,
-            website: formData.website || null,
-          }),
-        }).catch(() => {});
-
-        // Server-side Meta CAPI — fire and forget, never blocks form success
+        // Server-side Meta CAPI — fire and forget, never blocks form success.
         fetch("/api/capi", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -1,71 +1,71 @@
 import { MessageSquare, Phone, Bot, Calendar, BarChart3, Zap } from "lucide-react";
 
 export const homeTabs = [
-  "PATIENT ENGAGEMENT",
-  "BOOKING MANAGEMENT",
-  "AI-POWERED OPS",
-  "BROADCAST & CAMPAIGN",
-  "INTEGRATION & DATA",
+  "PATIENT CONVERSATIONS",
+  "APPOINTMENT FLOW",
+  "AI FRONT DESK",
+  "RECALL & CAMPAIGNS",
+  "DATA & REVENUE",
 ];
 
 export const homeTabContent = [
   {
-    title: "Omnichannel Patient Communication Across Every Channel",
-    subtitle: "WhatsApp, Instagram, phone, web chat, and more. One conversation thread per patient.",
+    title: "Every patient message in one place",
+    subtitle: "WhatsApp, Instagram, calls, forms, and web chat feed into one patient timeline.",
     image: "/assets/shared-omnichannel-inbox.webp",
     imageAlt: "Clinic coordinator at dental reception managing WhatsApp, Instagram, and web chat patient messages in unified inbox",
     features: [
-      { heading: "Unified Patient Inbox", text: "WhatsApp, Instagram, Facebook, TikTok, and web chat in one patient timeline. Every inquiry captured, every team member on the same page." },
-      { heading: "Full Ad Attribution Built In", text: "Google Ads and Meta lead forms auto-ingest with UTM and campaign data preserved. Revenue tracked from first click to booked appointment." },
+      { heading: "One patient thread", text: "Front-desk teams see the full conversation history before they reply. New inquiries, follow-ups, missed calls, and ad leads stay tied to the same patient record." },
+      { heading: "Source tracking from the first click", text: "Google, Meta, and TikTok leads arrive with campaign data intact, so the team can see which channels turn into booked visits." },
     ],
   },
   {
-    title: "Intelligent Appointment Booking with Real-Time EMR Sync",
-    subtitle: "From patient inquiry to confirmed appointment in seconds. Fully synced with your EMR.",
+    title: "Booking that keeps the schedule moving",
+    subtitle: "Give staff live slots, fast confirmations, and fewer manual updates.",
     image: "/assets/shared-patient-booking.webp",
     imageAlt: "Patient in waiting room smiling at phone with WhatsApp appointment booking confirmation overlay",
     features: [
-      { heading: "Coordinator-Led Booking", text: "Filter live EMR slots by doctor, service, and branch. WhatsApp confirmation sent automatically. Zero double entry, zero scheduling conflicts." },
-      { heading: "AI-Led Booking", text: "AI agents qualify intent, offer best slots, and book directly into your EMR. Automated 24h and 12h reminders reduce no-shows." },
+      { heading: "Coordinator booking", text: "Filter available slots by doctor, service, branch, and patient need. Once a visit is booked, the patient gets the confirmation on WhatsApp." },
+      { heading: "AI-assisted booking", text: "AI agents qualify the request, suggest suitable slots, and pass clean booking details to the team or EMR workflow." },
     ],
   },
   {
-    title: "AI Agents That Handle Patient Operations Around the Clock",
-    subtitle: "Most routine patient queries handled without staff involvement.",
+    title: "AI agents for routine front-desk work",
+    subtitle: "Answer common questions, recover missed calls, and keep conversations moving after hours.",
     image: "/assets/ai-agents-hero.webp",
     imageAlt: "Healthcare clinic storefront at night with WhatsApp AI booking conversation and 24/7 availability badge",
     features: [
-      { heading: "Chat AI Agent", text: "Responds instantly on WhatsApp, Instagram, and web, 24/7, in the patient's language. Qualifies intent, books via EMR, and recaptures no-shows." },
-      { heading: "Voice AI Agent", text: "Screen pop with patient context, real-time transcript, and live EMR booking. Missed calls trigger instant recovery workflows." },
+      { heading: "Chat AI agent", text: "Replies on WhatsApp, Instagram, and web chat in the patient's language. It can answer FAQs, collect intake details, and route complex cases to staff." },
+      { heading: "Voice AI agent", text: "Missed calls can trigger instant follow-up. Live calls show patient context, transcripts, and booking notes for the team." },
     ],
   },
   {
-    title: "Automated Patient Reactivation and Campaign Management",
-    subtitle: "Reach dormant patients, drive recall visits, and measure campaign ROI across every channel.",
+    title: "Recall campaigns that bring patients back",
+    subtitle: "Use WhatsApp, SMS, and email to fill gaps in the calendar without another spreadsheet.",
     image: "/assets/campaigns-hero.webp",
     imageAlt: "Marketing manager reviewing WhatsApp broadcast campaign performance analytics on presentation screen",
     features: [
-      { heading: "Lifecycle Reactivation Campaigns", text: "6-month recall, inactive outreach, and post-visit follow-ups automated through WhatsApp. Revenue from your existing patient base, zero manual effort." },
-      { heading: "Full Campaign Attribution", text: "Delivery, open, response, and booking conversion rates tracked per campaign. Measure ROI before allocating your next budget." },
+      { heading: "Patient recall", text: "Send follow-ups after visits, remind dormant patients when they are due, and offer rebooking links before the schedule has empty hours." },
+      { heading: "Campaign reporting", text: "Track delivery, replies, booked visits, and payment outcomes by campaign, branch, and channel." },
     ],
   },
   {
-    title: "Unified Healthcare Data with Full Revenue Attribution",
-    subtitle: "EMR sync, ad platform ingestion, and end-to-end revenue tracking in one platform.",
+    title: "Data that connects ads, bookings, and payments",
+    subtitle: "See where demand comes from and which interactions become revenue.",
     image: "/assets/integration-data-tab.webp",
     imageAlt: "Healthcare administrator viewing Zavis unified integration dashboard connecting EMR, payment, and communication systems",
     features: [
-      { heading: "Bidirectional EMR Sync", text: "Bookings, cancellations, and patient data sync in real time with your EMR. One source of truth, no double entry, no middleware." },
-      { heading: "Ad-to-Revenue Attribution", text: "Google Ads, Meta, and TikTok lead forms auto-ingest with full UTM data. Complete funnel visibility from click to collected revenue." },
+      { heading: "EMR and calendar sync", text: "Read appointment data, confirmation status, cancellations, and visit signals where the integration allows it." },
+      { heading: "Revenue attribution", text: "Tie ad leads, patient conversations, bookings, reminders, and payment links into one operating view." },
     ],
   },
 ];
 
 export const platformPillars = [
-  { icon: MessageSquare, title: "Omnichannel Inbox", desc: "All channels, one patient timeline", to: "/chat" },
-  { icon: Phone, title: "Cloud Voice", desc: "Native cloud calling with screen pop and recording", to: "/voice" },
-  { icon: Bot, title: "AI Agents", desc: "24/7 patient engagement, chat and voice", to: "/ai-agents" },
-  { icon: Calendar, title: "Bookings", desc: "Real-time EMR sync with WhatsApp confirmations", to: "/bookings" },
-  { icon: BarChart3, title: "Analytics", desc: "Ad click to revenue, fully attributed", to: "/analytics" },
-  { icon: Zap, title: "Automations", desc: "Reminders, follow-ups, and recall on autopilot", to: "/automations" },
+  { icon: MessageSquare, title: "Patient inbox", desc: "WhatsApp, social, web, and forms", to: "/chat" },
+  { icon: Phone, title: "Voice", desc: "Calls, missed-call follow-up, and notes", to: "/voice" },
+  { icon: Bot, title: "AI agents", desc: "Chat and voice support after hours", to: "/ai-agents" },
+  { icon: Calendar, title: "Bookings", desc: "Slots, confirmations, and reminders", to: "/bookings" },
+  { icon: BarChart3, title: "Analytics", desc: "Ad leads to booked and paid visits", to: "/analytics" },
+  { icon: Zap, title: "Automations", desc: "Recall, feedback, and payment nudges", to: "/automations" },
 ];

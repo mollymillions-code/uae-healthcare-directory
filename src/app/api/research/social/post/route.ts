@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPost, clearQueuedPost, getPostState } from '@/lib/research/postiz';
+import { isApiAuthenticated, isDashboardAuthenticated } from '@/lib/research/auth';
+
+function requireResearchAuth(req: NextRequest): NextResponse | null {
+  if (isApiAuthenticated(req) || isDashboardAuthenticated(req)) return null;
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
 
 /**
  * POST /api/social/post — Create a social media post (safe gateway)
@@ -8,6 +14,9 @@ import { createPost, clearQueuedPost, getPostState } from '@/lib/research/postiz
  */
 
 export async function POST(req: NextRequest) {
+  const authError = requireResearchAuth(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const result = await createPost(body);
 
@@ -23,6 +32,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const authError = requireResearchAuth(req);
+  if (authError) return authError;
+
   const id = req.nextUrl.searchParams.get('id');
   if (!id) {
     return NextResponse.json({ error: 'Post ID required' }, { status: 400 });
@@ -32,6 +44,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const authError = requireResearchAuth(req);
+  if (authError) return authError;
+
   const id = req.nextUrl.searchParams.get('id');
   if (!id) {
     return NextResponse.json({ error: 'Post ID required' }, { status: 400 });

@@ -152,13 +152,17 @@ async function sendNotification(claim: {
   }
 
   // Fallback: POST to Zavis internal API (same as lead webhook)
-  if (process.env.NEXT_PUBLIC_ZAVIS_API_URL && process.env.NEXT_PUBLIC_LEADS_WEBHOOK_SECRET) {
+  const baseUrl = process.env.ZAVIS_API_URL || process.env.NEXT_PUBLIC_ZAVIS_API_URL;
+  const webhookSecret =
+    process.env.LEADS_WEBHOOK_SECRET || process.env.NEXT_PUBLIC_LEADS_WEBHOOK_SECRET;
+
+  if (baseUrl && webhookSecret) {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_ZAVIS_API_URL}/api/leads/website`, {
+      await fetch(`${baseUrl.replace(/\/$/, "")}/api/leads/website`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-webhook-secret": process.env.NEXT_PUBLIC_LEADS_WEBHOOK_SECRET,
+          "x-webhook-secret": webhookSecret,
         },
         body: JSON.stringify({
           name: claim.contactName,

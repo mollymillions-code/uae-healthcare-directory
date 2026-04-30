@@ -245,6 +245,7 @@ export default async function ArabicConditionPage({ params }: Props) {
             {providers.slice(0, 18).map((p) => (
               <ProviderCard
                 key={p.id}
+                providerId={p.id}
                 name={p.name}
                 slug={p.slug}
                 citySlug={p.citySlug}

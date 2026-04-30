@@ -8,6 +8,9 @@ interface BreakingTickerProps {
 export function BreakingTicker({ articles }: BreakingTickerProps) {
   if (articles.length === 0) return null;
 
+  // Scale duration by article count so the ticker doesn't fly
+  const duration = `${Math.max(articles.length * 8, 30)}s`;
+
   return (
     <div className="bg-dark text-white overflow-hidden">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4 py-2">
@@ -18,7 +21,10 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
           </span>
         </span>
         <div className="overflow-hidden whitespace-nowrap">
-          <div className="inline-flex gap-12 animate-ticker">
+          <div
+            className="inline-flex gap-12 animate-ticker"
+            style={{ "--ticker-duration": duration } as React.CSSProperties}
+          >
             {articles.map((article) => (
               <Link
                 key={article.id}

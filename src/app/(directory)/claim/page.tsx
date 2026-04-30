@@ -15,6 +15,7 @@ import {
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { ClaimProviderSearch } from "@/components/claim/ClaimProviderSearch";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { faqPageSchema, speakableSchema, breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
@@ -158,6 +159,12 @@ export default function ClaimPage() {
                 >
                   Learn more
                 </a>
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="claim_page_hero_whatsapp"
+                  label="Get listed or edit via WhatsApp"
+                  variant="secondary"
+                />
               </div>
             </div>
 

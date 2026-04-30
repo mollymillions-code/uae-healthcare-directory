@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { ClaimForm } from "@/components/claim/ClaimForm";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { getProviderBySlug } from "@/lib/data";
 
 interface ClaimFormPageProps {
@@ -73,19 +74,39 @@ export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
   }
 
   return (
-    <ClaimForm
-      provider={{
-        id: provider.id,
-        name: provider.name,
-        slug: provider.slug,
-        address: provider.address,
-        citySlug: provider.citySlug,
-        categorySlug: provider.categorySlug,
-        phone: provider.phone,
-        website: provider.website,
-        licenseNumber: provider.licenseNumber,
-        isClaimed: provider.isClaimed,
-      }}
-    />
+    <>
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="rounded-z-md border border-accent/20 bg-accent/[0.04] p-5">
+          <p className="font-sans text-z-body-sm text-ink-soft mb-3">
+            Prefer WhatsApp? Confirm your role and send the listing details directly to Zavis.
+          </p>
+          <OwnerWhatsappCta
+            action={provider.isClaimed ? "edit" : "claim"}
+            surface="claim_form_whatsapp_cta"
+            providerId={provider.id}
+            providerName={provider.name}
+            providerSlug={provider.slug}
+            citySlug={provider.citySlug}
+            categorySlug={provider.categorySlug}
+            label={provider.isClaimed ? "Edit via WhatsApp" : "Claim or edit via WhatsApp"}
+            variant="secondary"
+          />
+        </div>
+      </section>
+      <ClaimForm
+        provider={{
+          id: provider.id,
+          name: provider.name,
+          slug: provider.slug,
+          address: provider.address,
+          citySlug: provider.citySlug,
+          categorySlug: provider.categorySlug,
+          phone: provider.phone,
+          website: provider.website,
+          licenseNumber: provider.licenseNumber,
+          isClaimed: provider.isClaimed,
+        }}
+      />
+    </>
   );
 }
