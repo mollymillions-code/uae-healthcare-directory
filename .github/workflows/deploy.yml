@@ -56,11 +56,13 @@ jobs:
         run: |
           scp -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o StrictHostKeyChecking=no \
             scripts/ec2-deploy-infra/deploy.sh \
+            scripts/ec2-deploy-infra/stage.sh \
+            scripts/ec2-deploy-infra/promote-staged.sh \
             scripts/ec2-deploy-infra/rollback.sh \
             scripts/ec2-deploy-infra/ecosystem.config.cjs \
             ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/zavis-deploy/
           ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 ubuntu@${{ secrets.EC2_HOST }} \
-            'chmod +x /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/rollback.sh && md5sum /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/rollback.sh /home/ubuntu/zavis-deploy/ecosystem.config.cjs'
+            'chmod +x /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/stage.sh /home/ubuntu/zavis-deploy/promote-staged.sh /home/ubuntu/zavis-deploy/rollback.sh && md5sum /home/ubuntu/zavis-deploy/deploy.sh /home/ubuntu/zavis-deploy/stage.sh /home/ubuntu/zavis-deploy/promote-staged.sh /home/ubuntu/zavis-deploy/rollback.sh /home/ubuntu/zavis-deploy/ecosystem.config.cjs'
 
       - name: Deploy via SSH
         run: |

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { BadgeCheck } from "lucide-react";
+import { VerifiedClinicBadge } from "@/components/provider/VerifiedClinicBadge";
 
 interface Provider {
   id: string;
@@ -103,6 +105,7 @@ export default function ProvidersAdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Provider | null>(null);
   const [saving, setSaving] = useState(false);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [reason, setReason] = useState("");
 
@@ -153,6 +156,35 @@ export default function ProvidersAdminPage() {
   const updateField = <K extends keyof Provider>(field: K, value: Provider[K]) => {
     if (!editing) return;
     setEditing({ ...editing, [field]: value });
+  };
+
+  const toggleVerification = async (provider: Provider, nextValue: boolean) => {
+    setVerifyingId(provider.id);
+    try {
+      const key = getAdminKey();
+      const res = await fetch(`/api/admin/providers/${provider.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
+        body: JSON.stringify({
+          isVerified: nextValue,
+          reason: nextValue
+            ? "Zavis Verified badge enabled from admin panel"
+            : "Zavis Verified badge disabled from admin panel",
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to update verification");
+      setProviders((current) =>
+        current.map((p) => (p.id === provider.id ? { ...p, isVerified: nextValue } : p))
+      );
+      if (editing?.id === provider.id) {
+        setEditing({ ...editing, isVerified: nextValue });
+      }
+      showToast("success", nextValue ? "Zavis Verified badge enabled" : "Zavis Verified badge removed");
+    } catch (err) {
+      showToast("error", err instanceof Error ? err.message : "Verification update failed");
+    } finally {
+      setVerifyingId(null);
+    }
   };
 
   return (
@@ -216,6 +248,7 @@ export default function ProvidersAdminPage() {
                 <th className="text-left px-4 py-3 font-medium text-black/60">City</th>
                 <th className="text-left px-4 py-3 font-medium text-black/60">Category</th>
                 <th className="text-left px-4 py-3 font-medium text-black/60">Rating</th>
+                <th className="text-left px-4 py-3 font-medium text-black/60">Verification</th>
                 <th className="text-left px-4 py-3 font-medium text-black/60">Phone</th>
                 <th className="text-left px-4 py-3 font-medium text-black/60">Actions</th>
               </tr>
@@ -226,7 +259,12 @@ export default function ProvidersAdminPage() {
                   key={p.id}
                   className="border-b border-black/[0.03] hover:bg-[#f8f8f6]/50 transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-[#1c1c1c]">{p.name}</td>
+                  <td className="px-4 py-3 font-medium text-[#1c1c1c]">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span>{p.name}</span>
+                      {p.isVerified && <VerifiedClinicBadge variant="inline" />}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-black/60 capitalize">{p.citySlug?.replace(/-/g, " ")}</td>
                   <td className="px-4 py-3 text-black/60 capitalize">{p.categorySlug?.replace(/-/g, " ")}</td>
                   <td className="px-4 py-3">
@@ -241,17 +279,43 @@ export default function ProvidersAdminPage() {
                       <span className="text-black/30">--</span>
                     )}
                   </td>
+                  <td className="px-4 py-3">
+                    {p.isVerified ? (
+                      <VerifiedClinicBadge variant="table" />
+                    ) : (
+                      <span className="font-['Geist',sans-serif] text-xs text-black/35">Not verified</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-black/60">{p.phone || "--"}</td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => {
-                        setEditing({ ...p });
-                        setReason("");
-                      }}
-                      className="text-[#006828] hover:underline text-sm font-medium"
-                    >
-                      Edit
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditing({ ...p });
+                          setReason("");
+                        }}
+                        className="text-[#006828] hover:underline text-sm font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleVerification(p, !p.isVerified)}
+                        disabled={verifyingId === p.id}
+                        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-['Geist',sans-serif] text-xs font-semibold transition-colors disabled:opacity-50 ${
+                          p.isVerified
+                            ? "border-[#006828]/20 bg-[#006828]/[0.06] text-[#006828] hover:border-[#006828]/35"
+                            : "border-black/[0.08] bg-white text-black/55 hover:border-[#006828]/35 hover:text-[#006828]"
+                        }`}
+                      >
+                        <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                        {verifyingId === p.id
+                          ? "Saving"
+                          : p.isVerified
+                            ? "Remove"
+                            : "Verify"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -272,9 +336,12 @@ export default function ProvidersAdminPage() {
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             {/* Modal header */}
             <div className="sticky top-0 bg-white border-b border-black/[0.06] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-              <h2 className="font-['Bricolage_Grotesque',sans-serif] text-lg font-semibold text-[#1c1c1c]">
-                Edit Provider
-              </h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] text-lg font-semibold text-[#1c1c1c]">
+                  Edit Provider
+                </h2>
+                {editing.isVerified && <VerifiedClinicBadge variant="table" />}
+              </div>
               <button
                 onClick={() => setEditing(null)}
                 className="text-black/40 hover:text-black/70 text-xl leading-none"
@@ -452,7 +519,7 @@ export default function ProvidersAdminPage() {
                 />
               </div>
 
-              {/* Checkboxes */}
+              {/* Claim state */}
               <div className="flex gap-6">
                 <label className="flex items-center gap-2 text-sm font-['Geist',sans-serif] text-[#1c1c1c]">
                   <input
@@ -463,16 +530,55 @@ export default function ProvidersAdminPage() {
                   />
                   Claimed
                 </label>
-                <label className="flex items-center gap-2 text-sm font-['Geist',sans-serif] text-[#1c1c1c]">
-                  <input
-                    type="checkbox"
-                    checked={editing.isVerified}
-                    onChange={(e) => updateField("isVerified", e.target.checked)}
-                    className="rounded border-black/[0.06] text-[#006828] focus:ring-[#006828]"
-                  />
-                  Verified
-                </label>
               </div>
+
+              {/* Zavis Verified toggle */}
+              <button
+                type="button"
+                onClick={() => updateField("isVerified", !editing.isVerified)}
+                aria-pressed={editing.isVerified}
+                className={`w-full rounded-2xl border p-4 text-left transition-all ${
+                  editing.isVerified
+                    ? "border-[#006828]/30 bg-[#f5fbf7] shadow-[0_16px_40px_rgba(0,104,40,0.10)] ring-1 ring-[#006828]/15"
+                    : "border-black/[0.08] bg-white hover:border-[#006828]/25 hover:bg-[#f5fbf7]"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`grid h-12 w-12 shrink-0 place-items-center rounded-full ${
+                        editing.isVerified
+                          ? "bg-[#006828] text-white shadow-[0_0_0_6px_rgba(0,104,40,0.10)]"
+                          : "bg-black/[0.04] text-black/30"
+                      }`}
+                    >
+                      <BadgeCheck className="h-7 w-7" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <p className="font-['Bricolage_Grotesque',sans-serif] text-lg font-medium tracking-tight text-[#1c1c1c]">
+                        Zavis Verified badge
+                      </p>
+                      <p className="mt-1 font-['Geist',sans-serif] text-sm leading-relaxed text-black/50">
+                        Toggle this on to show the Zavis green verified badge, premium profile strip, and verified card treatment across the directory.
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 font-['Geist',sans-serif] text-xs font-semibold ${
+                      editing.isVerified
+                        ? "bg-[#006828] text-white"
+                        : "bg-black/[0.05] text-black/45"
+                    }`}
+                  >
+                    {editing.isVerified ? "On" : "Off"}
+                  </span>
+                </div>
+                {editing.isVerified && (
+                  <div className="mt-4">
+                    <VerifiedClinicBadge variant="hero" />
+                  </div>
+                )}
+              </button>
 
               {/* Reason */}
               <div>
