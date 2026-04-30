@@ -97,7 +97,7 @@ get_cloudflared_bin() {
   esac
 
   mkdir -p "$bin_dir"
-  log "cloudflared: installing user-local binary for linux-$arch"
+  log "cloudflared: installing user-local binary for linux-$arch" >&2
   curl -fsSL "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$arch" -o "$bin"
   chmod +x "$bin"
   echo "$bin"
