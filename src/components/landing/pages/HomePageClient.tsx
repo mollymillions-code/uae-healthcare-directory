@@ -8,8 +8,9 @@ import { Timeline } from "@/components/landing/Timeline";
 import { LogoBar } from "@/components/landing/LogoBar";
 import { homeTabs, homeTabContent, platformPillars } from "@/data/landing/home";
 import { emrPartners, channelPartners } from "@/data/landing/brand-partners";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, BadgeCheck, Users, ShieldCheck } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { trackEvent } from "@/lib/gtag";
 
 export function HomePageClient() {
@@ -353,6 +354,104 @@ export function HomePageClient() {
                   out on schedule, payment links follow visits, and recall
                   campaigns bring patients back.
                 </p>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+      </section>
+
+      {/* List your clinic on Zavis directory */}
+      <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-[1200px] mx-auto">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#006828] via-[#0a7a32] to-[#04461c] p-8 sm:p-12 lg:p-16">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)]"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-40 -left-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]"
+            />
+            <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-7">
+                <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-xs text-white/70 uppercase tracking-[0.12em] mb-4">
+                  For UAE healthcare providers
+                </p>
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-white text-[40px] sm:text-[48px] lg:text-[56px] leading-[1.04] tracking-[-0.024em]">
+                  List your clinic on the <br className="hidden sm:block" />Zavis directory.
+                </h2>
+                <p className="mt-5 font-['Geist',sans-serif] text-white/80 text-base sm:text-lg leading-relaxed max-w-xl">
+                  Reach 12,500+ patients searching for clinics, hospitals, and pharmacies
+                  every week. Free forever, regulator-verified, and live in 2–3 days.
+                </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <OwnerWhatsappCta
+                    action="get_listed"
+                    surface="landing_list_clinic_section"
+                    label="List your clinic via WhatsApp"
+                    className="bg-white text-[#006828] hover:bg-white/90 px-6 py-3.5 text-base"
+                  />
+                  <Link
+                    href="/claim"
+                    onClick={() =>
+                      trackEvent("landing_list_clinic_secondary_click", {
+                        surface: "landing_list_clinic_section",
+                        cta_label: "Already on Zavis? Claim your listing",
+                      })
+                    }
+                    className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-transparent text-white hover:bg-white/10 px-5 py-3 font-['Geist',sans-serif] font-medium text-sm transition-colors"
+                  >
+                    Already on Zavis? Claim your listing
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+                <p className="mt-3 font-['Geist',sans-serif] text-xs text-white/55 leading-relaxed">
+                  We confirm your role at the clinic before WhatsApp opens. No card, no
+                  trial, no sales call.
+                </p>
+              </div>
+
+              <div className="lg:col-span-5 grid grid-cols-1 gap-3">
+                {[
+                  {
+                    Icon: BadgeCheck,
+                    title: "Regulator-verified",
+                    desc: "DHA, DOH, MOHAP cross-referenced. A trust badge patients filter by.",
+                  },
+                  {
+                    Icon: Users,
+                    title: "12,500+ patients searching",
+                    desc: "Listed alongside the most-trusted UAE clinics, hospitals, and pharmacies.",
+                  },
+                  {
+                    Icon: ShieldCheck,
+                    title: "Free forever",
+                    desc: "No card, no trial, no upsell. The directory is a public utility.",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.title}
+                    className="rounded-2xl bg-white/[0.07] border border-white/15 p-5 backdrop-blur-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-white/[0.10] flex items-center justify-center flex-shrink-0">
+                        <c.Icon
+                          className="h-5 w-5 text-white"
+                          strokeWidth={1.75}
+                        />
+                      </div>
+                      <div>
+                        <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-white text-base">
+                          {c.title}
+                        </p>
+                        <p className="mt-1 font-['Geist',sans-serif] text-sm text-white/65 leading-relaxed">
+                          {c.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -3,18 +3,16 @@ import Link from "next/link";
 import {
   ChevronRight,
   Sparkles,
-  Search,
+  MessageCircle,
   ShieldCheck,
   FileCheck,
   Rocket,
   BadgeCheck,
-  ArrowRight,
   Clock,
   Stethoscope,
 } from "lucide-react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
-import { ClaimProviderSearch } from "@/components/claim/ClaimProviderSearch";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { VERIFIED_CLINIC_EXPLANATION } from "@/components/provider/VerifiedClinicBadge";
 import { faqPageSchema, speakableSchema, breadcrumbSchema } from "@/lib/seo";
@@ -23,17 +21,24 @@ import { getBaseUrl } from "@/lib/helpers";
 export const metadata: Metadata = {
   title: "Claim Your Clinic's Listing — UAE Open Healthcare Directory",
   description:
-    "Verify your DHA/DOH/MOHAP-licensed clinic, hospital or dental practice in under 2 minutes. Free forever. Update hours, insurance, services, and photos.",
+    "Claim your DHA/DOH/MOHAP-licensed clinic, hospital, pharmacy, or dental practice on the Zavis Directory via WhatsApp. Free forever. Edit hours, insurance, services, and photos once verified.",
   alternates: {
     canonical: `${getBaseUrl()}/claim`,
   },
   openGraph: {
-    title: "Claim Your Healthcare Listing",
+    title: "Claim Your Healthcare Listing on Zavis",
     description:
-      "Healthcare providers can verify and manage their listing in the UAE Open Healthcare Directory. DHA, DOH, MOHAP supported. Free.",
+      "UAE healthcare providers can claim and manage their Zavis listing via WhatsApp. DHA, DOH, MOHAP cross-referenced. Free, no card, no sales call.",
+    url: `${getBaseUrl()}/claim`,
     type: "website",
     locale: "en_AE",
     siteName: "UAE Open Healthcare Directory",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Claim Your Healthcare Listing on Zavis",
+    description:
+      "Claim your UAE clinic on the Zavis Directory via WhatsApp. Free forever, regulator-verified.",
   },
   robots: { index: true, follow: true },
 };
@@ -62,7 +67,7 @@ const FAQS = [
   {
     question: "What if I can't find my clinic?",
     answer:
-      "Use the request listing form if your clinic is missing. Include your country, city, category, Google Business Profile link, trade licence, regulator licence, and proof that you are authorised to request the listing.",
+      "Tap the WhatsApp button on this page and let us know your clinic is missing. Include your country, city, category, Google Business Profile link, trade licence, regulator licence, and confirmation that you are authorised — we'll add the listing once we verify.",
   },
   {
     question: "Can I remove my listing?",
@@ -77,21 +82,21 @@ export default function ClaimPage() {
   const steps = [
     {
       n: "01",
-      Icon: Search,
-      title: "Find your listing",
-      desc: "Search for your clinic, hospital, or pharmacy below. We cover every DHA, DOH, and MOHAP-licensed facility in the UAE.",
+      Icon: MessageCircle,
+      title: "Tap WhatsApp",
+      desc: "Use the WhatsApp button below. Confirm your role at the clinic — owner, manager, doctor, or admin — and tap continue.",
     },
     {
       n: "02",
       Icon: ShieldCheck,
-      title: "Verify your licence",
-      desc: "Upload your DHA/DOH/MOHAP licence, business card, or official letterhead. Most claims are verified within 2–3 business days.",
+      title: "Share your licence",
+      desc: "Send your DHA/DOH/MOHAP licence number, a business card, or official letterhead inside WhatsApp. Most claims verify within 2–3 business days.",
     },
     {
       n: "03",
       Icon: Rocket,
       title: "Go live",
-      desc: "Edit hours, insurance, services, and photos. Changes appear with a verified badge patients trust.",
+      desc: "Hours, insurance, services, and photos go live with a verified badge patients trust.",
     },
   ];
 
@@ -147,25 +152,17 @@ export default function ClaimPage() {
               </p>
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <a
-                  href="#find-listing"
-                  className="inline-flex items-center gap-2 bg-accent-deep hover:bg-ink text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors"
-                >
-                  Start claiming
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="claim_page_hero_whatsapp"
+                  label="Claim or list via WhatsApp"
+                />
                 <a
                   href="#how-it-works"
                   className="inline-flex items-center gap-2 bg-white border border-ink text-ink hover:bg-surface-cream rounded-z-pill px-5 py-3 font-sans font-medium text-z-body-sm transition-colors"
                 >
                   Learn more
                 </a>
-                <OwnerWhatsappCta
-                  action="get_listed"
-                  surface="claim_page_hero_whatsapp"
-                  label="Get listed or edit via WhatsApp"
-                  variant="secondary"
-                />
               </div>
               <p className="mt-3 font-sans text-z-caption text-ink-muted leading-relaxed">
                 You will be asked to confirm you own or manage the clinic before WhatsApp opens.
@@ -261,34 +258,101 @@ export default function ClaimPage() {
         </div>
       </section>
 
-      {/* ─── Provider lookup form ─── */}
+      {/* ─── WhatsApp claim card ─── */}
       <section
-        id="find-listing"
+        id="claim-via-whatsapp"
         className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20"
       >
         <div className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-8 lg:p-10">
-          <header className="mb-6">
+          <header className="mb-6 max-w-2xl">
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2 inline-flex items-center gap-1.5">
               <Stethoscope className="h-3.5 w-3.5" />
               Step one
             </p>
             <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
-              Find your clinic.
+              Claim or list via WhatsApp.
             </h2>
-            <p className="font-sans text-z-body text-ink-soft mt-2 max-w-2xl leading-relaxed">
-              Search by clinic name, address, or licence number. Choose the matching
-              provider below to open the claim form for that listing.
+            <p className="font-sans text-z-body text-ink-soft mt-2 leading-relaxed">
+              The fastest way to claim an existing listing or add a new clinic to the
+              directory. Confirm your role, share your licence, and our team replies on
+              the same chat.
             </p>
           </header>
 
-          <ClaimProviderSearch />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7">
+              <div className="rounded-z-md bg-accent-muted/40 border border-accent-deep/15 p-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-11 w-11 rounded-full bg-accent-deep flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-5 w-5 text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-semibold text-ink text-z-h2">
+                      Get listed or claim — no forms, no email
+                    </h3>
+                    <p className="mt-2 font-sans text-z-body-sm text-ink-soft leading-relaxed">
+                      Tap below, pick your role, and we&apos;ll open WhatsApp with your
+                      clinic and page details prefilled. The Zavis team replies same day.
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      <OwnerWhatsappCta
+                        action="get_listed"
+                        surface="claim_page_step_one"
+                        label="Claim or list via WhatsApp"
+                      />
+                    </div>
+                    <p className="mt-3 font-sans text-z-caption text-ink-muted leading-relaxed">
+                      You will be asked to confirm you are authorised before WhatsApp opens.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mt-5 flex items-start gap-2 font-sans text-z-caption text-ink-muted">
-            <Clock className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-            <p>
-              Can&apos;t find your clinic? Use the request listing form and include your
-              licence number, regulator, and proof of authority.
-            </p>
+              <div className="mt-5 flex items-start gap-2 font-sans text-z-caption text-ink-muted">
+                <Clock className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                <p>
+                  Most clinics are listed or claimed within 2–3 business days of the
+                  WhatsApp request.
+                </p>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 grid grid-cols-1 gap-3">
+              {[
+                {
+                  Icon: BadgeCheck,
+                  title: "Already on Zavis",
+                  desc: "Tap WhatsApp from any provider page sidebar to claim that exact listing.",
+                },
+                {
+                  Icon: Sparkles,
+                  title: "Not on Zavis yet",
+                  desc: "Tap WhatsApp here, share your licence, and we add the listing for you.",
+                },
+                {
+                  Icon: ShieldCheck,
+                  title: "Already claimed",
+                  desc: "Use WhatsApp to request edits — hours, insurance, services, photos.",
+                },
+              ].map((c) => (
+                <div
+                  key={c.title}
+                  className="flex items-start gap-3 rounded-z-md bg-white border border-ink-line p-4"
+                >
+                  <div className="h-9 w-9 rounded-z-sm bg-accent-muted flex items-center justify-center flex-shrink-0">
+                    <c.Icon className="h-4 w-4 text-accent-dark" strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <p className="font-display font-semibold text-ink text-z-body-sm">
+                      {c.title}
+                    </p>
+                    <p className="font-sans text-z-caption text-ink-muted mt-0.5 leading-relaxed">
+                      {c.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -394,19 +458,19 @@ export default function ClaimPage() {
                 Ready when you are
               </p>
               <h2 className="font-display font-semibold text-white text-display-lg tracking-[-0.02em] leading-[1.05]">
-                Two minutes to verify. <br />Free forever.
+                One WhatsApp message. <br />Free forever.
               </h2>
               <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
-                No card, no trial, no sales call. Search for your clinic above, submit
-                your licence, and your verified listing goes live.
+                No card, no trial, no sales call. Tap WhatsApp, share your licence, and
+                your verified listing goes live.
               </p>
-              <a
-                href="#find-listing"
-                className="mt-7 inline-flex items-center gap-2 rounded-z-pill bg-accent-deep hover:bg-accent-dark text-white font-sans font-semibold text-z-body-sm px-6 py-3.5 transition-colors shadow-[0_8px_24px_-8px_rgba(0,104,40,0.35)]"
-              >
-                Start claiming
-                <ArrowRight className="h-4 w-4" />
-              </a>
+              <div className="mt-7">
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="claim_page_final_cta"
+                  label="Claim or list via WhatsApp"
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {[

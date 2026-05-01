@@ -1,8 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertCircle, ArrowLeft } from "lucide-react";
-import { ClaimForm } from "@/components/claim/ClaimForm";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ChevronRight,
+  ShieldCheck,
+  MessageCircle,
+  Sparkles,
+} from "lucide-react";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { getProviderByIdOrSlug } from "@/lib/data";
 
@@ -24,7 +30,7 @@ export async function generateMetadata({
 
   return {
     title: `Claim ${provider.name} | Zavis Directory`,
-    description: `Submit an authority check to claim and manage the Zavis listing for ${provider.name}.`,
+    description: `Open WhatsApp to claim and manage the Zavis listing for ${provider.name}.`,
     robots: { index: false, follow: false },
   };
 }
@@ -47,9 +53,8 @@ export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
                 This listing cannot be claimed yet.
               </h1>
               <p className="font-sans text-z-body-sm text-ink-soft mt-2 leading-relaxed">
-                The provider record is missing a claimable identifier. Return to search
-                and choose another result, or request a new listing if this practice
-                needs to be added.
+                The provider record is missing a claimable identifier. Return to the
+                claim hub and reach out via WhatsApp — our team will help.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
@@ -57,14 +62,13 @@ export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
                   className="inline-flex items-center gap-2 rounded-z-pill bg-white border border-ink text-ink hover:bg-surface-cream px-4 py-2.5 font-sans font-medium text-z-body-sm transition-colors"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Back to claim search
+                  Back to claim
                 </Link>
-                <Link
-                  href="/request-listing"
-                  className="inline-flex items-center gap-2 rounded-z-pill bg-accent text-white hover:bg-accent-dark px-4 py-2.5 font-sans font-semibold text-z-body-sm transition-colors"
-                >
-                  Request listing
-                </Link>
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="claim_listing_missing_id"
+                  label="Reach out via WhatsApp"
+                />
               </div>
             </div>
           </div>
@@ -73,40 +77,111 @@ export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
     );
   }
 
+  const action = provider.isClaimed ? "edit" : "claim";
+  const headline = provider.isClaimed ? "Edit your listing." : "Claim your listing.";
+  const lead = provider.isClaimed
+    ? `${provider.name} is already verified on Zavis. Use WhatsApp to request edits — hours, insurance, services, photos, or contact details.`
+    : `${provider.name} is on Zavis. Confirm your role at the clinic, share your DHA/DOH/MOHAP licence on WhatsApp, and our team takes it from there.`;
+
   return (
     <>
-      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="rounded-z-md border border-accent/20 bg-accent/[0.04] p-5">
-          <p className="font-sans text-z-body-sm text-ink-soft mb-3">
-            Prefer WhatsApp? Confirm your role and send the listing details directly to Zavis.
-          </p>
-          <OwnerWhatsappCta
-            action={provider.isClaimed ? "edit" : "claim"}
-            surface="claim_form_whatsapp_cta"
-            providerId={provider.id}
-            providerName={provider.name}
-            providerSlug={provider.slug}
-            citySlug={provider.citySlug}
-            categorySlug={provider.categorySlug}
-            label={provider.isClaimed ? "Edit via WhatsApp" : "Claim or edit via WhatsApp"}
-            variant="secondary"
-          />
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+        </div>
+
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-12">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/" className="hover:text-ink transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href="/claim" className="hover:text-ink transition-colors">
+              Claim
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium truncate">{provider.name}</span>
+          </nav>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                For {provider.name}
+              </p>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[48px] leading-[1.04] tracking-[-0.024em]">
+                {headline}
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 leading-relaxed">
+                {lead}
+              </p>
+
+              <div className="mt-7 flex flex-wrap gap-3">
+                <OwnerWhatsappCta
+                  action={action}
+                  surface="claim_listing_detail_hero"
+                  providerId={provider.id}
+                  providerName={provider.name}
+                  providerSlug={provider.slug}
+                  citySlug={provider.citySlug}
+                  categorySlug={provider.categorySlug}
+                  label={provider.isClaimed ? "Edit via WhatsApp" : "Claim via WhatsApp"}
+                />
+              </div>
+              <p className="mt-3 font-sans text-z-caption text-ink-muted leading-relaxed">
+                You will be asked to confirm you are authorised before WhatsApp opens.
+              </p>
+            </div>
+
+            <aside className="lg:col-span-5 space-y-3">
+              <div className="rounded-z-md bg-white border border-ink-line p-5">
+                <p className="font-sans text-z-micro text-ink-muted uppercase tracking-[0.06em] mb-1">
+                  Listing
+                </p>
+                <p className="font-display font-semibold text-ink text-z-h3 leading-tight">
+                  {provider.name}
+                </p>
+                {provider.address && (
+                  <p className="font-sans text-z-body-sm text-ink-soft mt-2 leading-relaxed">
+                    {provider.address}
+                  </p>
+                )}
+                {provider.licenseNumber && (
+                  <p className="font-sans text-z-caption text-ink-muted mt-2">
+                    Licence: {provider.licenseNumber}
+                  </p>
+                )}
+                {provider.isClaimed && (
+                  <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-z-caption text-accent-dark">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Already verified on Zavis
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-z-md bg-white border border-ink-line p-5">
+                <div className="flex items-start gap-3">
+                  <div className="h-9 w-9 rounded-full bg-accent-deep flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-4 w-4 text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="font-display font-semibold text-ink text-z-body-sm">
+                      One conversation, end to end
+                    </p>
+                    <p className="font-sans text-z-caption text-ink-muted mt-1 leading-relaxed">
+                      We collect your role and clinic details before WhatsApp opens, so
+                      the chat starts with everything we need.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
       </section>
-      <ClaimForm
-        provider={{
-          id: provider.id,
-          name: provider.name,
-          slug: provider.slug,
-          address: provider.address,
-          citySlug: provider.citySlug,
-          categorySlug: provider.categorySlug,
-          phone: provider.phone,
-          website: provider.website,
-          licenseNumber: provider.licenseNumber,
-          isClaimed: provider.isClaimed,
-        }}
-      />
     </>
   );
 }
