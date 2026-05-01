@@ -72,6 +72,13 @@ apply_sql_migrations() {
   IFS=$'\n' migrations=($(printf '%s\n' "${migrations[@]}" | sort))
   unset IFS
 
+  # cd into the app directory so node resolves require("dotenv") /
+  # require("pg") from the app's node_modules. Without this, the
+  # script runs from /home/ubuntu (which has no node_modules) and
+  # `require("dotenv")` fails with MODULE_NOT_FOUND, aborting the
+  # promotion before Nginx swap.
+  cd "$app_dir"
+
   log "migrations: applying ${#migrations[@]} file(s) from $MIGRATIONS_DIR"
   for migration in "${migrations[@]}"; do
     local rel="${migration#$app_dir/}"

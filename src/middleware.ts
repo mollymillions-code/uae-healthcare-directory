@@ -113,7 +113,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Propagate the resolved pathname as a request header so server-rendered
+  // layouts can branch on it (e.g. set `<html lang="ar" dir="rtl">` for
+  // /ar/* routes without a client-side flicker). Read in
+  // `src/app/layout.tsx` via `headers().get('x-pathname')`.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

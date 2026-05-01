@@ -13,7 +13,7 @@ import {
 } from "@/lib/data";
 import { getBaseUrl } from "@/lib/helpers";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
-import { DUO_FACET_MIN_PROVIDERS, getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import { DUO_FACET_MIN_PROVIDERS, TRI_FACET_MIN_PROVIDERS, getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
 import { safe } from "@/lib/safeData";
 import {
   TRI_FACET_INSURER_ALLOW,
@@ -167,6 +167,10 @@ function comboKey(citySlug: string, slug: string): string {
   return `${citySlug}:${slug}`;
 }
 
+function comboKey3(citySlug: string, categorySlug: string, insurerSlug: string): string {
+  return `${citySlug}:${categorySlug}:${insurerSlug}`;
+}
+
 function qualifiedTopProviders(providers: LocalProvider[]): LocalProvider[] {
   return providers.filter(
     (p) => Number(p.googleRating) > 0 && p.googleReviewCount > 10,
@@ -204,6 +208,13 @@ async function getSitemapEligibility(
   const topCityCategory = new Set<string>();
   const topUaeCategory = new Set<string>();
   const cityInsurance = new Set<string>();
+  // Per-(city × category × insurer) tuples that have ≥ TRI_FACET_MIN_PROVIDERS
+  // matching providers. Computed inline by inspecting the providers we
+  // already load for each (city, cat) — no extra DB queries required.
+  // Used to gate the /best/.../accepting/ and /directory/.../insurance/.../[cat]
+  // URLs so the sitemap never advertises a tri-facet URL whose page would
+  // 404 for thin-content reasons.
+  const cityCategoryInsurance = new Set<string>();
   const cityLanguage = new Set<string>();
   const city24Hour = new Set<string>();
   const cityEmergency = new Set<string>();
@@ -258,6 +269,31 @@ async function getSitemapEligibility(
           const qualifiedCount = qualifiedTopProviders(result.providers).length;
           if (ratedCount > 0) bestCityCategory.add(comboKey(city.slug, cat.slug));
           if (qualifiedCount >= 10) topCityCategory.add(comboKey(city.slug, cat.slug));
+
+          // Per-(city × category × insurer) eligibility for tri-facet URLs.
+          // We already have all matching providers in `result.providers` —
+          // count those with at least one insurance label matching the
+          // insurer's slug or English name (same predicate used by
+          // `getProviderCountByInsuranceCategory`). No additional DB query.
+          if (TRI_FACET_CATEGORY_ALLOW.has(cat.slug)) {
+            for (const insurer of INSURANCE_PROVIDERS) {
+              if (!TRI_FACET_INSURER_ALLOW.has(insurer.slug)) continue;
+              const matchTerms = [insurer.slug.toLowerCase(), insurer.name.toLowerCase()];
+              let count = 0;
+              for (const p of result.providers) {
+                if (p.insurance.some((label) => {
+                  const lower = label.toLowerCase();
+                  return matchTerms.some((t) => lower.includes(t));
+                })) {
+                  count++;
+                  if (count >= TRI_FACET_MIN_PROVIDERS) break;
+                }
+              }
+              if (count >= TRI_FACET_MIN_PROVIDERS) {
+                cityCategoryInsurance.add(comboKey3(city.slug, cat.slug, insurer.slug));
+              }
+            }
+          }
         }),
         ...INSURANCE_PROVIDERS.map(async (insurer) => {
           const geoEligible = getInsurancePlansByGeo(city.slug).some((p) => p.slug === insurer.slug);
@@ -288,6 +324,7 @@ async function getSitemapEligibility(
     topCityCategory,
     topUaeCategory,
     cityInsurance,
+    cityCategoryInsurance,
     cityLanguage,
     city24Hour,
     cityEmergency,
@@ -374,6 +411,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!eligibility.cityInsurance.has(comboKey(city.slug, insurer.slug))) continue;
       for (const cat of categories) {
         if (!TRI_FACET_CATEGORY_ALLOW.has(cat.slug)) continue;
+        // Per-tuple eligibility gate. Without this, the sitemap would
+        // emit URLs that the page renders as 404 because the tuple has
+        // < TRI_FACET_MIN_PROVIDERS matching providers — the worst SEO
+        // outcome (Google indexes 200-OK 404 bodies).
+        if (!eligibility.cityCategoryInsurance.has(comboKey3(city.slug, cat.slug, insurer.slug))) continue;
+
         // Existing aggregator (filtered view) — every matching provider.
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`,

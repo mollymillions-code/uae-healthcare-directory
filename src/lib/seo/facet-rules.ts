@@ -168,27 +168,35 @@ export const HUB_FACET_MIN_PROVIDERS = 10;
  * `src/lib/insurance-facets/editorial-copy.ts` so the page has real
  * content to render — not just a boilerplate template.
  *
- * 2026-05-02: expanded from 6 to 12 entries per Phase 2 of
- * `docs/playbooks/insurance-seo-strategy-plan.md`. The 6 added insurers
- * (axa, cigna, metlife, allianz-care, bupa-global, aetna-international)
- * are the most common entries in `provider.insurance` arrays after the
- * existing 6 government/legacy carriers.
+ * 2026-05-02: reconciled to canonical slugs. Provider DB labels are
+ * "Daman", "AXA", "Cigna", "Bupa Global", "Allianz Care", "Aetna
+ * International" etc. Canonical short slugs in `INSURANCE_PROVIDERS`
+ * (daman, axa, cigna, bupa, allianz, aetna) match those labels via
+ * case-insensitive substring; the previously-listed product-specific
+ * slugs (daman-enhanced, allianz-care, bupa-global, aetna-international)
+ * had no matching `getInsurancePlan(slug)` entry under
+ * `INSURANCE_PROVIDERS`, so the page resolver returned null and
+ * tri-facet routes 404'd while the sitemap still emitted them.
+ *
+ * The slugs below are the indexable URL space — every entry must:
+ *   1. exist in `INSURANCE_PROVIDERS` (`src/lib/constants/insurance.ts`)
+ *   2. exist in `INSURANCE_EDITORIAL` (`src/lib/insurance-facets/editorial-copy.ts`)
+ *   3. have ≥ TRI_FACET_MIN_PROVIDERS in DB for at least one (city, cat) tuple
  */
 export const TRI_FACET_INSURER_ALLOW: ReadonlySet<string> = new Set([
-  // Government / legacy carriers (original 6)
+  // Government / legacy carriers
   "thiqa",
-  "daman-enhanced",
-  "daman-basic",
+  "daman",
   "hayah",
   "adnic",
   "oman-insurance",
-  // International + private carriers (Phase 2 expansion)
+  // International + private carriers
   "axa",
   "cigna",
   "metlife",
-  "allianz-care",
-  "bupa-global",
-  "aetna-international",
+  "allianz",
+  "bupa",
+  "aetna",
 ]);
 
 /**
@@ -198,24 +206,31 @@ export const TRI_FACET_INSURER_ALLOW: ReadonlySet<string> = new Set([
  * professional-naming conventions that did not match any directory
  * category, silently breaking sitemap emission. Fixed 2026-05-02.
  *
- * 2026-05-02: expanded from 8 to 12 entries (added orthopedics,
- * mental-health, ent, fertility-ivf) per Phase 2.
+ * 2026-05-02: rewritten to data-backed categories. The previous list
+ * mixed facility-level categories (clinics, dental) with doctor-level
+ * specialties (cardiology, orthopedics, ent, mental-health, ob-gyn).
+ * The `providers` table only stores `category_slug` at the facility
+ * level — most specialties have 0 facility rows because cardiologists
+ * are indexed under `professionals_index` keyed off facilities of
+ * category `clinics` or `hospitals`. Including specialty slugs here
+ * caused tri-facet routes to render `notFound()` (per-tuple count = 0)
+ * while the sitemap still advertised them.
+ *
+ * Slugs below are restricted to category_slug values with non-trivial
+ * facility coverage in production data.
  */
 export const TRI_FACET_CATEGORY_ALLOW: ReadonlySet<string> = new Set([
-  // Original 8 (slug-corrected)
-  "hospitals",
   "clinics",
   "dental",
+  "hospitals",
   "dermatology",
-  "pediatrics",
-  "ob-gyn",
   "ophthalmology",
-  "cardiology",
-  // Phase 2 expansion
-  "orthopedics",
-  "mental-health",
-  "ent",
-  "fertility-ivf",
+  "pediatrics",
+  "pharmacy",
+  "home-healthcare",
+  "physiotherapy",
+  "radiology-imaging",
+  "labs-diagnostics",
 ]);
 
 /**

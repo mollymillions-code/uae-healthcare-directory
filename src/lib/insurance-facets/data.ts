@@ -272,8 +272,8 @@ export async function isDuoFacetEligible(
  * extracted it here so both 2-facet and 3-facet pages share one source.
  */
 const POPULAR_SLUGS = [
-  "daman", "daman-enhanced", "daman-basic",
-  "axa", "cigna", "bupa", "aetna", "allianz",
+  "daman",
+  "axa", "cigna", "bupa", "aetna", "allianz", "metlife",
   "oman-insurance", "orient", "adnic", "hayah", "nas", "mednet",
   "dic", "takaful-emarat", "salama", "thiqa",
 ];

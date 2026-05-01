@@ -51,36 +51,23 @@ export const INSURANCE_EDITORIAL: InsuranceEditorialEntry[] = [
       "ثقة هو البرنامج الحكومي المميز للتأمين الصحي في إمارة أبوظبي، المخصص حصرياً لمواطني الدولة وتديره شركة ضمان بالنيابة عن دائرة الصحة – أبوظبي. يقتصر الانتساب على المواطنين الإماراتيين الحاملين لخلاصة قيد أبوظبي ولا يتاح للمقيمين أو لمواطني الإمارات الأخرى. يوفر ثقة تغطية شبه كاملة بدون دفع شخصي تقريباً في جميع المنشآت المرخصة من دائرة الصحة في أبوظبي والعين، وفي قائمة مختارة من المنشآت الخاصة داخل الإمارة. خارج أبوظبي تقتصر الشبكة المتبادلة على المنشآت المرخصة من هيئة الصحة بدبي ووزارة الصحة التي وقعت اتفاقيات مباشرة مع ضمان. تشمل التغطية خدمات الأسنان والعيون والأمومة بدون حدود فرعية للبرنامج الأساسي، مع اشتراط الموافقة المسبقة للعلاج خارج الدولة. ولأن ثقة مقيّد جغرافياً، تعرض زافيس صفحات ثقة في أبوظبي والعين فقط وتستبعد باقي الإمارات لتجنب المحتوى الضعيف.",
   },
 
-  // ─── Daman Enhanced ────────────────────────────────────────────────────────
+  // ─── Daman (parent brand — covers Enhanced + Basic) ───────────────────────
+  // Canonical slug `daman` matches both the SEO URL `/insurance/daman` and
+  // the most common label "Daman" present in providers.insurance arrays.
+  // Editorial copy below describes Daman Enhanced as the dominant variant;
+  // Daman Basic (the DOH-mandated floor cover) is referenced inline.
   {
-    slug: "daman-enhanced",
-    nameEn: "Daman Enhanced",
-    nameAr: "ضمان المعزز",
+    slug: "daman",
+    nameEn: "Daman",
+    nameAr: "ضمان",
     type: "carrier",
     geoScope: "uae",
     isDental: true,
     isMedical: true,
-    parentPlanSlug: "daman",
     editorialCopyEn:
-      "Daman Enhanced is the National Health Insurance Company's mid-to-high-tier product line and the dominant group medical scheme for white-collar employers in Abu Dhabi and across the UAE. Enhanced plans sit above the DOH-mandated Basic Scheme (ex-EBP) and typically carry an annual benefit limit between AED 1M and AED 3M, 10–20% outpatient co-pay (capped at AED 500–1,000 per year for most employer-sponsored variants), and direct billing across Daman's Gold, Silver and Platinum network tiers. The Gold network includes Cleveland Clinic Abu Dhabi, Mediclinic, HealthPoint, Burjeel, NMC Royal, Aster, and the majority of DOH-licensed multi-specialty centres in Abu Dhabi, Dubai and the Northern Emirates. Dental is covered up to AED 3,000–5,000 annually on most Enhanced policies; maternity applies after a 10-month waiting period. Pre-authorisation is required for elective inpatient, MRI, CT and high-cost specialty drugs. Daman Enhanced is accepted in every emirate, making it the strongest city-level anchor for specialty facet pages on Zavis.",
+      "Daman — the National Health Insurance Company — is the dominant group medical scheme for white-collar employers in Abu Dhabi and across the UAE. Daman's product line spans the DOH-mandated Basic Scheme (ex-EBP) at the floor and Enhanced/Premier plans above it; Enhanced policies typically carry an annual benefit limit between AED 1M and AED 3M, 10–20% outpatient co-pay (capped at AED 500–1,000 per year for most employer-sponsored variants), and direct billing across Daman's Gold, Silver and Platinum network tiers. The Gold network includes Cleveland Clinic Abu Dhabi, Mediclinic, HealthPoint, Burjeel, NMC Royal, Aster, and the majority of DOH-licensed multi-specialty centres in Abu Dhabi, Dubai and the Northern Emirates. Dental is covered up to AED 3,000–5,000 annually on most Enhanced policies; maternity applies after a 10-month waiting period. Daman Basic is the AED 150,000-cap floor cover for low-income workers with a deliberately narrow public-sector-leaning network. Pre-authorisation is required for elective inpatient, MRI, CT and high-cost specialty drugs. Daman is accepted in every emirate, making it the strongest city-level anchor for specialty facet pages on Zavis.",
     editorialCopyAr:
-      "ضمان المعزز هو فئة المنتجات المتوسطة إلى العليا التي تقدمها شركة التأمين الصحي الوطنية ضمان، ويُعد المخطط الطبي الجماعي الأكثر شيوعاً لأصحاب العمل في القطاع الأبيض في أبوظبي وعلى مستوى الدولة. تقع خطط المعزز فوق الخطة الأساسية التي تفرضها دائرة الصحة، وتتراوح حدودها السنوية عادة بين مليون وثلاثة ملايين درهم، مع نسبة تحمل خارجية بين 10 و20% وبحد أقصى سنوي بين 500 و1000 درهم لأغلب خطط أصحاب العمل، وفوترة مباشرة ضمن شبكات ضمان الذهبية والفضية والبلاتينية. تشمل الشبكة الذهبية كليفلاند كلينك أبوظبي وميديكلينك وهيلث بوينت وبرجيل وإن إم سي رويال وأستر ومعظم المراكز متعددة التخصصات المرخصة في أبوظبي ودبي والإمارات الشمالية. تُغطى طب الأسنان بحد أقصى يتراوح بين 3000 و5000 درهم سنوياً، وتطبق الأمومة بعد فترة انتظار تبلغ عشرة أشهر. يُشترط الحصول على موافقة مسبقة للعمليات الاختيارية والرنين المغناطيسي والأشعة المقطعية والأدوية المتخصصة عالية التكلفة. يُقبل ضمان المعزز في جميع الإمارات مما يجعله المرساة الأقوى لصفحات التخصصات على مستوى المدن في زافيس.",
-  },
-
-  // ─── Daman Basic (ex-EBP) ──────────────────────────────────────────────────
-  {
-    slug: "daman-basic",
-    nameEn: "Daman Basic",
-    nameAr: "ضمان الأساسي",
-    type: "carrier",
-    geoScope: "uae",
-    isDental: false,
-    isMedical: true,
-    parentPlanSlug: "daman",
-    editorialCopyEn:
-      "Daman Basic — historically known as the Essential Benefits Plan (EBP) or the Abu Dhabi Basic Scheme — is the floor of mandatory cover for low-income workers whose salary is below AED 4,000/month plus housing. Employers in Dubai and Abu Dhabi are legally required to provide at least this tier under DHA and DOH mandates. The annual cap is AED 150,000, with a 20% outpatient co-pay up to AED 500/year and AED 300 per inpatient admission. The network is deliberately narrow — Daman Basic steers members toward public-sector hospitals (SEHA in Abu Dhabi; Dubai Academic Health Corporation in Dubai) plus a curated list of mid-tier private clinics. Dental is excluded except for emergencies. Maternity is covered at public facilities only, with a 6-month waiting period. On Zavis, Daman Basic facet pages exist for every emirate but lean heavily on public hospital listings and non-premium clinics; high-end dermatology, cosmetic or IVF pages intentionally suppress this payer because the tuples are empty by design.",
-    editorialCopyAr:
-      "ضمان الأساسي — المعروف تاريخياً بخطة المنافع الأساسية أو الخطة الأساسية لأبوظبي — هو الحد الأدنى من التغطية الإلزامية للعمال محدودي الدخل الذين يقل راتبهم عن أربعة آلاف درهم شهرياً إضافة إلى السكن. يلزم القانون أصحاب العمل في دبي وأبوظبي بتقديم هذه الفئة كحد أدنى وفقاً للوائح هيئة الصحة بدبي ودائرة الصحة في أبوظبي. يبلغ السقف السنوي 150 ألف درهم مع تحمل خارجي بنسبة 20% وبحد أقصى 500 درهم سنوياً و300 درهم لكل دخول للمستشفى. الشبكة ضيقة بشكل متعمد إذ توجه ضمان الأساسي أعضاءه نحو المستشفيات الحكومية (صحة في أبوظبي ومؤسسة دبي الصحية الأكاديمية في دبي) إضافة إلى قائمة مختارة من العيادات الخاصة المتوسطة. تُستثنى خدمات الأسنان باستثناء الحالات الطارئة، وتُغطى الأمومة في المرافق الحكومية فقط مع فترة انتظار ستة أشهر. تعرض زافيس صفحات ضمان الأساسي لكل الإمارات لكنها تعتمد بشكل كبير على المستشفيات الحكومية والعيادات غير المميزة، وتُستبعد صفحات الأمراض الجلدية العليا والتجميل وأطفال الأنابيب لأن مجموعات النتائج فيها تكون فارغة بطبيعة التصميم.",
+      "ضمان (شركة التأمين الصحي الوطنية) هو المخطط الطبي الجماعي الأكثر شيوعاً لأصحاب العمل في القطاع الأبيض في أبوظبي وعلى مستوى الدولة. تتدرج منتجات ضمان من الخطة الأساسية التي تفرضها دائرة الصحة (المعروفة سابقاً بخطة المنافع الأساسية) إلى خطط المعزز والبريمير. تتراوح حدود خطط المعزز السنوية بين مليون وثلاثة ملايين درهم، مع نسبة تحمل خارجية بين 10 و20% وبحد أقصى سنوي بين 500 و1000 درهم لأغلب خطط أصحاب العمل، وفوترة مباشرة ضمن شبكات ضمان الذهبية والفضية والبلاتينية. تشمل الشبكة الذهبية كليفلاند كلينك أبوظبي وميديكلينك وهيلث بوينت وبرجيل وإن إم سي رويال وأستر ومعظم المراكز متعددة التخصصات المرخصة في أبوظبي ودبي والإمارات الشمالية. تُغطى طب الأسنان بحد أقصى يتراوح بين 3000 و5000 درهم سنوياً، وتطبق الأمومة بعد فترة انتظار تبلغ عشرة أشهر. أما خطة ضمان الأساسي فهي الحد الأدنى من التغطية الإلزامية بسقف سنوي 150 ألف درهم وشبكة ضيقة تركز على المستشفيات الحكومية. يُشترط الحصول على موافقة مسبقة للعمليات الاختيارية والرنين المغناطيسي والأشعة المقطعية والأدوية المتخصصة عالية التكلفة. يُقبل ضمان في جميع الإمارات مما يجعله المرساة الأقوى لصفحات التخصصات على مستوى المدن في زافيس.",
   },
 
   // ─── Hayah (formerly AXA Green Crescent) ───────────────────────────────────
@@ -180,7 +167,7 @@ export const INSURANCE_EDITORIAL: InsuranceEditorialEntry[] = [
 
   // ─── Allianz Care ──────────────────────────────────────────────────────
   {
-    slug: "allianz-care",
+    slug: "allianz",
     nameEn: "Allianz Care",
     nameAr: "أليانز كير",
     type: "carrier",
@@ -195,7 +182,7 @@ export const INSURANCE_EDITORIAL: InsuranceEditorialEntry[] = [
 
   // ─── Bupa Global ───────────────────────────────────────────────────────
   {
-    slug: "bupa-global",
+    slug: "bupa",
     nameEn: "Bupa Global",
     nameAr: "بوبا جلوبال",
     type: "carrier",
@@ -210,7 +197,7 @@ export const INSURANCE_EDITORIAL: InsuranceEditorialEntry[] = [
 
   // ─── Aetna International ───────────────────────────────────────────────
   {
-    slug: "aetna-international",
+    slug: "aetna",
     nameEn: "Aetna International",
     nameAr: "آيتنا الدولية",
     type: "carrier",
