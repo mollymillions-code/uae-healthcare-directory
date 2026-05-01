@@ -212,7 +212,14 @@ export function ProviderDetailTemplate({
           <div className="flex items-center gap-1 flex-shrink-0">
             <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
             <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
-              <HeartButton size="sm" ariaLabel={`Save ${p.name}`} storageKey={`zavis:saved:${p.id || p.slug}`} />
+              <HeartButton
+                size="sm"
+                ariaLabel={`Save ${p.name}`}
+                providerId={p.id}
+                providerName={p.name}
+                surface="provider_detail"
+                storageKey={p.id ? undefined : `zavis:saved:${p.slug}`}
+              />
               <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>
             </div>
           </div>

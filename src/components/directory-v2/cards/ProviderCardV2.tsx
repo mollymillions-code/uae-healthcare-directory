@@ -9,6 +9,7 @@ import { collectProviderImageUrls } from "@/lib/media/provider-images";
 import { VerifiedClinicBadge } from "@/components/provider/VerifiedClinicBadge";
 
 export interface ProviderCardV2Props {
+  id?: string;
   name: string;
   slug: string;
   citySlug: string;
@@ -75,7 +76,14 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
 
         {/* Heart — above overlay link */}
         <div className="absolute top-3 right-3 z-30">
-          <HeartButton ariaLabel={`Save ${p.name}`} size="sm" storageKey={`zavis:saved:${p.slug}`} />
+          <HeartButton
+            ariaLabel={`Save ${p.name}`}
+            size="sm"
+            providerId={p.id}
+            providerName={p.name}
+            surface="card_v2"
+            storageKey={p.id ? undefined : `zavis:saved:${p.slug}`}
+          />
         </div>
       </div>
 

@@ -353,6 +353,7 @@ export default async function CityPage({ params }: Props) {
               return (
                 <ProviderCardV2
                   key={p.id}
+                  id={p.id}
                   name={p.name}
                   slug={p.slug}
                   citySlug={p.citySlug}

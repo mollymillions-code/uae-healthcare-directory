@@ -765,6 +765,7 @@ export async function GccCityPage({
               return (
                 <ProviderCardV2
                   key={p.id}
+                  id={p.id}
                   name={p.name}
                   slug={p.slug}
                   citySlug={p.citySlug}
