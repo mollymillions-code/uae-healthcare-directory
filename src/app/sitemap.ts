@@ -374,11 +374,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!eligibility.cityInsurance.has(comboKey(city.slug, insurer.slug))) continue;
       for (const cat of categories) {
         if (!TRI_FACET_CATEGORY_ALLOW.has(cat.slug)) continue;
+        // Existing aggregator (filtered view) — every matching provider.
         entries.push({
           url: `${baseUrl}/directory/${city.slug}/insurance/${insurer.slug}/${cat.slug}`,
           lastModified: LAST_CONTENT_UPDATE,
           changeFrequency: "weekly",
           priority: 0.65,
+        });
+        // Phase 2 (insurance-seo-strategy-plan.md): editorial Top-N route —
+        // same eligibility, different intent. Sibling URL with hreflang
+        // alternates. Runtime `isTriFacetEligible` enforces the min-provider
+        // gate so low-coverage tuples noindex themselves.
+        entries.push({
+          url: `${baseUrl}/best/${city.slug}/${cat.slug}/accepting/${insurer.slug}`,
+          lastModified: LAST_CONTENT_UPDATE,
+          changeFrequency: "weekly",
+          priority: 0.7,
+          alternates: {
+            languages: {
+              en: `${baseUrl}/best/${city.slug}/${cat.slug}/accepting/${insurer.slug}`,
+              ar: `${baseUrl}/ar/best/${city.slug}/${cat.slug}/accepting/${insurer.slug}`,
+            },
+          },
         });
       }
     }

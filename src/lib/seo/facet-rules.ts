@@ -163,35 +163,59 @@ export const HUB_FACET_MIN_PROVIDERS = 10;
 // ─── Allowlists (centralized from sitemap.ts) ─────────────────────────────
 
 /**
- * The 6 payer slugs that actually have long-form editorial copy in
- * `src/lib/insurance-facets/editorial-copy.ts` and are therefore
- * allowed to appear in tri-facet (city × insurer × specialty) URLs.
- * Any slug added to that editorial file must also be added here.
+ * Payer slugs allowed to appear in tri-facet (city × insurer × category)
+ * URLs. Each entry MUST have a corresponding row in
+ * `src/lib/insurance-facets/editorial-copy.ts` so the page has real
+ * content to render — not just a boilerplate template.
+ *
+ * 2026-05-02: expanded from 6 to 12 entries per Phase 2 of
+ * `docs/playbooks/insurance-seo-strategy-plan.md`. The 6 added insurers
+ * (axa, cigna, metlife, allianz-care, bupa-global, aetna-international)
+ * are the most common entries in `provider.insurance` arrays after the
+ * existing 6 government/legacy carriers.
  */
 export const TRI_FACET_INSURER_ALLOW: ReadonlySet<string> = new Set([
+  // Government / legacy carriers (original 6)
   "thiqa",
   "daman-enhanced",
   "daman-basic",
   "hayah",
   "adnic",
   "oman-insurance",
+  // International + private carriers (Phase 2 expansion)
+  "axa",
+  "cigna",
+  "metlife",
+  "allianz-care",
+  "bupa-global",
+  "aetna-international",
 ]);
 
 /**
- * The 8 evergreen specialties that tri-facet URLs are allowed to use.
- * These match the top-inventory categories across all emirates and
- * have enough provider coverage to reliably clear
- * `TRI_FACET_MIN_PROVIDERS` for the payers in `TRI_FACET_INSURER_ALLOW`.
+ * Directory category slugs allowed in tri-facet URLs. Slugs MUST match
+ * the actual `categories` constants in `src/lib/constants/categories.ts`
+ * — previously this list contained "dentists/dermatologists/etc"
+ * professional-naming conventions that did not match any directory
+ * category, silently breaking sitemap emission. Fixed 2026-05-02.
+ *
+ * 2026-05-02: expanded from 8 to 12 entries (added orthopedics,
+ * mental-health, ent, fertility-ivf) per Phase 2.
  */
 export const TRI_FACET_CATEGORY_ALLOW: ReadonlySet<string> = new Set([
+  // Original 8 (slug-corrected)
   "hospitals",
   "clinics",
-  "dentists",
-  "dermatologists",
-  "pediatricians",
-  "gynecologists",
-  "ophthalmologists",
-  "cardiologists",
+  "dental",
+  "dermatology",
+  "pediatrics",
+  "ob-gyn",
+  "ophthalmology",
+  "cardiology",
+  // Phase 2 expansion
+  "orthopedics",
+  "mental-health",
+  "ent",
+  "fertility-ivf",
 ]);
 
 /**

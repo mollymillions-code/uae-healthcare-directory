@@ -19,8 +19,12 @@ import {
 import { getBaseUrl } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
 
+// 12h ISR cache. Previously had `dynamic = "force-dynamic"` which overrode
+// the revalidate above and forced every request to run the ~351-query
+// network-stats aggregation, causing 30s timeouts on cold cache. The page
+// shows aggregate insurer + city data with no per-user content, so ISR is
+// safe and dramatically faster after the first hit.
 export const revalidate = 43200;
-export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();

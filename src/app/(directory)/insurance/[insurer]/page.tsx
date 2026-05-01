@@ -23,6 +23,12 @@ import {
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
+import {
+  TRI_FACET_INSURER_ALLOW,
+  TRI_FACET_CATEGORY_ALLOW,
+} from "@/lib/seo/facet-rules";
+import { isTriFacetEligible, getInsurancePlansByGeo } from "@/lib/insurance-facets/data";
+import { getCities, getCategoryBySlug } from "@/lib/data";
 
 export const revalidate = 43200;
 
@@ -69,6 +75,47 @@ export default async function InsurerDetailPage({ params }: Props) {
   const cheapestPlan = [...profile.plans].sort(
     (a, b) => a.premiumRange.min - b.premiumRange.min,
   )[0];
+
+  // Phase 2 (insurance-seo-strategy-plan.md): if this insurer is in the
+  // tri-facet allow-list, compute eligible city × category combos to surface
+  // "Top clinics by city × category accepting {insurer}" links. Skipped for
+  // insurers outside the allow-list (no editorial copy backing).
+  const isInTriFacetAllowList = TRI_FACET_INSURER_ALLOW.has(profile.slug);
+  type TopCombo = { city: string; citySlug: string; category: string; categorySlug: string };
+  const topAcceptingCombos: TopCombo[] = [];
+  if (isInTriFacetAllowList) {
+    const eligibleCities = getInsurancePlansByGeo("dubai") // bootstrap any
+      .length > 0
+      ? getCities().filter((c) => c.country === "ae")
+      : [];
+    const eligibleCategorySlugs = Array.from(TRI_FACET_CATEGORY_ALLOW);
+    const probes = eligibleCities.flatMap((city) =>
+      eligibleCategorySlugs.map((catSlug) => ({ city, catSlug })),
+    );
+    const results = await Promise.all(
+      probes.map(async ({ city, catSlug }) => {
+        const geoOk = getInsurancePlansByGeo(city.slug).some(
+          (p) => p.slug === profile.slug,
+        );
+        if (!geoOk) return null;
+        const eligible = await safe(
+          isTriFacetEligible(profile.slug, city.slug, catSlug),
+          false,
+          `insurer-page-tri-facet:${profile.slug}:${city.slug}:${catSlug}`,
+        );
+        if (!eligible) return null;
+        const cat = getCategoryBySlug(catSlug);
+        if (!cat) return null;
+        return {
+          city: city.name,
+          citySlug: city.slug,
+          category: cat.name,
+          categorySlug: cat.slug,
+        } as TopCombo;
+      }),
+    );
+    for (const r of results) if (r) topAcceptingCombos.push(r);
+  }
 
   const faqs = [
     {
@@ -409,6 +456,35 @@ export default async function InsurerDetailPage({ params }: Props) {
                   </Link>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {/* Top clinics by city × category accepting this insurer (Phase 2 SEO) */}
+        {topAcceptingCombos.length > 0 && (
+          <section>
+            <header className="mb-6">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+                Editorial Top-N
+              </p>
+              <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+                Top clinics accepting {profile.name}.
+              </h2>
+              <p className="mt-2 font-sans text-z-body-sm text-ink-soft max-w-2xl">
+                Curated rankings by city and specialty — all providers accepting{" "}
+                {profile.name} insurance, ranked by patient ratings.
+              </p>
+            </header>
+            <div className="flex flex-wrap gap-2">
+              {topAcceptingCombos.map((c) => (
+                <Link
+                  key={`${c.citySlug}-${c.categorySlug}`}
+                  href={`/best/${c.citySlug}/${c.categorySlug}/accepting/${profile.slug}`}
+                  className="rounded-z-pill border border-ink-hairline bg-white px-4 py-2 font-sans text-z-body-sm text-ink hover:border-ink"
+                >
+                  Best {c.category.toLowerCase()} in {c.city} accepting {profile.name} →
+                </Link>
+              ))}
             </div>
           </section>
         )}

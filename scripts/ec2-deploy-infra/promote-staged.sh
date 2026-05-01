@@ -18,7 +18,7 @@ SITEMAP_LOCK="/tmp/zavis-sitemap-gen.lock"
 SITEMAP_GEN="/home/ubuntu/zavis-deploy/sitemap-gen/generate-provider-sitemaps.mjs"
 SITEMAP_LOG="/home/ubuntu/logs/sitemap-generation.log"
 TUNNEL_PM2="zavis-stage-tunnel"
-VERIFICATION_MIGRATION="scripts/db/migrations/2026-04-30-provider-verification-badges.sql"
+MIGRATIONS_DIR="scripts/db/migrations"
 
 mkdir -p /home/ubuntu/logs
 
@@ -42,16 +42,41 @@ print(sum(1 for p in d if p['name']=='$name' and p['pm2_env']['status']=='online
 "
 }
 
-apply_sql_migration() {
+apply_sql_migrations() {
   local app_dir="$1"
-  local migration="$app_dir/$VERIFICATION_MIGRATION"
-  if [ ! -f "$migration" ]; then
-    log "migration: $VERIFICATION_MIGRATION not present; skipping"
+  local mig_dir="$app_dir/$MIGRATIONS_DIR"
+  if [ ! -d "$mig_dir" ]; then
+    log "migrations: $MIGRATIONS_DIR not present in $app_dir; skipping"
     return
   fi
 
-  log "migration: applying $VERIFICATION_MIGRATION"
-  ENV_FILE="$SHARED_DIR/.env.local" MIGRATION_FILE="$migration" node <<'NODE'
+  # Apply every .sql file in lexical (date-prefixed) order. All migrations
+  # in scripts/db/migrations/ are written to be idempotent (CREATE TABLE
+  # IF NOT EXISTS / INSERT ON CONFLICT / idempotent UPDATEs), so reapplying
+  # them on every promote is safe and self-healing — drift between the DB
+  # schema and what the code expects is caught here, not in production
+  # at request time. The previous design only applied a single hardcoded
+  # file (provider-verification-badges) and silently let everything else
+  # drift, which caused the consumer-accounts and provider-slug-history
+  # outages in late April.
+  shopt -s nullglob
+  local migrations=("$mig_dir"/*.sql)
+  shopt -u nullglob
+
+  if [ "${#migrations[@]}" -eq 0 ]; then
+    log "migrations: no .sql files found in $mig_dir"
+    return
+  fi
+
+  # Sort lexically so date-prefixed filenames apply oldest-first.
+  IFS=$'\n' migrations=($(printf '%s\n' "${migrations[@]}" | sort))
+  unset IFS
+
+  log "migrations: applying ${#migrations[@]} file(s) from $MIGRATIONS_DIR"
+  for migration in "${migrations[@]}"; do
+    local rel="${migration#$app_dir/}"
+    log "migrations: -> $rel"
+    if ! ENV_FILE="$SHARED_DIR/.env.local" MIGRATION_FILE="$migration" node <<'NODE' 2>&1 | tee -a "$DEPLOY_LOG"
 const fs = require("fs");
 const dotenv = require("dotenv");
 const { Client } = require("pg");
@@ -77,7 +102,11 @@ main().catch((err) => {
   process.exit(1);
 });
 NODE
-  log "migration: complete"
+    then
+      fail "migrations: failed on $rel — aborting promotion"
+    fi
+  done
+  log "migrations: all applied"
 }
 
 exec 200>"$LOCK_FILE"
@@ -111,7 +140,7 @@ if [ "$HTTP_CODE" != "200" ]; then
   fail "staged target health failed on port $port (HTTP $HTTP_CODE)"
 fi
 
-apply_sql_migration "$dir"
+apply_sql_migrations "$dir"
 
 # Clear any stage-only verification overrides now that the DB migration is applied.
 log "target: restarting $pm2 without stage-only verification overrides"

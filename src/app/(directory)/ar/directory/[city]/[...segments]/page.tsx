@@ -8,6 +8,7 @@ import { StarRating } from "@/components/shared/StarRating";
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
+import { FaqSection } from "@/components/seo/FaqSection";
 import {
   getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug, getAreasByCity,
@@ -16,7 +17,7 @@ import {
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema,
-  itemListSchema, speakableSchema,
+  itemListSchema, speakableSchema, faqPageSchema,
   truncateTitle, truncateDescription,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -972,6 +973,60 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </div>
           </div>
         </div>
+
+        {/* Arabic FAQ — Phase 1.5 of insurance-seo-strategy-plan.md.
+            Mirrors the EN listing-page FAQ structure so providers
+            have consistent Q&A coverage in both locales. Picked up by
+            Google's faqPageSchema for rich-result eligibility. */}
+        {(() => {
+          const arabicProviderFaqs = [
+            {
+              question: `هل يقبل ${provider.name} التأمين الصحي؟`,
+              answer: provider.insurance.length > 0
+                ? `نعم. ${provider.name} يقبل ${provider.insurance.length} ${provider.insurance.length === 1 ? "خطة تأمين" : "خطة تأمين"}، تشمل ${provider.insurance.slice(0, 3).join("، ")}${provider.insurance.length > 3 ? ` و${provider.insurance.length - 3} خطط أخرى` : ""}. تأكد دائماً من تفاصيل التغطية وترتيبات الفوترة المباشرة مع العيادة قبل الزيارة.`
+                : `${provider.name} لم يؤكد بعد خطط التأمين المقبولة على دليل الرعاية الصحية المفتوح في الإمارات. اتصل بالعيادة مباشرة للاستفسار عن تأمينك.`,
+            },
+            {
+              question: `ما هي خطط التأمين التي يقبلها ${provider.name}؟`,
+              answer: provider.insurance.length > 0
+                ? `${provider.name} يقبل خطط التأمين التالية: ${provider.insurance.join("، ")}. تأكد دائماً من تفاصيل التغطية مباشرة مع المقدم قبل الزيارة.`
+                : `اتصل بـ ${provider.name} مباشرة لتأكيد خطط التأمين المقبولة حالياً.`,
+            },
+            {
+              question: `ما هي ساعات عمل ${provider.name} في ${cityNameAr}؟`,
+              answer: hasValidHours(provider.operatingHours) && provider.operatingHours.mon
+                ? `يعمل ${provider.name} في ${cityNameAr} وفق الجدول التالي: ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة طوال أيام الأسبوع" : `من ${provider.operatingHours.mon.open} إلى ${provider.operatingHours.mon.close} في أيام الأسبوع`}. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`
+                : `اتصل بـ ${provider.name} مباشرة للحصول على ساعات العمل الحالية. الهاتف: ${provider.phone || "راجع البطاقة"}.`,
+            },
+            {
+              question: `ما هي الخدمات الطبية المتوفرة في ${provider.name}؟`,
+              answer: provider.services.length > 0
+                ? `يقدم ${provider.name} الخدمات الطبية التالية: ${provider.services.join("، ")}. هذه المعلومات مصدرها السجلات الرسمية للجهات الصحية في الإمارات.`
+                : `اتصل بـ ${provider.name} للحصول على قائمة كاملة بالخدمات الطبية المتاحة.`,
+            },
+            {
+              question: `كيف أصل إلى ${provider.name} في ${areaNameAr || cityNameAr}؟`,
+              answer: `${provider.name} يقع في ${provider.address}${areaNameAr ? `، في منطقة ${areaNameAr} بـ ${cityNameAr}` : `، ${cityNameAr}`}، الإمارات.${Number(provider.latitude) !== 0 ? " يمكنك الحصول على الاتجاهات عبر خرائط Google." : ""} ${provider.phone ? `للاتجاهات أو المواعيد، اتصل بالرقم ${provider.phone}.` : ""}`,
+            },
+            ...(provider.googleRating && Number(provider.googleRating) > 0 ? [{
+              question: `ما هو تقييم ${provider.name} على Google؟`,
+              answer: `يحظى ${provider.name} بتقييم ${provider.googleRating} نجوم على Google من ${provider.googleReviewCount?.toLocaleString("ar-AE") || "0"} تقييم من المرضى. التقييمات تعكس تجارب المرضى الحقيقية ويتم تحديثها باستمرار.`,
+            }] : []),
+            ...(provider.languages.length > 0 ? [{
+              question: `ما اللغات التي يتحدث بها فريق ${provider.name}؟`,
+              answer: `يتحدث فريق ${provider.name} اللغات التالية: ${provider.languages.join("، ")}. هذا يساعد في خدمة مجتمع ${cityNameAr} متعدد الثقافات.`,
+            }] : []),
+          ];
+          return (
+            <>
+              <JsonLd data={faqPageSchema(arabicProviderFaqs)} />
+              <div className="mt-8 mb-6">
+                <h2 className="font-bold text-dark mb-4 text-2xl">الأسئلة الشائعة</h2>
+                <FaqSection faqs={arabicProviderFaqs} />
+              </div>
+            </>
+          );
+        })()}
 
         {/* Language Switch */}
         <div className="text-center pt-6 pb-4">

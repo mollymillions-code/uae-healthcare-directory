@@ -247,3 +247,69 @@ This is the minimum-blast-radius option until Codex resolves the divergence.
 - [ ] Push merged `live` to `zavis-support/live`
 - [ ] Add the process fixes (1, 2, 3) to prevent recurrence
 - [ ] Mark this document `Status: Resolved` with date and commit SHA of the merge
+
+---
+
+## 2026-05-02 Update — Claude Opus follow-up work + revised user directive
+
+User direction at `2026-05-02`: **"Don't push the codex branch to live. Push everything to the codex branch itself, and let the current setup exist like it is existing. I will later work with Codex to solve for that."**
+
+→ Tier 2 (codex → live merge) is **DEFERRED**. Codex now owns the merge decision. Claude Opus shipped only the Tier 4 patches and additional QA on top of the codex branch lineage.
+
+### Tier 4 patches landed on this branch (NOT pushed to `live`)
+
+| # | Area | Change | Files |
+|---|---|---|---|
+| 4a | `/professionals/cardiology` redirect bug | Map-based `getSpecialtyBySlug` returned `undefined` at runtime in some Next bundle splits. Switched to direct `ALL_SPECIALTIES.find()`. EN + AR mirrors. | `src/app/(directory)/professionals/[category]/page.tsx`, `src/app/(directory)/ar/professionals/[category]/page.tsx` |
+| 4b | `/insurance` hub 30s timeout | Removed `export const dynamic = "force-dynamic"` which was overriding `revalidate=43200` and forcing ~351 DB queries on every request. ISR was already configured correctly; the dynamic flag was the culprit. | `src/app/(directory)/insurance/page.tsx` |
+| 4c | `promote-staged.sh` migration drift | Old script applied a single hardcoded migration file (`provider-verification-badges.sql`) and silently let everything else drift. Patched to iterate ALL `.sql` files in `scripts/db/migrations/` in lexical order. All migrations are idempotent (CREATE TABLE IF NOT EXISTS / ON CONFLICT / idempotent UPDATEs), so reapplying on every promote is self-healing. **This was the root cause of the consumer-accounts and provider-slug-history outages in late April.** | `scripts/ec2-deploy-infra/promote-staged.sh` |
+| 4d | Provider portal email invites | Invite path was creating `clinicInvites` rows + activation URL but never sending an email — admin had to copy-paste manually. Added `sendProviderPortalInviteEmail()` to `@/lib/auth/email.ts` (mirrors password-reset pattern: tries Plunk → Resend → console.warn fallback) and called it from `createProviderPortalInvite()`. Best-effort: dispatch failures are logged but don't fail the invite itself; admin always still gets the URL in the API response. | `src/lib/auth/email.ts`, `src/lib/provider-portal/invites.ts` |
+
+### Phase 2/3 SEO work also on this branch
+
+- New tri-facet route: `src/app/(directory)/best/[city]/[category]/accepting/[insurer]/page.tsx` + AR mirror, with 7-question FAQ helper inline
+- Sitemap emission for the new route (EN + AR alternates)
+- `/insurance/[insurer]` now has a "Top clinics by city × category" section with chip links
+- `TRI_FACET_INSURER_ALLOW` 6 → 12, `TRI_FACET_CATEGORY_ALLOW` 8 → 12 (also fixed silent-bug slug typos like `dentists` → `dental`)
+- `INSURANCE_EDITORIAL` extended with bilingual ~200-word copy for axa, cigna, metlife, allianz-care, bupa-global, aetna-international (drafts — flagged for editorial review)
+- `docs/playbooks/insurance-guide-listicle-briefs.md` — 10 detailed content briefs for Phase 3
+- AR catchall listing branch now mounts `<FaqSection>` + `faqPageSchema()` with 7-question Arabic FAQ array
+
+### URGENT QA fix landed: `/login` was the research dashboard password gate
+
+User screenshot showed visitors clicking "Sign in" landing on a page titled "RESEARCH DASHBOARD / Welcome back / Dashboard password". Replaced `src/app/(directory)/login/page.tsx` with a proper consumer NextAuth credentials login form (email + password → `signIn("credentials", ...)` → redirects to `/account` or `?redirect=`). Links to `/forgot-password` and `/signup`. **No staff or research-dashboard references on the public consumer login.** The research dashboard gate is still reachable at `/dashboard-auth` for internal use only.
+
+### NEW STRATEGIC CONSTRAINT FROM USER (2026-05-02) — flagged for codex
+
+> "The sign-in is supposed to be happening via the Zavis platform for the clinics, but for the patients and users, the sign-in will happen here. For clinics, there is not going to be any sign-in here."
+
+This conflicts with the embed-first design captured in `docs/ops/clinic-portal-intent.md`, which assumed `/provider-portal/login` continues to exist as a fallback for activated clinic accounts. Under the new directive:
+
+- **Patient/consumer sign-in:** stays on the directory (`/login`) — already correct after this patch ✅
+- **Clinic sign-in:** moves to the Zavis platform (separate SaaS, presumably `platform.zavis.ai` or `app.zavis.ai`)
+- **`/provider-portal/login` route:** unclear whether to delete, redirect, or keep as embed-only
+
+**Claude Opus has NOT deleted `/provider-portal/login`** because:
+1. It's load-bearing for the existing invite/activate flow (admin invite → email → `/provider-portal/activate` sets password → `/provider-portal/login` to access dashboard)
+2. The migration plan to the Zavis platform is owned by codex / user
+3. Deleting unilaterally would break the half-built provider edit workflow
+
+**Codex action item:** Decide migration strategy:
+- Option A: Keep `/provider-portal/*` as embed-only (clinic websites iframe in via HMAC token); drop the standalone login form
+- Option B: Build a redirect from `/provider-portal/login` → Zavis platform login URL
+- Option C: Delete `/provider-portal/*` entirely; rebuild on the Zavis platform from scratch
+
+### Files deleted
+
+- `src/components/layout/Header.tsx` — confirmed orphan via `grep -rln "from.*['\"]@/components/layout/Header"` returned zero hits
+- `src/components/layout/Footer.tsx` — removed broken `<Link href="/api/search">` (would 405)
+
+### Branch state at 2026-05-02
+
+- `phase-1-seo-and-handoff` (local) — has all the above work
+- `codex/staging-green-full-20260430211038` (local + `origin` + `zavis-support`) — production-deployed tip, lineage intact
+- `live` (`zavis-support`) — still drifted, still untouched
+
+Per user instruction the local branch will be merged into / pushed onto the codex branch, NOT into `live`. The previously-described divergence between `codex/staging-green-full-20260430211038` and `zavis-support/live` is now codex's call to resolve.
+
+**Status:** Open — Tier 4 patches and SEO Phase 2 are ready on the codex branch; codex owns the merge-to-live decision and the provider-portal sign-in strategy.

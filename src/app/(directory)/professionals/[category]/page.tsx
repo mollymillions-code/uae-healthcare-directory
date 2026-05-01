@@ -6,9 +6,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getProfessionalsByCategory } from "@/lib/professionals";
 import {
   PROFESSIONAL_CATEGORIES,
+  ALL_SPECIALTIES,
   getSpecialtiesByCategory,
   getCategoryBySlug,
-  getSpecialtyBySlug,
 } from "@/lib/constants/professionals";
 import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -48,9 +48,16 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
   if (!cat) {
-    const specialty = getSpecialtyBySlug(params.category);
+    // Bypass the Map-based lookup with direct iteration. The Map version
+    // (getSpecialtyBySlug) appeared to return undefined at runtime in some
+    // builds even though the data was present in source, possibly due to
+    // module init ordering with how Next.js bundles route chunks. Direct
+    // .find() against the imported array is more reliable.
+    const specialty = ALL_SPECIALTIES.find((s) => s.slug === params.category);
     if (specialty) {
-      permanentRedirect(`/professionals/${specialty.category}/${specialty.slug}`);
+      permanentRedirect(
+        `/professionals/${specialty.category}/${specialty.slug}`,
+      );
     }
     notFound();
   }

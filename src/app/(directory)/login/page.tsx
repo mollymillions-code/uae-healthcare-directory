@@ -1,152 +1,127 @@
 "use client";
 
-import { useState, Suspense } from "react";
 import Link from "next/link";
+import { Suspense, useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Lock, ArrowRight, Sparkles } from "lucide-react";
 
 function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/account";
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/research/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+    const signInResult = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
     });
 
-    if (res.ok) {
+    if (signInResult?.ok) {
       router.push(redirect);
+      router.refresh();
     } else {
-      setError("Invalid password");
+      setError("Invalid email or password.");
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }
 
   return (
-    <section className="relative overflow-hidden bg-surface-cream min-h-[calc(100vh-5rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
-        <div className="absolute -top-20 -left-32 h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]" />
-      </div>
+    <div className="min-h-screen bg-[#f8f8f6] px-4 py-12">
+      <div className="mx-auto max-w-md rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm sm:p-8">
+        <Link
+          href="/directory"
+          className="font-['Bricolage_Grotesque',sans-serif] text-2xl font-semibold tracking-tight text-[#1c1c1c]"
+        >
+          zavis<span className="text-[#006828]">.</span>
+        </Link>
+        <h1 className="mt-8 font-['Bricolage_Grotesque',sans-serif] text-[28px] font-medium tracking-tight text-[#1c1c1c]">
+          Welcome back
+        </h1>
+        <p className="mt-2 font-['Geist',sans-serif] text-sm leading-relaxed text-black/50">
+          Sign in to pick up your saved clinics and continue your healthcare search.
+        </p>
 
-      <div className="relative w-full max-w-md">
-        {/* Hero copy */}
-        <div className="text-center mb-8">
-          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5" />
-            Research dashboard
-          </p>
-          <h1 className="font-display font-semibold text-ink text-display-md lg:text-[40px] leading-[1.04] tracking-[-0.022em]">
-            Welcome back.
-          </h1>
-          <p className="font-sans text-z-body text-ink-soft mt-3 leading-relaxed">
-            Sign in to access the Zavis research dashboard.
-          </p>
-        </div>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <label className="block">
+            <span className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c]">
+              Email
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              required
+              className="mt-1 w-full rounded-xl border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]"
+            />
+          </label>
+          <label className="block">
+            <span className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c]">
+              Password
+            </span>
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              required
+              className="mt-1 w-full rounded-xl border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]"
+            />
+          </label>
 
-        {/* Login card */}
-        <div className="rounded-z-lg bg-white border border-ink-line p-6 sm:p-8 shadow-z-card">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label
-                htmlFor="password"
-                className="block font-sans text-z-caption font-semibold text-ink-soft mb-1.5"
-              >
-                Dashboard password
-              </label>
-              <div className="relative">
-                <Lock
-                  className="h-4 w-4 text-ink-muted absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  strokeWidth={1.75}
-                />
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  autoFocus
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full bg-white rounded-z-md border border-ink-hairline pl-11 pr-4 py-3 font-sans text-z-body text-ink placeholder:text-ink-muted focus:border-ink focus:ring-1 focus:ring-ink outline-none transition-colors"
-                  disabled={loading}
-                />
-              </div>
-              {error && (
-                <p
-                  role="alert"
-                  className="mt-2 font-sans text-z-caption text-red-600 flex items-center gap-1.5"
-                >
-                  {error}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white rounded-z-pill px-5 py-3 font-sans font-semibold text-z-body-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          {error && (
+            <p
+              role="alert"
+              className="font-['Geist',sans-serif] text-sm text-red-600"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  Sign in
-                  <ArrowRight className="h-4 w-4" />
-                </>
-              )}
-            </button>
-          </form>
+              {error}
+            </p>
+          )}
 
-          <p className="font-sans text-z-caption text-ink-muted text-center mt-6 pt-6 border-t border-ink-hairline">
-            Trouble signing in? Email{" "}
-            <a
-              href="mailto:support@zavis.ai"
-              className="font-medium text-ink underline underline-offset-2 hover:text-ink-soft"
-            >
-              support@zavis.ai
-            </a>
-            .
-          </p>
-        </div>
-
-        <div className="text-center mt-6">
-          <Link
-            href="/directory"
-            className="font-sans text-z-caption text-ink-muted hover:text-ink underline underline-offset-2"
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full bg-[#006828] px-5 py-3 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c] disabled:cursor-wait disabled:opacity-70"
           >
-            ← Back to directory
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+
+        <div className="mt-5 flex items-center justify-between text-sm">
+          <Link
+            href="/forgot-password"
+            className="font-['Geist',sans-serif] text-black/55 hover:text-[#006828]"
+          >
+            Forgot password?
+          </Link>
+          <Link
+            href={`/signup?redirect=${encodeURIComponent(redirect)}`}
+            className="font-['Geist',sans-serif] font-medium text-[#006828] hover:underline"
+          >
+            Create account
           </Link>
         </div>
+
+        <p className="mt-6 border-t border-black/[0.06] pt-5 font-['Geist',sans-serif] text-xs text-black/40">
+          Are you a clinic? Manage your listing through the Zavis platform — provider sign-in is not on this directory.
+        </p>
       </div>
-    </section>
+    </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <section className="bg-surface-cream min-h-[calc(100vh-5rem)] flex items-center justify-center">
-          <div className="inline-flex items-center gap-2 font-sans text-z-body-sm text-ink-muted">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Loading…
-          </div>
-        </section>
-      }
-    >
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f8f6]" />}>
       <LoginForm />
     </Suspense>
   );

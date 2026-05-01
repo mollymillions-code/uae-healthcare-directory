@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { createPlainToken, hashToken } from "@/lib/auth/tokens";
+import { sendProviderPortalInviteEmail } from "@/lib/auth/email";
 import { normalizePortalEmail, type ProviderPortalRole } from "@/lib/provider-portal/auth";
 
 function slugify(value: string): string {
@@ -134,6 +135,21 @@ export async function createProviderPortalInvite(input: {
   const activationUrl = `${getBaseUrl()}/provider-portal/activate?token=${encodeURIComponent(
     plainToken
   )}`;
+
+  // Email is best-effort: degrades to a console warning if no provider is
+  // configured. Admin always still gets the activationUrl in the API response
+  // and can forward it manually as a fallback.
+  try {
+    await sendProviderPortalInviteEmail({
+      to: email,
+      contactName: input.contactName ?? null,
+      providerName: provider.name,
+      activationUrl,
+      expiresAt,
+    });
+  } catch (err) {
+    console.error("[provider-portal-invite] email dispatch failed:", err);
+  }
 
   return {
     inviteId,

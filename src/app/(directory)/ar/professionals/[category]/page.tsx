@@ -6,9 +6,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getProfessionalsByCategory } from "@/lib/professionals";
 import {
   PROFESSIONAL_CATEGORIES,
+  ALL_SPECIALTIES,
   getSpecialtiesByCategory,
   getCategoryBySlug,
-  getSpecialtyBySlug,
 } from "@/lib/constants/professionals";
 import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -62,9 +62,13 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function ArabicCategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
   if (!cat) {
-    const specialty = getSpecialtyBySlug(params.category);
+    // Direct .find() — see EN counterpart for context on why we don't use
+    // the Map-based getSpecialtyBySlug helper here.
+    const specialty = ALL_SPECIALTIES.find((s) => s.slug === params.category);
     if (specialty) {
-      permanentRedirect(`/ar/professionals/${specialty.category}/${specialty.slug}`);
+      permanentRedirect(
+        `/ar/professionals/${specialty.category}/${specialty.slug}`,
+      );
     }
     notFound();
   }

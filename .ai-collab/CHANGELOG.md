@@ -1,5 +1,105 @@
 # Zavis Landing - Changelog
 
+## 2026-05-02 — [Claude Code] Phase 2 SEO + Tier 4 patches + URGENT QA fix on /login + provider-portal email plumbing
+
+**Signed by:** Claude Code Opus 4.7 · 2026-05-02T13:00:00+04:00
+**Branch:** `phase-1-seo-and-handoff` (local), to be pushed to `codex/staging-green-full-20260430211038`
+**Status:** Local-only; **NOT pushed to `live`** per explicit user directive ("Push everything to the codex branch itself, and let the current setup exist like it is existing. I will later work with Codex to solve for that.")
+**Why:** Continuation of the Phase 2 SEO buildout, the deployment-mess Tier 4 loose ends, and an urgent QA fix on `/login` that was serving the research dashboard password gate to consumers.
+
+### What changed
+
+**1) URGENT QA: `/login` was the research dashboard password gate**
+
+User screenshot showed visitors clicking "Sign in" landing on a page titled "RESEARCH DASHBOARD / Welcome back / Dashboard password" — a copy of the staff research dashboard auth page that had been wired in as `/login` at some point. Replaced `src/app/(directory)/login/page.tsx` with a real consumer NextAuth credentials login (email + password → `signIn("credentials", ...)` → redirect to `/account` or `?redirect=`). Links to `/forgot-password` and `/signup` for account creation. The page footer makes clear that clinics manage listings via the Zavis platform, not via this directory. The internal staff research dashboard gate is still reachable at `/dashboard-auth` for staff.
+
+**Strategic constraint flagged for codex** (user message 2026-05-02):
+> "The sign-in is supposed to be happening via the Zavis platform for the clinics, but for the patients and users, the sign-in will happen here. For clinics, there is not going to be any sign-in here."
+
+This conflicts with codex's embed-first design captured in `docs/ops/clinic-portal-intent.md`. `/provider-portal/login` was NOT deleted (it's load-bearing for the existing invite/activate flow). Codex needs to decide: keep portal embed-only, redirect login to platform, or rip out `/provider-portal/*` entirely. See `docs/ops/deployment-mess-issue.md` § "2026-05-02 Update" for the full handoff.
+
+**2) Phase 2 SEO buildout**
+
+- **NEW** `src/app/(directory)/best/[city]/[category]/accepting/[insurer]/page.tsx` — Top-N tri-facet route. Uses `ListingsTemplate`, gates render on `isTriFacetEligible(insurerSlug, citySlug, categorySlug)`, includes 7-question FAQ helper inline, JsonLd: WebPage + ItemList + BreadcrumbList + FAQPage. `revalidate=21600`, `dynamicParams=true`, `generateStaticParams` returns `[]` unless `PREBUILD_STATIC_ROUTES=1`.
+- **NEW** `src/app/(directory)/ar/best/[city]/[category]/accepting/[insurer]/page.tsx` — Arabic mirror. Uses `getArabicCityName(city.slug)` and `getArabicCategoryName(category.slug)` from `@/lib/i18n` (NOT `LocalCategory.nameAr` — that field doesn't exist).
+- **EXTENDED** `src/app/sitemap.ts` — emits `/best/{city}/{category}/accepting/{insurer}` URLs alongside existing tri-facet URLs, with EN+AR hreflang alternates.
+- **EXTENDED** `src/app/(directory)/insurance/[insurer]/page.tsx` — added "Top clinics by city × category accepting {insurer}" section with chip links pointing to the new `/best/...` routes. Uses `TRI_FACET_INSURER_ALLOW`, `TRI_FACET_CATEGORY_ALLOW`, `isTriFacetEligible`, `getInsurancePlansByGeo`.
+- **CRITICAL BUG FIX** `src/lib/seo/facet-rules.ts` — `TRI_FACET_CATEGORY_ALLOW` had wrong slugs (`dentists, dermatologists, pediatricians, gynecologists, ophthalmologists, cardiologists`) that did not match real directory slugs (`dental, dermatology, pediatrics, ob-gyn, ophthalmology, cardiology`). This had been silently breaking sitemap tri-facet emission. Fixed slugs and expanded `TRI_FACET_INSURER_ALLOW` from 6 → 12 (added: axa, cigna, metlife, allianz-care, bupa-global, aetna-international) and `TRI_FACET_CATEGORY_ALLOW` from 8 → 12 (added: orthopedics, mental-health, ent, fertility-ivf).
+- **EXTENDED** `src/lib/insurance-facets/editorial-copy.ts` — added 6 new INSURANCE_EDITORIAL entries with bilingual ~200-word copy. Marked as drafts for editorial team verification.
+- **NEW** `docs/playbooks/insurance-guide-listicle-briefs.md` — 10 detailed Phase 3 content briefs for the editorial team. Slugs: walk-in-clinic-insurance, direct-billing-insurance-uae, same-day-claims-insurance, dental-insurance-uae-2026, chronic-disease-coverage-uae, outpatient-vs-inpatient-uae, expat-vs-resident-insurance, top-up-insurance-uae, mandatory-health-insurance-emirates, insurance-claim-process-uae.
+
+**3) AR FAQ infrastructure on catchall listing branch**
+
+`src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx` now mounts `<FaqSection>` + `<JsonLd data={faqPageSchema(arabicProviderFaqs)} />` on the listing branch. 7-question Arabic FAQ array with bilingual provider context.
+
+**4) Tier 4a: `/professionals/cardiology` redirect bug**
+
+The page rendered the not-found page despite the source containing `permanentRedirect(...)` for specialty matches. Hypothesis: Map-based `getSpecialtyBySlug` returned `undefined` at runtime due to module init ordering with Next.js bundling. Switched to direct `ALL_SPECIALTIES.find((s) => s.slug === params.category)` against the imported array. Same fix applied to AR mirror.
+
+**5) Tier 4b: `/insurance` hub 30-second timeout**
+
+Removed `export const dynamic = "force-dynamic"` from `src/app/(directory)/insurance/page.tsx`. The flag was overriding the file's `export const revalidate = 43200` ISR setting and forcing ~351 DB queries on every request, which caused 30s timeouts on production. ISR was correctly configured; the `dynamic` flag was the only culprit.
+
+**6) Tier 4c: `promote-staged.sh` migration drift**
+
+Old script applied a single hardcoded migration file (`scripts/db/migrations/2026-04-30-provider-verification-badges.sql`) and silently let everything else drift. **This was the root cause of the consumer-accounts and provider-slug-history outages in late April** — when those migrations weren't applied to the EC2 database, code that did `db.select().from(consumerUsers)` failed because Drizzle SELECTs all schema columns. Patched `scripts/ec2-deploy-infra/promote-staged.sh` to iterate ALL `.sql` files in `scripts/db/migrations/` in lexical (date-prefixed) order. All migrations were verified to be idempotent (CREATE TABLE IF NOT EXISTS, INSERT ON CONFLICT DO NOTHING, idempotent UPDATEs), so reapplying on every promote is self-healing — schema drift is caught here, not at request time. The repo version of promote-staged.sh propagates to EC2 via the existing `deploy.sh` "Sync deploy infra to EC2 (drift prevention)" step on the next deploy.
+
+**7) Tier 4d: provider portal email invite plumbing**
+
+The invite path was creating `clinicInvites` rows + activation URL but never sending an email — admin had to copy-paste the URL out of the JSON response and forward it manually. Refactored `src/lib/auth/email.ts` to extract a shared `dispatchEmail()` helper (Plunk → Resend → console.warn fallback), added `sendProviderPortalInviteEmail()` exporting from the same module, and wired it into `createProviderPortalInvite()` in `src/lib/provider-portal/invites.ts`. Best-effort dispatch: failures are caught and logged but don't fail the invite creation; admin always still gets the activation URL in the API response as a manual fallback.
+
+**Note:** This works for the existing flow but may be obsolete depending on codex's decision on the provider-portal-on-Zavis-platform migration. If portal moves to platform, this plumbing can be deleted cleanly — `sendProviderPortalInviteEmail` is the only export added.
+
+**8) Cleanup**
+
+- **DELETED** `src/components/layout/Header.tsx` — confirmed orphan via `grep -rln "from.*['\"]@/components/layout/Header"` (zero hits across the codebase).
+- **EDITED** `src/components/layout/Footer.tsx` — removed broken `<Link href="/api/search">` that would 405.
+
+### Files touched
+
+- `src/app/(directory)/login/page.tsx` (rewrite)
+- `src/app/(directory)/best/[city]/[category]/accepting/[insurer]/page.tsx` (NEW)
+- `src/app/(directory)/ar/best/[city]/[category]/accepting/[insurer]/page.tsx` (NEW)
+- `src/app/(directory)/professionals/[category]/page.tsx` (Map → find)
+- `src/app/(directory)/ar/professionals/[category]/page.tsx` (Map → find)
+- `src/app/(directory)/insurance/page.tsx` (drop force-dynamic)
+- `src/app/(directory)/insurance/[insurer]/page.tsx` (Top-N section)
+- `src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx` (FAQ block)
+- `src/app/sitemap.ts` (best-of route emission)
+- `src/lib/seo/facet-rules.ts` (slug typo fix + allow-list expansion)
+- `src/lib/insurance-facets/editorial-copy.ts` (6 new bilingual entries)
+- `src/lib/auth/email.ts` (dispatchEmail + sendProviderPortalInviteEmail)
+- `src/lib/provider-portal/invites.ts` (wire invite email)
+- `scripts/ec2-deploy-infra/promote-staged.sh` (auto-apply all migrations)
+- `src/components/layout/Footer.tsx` (remove broken /api/search link)
+- `src/components/layout/Header.tsx` (DELETED — orphan)
+- `docs/playbooks/insurance-guide-listicle-briefs.md` (NEW)
+- `docs/ops/qa-audit-2026-05-02.md` (NEW)
+- `docs/ops/deployment-mess-issue.md` (appended 2026-05-02 update)
+
+### Lint/typecheck status
+
+- All touched/new files pass `npx eslint <file>` clean.
+- `npx tsc --noEmit -p .` shows ONLY pre-existing errors unrelated to this work (missing `framer-motion` types, etc. — all in files Claude Code did not touch in this commit).
+
+### What ships next time `promote-staged.sh` runs against this branch
+
+The codex branch tip already at production. Once this work is merged INTO the codex branch (per user direction), the next promote will:
+1. Apply all migrations in `scripts/db/migrations/` (idempotent, safe to rerun)
+2. Build the new `/best/...` route (EN + AR), emit Top-N sitemap URLs
+3. Serve the new consumer `/login` form
+4. Drop the `/insurance` hub timeout
+5. Fix the `/professionals/cardiology` redirect
+6. Send actual emails for provider portal invites (if `PLUNK_SECRET_KEY` or `RESEND_API_KEY` is set in `/home/ubuntu/zavis-shared/.env.local`)
+
+### What does NOT ship from this work
+
+- The `live` branch divergence is still open. Codex must decide whether to merge codex lineage into `live` or revert.
+- `/provider-portal/login` is still the clinic sign-in route. Codex must decide its fate per the new strategic constraint.
+- Phase 3 listicle prose is briefs-only — editorial team must write the actual article bodies.
+
+---
+
 ## 2026-04-26 — [Claude Code] Hide Ghasaq Medical Center (Sharjah) from the public site
 
 **Signed by:** Claude Code · 2026-04-26T00:00:00+04:00
