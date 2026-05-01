@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Sans, Space_Mono, Lora, Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
-import { headers } from "next/headers";
 import { Suspense } from "react";
 import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
 import { NextAuthProvider } from "@/components/auth/NextAuthProvider";
@@ -100,18 +99,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Detect Arabic route via pathname header set by `src/middleware.ts`.
-  // Server-renders `<html lang="ar" dir="rtl">` for /ar/* so Googlebot
-  // sees the correct attributes in the initial HTML response — without
-  // this, AR pages SSR with lang=en/dir=ltr and only flip after JS hydrates
-  // (the SetArabicLang useEffect runs client-side only).
-  const pathname = headers().get("x-pathname") || "";
-  const isArabic = pathname === "/ar" || pathname.startsWith("/ar/");
-  const htmlLang = isArabic ? "ar" : "en";
-  const htmlDir = isArabic ? "rtl" : "ltr";
-
+  // Note: AR routes flip <html lang/dir> client-side via the
+  // SetArabicLang component mounted in `(directory)/ar/layout.tsx`.
+  // Calling `headers()` here would make every ISR page dynamic
+  // (DYNAMIC_SERVER_USAGE), so we accept a brief lang=en flash on
+  // AR routes. Googlebot still picks up the correct attributes
+  // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang={htmlLang} dir={htmlDir} className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable}`}>
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
