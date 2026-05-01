@@ -236,7 +236,9 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 </Link>
               ) : (
                 <Link
-                  href="/login"
+                  href={`${pathname}?auth=login`}
+                  scroll={false}
+                  replace
                   className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
                 >
                   Sign in
@@ -412,7 +414,10 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                   </Link>
                 ) : (
                   <Link
-                    href="/login"
+                    href={`${pathname}?auth=login`}
+                    scroll={false}
+                    replace
+                    onClick={() => setMobileOpen(false)}
                     className="block text-center font-sans font-medium text-ink-soft hover:text-ink py-2"
                   >
                     Sign in
