@@ -24,10 +24,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Phone, MessageCircle, MapPin, Globe } from "lucide-react";
 import { trackProviderCta, type ProviderTrackingInfo } from "@/lib/provider-tracking";
-import { ConsumerAccountPrompt } from "@/components/account/ConsumerAccountPrompt";
 import { recordConsumerEvent } from "@/lib/consumer-intent-client";
 
 export interface StickyMobileCtaProps {
@@ -66,9 +64,7 @@ export function StickyMobileCta({
   directionsUrl,
   websiteUrl,
 }: StickyMobileCtaProps) {
-  const { status } = useSession();
   const [visible, setVisible] = useState(false);
-  const [promptOpen, setPromptOpen] = useState(false);
 
   useEffect(() => {
     function onScroll() {
@@ -95,17 +91,10 @@ export function StickyMobileCta({
     isClaimed,
   };
 
-  function maybePromptForAccount() {
-    if (status !== "unauthenticated" || typeof window === "undefined") return;
-    const key = "zavis_account_prompt_last_seen";
-    const lastSeen = Number(window.localStorage.getItem(key) || 0);
-    if (Date.now() - lastSeen < 24 * 60 * 60 * 1000) return;
-    window.localStorage.setItem(key, String(Date.now()));
-    window.setTimeout(() => setPromptOpen(true), 250);
-  }
-
   function handleClick(type: "call" | "whatsapp" | "directions" | "website") {
     trackProviderCta(type, "sticky_mobile_cta", provider);
+    // Account prompt is triggered globally by recordConsumerEvent →
+    // PostActionAccountPrompt (mounted in src/app/layout.tsx).
     recordConsumerEvent({
       action: `provider_${type}_click`,
       surface: "sticky_mobile_cta",
@@ -116,7 +105,6 @@ export function StickyMobileCta({
       ctaLabel: type,
       metadata: { citySlug, categorySlug, isClaimed },
     }).catch(() => undefined);
-    if (type === "call" || type === "whatsapp") maybePromptForAccount();
   }
 
   return (
@@ -183,12 +171,6 @@ export function StickyMobileCta({
           </div>
       </div>
       </div>
-      <ConsumerAccountPrompt
-        open={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        title="Keep this clinic handy"
-        message="Create a free account to save clinics, keep your recent calls, and continue your search later."
-      />
     </>
   );
 }

@@ -9,11 +9,8 @@
  */
 
 import Link from "next/link";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { Phone, Globe, MapPin, ExternalLink } from "lucide-react";
 import { trackProviderCta, type ProviderTrackingInfo } from "@/lib/provider-tracking";
-import { ConsumerAccountPrompt } from "@/components/account/ConsumerAccountPrompt";
 import { recordConsumerEvent } from "@/lib/consumer-intent-client";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 
@@ -42,8 +39,6 @@ export function ProviderSidebarCta({
   address,
   directionsUrl,
 }: ProviderSidebarCtaProps) {
-  const { status } = useSession();
-  const [promptOpen, setPromptOpen] = useState(false);
   const provider: ProviderTrackingInfo = {
     name: providerName,
     slug: providerSlug,
@@ -55,17 +50,10 @@ export function ProviderSidebarCta({
 
   const cleanPhone = phone ? phone.replace(/[^+\d]/g, "") : null;
 
-  function maybePromptForAccount() {
-    if (status !== "unauthenticated" || typeof window === "undefined") return;
-    const key = "zavis_account_prompt_last_seen";
-    const lastSeen = Number(window.localStorage.getItem(key) || 0);
-    if (Date.now() - lastSeen < 24 * 60 * 60 * 1000) return;
-    window.localStorage.setItem(key, String(Date.now()));
-    window.setTimeout(() => setPromptOpen(true), 250);
-  }
-
   function handleTrackedClick(type: "call" | "website" | "directions") {
     trackProviderCta(type, "sidebar", provider);
+    // Account prompt is triggered globally by recordConsumerEvent →
+    // PostActionAccountPrompt (mounted in src/app/layout.tsx).
     recordConsumerEvent({
       action: `provider_${type}_click`,
       surface: "provider_sidebar",
@@ -76,7 +64,6 @@ export function ProviderSidebarCta({
       ctaLabel: type,
       metadata: { citySlug, categorySlug, isClaimed },
     }).catch(() => undefined);
-    if (type === "call") maybePromptForAccount();
   }
 
   return (
@@ -156,12 +143,6 @@ export function ProviderSidebarCta({
             </Link>
           )}
       </div>
-      <ConsumerAccountPrompt
-        open={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        title="Keep this clinic handy"
-        message="Create a free account to save clinics, keep your recent calls, and continue your search later."
-      />
     </>
   );
 }

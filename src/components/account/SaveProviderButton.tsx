@@ -9,7 +9,6 @@ import {
   recordConsumerEvent,
   removeLocalSavedProviderId,
 } from "@/lib/consumer-intent-client";
-import { ConsumerAccountPrompt } from "@/components/account/ConsumerAccountPrompt";
 
 interface SaveProviderButtonProps {
   providerId: string;
@@ -52,7 +51,6 @@ export function SaveProviderButton({
   const { status } = useSession();
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [promptOpen, setPromptOpen] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -100,9 +98,11 @@ export function SaveProviderButton({
         removeLocalSavedProviderId(providerId);
         setSaved(false);
       } else {
+        // Anonymous: keep save in localStorage. The global PostActionAccountPrompt
+        // (mounted in src/app/layout.tsx) listens to the recordConsumerEvent above
+        // and surfaces the warm "Enjoying Zavis?" modal subject to its 24h throttle.
         addLocalSavedProviderId(providerId);
         setSaved(true);
-        setPromptOpen(true);
       }
     }
 
@@ -126,12 +126,6 @@ export function SaveProviderButton({
         <Bookmark className={`${compact ? "h-3.5 w-3.5" : "h-4 w-4"} ${saved ? "fill-current" : ""}`} aria-hidden="true" />
         {!compact && <span>{saved ? "Saved" : "Save"}</span>}
       </button>
-      <ConsumerAccountPrompt
-        open={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        title="Provider saved"
-        message="Create a free account to keep saved clinics across your phone, laptop, and future searches."
-      />
     </>
   );
 }

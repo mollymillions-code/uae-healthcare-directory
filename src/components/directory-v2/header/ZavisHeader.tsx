@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { CITIES } from "@/lib/constants/cities";
 import { COUNTRIES } from "@/lib/constants/countries";
 import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
@@ -92,6 +93,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
   const pathname = usePathname();
   const router = useRouter();
   const countryCtx = useCountryContext(pathname);
+  const { status: sessionStatus } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [initialSegment, setInitialSegment] = useState<SearchSegment | null>(null);
@@ -224,6 +226,22 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               >
                 Claim your listing
               </Link>
+              {sessionStatus === "authenticated" ? (
+                <Link
+                  href="/account"
+                  className="inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
+                >
+                  <User className="h-4 w-4" strokeWidth={2} />
+                  Account
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
+                >
+                  Sign in
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
@@ -384,6 +402,22 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 >
                   Claim your listing
                 </Link>
+                {sessionStatus === "authenticated" ? (
+                  <Link
+                    href="/account"
+                    className="flex items-center justify-center gap-2 font-sans font-medium text-ink-soft hover:text-ink py-2"
+                  >
+                    <User className="h-4 w-4" strokeWidth={2} />
+                    My account
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block text-center font-sans font-medium text-ink-soft hover:text-ink py-2"
+                  >
+                    Sign in
+                  </Link>
+                )}
                 {arabicHref && (
                   <Link
                     href={arabicHref}

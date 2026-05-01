@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
 import { NextAuthProvider } from "@/components/auth/NextAuthProvider";
 import { RouteLoadingOverlay } from "@/components/layout/RouteLoadingOverlay";
+import { PostActionAccountPrompt } from "@/components/account/PostActionAccountPrompt";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -131,7 +132,10 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <RouteLoadingOverlay />
         </Suspense>
-        <NextAuthProvider>{children}</NextAuthProvider>
+        <NextAuthProvider>
+          {children}
+          <PostActionAccountPrompt />
+        </NextAuthProvider>
       </body>
     </html>
   );

@@ -57,6 +57,30 @@ export async function syncLocalSavedProviders(): Promise<number> {
   return Number(data.synced ?? 0);
 }
 
+/**
+ * Window CustomEvent name dispatched after a primary consumer action (call,
+ * whatsapp, save, etc.) is recorded. The global PostActionAccountPrompt
+ * component listens for this and shows a warm "create an account" modal for
+ * unauthenticated users, throttled to once per 24h.
+ */
+export const POST_ACTION_EVENT = "zavis:post-action";
+
+export interface PostActionEventDetail {
+  action: string;
+  surface?: string;
+  providerId?: string | null;
+  providerName?: string | null;
+}
+
+function dispatchPostActionEvent(detail: PostActionEventDetail) {
+  if (typeof window === "undefined") return;
+  try {
+    window.dispatchEvent(new CustomEvent<PostActionEventDetail>(POST_ACTION_EVENT, { detail }));
+  } catch {
+    // Older browsers without CustomEvent support: silent no-op.
+  }
+}
+
 export async function recordConsumerEvent(payload: {
   action: string;
   surface: string;
@@ -78,6 +102,16 @@ export async function recordConsumerEvent(payload: {
     cta_label: payload.ctaLabel,
     anonymous_id: anonymousId,
     ...(payload.metadata ?? {}),
+  });
+
+  // Notify the global PostActionAccountPrompt listener. The listener decides
+  // whether the action qualifies and whether the snooze allows showing the
+  // prompt — this dispatcher is intentionally permissive.
+  dispatchPostActionEvent({
+    action: payload.action,
+    surface: payload.surface,
+    providerId: payload.providerId,
+    providerName: payload.entityName,
   });
 
   await fetch("/api/account/provider-events", {
