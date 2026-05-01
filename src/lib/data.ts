@@ -87,6 +87,7 @@ let _db: typeof import("@/lib/db")["db"] | null = null;
 let _providersTable: typeof import("@/lib/db/schema")["providers"] | null = null;
 let _areasTable: typeof import("@/lib/db/schema")["areas"] | null = null;
 let _citiesTable: typeof import("@/lib/db/schema")["cities"] | null = null;
+let _providerSlugHistoryTable: typeof import("@/lib/db/schema")["providerSlugHistory"] | null = null;
 let _eq: typeof import("drizzle-orm")["eq"] | null = null;
 let _and: typeof import("drizzle-orm")["and"] | null = null;
 let _countFn: typeof import("drizzle-orm")["count"] | null = null;
@@ -110,6 +111,7 @@ async function ensureDbModules() {
   _providersTable = schemaMod.providers;
   _areasTable = schemaMod.areas;
   _citiesTable = schemaMod.cities;
+  _providerSlugHistoryTable = schemaMod.providerSlugHistory;
   _eq = ormMod.eq;
   _and = ormMod.and;
   _countFn = ormMod.count;
@@ -1394,6 +1396,27 @@ export async function searchProvidersByName(filters: {
   };
 }
 
+/**
+ * Look up an archived slug in `provider_slug_history`. Returns the provider id
+ * if found. Used by getProviderBySlug to 301 historical URLs to canonical.
+ */
+async function lookupHistoricalSlug(slug: string): Promise<string | undefined> {
+  if (!HAS_DB) return undefined;
+  await ensureDbModules();
+  try {
+    const rows = await _db!
+      .select({ providerId: _providerSlugHistoryTable!.providerId })
+      .from(_providerSlugHistoryTable!)
+      .where(_eq!(_providerSlugHistoryTable!.oldSlug, slug))
+      .limit(1);
+    return rows[0]?.providerId;
+  } catch {
+    // Table may not exist yet on a slot whose migration hasn't applied.
+    // Treat as miss rather than crash — the page will fall through to 404.
+    return undefined;
+  }
+}
+
 export async function getProviderBySlug(slug: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
   if (isRemovedProviderSlug(slug)) return undefined;
   const scope = canonicalizeProviderFilterScope(expectedScope);
@@ -1419,6 +1442,20 @@ export async function getProviderBySlug(slug: string, expectedScope?: ProviderFi
     rows.length > 0 && !isRemovedProviderRecord(rows[0])
       ? sanitizeProviderForPublic(rowToProvider(rows[0]))
       : undefined;
+
+  // Fallback 1: explicit slug history (predictable, indexed lookup).
+  if (!provider) {
+    const historicalId = await lookupHistoricalSlug(slug);
+    if (historicalId) {
+      const historyRows = await _db!.select().from(t).where(_eq!(t.id, historicalId)).limit(1);
+      if (historyRows.length > 0 && !isRemovedProviderRecord(historyRows[0])) {
+        provider = sanitizeProviderForPublic(rowToProvider(historyRows[0]));
+      }
+    }
+  }
+
+  // Fallback 2: name/license-derived alias match (deterministic, predates this
+  // change — kept as a safety net for legacy URLs not yet in slug history).
   if (!provider) {
     const candidates = await dbSelectProviders({
       country: scope?.country,
@@ -1642,6 +1679,34 @@ function findProviderBySlugAlias(
     const aliases = providerSlugAliases(provider);
     return aliases.has(requested) || aliases.has(requestedStem);
   });
+}
+
+/**
+ * Archive an old provider slug into provider_slug_history. Idempotent — same
+ * (old_slug, provider_id) won't error on rerun. Call this whenever a provider's
+ * canonical slug changes (rename, admin edit, marketing-friendly short URL).
+ */
+export async function archiveProviderSlug(opts: {
+  oldSlug: string;
+  providerId: string;
+  citySlug?: string;
+  reason?: string;
+}): Promise<void> {
+  if (!HAS_DB) return;
+  await ensureDbModules();
+  try {
+    await _db!
+      .insert(_providerSlugHistoryTable!)
+      .values({
+        oldSlug: opts.oldSlug,
+        providerId: opts.providerId,
+        citySlug: opts.citySlug,
+        reason: opts.reason,
+      })
+      .onConflictDoNothing();
+  } catch (err) {
+    console.error("[archiveProviderSlug] failed:", err);
+  }
 }
 
 /** Get all provider slugs for a city (for generateStaticParams — avoids loading full objects) */

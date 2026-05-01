@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
@@ -252,7 +252,15 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
-  if (resolved.type === "listing") noStore();
+  if (resolved.type === "listing") {
+    noStore();
+    const lastSegment = params.segments[params.segments.length - 1];
+    if (lastSegment && lastSegment !== resolved.provider.slug) {
+      const canonicalCategory = resolved.provider.categorySlug ?? resolved.category.slug;
+      const areaPart = "area" in resolved && resolved.area ? `/${resolved.area.slug}` : "";
+      permanentRedirect(`/ar/directory/${city.slug}${areaPart}/${canonicalCategory}/${resolved.provider.slug}`);
+    }
+  }
 
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -8,6 +8,7 @@ import {
   PROFESSIONAL_CATEGORIES,
   getSpecialtiesByCategory,
   getCategoryBySlug,
+  getSpecialtyBySlug,
 } from "@/lib/constants/professionals";
 import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -60,7 +61,13 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function ArabicCategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
-  if (!cat) notFound();
+  if (!cat) {
+    const specialty = getSpecialtyBySlug(params.category);
+    if (specialty) {
+      permanentRedirect(`/ar/professionals/${specialty.category}/${specialty.slug}`);
+    }
+    notFound();
+  }
 
   const base = getBaseUrl();
   const specialties = getSpecialtiesByCategory(cat.slug);

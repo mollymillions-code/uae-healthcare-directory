@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ProviderDetailTemplate } from "@/components/directory-v2/templates/ProviderDetailTemplate";
@@ -401,7 +401,18 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
-  if (resolved.type === "listing") noStore();
+  if (resolved.type === "listing") {
+    noStore();
+    // Canonical-slug redirect: if the user reached this page via a slug alias
+    // (e.g. /clinics/dental-hub matched "Dental Hub Clinic" via stem-suffix
+    // stripping), 301 to the canonical URL so search engines collapse aliases.
+    const lastSegment = params.segments[params.segments.length - 1];
+    if (lastSegment && lastSegment !== resolved.provider.slug) {
+      const canonicalCategory = resolved.provider.categorySlug ?? resolved.category.slug;
+      const areaPart = "area" in resolved && resolved.area ? `/${resolved.area.slug}` : "";
+      permanentRedirect(`/directory/${city.slug}${areaPart}/${canonicalCategory}/${resolved.provider.slug}`);
+    }
+  }
 
   const base = getBaseUrl();
   // Item 0.5 + Item 22 — thread searchParams.page end-to-end so the ~136

@@ -1295,3 +1295,21 @@ export const adminChanges = pgTable(
     createdIdx: index("idx_admin_changes_created").on(table.createdAt),
   })
 );
+
+// Tracks every slug a provider has ever had. When a provider's slug changes
+// (rename, admin edit, marketing-friendly short URL), the old slug is archived
+// here. Lookups on a missing slug consult this table and 301 to the canonical
+// provider URL — predictable, no fuzzy matching, search-engine safe.
+export const providerSlugHistory = pgTable(
+  "provider_slug_history",
+  {
+    oldSlug: text("old_slug").primaryKey(),
+    providerId: text("provider_id").notNull(),
+    citySlug: text("city_slug"),
+    archivedAt: timestamp("archived_at", { withTimezone: true }).notNull().defaultNow(),
+    reason: text("reason"),
+  },
+  (table) => ({
+    providerIdx: index("idx_provider_slug_history_provider").on(table.providerId),
+  })
+);

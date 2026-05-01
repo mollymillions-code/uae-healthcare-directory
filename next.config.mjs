@@ -40,6 +40,29 @@ const nextConfig = {
       { protocol: "https", hostname: "**.googleusercontent.com" },
     ],
   },
+  async redirects() {
+    // City slug aliases — common UAE abbreviations users type or paste in URLs.
+    // 301 to the canonical slug so search engines collapse the duplicates and
+    // ISR/CDN caches don't fragment across variants.
+    const cityAliases = [
+      { from: "uaq", to: "umm-al-quwain" },
+      { from: "rak", to: "ras-al-khaimah" },
+    ];
+    const redirects = [];
+    for (const { from, to } of cityAliases) {
+      redirects.push({
+        source: `/directory/${from}/:path*`,
+        destination: `/directory/${to}/:path*`,
+        permanent: true,
+      });
+      redirects.push({
+        source: `/ar/directory/${from}/:path*`,
+        destination: `/ar/directory/${to}/:path*`,
+        permanent: true,
+      });
+    }
+    return redirects;
+  },
   async headers() {
     return [
       {
