@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
@@ -169,18 +168,17 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-ink-line">
         <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
-            {/* Left — Brand */}
-            <Link href={directoryHome} className="flex items-center gap-2.5 flex-shrink-0">
-              <Image
-                src="/zavis-logo-dark.svg"
-                alt="Zavis"
-                width={88}
-                height={28}
-                className="h-7 w-auto"
-                priority
-                draggable={false}
-              />
-              <span className="hidden sm:inline-block font-display font-semibold text-ink text-[15px] tracking-[-0.01em] whitespace-nowrap">
+            {/* Left — Brand. Both pieces are text so they share the same
+                font baseline (the previous SVG-image + text combination
+                had a visible vertical-alignment mismatch). */}
+            <Link href={directoryHome} className="flex items-baseline gap-2.5 flex-shrink-0">
+              <span
+                aria-label="Zavis"
+                className="font-['Bricolage_Grotesque',sans-serif] text-[24px] font-semibold tracking-[-0.02em] text-ink leading-none"
+              >
+                zavis<span className="text-[#006828]">.</span>
+              </span>
+              <span className="hidden sm:inline-block font-display font-semibold text-ink text-[15px] tracking-[-0.01em] whitespace-nowrap leading-none">
                 Healthcare Directory
               </span>
             </Link>
@@ -248,12 +246,9 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 type="button"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open menu"
-                className="inline-flex items-center gap-2 border border-ink-hairline rounded-z-pill pl-3 pr-1 py-1 hover:shadow-z-card transition-shadow duration-z-fast"
+                className="inline-flex items-center justify-center h-10 w-10 border border-ink-hairline rounded-full hover:shadow-z-card transition-shadow duration-z-fast"
               >
                 <Menu className="h-4 w-4 text-ink" strokeWidth={2.5} />
-                <span className="w-8 h-8 rounded-full bg-ink text-white inline-flex items-center justify-center font-sans text-[12px] font-semibold">
-                  Z
-                </span>
               </button>
             </div>
 

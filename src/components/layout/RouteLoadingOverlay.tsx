@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 
 const NAVIGATION_EVENT = "zavis:navigation-start";
@@ -112,8 +113,16 @@ export function RouteLoadingOverlay() {
         <div className="relative h-12 w-12">
           <div className="absolute inset-0 rounded-full border-2 border-accent/15" />
           <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-accent" />
-          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-ink font-display text-lg font-semibold text-white">
-            Z
+          <span className="absolute inset-1 flex items-center justify-center overflow-hidden rounded-full">
+            <Image
+              src="/zavis-icon-dark.svg"
+              alt="Zavis"
+              width={40}
+              height={40}
+              className="h-full w-full"
+              priority
+              draggable={false}
+            />
           </span>
         </div>
         <span className="font-sans text-z-body-sm font-semibold text-ink">Loading</span>
