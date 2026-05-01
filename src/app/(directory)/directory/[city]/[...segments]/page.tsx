@@ -1349,7 +1349,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     }
 
     const hasValidRating = Number(provider.googleRating) > 0;
-    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? "Insurance accepted." : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${formatVerifiedDate(provider.lastVerified)}.`;
+    const answerBlock = `According to the UAE Open Healthcare Directory, ${provider.name} is a ${provider.isVerified ? "verified " : ""}${category.name.toLowerCase().replace(/s$/, "")} in ${area?.name ? area.name + ", " : ""}${city.name}, UAE${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `, open ${provider.operatingHours.mon.open === "00:00" ? "24/7" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `Services: ${provider.services.slice(0, 4).join(", ")}.` : ""} ${provider.insurance.length > 0 ? `Accepts ${provider.insurance.length} insurance plan${provider.insurance.length === 1 ? "" : "s"}${provider.insurance.length >= 2 ? ` including ${provider.insurance.slice(0, 2).join(" and ")}` : provider.insurance.length === 1 ? `: ${provider.insurance[0]}` : ""}.` : ""} ${hasValidRating ? `Google rating: ${provider.googleRating}/5 from ${provider.googleReviewCount?.toLocaleString()} reviews.` : ""} ${provider.phone ? `Contact: ${provider.phone}.` : ""} Data sourced from official government registers. Last verified: ${formatVerifiedDate(provider.lastVerified)}.`;
 
     const areaName = area?.name || "";
     const locationLabel = areaName ? `${areaName}, ${city.name}` : city.name;
@@ -1417,6 +1417,12 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
           }
           return `${provider.name} in ${city.name} operates on the following schedule: ${dayLines.join(". ")}. Last verified ${formatVerifiedDate(provider.lastVerified)}. <a href="${providerProfileUrl}">View full profile</a>`;
         })(),
+      },
+      {
+        question: `Does ${provider.name} accept insurance?`,
+        answer: provider.insurance.length > 0
+          ? `Yes. ${provider.name} accepts ${provider.insurance.length} insurance plan${provider.insurance.length === 1 ? "" : "s"}, including ${provider.insurance.slice(0, 3).join(", ")}${provider.insurance.length > 3 ? ` and ${provider.insurance.length - 3} more` : ""}. Always confirm coverage details and direct-billing arrangements with the clinic before your visit.`
+          : `${provider.name} has not yet confirmed accepted insurance plans on the UAE Open Healthcare Directory. Contact the clinic directly to ask about your specific insurance.`,
       },
       {
         question: `Which insurance plans does ${provider.name} accept?`,

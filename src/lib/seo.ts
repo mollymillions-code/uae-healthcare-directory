@@ -323,6 +323,18 @@ export function medicalOrganizationSchema(
           })),
         }
       : {}),
+    // Insurance acceptance — emitted as `paymentAccepted` (a `LocalBusiness`
+    // property) rather than a more "correct" property because schema.org has
+    // no canonical way to attach a list of accepted insurance plans to a
+    // `MedicalBusiness` node. `MedicalBusiness > acceptedInsurance` does not
+    // exist in the vocabulary, and `healthPlanNetworkId` is defined on
+    // `HealthPlanFormulary` / `HealthInsurancePlan` (not on businesses) so
+    // emitting it here would produce a Rich Results Test "unknown property"
+    // warning. `paymentAccepted` is the de-facto convention used by
+    // Healthgrades, Zocdoc, Vitals, and Doctolib for the same purpose, and
+    // Google's parsers extract it for the "accepts insurance" line in some
+    // medical knowledge panels. Do not "fix" this without verifying against
+    // the Rich Results Tester on at least 3 representative providers.
     ...(provider.insurance.length > 0
       ? {
           paymentAccepted: provider.insurance.join(", "),
