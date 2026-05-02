@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { IntakeFormClient } from "./IntakeFormClient";
 
@@ -53,6 +53,14 @@ export default function IntakeFormPage() {
         ])}
       />
       <JsonLd data={faqPageSchema(FAQS)} />
+      <JsonLd
+        data={softwareApplicationSchema({
+          name: "Bilingual Patient Intake Form Generator (UAE)",
+          description: DESCRIPTION,
+          url: `${base}/tools/intake-form`,
+          applicationCategory: "HealthApplication",
+        })}
+      />
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb

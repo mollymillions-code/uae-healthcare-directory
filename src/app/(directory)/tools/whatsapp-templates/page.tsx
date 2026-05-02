@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { TEMPLATES, SPECIALTIES, MESSAGE_TYPES } from "@/lib/tools/whatsapp-templates";
 import { WhatsAppTemplatesClient } from "./WhatsAppTemplatesClient";
@@ -54,6 +54,14 @@ export default function WhatsAppTemplatesPage() {
         ])}
       />
       <JsonLd data={faqPageSchema(FAQS)} />
+      <JsonLd
+        data={softwareApplicationSchema({
+          name: "Bilingual WhatsApp Reminder Templates for UAE Clinics",
+          description: DESCRIPTION,
+          url: `${base}/tools/whatsapp-templates`,
+          applicationCategory: "BusinessApplication",
+        })}
+      />
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb

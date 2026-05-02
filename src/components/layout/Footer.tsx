@@ -83,6 +83,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/find-a-doctor" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Find a Doctor</Link></li>
               <li><Link href="/directory/dubai/top/hospitals" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Top Rated</Link></li>
+              <li><Link href="/tools" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Free Tools for Clinics</Link></li>
               <li>
                 <OwnerWhatsappCta
                   action="get_listed"

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ReviewReplyClient } from "./ReviewReplyClient";
 
@@ -53,6 +53,14 @@ export default function ReviewReplyPage() {
         ])}
       />
       <JsonLd data={faqPageSchema(FAQS)} />
+      <JsonLd
+        data={softwareApplicationSchema({
+          name: "AI Google Review Reply Generator (UAE, PDPL-safe)",
+          description: DESCRIPTION,
+          url: `${base}/tools/review-reply`,
+          applicationCategory: "BusinessApplication",
+        })}
+      />
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb

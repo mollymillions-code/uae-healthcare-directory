@@ -45,9 +45,26 @@ const GUIDE_SLUGS = [
   "healthcare-free-zones-dubai", "emergency-services-uae",
 ];
 const INSURANCE_GUIDE_SLUGS = [
+  // Phase 1 (5 original guides)
   "freelancer-health-insurance", "maternity-insurance-uae",
   "how-to-claim-health-insurance", "domestic-worker-insurance",
   "switching-health-insurance",
+  // Phase 3 listicles (added 2026-05-02)
+  "walk-in-clinic-insurance", "direct-billing-insurance-uae",
+  "same-day-claims-insurance", "dental-insurance-uae-2026",
+  "chronic-disease-coverage-uae", "outpatient-vs-inpatient-uae",
+  "expat-vs-resident-insurance", "top-up-insurance-uae",
+  "mandatory-health-insurance-emirates", "insurance-claim-process-uae",
+];
+
+// Free tools mounted at /tools/* — operator-facing utilities. EN-only by design
+// (claim codes, clinical English terminology, regulatory acronyms). No AR mirrors.
+const TOOL_SLUGS = [
+  "claim-decoder",
+  "whatsapp-templates",
+  "compliance-calendar",
+  "intake-form",
+  "review-reply",
 ];
 const GUIDE_SLUGS_LABS = [
   "visa-medical", "pre-marital-screening", "pregnancy-tests", "walk-in-labs",
@@ -883,6 +900,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${baseUrl}/insurance/guide`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   for (const slug of INSURANCE_GUIDE_SLUGS) {
     entries.push({ url: `${baseUrl}/insurance/guide/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.65 });
+  }
+
+  // Free tools (/tools/*) — operator-facing utilities. Index + 5 individual tools.
+  // Higher priority than internal hubs because each tool ranks for high-intent
+  // operator queries ("UAE claim rejection codes", "WhatsApp templates dental").
+  entries.push({ url: `${baseUrl}/tools`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
+  for (const slug of TOOL_SLUGS) {
+    entries.push({ url: `${baseUrl}/tools/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
   }
 
   // Pricing hub — procedures, comparisons, lists, guides, journeys

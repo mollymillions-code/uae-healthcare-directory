@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqPageSchema, softwareApplicationSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 import { ClaimDecoderClient } from "./ClaimDecoderClient";
 import { CLAIM_CODES, TOP_RECENT_CODES } from "@/lib/tools/claim-codes";
@@ -54,6 +54,14 @@ export default function ClaimDecoderPage() {
         ])}
       />
       <JsonLd data={faqPageSchema(FAQS)} />
+      <JsonLd
+        data={softwareApplicationSchema({
+          name: "UAE Claim Rejection Decoder",
+          description: DESCRIPTION,
+          url: `${base}/tools/claim-decoder`,
+          applicationCategory: "BusinessApplication",
+        })}
+      />
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb

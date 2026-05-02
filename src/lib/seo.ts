@@ -541,6 +541,45 @@ export function speakableSchema(cssSelectors: string[]) {
   };
 }
 
+/**
+ * Schema for the free-tools at /tools/*. Modelled as `SoftwareApplication`
+ * per Google's free-tool rich-result spec. Sets the BrowserApplication
+ * subtype, "Free" pricing offer, and operating system "Any".
+ */
+export function softwareApplicationSchema(opts: {
+  name: string;
+  description: string;
+  url: string;
+  applicationCategory?: string; // e.g. "BusinessApplication", "HealthApplication"
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    applicationCategory: opts.applicationCategory ?? "BusinessApplication",
+    applicationSubCategory: "BrowserApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "AED",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Zavis",
+      url: "https://www.zavis.ai",
+    },
+    isAccessibleForFree: true,
+    inLanguage: "en",
+    audience: {
+      "@type": "Audience",
+      audienceType: "UAE healthcare clinics, billing teams, practice managers",
+    },
+  };
+}
+
 export function medicalWebPageSchema(
   name: string,
   description: string,
