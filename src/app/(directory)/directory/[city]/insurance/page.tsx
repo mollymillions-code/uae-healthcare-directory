@@ -61,10 +61,10 @@ export default async function InsuranceIndexPage({ params }: Props) {
 
   const mandatoryNote =
     city.name === "Dubai"
-      ? "Dubai mandates health insurance for all residents under DHA regulations."
+      ? "Dubai mandates health insurance for all residents under emirate regulations."
       : city.name === "Abu Dhabi"
-      ? "Abu Dhabi requires mandatory health insurance (Daman/Thiqa) for all residents and nationals under DOH regulations."
-      : `Health insurance coverage in ${city.name} follows UAE federal regulations under MOHAP.`;
+      ? "Abu Dhabi requires mandatory health insurance (Daman/Thiqa) for all residents and nationals under emirate regulations."
+      : `Health insurance coverage in ${city.name} follows UAE federal regulations.`;
 
   return (
     <HubPageTemplate

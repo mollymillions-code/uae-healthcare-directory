@@ -28,9 +28,9 @@ function getProcedureBySlug(slug: string): MedicalProcedure | undefined {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 /**
@@ -401,7 +401,7 @@ export default async function AreaProcedurePage({ params }: Props) {
             </table>
           </div>
           <p className="font-sans text-z-caption text-ink-muted mt-3">
-            Source: DOH Mandatory Tariff (Shafafiya), DHA DRG parameters, and market-observed data 2024-2026. Base tariff: AED {proc.baseTariffAed.toLocaleString()}.
+            Source: Mandatory Tariff (Shafafiya), DRG parameters, and market-observed data 2024-2026. Base tariff: AED {proc.baseTariffAed.toLocaleString()}.
           </p>
         </div>
       </section>

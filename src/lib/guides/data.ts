@@ -5,7 +5,7 @@
  * Three template types:
  *   - cost-guide: Procedure cost breakdowns with price ranges, insurance info, and top clinics
  *   - comparison: "Best of" lists pulling top-rated providers from the directory DB
- *   - system-guide: UAE healthcare system explainers (DHA, insurance, medical tourism)
+ *   - system-guide: UAE healthcare system explainers (the UAE healthcare regulator, insurance, medical tourism)
  *
  * Guides are rendered programmatically at /guides/[slug] using shared templates.
  * Content is static (defined here), but provider data is pulled live from PostgreSQL.
@@ -93,11 +93,11 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Insurance Coverage for Dental Implants",
-        content: "Most basic UAE health insurance plans do not cover dental implants, as they are classified as an elective or cosmetic procedure under DHA guidelines. Enhanced plans from Daman, AXA, Cigna, and Bupa may cover a portion (typically 50–80% up to an annual dental cap of AED 5,000–15,000). If your plan includes 'major dental' or 'prosthodontic' coverage, implants may be partially covered. Always check your Schedule of Benefits and request pre-authorisation before proceeding. Some clinics in Dubai offer interest-free payment plans over 6–12 months for out-of-pocket patients."
+        content: "Most basic UAE health insurance plans do not cover dental implants, as they are classified as an elective or cosmetic procedure under the UAE healthcare regulator guidelines. Enhanced plans from Daman, AXA, Cigna, and Bupa may cover a portion (typically 50–80% up to an annual dental cap of AED 5,000–15,000). If your plan includes 'major dental' or 'prosthodontic' coverage, implants may be partially covered. Always check your Schedule of Benefits and request pre-authorisation before proceeding. Some clinics in Dubai offer interest-free payment plans over 6–12 months for out-of-pocket patients."
       },
       {
         heading: "How to Choose a Dental Implant Clinic in Dubai",
-        content: "Look for clinics that are DHA-licensed and have a prosthodontist or oral surgeon on staff (not just a general dentist placing implants). Ask about the implant brand and whether it carries a manufacturer warranty (typically 10 years to lifetime for premium brands). Check if the price quote includes the full treatment: implant, abutment, crown, CT scan, and follow-up visits. Avoid quotes that seem unusually low — they may exclude the crown or use unbranded implants. Read patient reviews with a focus on long-term outcomes, not just the initial procedure."
+        content: "Look for clinics that are UAE-licensed (Dubai) and have a prosthodontist or oral surgeon on staff (not just a general dentist placing implants). Ask about the implant brand and whether it carries a manufacturer warranty (typically 10 years to lifetime for premium brands). Check if the price quote includes the full treatment: implant, abutment, crown, CT scan, and follow-up visits. Avoid quotes that seem unusually low — they may exclude the crown or use unbranded implants. Read patient reviews with a focus on long-term outcomes, not just the initial procedure."
       },
       {
         heading: "Dental Implant Timeline",
@@ -205,7 +205,7 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Choosing a Fertility Clinic in Dubai",
-        content: "Dubai has over 25 DHA-licensed fertility centres. Key factors to consider: the clinic's reported success rates (ask for age-stratified data), the lead embryologist's qualifications, available technologies (time-lapse incubators, PGT-A, vitrification), and the clinic's approach to single vs. multiple embryo transfer. DHA regulates IVF in Dubai under Health Regulation 11 of 2014, which permits IVF only for legally married couples with valid UAE marriage certificates. Surrogacy and egg donation from anonymous donors are not permitted under UAE law."
+        content: "Dubai has over 25 UAE-licensed (Dubai) fertility centres. Key factors to consider: the clinic's reported success rates (ask for age-stratified data), the lead embryologist's qualifications, available technologies (time-lapse incubators, PGT-A, vitrification), and the clinic's approach to single vs. multiple embryo transfer. The UAE healthcare regulator regulates IVF in Dubai under Health Regulation 11 of 2014, which permits IVF only for legally married couples with valid UAE marriage certificates. Surrogacy and egg donation from anonymous donors are not permitted under UAE law."
       },
     ],
     faqs: [
@@ -253,7 +253,7 @@ export const GUIDES: GuideDefinition[] = [
     faqs: [
       { question: "How much is a nose job in Dubai?", answer: "A rhinoplasty in Dubai costs AED 15,000–50,000 depending on the technique and surgeon. Closed rhinoplasty averages AED 22,000 and open rhinoplasty averages AED 30,000. Revision rhinoplasty costs AED 25,000–70,000." },
       { question: "Is rhinoplasty covered by insurance in Dubai?", answer: "Cosmetic rhinoplasty is not covered by insurance. However, if the procedure includes a septoplasty or turbinate reduction for breathing problems (septorhinoplasty), the functional component may be partially covered by your insurance plan with a doctor's referral." },
-      { question: "How do I choose a rhinoplasty surgeon in Dubai?", answer: "Look for a DHA-licensed plastic surgeon who is board-certified and specialises in rhinoplasty. Review before/after photos of similar nose types. Ask about the surgeon's revision rate (under 10% is excellent). Consult at least 2–3 surgeons before deciding." },
+      { question: "How do I choose a rhinoplasty surgeon in Dubai?", answer: "Look for a UAE-licensed (Dubai) plastic surgeon who is board-certified and specialises in rhinoplasty. Review before/after photos of similar nose types. Ask about the surgeon's revision rate (under 10% is excellent). Consult at least 2–3 surgeons before deciding." },
     ],
     directoryLinks: [
       { label: "Plastic Surgery Clinics in Dubai", href: "/directory/dubai/cosmetic-plastic" },
@@ -406,7 +406,7 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Insurance Coverage",
-        content: "Most UAE insurance plans cover one annual preventive health screening. DHA mandates that basic plans include a wellness checkup. Check your policy for the covered amount — it typically ranges from AED 300 to AED 1,500. Upgrades to executive packages are available at a discounted out-of-pocket top-up."
+        content: "Most UAE insurance plans cover one annual preventive health screening. The UAE healthcare regulator mandates that basic plans include a wellness checkup. Check your policy for the covered amount — it typically ranges from AED 300 to AED 1,500. Upgrades to executive packages are available at a discounted out-of-pocket top-up."
       },
     ],
     faqs: [
@@ -476,7 +476,7 @@ export const GUIDES: GuideDefinition[] = [
     priceRanges: [
       { label: "Normal Delivery (private hospital)", min: 8000, max: 25000, typical: 15000, notes: "Includes delivery room, 1–2 night stay, paediatrician on call." },
       { label: "C-Section (private hospital)", min: 15000, max: 50000, typical: 30000, notes: "Includes OT, surgeon, anaesthesia, 3–4 night stay, newborn care." },
-      { label: "C-Section (government hospital)", min: 5000, max: 15000, typical: 10000, notes: "DHA facilities. Lower cost but shared rooms. Priority for insurance card holders." },
+      { label: "C-Section (government hospital)", min: 5000, max: 15000, typical: 10000, notes: "The UAE healthcare regulator facilities. Lower cost but shared rooms. Priority for insurance card holders." },
       { label: "Prenatal Care Package", min: 3000, max: 8000, typical: 5000, notes: "Monthly OB visits, routine blood work, ultrasounds. 9-month coverage." },
       { label: "NICU (per day, if needed)", min: 3000, max: 10000, typical: 5000, notes: "Neonatal intensive care. Can add significant cost for premature/complicated deliveries." },
     ],
@@ -487,7 +487,7 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Maternity Insurance in Dubai",
-        content: "DHA mandates maternity coverage in enhanced health insurance plans with a typical sub-limit of AED 10,000–15,000 for normal delivery and AED 15,000–25,000 for C-section. Basic plans may have lower maternity limits or a waiting period of 6–12 months. Maternity coverage kicks in only after the waiting period — plan pregnancies accordingly. Out-of-pocket costs after insurance for a C-section at a premium hospital typically run AED 5,000–20,000."
+        content: "The UAE healthcare regulator mandates maternity coverage in enhanced health insurance plans with a typical sub-limit of AED 10,000–15,000 for normal delivery and AED 15,000–25,000 for C-section. Basic plans may have lower maternity limits or a waiting period of 6–12 months. Maternity coverage kicks in only after the waiting period — plan pregnancies accordingly. Out-of-pocket costs after insurance for a C-section at a premium hospital typically run AED 5,000–20,000."
       },
     ],
     faqs: [
@@ -515,7 +515,7 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "best hospitals in dubai",
     metaDescription: "The top hospitals in Dubai ranked by Google patient reviews, services, and specialties. Compare facilities, insurance acceptance, and ratings across 600+ providers. Updated April 2026.",
     templateType: "comparison",
-    heroText: "Dubai has over 600 hospitals, medical centres, and specialty hospitals regulated by the Dubai Health Authority (DHA). The UAE Open Healthcare Directory ranks facilities using verified Google patient reviews, breadth of services, and insurance acceptance. Below are the top-rated hospitals in Dubai based on review data from over 50,000 verified patient ratings.",
+    heroText: "Dubai has over 600 hospitals, medical centres, and specialty hospitals regulated by the UAE healthcare regulator (Dubai). The UAE Open Healthcare Directory ranks facilities using verified Google patient reviews, breadth of services, and insurance acceptance. Below are the top-rated hospitals in Dubai based on review data from over 50,000 verified patient ratings.",
     relatedCategories: ["hospitals"],
     relatedCities: ["dubai"],
     priceRanges: [],
@@ -530,12 +530,12 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Government vs Private Hospitals",
-        content: "Dubai has both government hospitals (run by DHA, such as Rashid Hospital and Dubai Hospital) and private hospitals (Mediclinic, NMC, Aster, Burjeel, etc.). Government hospitals are generally cheaper and handle the most complex trauma and emergency cases. Private hospitals offer shorter wait times, more comfortable facilities, and wider specialist availability. Both are DHA-regulated and must meet the same clinical standards."
+        content: "Dubai has both government hospitals (run by the UAE healthcare regulator, such as Rashid Hospital and Dubai Hospital) and private hospitals (Mediclinic, NMC, Aster, Burjeel, etc.). Government hospitals are generally cheaper and handle the most complex trauma and emergency cases. Private hospitals offer shorter wait times, more comfortable facilities, and wider specialist availability. Both are the UAE healthcare regulator-regulated and must meet the same clinical standards."
       },
     ],
     faqs: [
       { question: "What is the best hospital in Dubai?", answer: "Based on verified patient reviews from over 50,000 ratings, the top-rated hospitals in Dubai include Mediclinic City Hospital, American Hospital Dubai, King's College Hospital Dubai, and Cleveland Clinic Abu Dhabi's Dubai branch. Rankings are based on Google rating, review volume, and breadth of services." },
-      { question: "How many hospitals are there in Dubai?", answer: "Dubai has over 600 hospitals and medical centres regulated by the Dubai Health Authority (DHA). This includes government hospitals, private hospitals, specialty centres, and day-surgery centres." },
+      { question: "How many hospitals are there in Dubai?", answer: "Dubai has over 600 hospitals and medical centres regulated by the UAE healthcare regulator (Dubai). This includes government hospitals, private hospitals, specialty centres, and day-surgery centres." },
       { question: "Which Dubai hospitals are JCI accredited?", answer: "Several major Dubai hospitals hold JCI accreditation including American Hospital Dubai, Mediclinic City Hospital, Clemenceau Medical Center, and Saudi German Hospital. JCI accreditation is an internationally recognised standard for hospital quality and patient safety." },
     ],
     directoryLinks: [
@@ -555,7 +555,7 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "best dental clinics dubai",
     metaDescription: "The top dental clinics in Dubai ranked by patient reviews. Compare ratings, services, insurance acceptance, and pricing across 800+ dental practices. Updated April 2026.",
     templateType: "comparison",
-    heroText: "Dubai has over 800 DHA-licensed dental clinics ranging from single-chair practices to multi-specialty dental centres. The directory ranks clinics by verified patient reviews, breadth of dental services (general, cosmetic, orthodontics, implants), and insurance acceptance.",
+    heroText: "Dubai has over 800 UAE-licensed (Dubai) dental clinics ranging from single-chair practices to multi-specialty dental centres. The directory ranks clinics by verified patient reviews, breadth of dental services (general, cosmetic, orthodontics, implants), and insurance acceptance.",
     relatedCategories: ["dental"],
     relatedCities: ["dubai"],
     priceRanges: [],
@@ -588,14 +588,14 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "best dental clinics abu dhabi",
     metaDescription: "The top dental clinics in Abu Dhabi ranked by patient reviews. Compare ratings, services, and insurance across 400+ dental practices. Updated April 2026.",
     templateType: "comparison",
-    heroText: "Abu Dhabi has over 400 DOH-licensed dental clinics. The directory ranks clinics by verified patient reviews, service range, and insurance network participation. Abu Dhabi dental prices are generally 10–15% lower than Dubai.",
+    heroText: "Abu Dhabi has over 400 UAE-licensed (Abu Dhabi) dental clinics. The directory ranks clinics by verified patient reviews, service range, and insurance network participation. Abu Dhabi dental prices are generally 10–15% lower than Dubai.",
     relatedCategories: ["dental"],
     relatedCities: ["abu-dhabi"],
     priceRanges: [],
     sections: [
       {
         heading: "How We Rank",
-        content: "Rankings use Google patient reviews (minimum 20 to qualify), breadth of services, and insurance acceptance. DOH-regulated clinics in Abu Dhabi follow the Shafafiya transparent pricing framework, making cost comparison easier."
+        content: "Rankings use Google patient reviews (minimum 20 to qualify), breadth of services, and insurance acceptance. The UAE healthcare regulator-regulated clinics in Abu Dhabi follow the Shafafiya transparent pricing framework, making cost comparison easier."
       },
       {
         heading: "Abu Dhabi vs Dubai Dental Prices",
@@ -604,7 +604,7 @@ export const GUIDES: GuideDefinition[] = [
     ],
     faqs: [
       { question: "What is the best dental clinic in Abu Dhabi?", answer: "Top-rated dental clinics in Abu Dhabi include Smile Design Dental Center, Bright Smile Dental, and Dental Studio Abu Dhabi based on verified patient reviews and service breadth." },
-      { question: "How much does a dentist visit cost in Abu Dhabi?", answer: "A dental check-up in Abu Dhabi costs AED 100–250. Cleaning costs AED 150–400. Abu Dhabi dental prices are regulated under the DOH Shafafiya framework." },
+      { question: "How much does a dentist visit cost in Abu Dhabi?", answer: "A dental check-up in Abu Dhabi costs AED 100–250. Cleaning costs AED 150–400. Abu Dhabi dental prices are regulated under the UAE healthcare regulator Shafafiya framework." },
     ],
     directoryLinks: [
       { label: "Dental Clinics in Abu Dhabi", href: "/directory/abu-dhabi/dental" },
@@ -621,14 +621,14 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "best hospitals abu dhabi",
     metaDescription: "The top hospitals in Abu Dhabi ranked by patient reviews. Compare ratings, specialties, and insurance acceptance across 300+ facilities. Cleveland Clinic, NMC, Burjeel, and more. Updated April 2026.",
     templateType: "comparison",
-    heroText: "Abu Dhabi is home to over 300 hospitals and medical centres regulated by the Department of Health (DOH). The city hosts internationally renowned facilities including Cleveland Clinic Abu Dhabi, Sheikh Shakhbout Medical City (SSMC), and Burjeel Medical City.",
+    heroText: "Abu Dhabi is home to over 300 hospitals and medical centres regulated by the UAE healthcare regulator (Abu Dhabi). The city hosts internationally renowned facilities including Cleveland Clinic Abu Dhabi, Sheikh Shakhbout Medical City (SSMC), and Burjeel Medical City.",
     relatedCategories: ["hospitals"],
     relatedCities: ["abu-dhabi"],
     priceRanges: [],
     sections: [
       {
         heading: "Ranking Methodology",
-        content: "Hospitals are ranked by Google patient reviews (50% weight, minimum 50 reviews), breadth of specialties (30%), and insurance network size (20%). Only DOH-licensed facilities are included."
+        content: "Hospitals are ranked by Google patient reviews (50% weight, minimum 50 reviews), breadth of specialties (30%), and insurance network size (20%). Only UAE-licensed (Abu Dhabi) facilities are included."
       },
       {
         heading: "Key Abu Dhabi Hospitals",
@@ -637,7 +637,7 @@ export const GUIDES: GuideDefinition[] = [
     ],
     faqs: [
       { question: "What is the best hospital in Abu Dhabi?", answer: "Cleveland Clinic Abu Dhabi, Sheikh Shakhbout Medical City (SSMC), and Burjeel Medical City are consistently ranked among the best hospitals in Abu Dhabi based on patient reviews, clinical outcomes, and international accreditations." },
-      { question: "How many hospitals are in Abu Dhabi?", answer: "Abu Dhabi has over 300 hospitals and medical centres regulated by the Department of Health (DOH), including government, private, and semi-government facilities." },
+      { question: "How many hospitals are in Abu Dhabi?", answer: "Abu Dhabi has over 300 hospitals and medical centres regulated by the UAE healthcare regulator (Abu Dhabi), including government, private, and semi-government facilities." },
     ],
     directoryLinks: [
       { label: "All Hospitals in Abu Dhabi", href: "/directory/abu-dhabi/hospitals" },
@@ -654,14 +654,14 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "best dermatologist dubai",
     metaDescription: "Top-rated dermatologists and skin clinics in Dubai ranked by patient reviews. Acne, eczema, cosmetic dermatology, laser treatments. Compare 400+ providers. Updated April 2026.",
     templateType: "comparison",
-    heroText: "Dubai has over 400 DHA-licensed dermatology clinics covering medical dermatology (acne, eczema, psoriasis), cosmetic dermatology (Botox, fillers, chemical peels), and laser treatments (hair removal, skin resurfacing). Below are the top-rated dermatology providers based on verified patient reviews.",
+    heroText: "Dubai has over 400 UAE-licensed (Dubai) dermatology clinics covering medical dermatology (acne, eczema, psoriasis), cosmetic dermatology (Botox, fillers, chemical peels), and laser treatments (hair removal, skin resurfacing). Below are the top-rated dermatology providers based on verified patient reviews.",
     relatedCategories: ["dermatology"],
     relatedCities: ["dubai"],
     priceRanges: [],
     sections: [
       {
         heading: "What to Look for in a Dermatologist",
-        content: "Look for DHA-licensed dermatologists with specialist qualifications (board certification in dermatology). For cosmetic procedures, check the clinic's technology (recent-generation lasers, FDA-cleared devices). For medical conditions like eczema or psoriasis, look for dermatologists with experience in immunotherapy and biologic treatments."
+        content: "Look for UAE-licensed (Dubai) dermatologists with specialist qualifications (board certification in dermatology). For cosmetic procedures, check the clinic's technology (recent-generation lasers, FDA-cleared devices). For medical conditions like eczema or psoriasis, look for dermatologists with experience in immunotherapy and biologic treatments."
       },
     ],
     faqs: [
@@ -690,12 +690,12 @@ export const GUIDES: GuideDefinition[] = [
     sections: [
       {
         heading: "Choosing a Pediatrician in Dubai",
-        content: "Look for DHA-licensed pediatricians who offer comprehensive well-child services: vaccinations (following the UAE National Immunization Schedule), developmental screening, growth monitoring, and sick-child consultations. Convenient location matters — you'll visit frequently in the first 2 years. Check if the clinic offers same-day sick appointments and after-hours availability."
+        content: "Look for UAE-licensed (Dubai) pediatricians who offer comprehensive well-child services: vaccinations (following the UAE National Immunization Schedule), developmental screening, growth monitoring, and sick-child consultations. Convenient location matters — you'll visit frequently in the first 2 years. Check if the clinic offers same-day sick appointments and after-hours availability."
       },
     ],
     faqs: [
       { question: "How much does a pediatrician visit cost in Dubai?", answer: "A pediatrician consultation in Dubai costs AED 300–600. Follow-up visits are AED 150–300. Vaccinations are charged separately at AED 100–500 per dose depending on the vaccine. Most insurance plans cover well-child visits." },
-      { question: "How often should I take my child to the pediatrician?", answer: "The DHA recommends well-child visits at 1, 2, 4, 6, 9, 12, 15, 18, and 24 months, then annually. Vaccinations follow the UAE National Immunization Schedule." },
+      { question: "How often should I take my child to the pediatrician?", answer: "The UAE healthcare regulator recommends well-child visits at 1, 2, 4, 6, 9, 12, 15, 18, and 24 months, then annually. Vaccinations follow the UAE National Immunization Schedule." },
     ],
     directoryLinks: [
       { label: "Pediatric Clinics in Dubai", href: "/directory/dubai/pediatrics" },
@@ -739,38 +739,38 @@ export const GUIDES: GuideDefinition[] = [
 
   {
     slug: "dha-license-verification",
-    title: "DHA License Verification — How to Check a Doctor's License in Dubai",
-    h1: "DHA License Verification: Check Any Doctor or Facility in Dubai",
+    title: "Regulator License Verification — How to Check a Doctor's License in Dubai",
+    h1: "Regulator License Verification: Check Any Doctor or Facility in Dubai",
     targetQuery: "dha license verification",
-    metaDescription: "How to verify a doctor's DHA license in Dubai. Step-by-step guide to using the Dubai Health Authority license verification portal. Check any healthcare professional or facility. Updated April 2026.",
+    metaDescription: "How to verify a doctor's regulator license in Dubai. Step-by-step guide to using the UAE healthcare regulator (Dubai) license verification portal. Check any healthcare professional or facility. Updated April 2026.",
     templateType: "system-guide",
-    heroText: "The Dubai Health Authority (DHA) maintains a public register of all licensed healthcare professionals and facilities in Dubai. Any patient can verify a doctor's credentials, license status, and specialisation online through the DHA Sheryan portal. This is the single most important step you can take before visiting any healthcare provider in Dubai.",
+    heroText: "The UAE healthcare regulator (Dubai) maintains a public register of all licensed healthcare professionals and facilities in Dubai. Any patient can verify a doctor's credentials, license status, and specialisation online through the DHA Sheryan portal. This is the single most important step you can take before visiting any healthcare provider in Dubai.",
     relatedCategories: [],
     relatedCities: ["dubai"],
     priceRanges: [],
     sections: [
       {
-        heading: "How to Verify a DHA License Online",
+        heading: "How to Verify a Regulator License Online",
         content: "Go to the DHA Sheryan portal (sheryan.dha.gov.ae) and click on 'Search Health Professional' or 'Search Health Facility'. You can search by the professional's name, license number, or specialisation. The results show: full name, nationality, primary qualification, specialisation, license type (Specialist, Consultant, General Practitioner), license status (Active, Suspended, Revoked), the facility they are registered with, and the license expiry date. If a professional's license shows as anything other than 'Active', do not proceed with treatment."
       },
       {
-        heading: "What the DHA License Means",
-        content: "A DHA license confirms that the healthcare professional has: passed the DHA prometric exam or qualified for exam exemption, had their credentials verified (primary degree, specialisation, internship), completed a good standing certificate from their previous country of practice, and been approved to practice a specific specialty in Dubai. The license does not guarantee quality of care, but it confirms the minimum regulatory requirements have been met. DHA licenses must be renewed annually, so check that the license is current."
+        heading: "What the Regulator License Means",
+        content: "A regulator license confirms that the healthcare professional has: passed the UAE healthcare regulator prometric exam or qualified for exam exemption, had their credentials verified (primary degree, specialisation, internship), completed a good standing certificate from their previous country of practice, and been approved to practice a specific specialty in Dubai. The license does not guarantee quality of care, but it confirms the minimum regulatory requirements have been met. regulator licenses must be renewed annually, so check that the license is current."
       },
       {
         heading: "Facility License Verification",
-        content: "You can also verify any healthcare facility's DHA license through the same portal. Search by facility name to see: license type (hospital, clinic, pharmacy, diagnostic centre), license status, address, and the facility's DHA registration number. Every legitimate healthcare facility in Dubai must display their DHA license prominently on their premises."
+        content: "You can also verify any healthcare facility's regulator license through the same portal. Search by facility name to see: license type (hospital, clinic, pharmacy, diagnostic centre), license status, address, and the facility's the UAE healthcare regulator registration number. Every legitimate healthcare facility in Dubai must display their regulator license prominently on their premises."
       },
       {
         heading: "Abu Dhabi and Northern Emirates",
-        content: "For Abu Dhabi: Use the DOH (Department of Health) portal at doh.gov.ae to verify professionals licensed in Abu Dhabi, Al Ain, and the Al Dhafra region. For Sharjah, Ajman, Fujairah, RAK, and UAQ: Use the MOHAP (Ministry of Health and Prevention) portal at mohap.gov.ae. Each authority maintains its own register, and a license from one authority does not automatically apply in another emirate."
+        content: "For Abu Dhabi: Use the UAE healthcare regulator (Department of Health) portal at doh.gov.ae to verify professionals licensed in Abu Dhabi, Al Ain, and the Al Dhafra region. For Sharjah, Ajman, Fujairah, RAK, and UAQ: Use the UAE healthcare regulator (the UAE healthcare regulator) portal at mohap.gov.ae. Each authority maintains its own register, and a license from one authority does not automatically apply in another emirate."
       },
     ],
     faqs: [
       { question: "How do I check if a doctor is licensed in Dubai?", answer: "Go to sheryan.dha.gov.ae, click 'Search Health Professional', and enter the doctor's name or license number. The results show their specialisation, license status, and registered facility. Only visit doctors whose license status shows as 'Active'." },
-      { question: "Is a DHA license the same as a DOH license?", answer: "No. DHA licenses apply only in Dubai. DOH licenses apply in Abu Dhabi. MOHAP licenses apply in the Northern Emirates. A doctor licensed by DHA cannot practice in Abu Dhabi without a separate DOH license, and vice versa." },
+      { question: "Is a regulator license the same as a regulator license?", answer: "No. regulator licenses apply only in Dubai. regulator licenses apply in Abu Dhabi. regulator licenses apply in the Northern Emirates. A doctor licensed by the UAE healthcare regulator cannot practice in Abu Dhabi without a separate regulator license, and vice versa." },
       { question: "Can I verify a pharmacist's or nurse's license?", answer: "Yes. The DHA Sheryan portal covers all healthcare professionals: doctors, dentists, nurses, pharmacists, physiotherapists, optometrists, and allied health professionals. The search function works the same way for all categories." },
-      { question: "What should I do if a doctor's license is expired or suspended?", answer: "Do not proceed with treatment. You can report concerns to the DHA Health Regulation Sector via their complaint portal or by calling the DHA hotline at 800-DHA (800-342). Practicing without a valid license is a criminal offence in the UAE." },
+      { question: "What should I do if a doctor's license is expired or suspended?", answer: "Do not proceed with treatment. You can report concerns to the UAE healthcare regulator Health Regulation Sector via their complaint portal or by calling the UAE healthcare regulator hotline at 800-the UAE healthcare regulator (800-342). Practicing without a valid license is a criminal offence in the UAE." },
     ],
     directoryLinks: [
       { label: "All Clinics in Dubai", href: "/directory/dubai/clinics" },
@@ -788,14 +788,14 @@ export const GUIDES: GuideDefinition[] = [
     targetQuery: "health insurance uae",
     metaDescription: "Complete guide to UAE health insurance. Mandatory coverage rules, Dubai vs Abu Dhabi, best plans for expats, what's covered, how to choose, and common mistakes. Updated April 2026.",
     templateType: "system-guide",
-    heroText: "Health insurance is mandatory for all UAE residents. Dubai and Abu Dhabi have enforced employer-sponsored health insurance since 2014, while the Northern Emirates are rolling out similar mandates under MOHAP. This guide covers everything residents and expats need to know about UAE health insurance in 2026: how it works, what's covered, how to choose a plan, and how to avoid common pitfalls.",
+    heroText: "Health insurance is mandatory for all UAE residents. Dubai and Abu Dhabi have enforced employer-sponsored health insurance since 2014, while the Northern Emirates are rolling out similar mandates under the UAE healthcare regulator. This guide covers everything residents and expats need to know about UAE health insurance in 2026: how it works, what's covered, how to choose a plan, and how to avoid common pitfalls.",
     relatedCategories: [],
     relatedCities: ["dubai", "abu-dhabi", "sharjah"],
     priceRanges: [],
     sections: [
       {
         heading: "Is Health Insurance Mandatory in the UAE?",
-        content: "Yes, since 2014 in Dubai and Abu Dhabi. In Dubai, employers must provide health insurance for all employees and their sponsored dependents under DHA Law No. 11 of 2013. The minimum coverage is the Essential Benefits Plan (EBP) which costs approximately AED 500–700 per year for the employer. In Abu Dhabi, health insurance has been mandatory since 2007 under the HAAD (now DOH) framework. UAE nationals in Abu Dhabi are covered by the Thiqa programme. In the Northern Emirates, MOHAP is phasing in mandatory coverage with employer obligations increasing each year."
+        content: "Yes, since 2014 in Dubai and Abu Dhabi. In Dubai, employers must provide health insurance for all employees and their sponsored dependents under the UAE healthcare regulator Law No. 11 of 2013. The minimum coverage is the Essential Benefits Plan (EBP) which costs approximately AED 500–700 per year for the employer. In Abu Dhabi, health insurance has been mandatory since 2007 under the Abu Dhabi regulator framework. UAE nationals in Abu Dhabi are covered by the Thiqa programme. In the Northern Emirates, the UAE healthcare regulator is phasing in mandatory coverage with employer obligations increasing each year."
       },
       {
         heading: "What Does Basic Coverage Include",
@@ -811,7 +811,7 @@ export const GUIDES: GuideDefinition[] = [
       },
     ],
     faqs: [
-      { question: "Is health insurance mandatory in Dubai?", answer: "Yes. Since 2014, all employers in Dubai must provide health insurance for employees and their sponsored dependents. The minimum is the DHA Essential Benefits Plan. Failure to comply results in fines of AED 500 per month per uninsured person." },
+      { question: "Is health insurance mandatory in Dubai?", answer: "Yes. Since 2014, all employers in Dubai must provide health insurance for employees and their sponsored dependents. The minimum is the Dubai mandatory health insurance plan. Failure to comply results in fines of AED 500 per month per uninsured person." },
       { question: "How much does health insurance cost in the UAE?", answer: "Basic plans (Essential Benefits Plan) cost AED 500–700 per person per year. Enhanced individual plans cost AED 3,000–8,000/year. Family plans range from AED 8,000–25,000/year. Premium plans with global coverage can exceed AED 30,000/year." },
       { question: "What is the best health insurance in the UAE?", answer: "Top insurers by network size and customer satisfaction include Daman (National Health Insurance Company), AXA, Cigna, MetLife, Bupa Arabia, and Oman Insurance. The best plan depends on your budget, preferred hospitals, and coverage needs." },
       { question: "Are pre-existing conditions covered?", answer: "Basic plans typically exclude pre-existing conditions for the first 6 months. Enhanced plans may cover them from day one or after a 3-month waiting period. Chronic conditions like diabetes and hypertension are covered once the waiting period expires." },
@@ -839,7 +839,7 @@ export const GUIDES: GuideDefinition[] = [
     sections: [
       {
         heading: "Why Dubai for Medical Tourism",
-        content: "Dubai offers several advantages: 1) Over 30 JCI-accredited hospitals (more per capita than most countries). 2) Doctors trained in the US, UK, Europe, and Australia. 3) Procedure costs 30–60% lower than the US and UK. 4) Minimal language barriers — English is widely spoken. 5) World-class hotel and hospitality infrastructure for recovery. 6) DHA Health Tourism Department provides concierge services. 7) Easy tourist visa for most nationalities (30–90 day visa on arrival). 8) Zero income tax makes it attractive for long-stay recovery patients."
+        content: "Dubai offers several advantages: 1) Over 30 JCI-accredited hospitals (more per capita than most countries). 2) Doctors trained in the US, UK, Europe, and Australia. 3) Procedure costs 30–60% lower than the US and UK. 4) Minimal language barriers — English is widely spoken. 5) World-class hotel and hospitality infrastructure for recovery. 6) the UAE healthcare regulator Health Tourism Department provides concierge services. 7) Easy tourist visa for most nationalities (30–90 day visa on arrival). 8) Zero income tax makes it attractive for long-stay recovery patients."
       },
       {
         heading: "Most Popular Procedures for Medical Tourists",
@@ -847,7 +847,7 @@ export const GUIDES: GuideDefinition[] = [
       },
       {
         heading: "Visa and Travel Requirements",
-        content: "Citizens of 70+ countries receive a 30-day visa on arrival at Dubai airports. For longer treatment, a 90-day medical treatment visa is available through the DHA Health Tourism portal. You'll need: a treatment plan letter from your Dubai hospital, valid passport (6+ months validity), travel insurance (recommended), and proof of funds. Some hospitals have dedicated international patient departments that handle visa support, airport transfers, hotel bookings, and interpreter services."
+        content: "Citizens of 70+ countries receive a 30-day visa on arrival at Dubai airports. For longer treatment, a 90-day medical treatment visa is available through the UAE healthcare regulator Health Tourism portal. You'll need: a treatment plan letter from your Dubai hospital, valid passport (6+ months validity), travel insurance (recommended), and proof of funds. Some hospitals have dedicated international patient departments that handle visa support, airport transfers, hotel bookings, and interpreter services."
       },
       {
         heading: "How to Plan Your Medical Trip",
@@ -855,9 +855,9 @@ export const GUIDES: GuideDefinition[] = [
       },
     ],
     faqs: [
-      { question: "Is medical tourism safe in Dubai?", answer: "Yes. Dubai's healthcare is regulated by the DHA, which enforces international standards. Over 30 hospitals in Dubai hold JCI accreditation. The DHA Health Tourism Department provides regulatory oversight specifically for medical tourists and has a dedicated complaints hotline." },
+      { question: "Is medical tourism safe in Dubai?", answer: "Yes. Dubai's healthcare is regulated by the UAE healthcare regulator, which enforces international standards. Over 30 hospitals in Dubai hold JCI accreditation. The UAE healthcare regulator Health Tourism Department provides regulatory oversight specifically for medical tourists and has a dedicated complaints hotline." },
       { question: "How much cheaper is medical treatment in Dubai vs the US?", answer: "Dubai medical procedures typically cost 30–60% less than the US. Examples: LASIK is 50% cheaper, dental implants 40% cheaper, knee replacement 50% cheaper, and IVF 40% cheaper. Compared to the UK, savings are 20–40%." },
-      { question: "Do I need a special visa for medical tourism in Dubai?", answer: "For treatment under 30 days, the standard tourist visa (visa on arrival for 70+ nationalities) is sufficient. For longer treatment, apply for a 90-day medical treatment visa through the DHA Health Tourism portal with a hospital letter." },
+      { question: "Do I need a special visa for medical tourism in Dubai?", answer: "For treatment under 30 days, the standard tourist visa (visa on arrival for 70+ nationalities) is sufficient. For longer treatment, apply for a 90-day medical treatment visa through the UAE healthcare regulator Health Tourism portal with a hospital letter." },
     ],
     directoryLinks: [
       { label: "Hospitals in Dubai", href: "/directory/dubai/hospitals" },
@@ -871,28 +871,28 @@ export const GUIDES: GuideDefinition[] = [
 
   {
     slug: "mohap-license-check",
-    title: "MOHAP License Verification — Check Healthcare Professionals in Northern Emirates",
-    h1: "MOHAP License Verification: Sharjah, Ajman, RAK, Fujairah & UAQ",
+    title: "Regulator License Verification — Check Healthcare Professionals in Northern Emirates",
+    h1: "Regulator License Verification: Sharjah, Ajman, RAK, Fujairah & UAQ",
     targetQuery: "mohap license verification",
-    metaDescription: "How to verify a doctor's MOHAP license in Sharjah, Ajman, RAK, Fujairah, and UAQ. Step-by-step guide to the Ministry of Health license check portal. Updated April 2026.",
+    metaDescription: "How to verify a doctor's regulator license in Sharjah, Ajman, RAK, Fujairah, and UAQ. Step-by-step guide to the Ministry of Health license check portal. Updated April 2026.",
     templateType: "system-guide",
-    heroText: "The Ministry of Health and Prevention (MOHAP) regulates healthcare in the Northern Emirates: Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. All healthcare professionals in these emirates must hold a valid MOHAP license. You can verify any doctor, dentist, nurse, or pharmacist's license through the MOHAP online portal.",
+    heroText: "The UAE healthcare regulator regulates healthcare in the Northern Emirates: Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. All healthcare professionals in these emirates must hold a valid regulator license. You can verify any doctor, dentist, nurse, or pharmacist's license through the UAE healthcare regulator online portal.",
     relatedCategories: [],
     relatedCities: ["sharjah", "ajman", "ras-al-khaimah", "fujairah", "umm-al-quwain"],
     priceRanges: [],
     sections: [
       {
-        heading: "How to Verify a MOHAP License",
+        heading: "How to Verify a Regulator License",
         content: "Visit mohap.gov.ae and navigate to the 'Smart Services' section. Select 'Verify Health Professional License'. Enter the professional's name, license number, or Emirates ID. The portal shows: full name, nationality, specialty, license type, license status (Active, Inactive, Suspended), registered facility, and license expiry date. Only accept treatment from professionals with an 'Active' license status."
       },
       {
-        heading: "MOHAP vs DHA vs DOH",
-        content: "Each UAE health authority regulates its own jurisdiction: MOHAP covers Sharjah, Ajman, RAK, Fujairah, and UAQ. DHA covers Dubai only. DOH covers Abu Dhabi and Al Ain. A MOHAP license is not valid in Dubai (you need a DHA license) and vice versa. Some doctors hold multiple licenses and practice in more than one emirate."
+        heading: "The UAE healthcare regulator vs the UAE healthcare regulator vs the UAE healthcare regulator",
+        content: "Each UAE health authority regulates its own jurisdiction: the UAE healthcare regulator covers Sharjah, Ajman, RAK, Fujairah, and UAQ. The UAE healthcare regulator covers Dubai only. The UAE healthcare regulator covers Abu Dhabi and Al Ain. A regulator license is not valid in Dubai (you need a regulator license) and vice versa. Some doctors hold multiple licenses and practice in more than one emirate."
       },
     ],
     faqs: [
       { question: "How do I check a doctor's license in Sharjah?", answer: "Go to mohap.gov.ae, navigate to Smart Services, select Verify Health Professional License, and enter the doctor's name or license number. The portal will show their specialty, license status, and registered facility." },
-      { question: "Is a MOHAP license valid in Dubai?", answer: "No. A MOHAP license is only valid in the Northern Emirates (Sharjah, Ajman, RAK, Fujairah, UAQ). To practice in Dubai, a doctor needs a DHA license. To practice in Abu Dhabi, they need a DOH license." },
+      { question: "Is a regulator license valid in Dubai?", answer: "No. A regulator license is only valid in the Northern Emirates (Sharjah, Ajman, RAK, Fujairah, UAQ). To practice in Dubai, a doctor needs a regulator license. To practice in Abu Dhabi, they need a regulator license." },
     ],
     directoryLinks: [
       { label: "Clinics in Sharjah", href: "/directory/sharjah/clinics" },
@@ -917,7 +917,7 @@ export const GUIDES: GuideDefinition[] = [
     sections: [
       {
         heading: "What Makes DHCC Different",
-        content: "Unlike the rest of Dubai (regulated by DHA), DHCC is regulated by its own authority — the DHCA. This means different licensing requirements, pricing structures, and operational rules. DHCC providers are not bound by DHA pricing guidelines, which is why some procedures cost more (or less) at DHCC facilities compared to DHA-regulated clinics elsewhere in Dubai. However, insurance coverage and acceptance work the same way."
+        content: "Unlike the rest of Dubai (regulated by the UAE healthcare regulator), DHCC is regulated by its own authority — the DHCA. This means different licensing requirements, pricing structures, and operational rules. DHCC providers are not bound by the UAE healthcare regulator pricing guidelines, which is why some procedures cost more (or less) at DHCC facilities compared to the UAE healthcare regulator-regulated clinics elsewhere in Dubai. However, insurance coverage and acceptance work the same way."
       },
       {
         heading: "Finding Specialists at DHCC",
@@ -925,7 +925,7 @@ export const GUIDES: GuideDefinition[] = [
       },
     ],
     faqs: [
-      { question: "Is Dubai Healthcare City regulated by DHA?", answer: "No. DHCC is regulated by its own authority, the Dubai Healthcare City Authority (DHCA). Licensing, pricing, and operational rules differ from DHA-regulated facilities. However, insurance plans that cover DHCC facilities work the same way." },
+      { question: "Is Dubai Healthcare City regulated by the UAE healthcare regulator?", answer: "No. DHCC is regulated by its own authority, the Dubai Healthcare City Authority (DHCA). Licensing, pricing, and operational rules differ from the UAE healthcare regulator-regulated facilities. However, insurance plans that cover DHCC facilities work the same way." },
       { question: "How do I get to Dubai Healthcare City?", answer: "DHCC is located in the Oud Metha area of Dubai, accessible via Healthcare City Metro Station (Green Line). It is adjacent to Wafi Mall and is a 10-minute drive from Downtown Dubai. Parking is available throughout the free zone." },
     ],
     directoryLinks: [
@@ -1036,7 +1036,7 @@ export const GUIDES: GuideDefinition[] = [
     sections: [
       {
         heading: "Insurance Coverage for Mental Health",
-        content: "Since 2020, DHA has mandated that enhanced insurance plans include mental health coverage. Basic plans cover up to 6 sessions per year. Enhanced plans cover 12–24 sessions per year with typical co-pay of AED 50–100 per session. Psychiatrist consultations and prescribed psychiatric medications are covered separately under specialist and pharmacy benefits. Check your policy for the specific mental health sub-limit."
+        content: "Since 2020, the UAE healthcare regulator has mandated that enhanced insurance plans include mental health coverage. Basic plans cover up to 6 sessions per year. Enhanced plans cover 12–24 sessions per year with typical co-pay of AED 50–100 per session. Psychiatrist consultations and prescribed psychiatric medications are covered separately under specialist and pharmacy benefits. Check your policy for the specific mental health sub-limit."
       },
       {
         heading: "Finding the Right Therapist",
@@ -1086,7 +1086,7 @@ export const GUIDES: GuideDefinition[] = [
     faqs: [
       { question: "How much does Botox cost in Dubai?", answer: "Botox in Dubai costs AED 30–60 per unit (Allergan brand). A typical 3-area treatment (forehead, frown lines, crow's feet) costs AED 2,000–4,000. Single area treatment costs AED 800–1,500." },
       { question: "How often do I need Botox?", answer: "Botox results last 3–4 months. Most patients in Dubai schedule treatments every 3–4 months for the first year, then can sometimes extend to 4–6 months as the muscles weaken over time." },
-      { question: "Is Botox safe?", answer: "Yes, when administered by a DHA-licensed dermatologist or aesthetics practitioner using genuine, DHA-approved botulinum toxin products. Complications are rare and typically mild (bruising, headache). Avoid unlicensed practitioners and unbranded products." },
+      { question: "Is Botox safe?", answer: "Yes, when administered by a UAE-licensed (Dubai) dermatologist or aesthetics practitioner using genuine, UAE-approved (Dubai) botulinum toxin products. Complications are rare and typically mild (bruising, headache). Avoid unlicensed practitioners and unbranded products." },
     ],
     directoryLinks: [
       { label: "Cosmetic Clinics in Dubai", href: "/directory/dubai/cosmetic-plastic" },

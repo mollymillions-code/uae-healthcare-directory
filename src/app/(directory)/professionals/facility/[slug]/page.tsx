@@ -35,11 +35,11 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
   return {
     title: `${profile.name} — Healthcare Team Directory | ${profile.totalStaff.toLocaleString()} Licensed Staff`,
-    description: `View the full staff directory for ${profile.name} in Dubai. ${profile.totalStaff.toLocaleString()} DHA-licensed professionals including ${Object.entries(profile.categories).map(([slug, count]) => { const cat = PROFESSIONAL_CATEGORIES.find((c) => c.slug === slug); return `${count.toLocaleString()} ${cat?.name.toLowerCase() || slug}`; }).join(", ")}. Sourced from the official Sheryan Medical Registry.`,
+    description: `View the full staff directory for ${profile.name} in Dubai. ${profile.totalStaff.toLocaleString()} UAE-licensed (Dubai) professionals including ${Object.entries(profile.categories).map(([slug, count]) => { const cat = PROFESSIONAL_CATEGORIES.find((c) => c.slug === slug); return `${count.toLocaleString()} ${cat?.name.toLowerCase() || slug}`; }).join(", ")}. Sourced from the official Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/professionals/facility/${profile.slug}` },
     openGraph: {
       title: `${profile.name} — Healthcare Team Directory`,
-      description: `${profile.totalStaff.toLocaleString()} DHA-licensed professionals at ${profile.name}.`,
+      description: `${profile.totalStaff.toLocaleString()} UAE-licensed (Dubai) professionals at ${profile.name}.`,
       url: `${base}/professionals/facility/${profile.slug}`,
       type: "website",
       siteName: "UAE Open Healthcare Directory",
@@ -92,7 +92,7 @@ export default function FacilityStaffPage({ params }: Props) {
             "@type": "QuantitativeValue",
             value: profile.totalStaff,
           },
-          description: `${profile.name} employs ${profile.totalStaff.toLocaleString()} DHA-licensed healthcare professionals in Dubai.`,
+          description: `${profile.name} employs ${profile.totalStaff.toLocaleString()} UAE-licensed (Dubai) healthcare professionals in Dubai.`,
           areaServed: {
             "@type": "City",
             name: "Dubai",
@@ -116,12 +116,12 @@ export default function FacilityStaffPage({ params }: Props) {
           {profile.name}
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {profile.totalStaff.toLocaleString()} DHA-Licensed Staff
+          {profile.totalStaff.toLocaleString()} UAE-Licensed (Dubai) Staff
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             {profile.name} has {profile.totalStaff.toLocaleString()} healthcare professionals
-            licensed by the Dubai Health Authority. The team includes{" "}
+            licensed by the UAE healthcare regulator (Dubai). The team includes{" "}
             {categoryBreakdown
               .map((c) => `${c.count.toLocaleString()} ${c.name.toLowerCase()}`)
               .join(", ")}
@@ -247,9 +247,9 @@ export default function FacilityStaffPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

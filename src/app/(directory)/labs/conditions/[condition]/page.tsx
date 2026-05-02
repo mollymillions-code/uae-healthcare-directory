@@ -139,7 +139,7 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
       "Recurring infections",
     ],
     uaeContext:
-      "The UAE has one of the highest diabetes prevalence rates in the world at 17.3%, according to the International Diabetes Federation. Up to 25% of adults have pre-diabetes, meaning nearly half of UAE residents have some degree of glucose dysregulation. The high rates are driven by rapid urbanisation, sedentary office-based lifestyles, high-calorie diets, and genetic predisposition in South Asian and Arab populations. The DHA's Dubai Diabetes Programme and Abu Dhabi's Weqaya screening programme both include fasting glucose and HbA1c in their population-level screening efforts. Diabetes testing is covered under the UAE mandatory health insurance framework, and most corporate wellness programmes include HbA1c in their annual check-ups. Kidney function testing (KFT) is critical for UAE diabetics because diabetic nephropathy is the leading cause of kidney failure in the UAE, with over 1,200 new dialysis patients annually.",
+      "The UAE has one of the highest diabetes prevalence rates in the world at 17.3%, according to the International Diabetes Federation. Up to 25% of adults have pre-diabetes, meaning nearly half of UAE residents have some degree of glucose dysregulation. The high rates are driven by rapid urbanisation, sedentary office-based lifestyles, high-calorie diets, and genetic predisposition in South Asian and Arab populations. The UAE healthcare regulator's Dubai Diabetes Programme and Abu Dhabi's Weqaya screening programme both include fasting glucose and HbA1c in their population-level screening efforts. Diabetes testing is covered under the UAE mandatory health insurance framework, and most corporate wellness programmes include HbA1c in their annual check-ups. Kidney function testing (KFT) is critical for UAE diabetics because diabetic nephropathy is the leading cause of kidney failure in the UAE, with over 1,200 new dialysis patients annually.",
     faqs: [
       {
         question: "How much does a diabetes blood test cost in the UAE?",
@@ -194,7 +194,7 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
       "Unusual cravings for ice or non-food items (pica)",
     ],
     uaeContext:
-      "Iron deficiency anemia is the most common nutritional deficiency in the UAE, particularly among South Asian and Filipino women of reproductive age, with studies from DHA-affiliated hospitals reporting iron deficiency in 15-30% of pregnant women in Dubai. Thalassemia is an additional significant concern — the UAE has thalassemia carrier rates of 5-8% in the general population, and higher in Emirati nationals and South Asian communities. A CBC alone cannot distinguish between iron deficiency anemia and thalassemia trait; iron studies are essential for the correct diagnosis. This distinction matters because giving iron supplements to a person with thalassemia trait but normal iron stores is unnecessary and potentially harmful. The UAE's mandatory pre-marital screening programme includes hemoglobin electrophoresis specifically to identify thalassemia carriers before marriage. Vitamin B12 deficiency is also common among the UAE's large vegetarian South Asian population.",
+      "Iron deficiency anemia is the most common nutritional deficiency in the UAE, particularly among South Asian and Filipino women of reproductive age, with studies from the UAE healthcare regulator-affiliated hospitals reporting iron deficiency in 15-30% of pregnant women in Dubai. Thalassemia is an additional significant concern — the UAE has thalassemia carrier rates of 5-8% in the general population, and higher in Emirati nationals and South Asian communities. A CBC alone cannot distinguish between iron deficiency anemia and thalassemia trait; iron studies are essential for the correct diagnosis. This distinction matters because giving iron supplements to a person with thalassemia trait but normal iron stores is unnecessary and potentially harmful. The UAE's mandatory pre-marital screening programme includes hemoglobin electrophoresis specifically to identify thalassemia carriers before marriage. Vitamin B12 deficiency is also common among the UAE's large vegetarian South Asian population.",
     faqs: [
       {
         question: "How much does an anemia blood test cost in the UAE?",
@@ -423,7 +423,7 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
       "Muscle cramps, especially at night",
     ],
     uaeContext:
-      "Chronic kidney disease (CKD) is a growing health concern in the UAE, directly linked to the country's high prevalence of diabetes (17.3%) and hypertension. The UAE Renal Registry reports approximately 1,200 new patients commencing dialysis annually, with diabetic nephropathy accounting for the largest share. An estimated 13% of UAE adults over 60 have some degree of CKD. The South Asian male expat population has particularly high rates of gout and elevated uric acid, making uric acid testing a relevant add-on to the standard KFT panel. Regular NSAID use — common among labourers and those with chronic pain — can accelerate kidney decline. The UAE national insurance mandate covers KFT testing under corporate health plans, and early CKD detection is a priority in both DHA and DOH primary care guidelines. National Reference Laboratory (NRL) in Abu Dhabi specialises in detailed renal panels including urine albumin-to-creatinine ratio (uACR) for early CKD detection.",
+      "Chronic kidney disease (CKD) is a growing health concern in the UAE, directly linked to the country's high prevalence of diabetes (17.3%) and hypertension. The UAE Renal Registry reports approximately 1,200 new patients commencing dialysis annually, with diabetic nephropathy accounting for the largest share. An estimated 13% of UAE adults over 60 have some degree of CKD. The South Asian male expat population has particularly high rates of gout and elevated uric acid, making uric acid testing a relevant add-on to the standard KFT panel. Regular NSAID use — common among labourers and those with chronic pain — can accelerate kidney decline. The UAE national insurance mandate covers KFT testing under corporate health plans, and early CKD detection is a priority in both the UAE healthcare regulator and the UAE healthcare regulator primary care guidelines. National Reference Laboratory (NRL) in Abu Dhabi specialises in detailed renal panels including urine albumin-to-creatinine ratio (uACR) for early CKD detection.",
     faqs: [
       {
         question: "How much does a kidney function test cost in the UAE?",
@@ -540,7 +540,7 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
       "Unexplained weight loss",
     ],
     uaeContext:
-      "STD testing is deeply integrated into the UAE regulatory framework. HIV, Hepatitis B, and syphilis (VDRL) testing is mandatory for all UAE residence visa applications and renewals. Pre-marital screening (Federal Law No. 22 of 2006) requires HIV, Hepatitis B, Hepatitis C, and syphilis testing for all couples planning to marry in the UAE. These regulatory requirements mean that most UAE residents have been tested at least once. However, voluntary confidential testing for ongoing sexual health is less common due to cultural sensitivities and the legal implications of certain positive results. At licensed standalone diagnostic labs, STD test results are treated as confidential medical records and are not reported to immigration authorities (unlike visa medical results, which are processed through the MOHAP system). This distinction is important for anyone seeking voluntary screening outside the visa/marriage context.",
+      "STD testing is deeply integrated into the UAE regulatory framework. HIV, Hepatitis B, and syphilis (VDRL) testing is mandatory for all UAE residence visa applications and renewals. Pre-marital screening (Federal Law No. 22 of 2006) requires HIV, Hepatitis B, Hepatitis C, and syphilis testing for all couples planning to marry in the UAE. These regulatory requirements mean that most UAE residents have been tested at least once. However, voluntary confidential testing for ongoing sexual health is less common due to cultural sensitivities and the legal implications of certain positive results. At licensed standalone diagnostic labs, STD test results are treated as confidential medical records and are not reported to immigration authorities (unlike visa medical results, which are processed through the UAE healthcare regulator system). This distinction is important for anyone seeking voluntary screening outside the visa/marriage context.",
     faqs: [
       {
         question: "How much does STD screening cost in the UAE?",
@@ -550,17 +550,17 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
       {
         question: "Is STD testing confidential at UAE labs?",
         answer:
-          "Yes. At licensed standalone diagnostic labs (Al Borg, Medsol, Thumbay, Alpha Medical), STD test results are confidential medical records protected by UAE health data law. They are not reported to immigration authorities. This is distinct from visa medical screening, where results are uploaded to the MOHAP system.",
+          "Yes. At licensed standalone diagnostic labs (Al Borg, Medsol, Thumbay, Alpha Medical), STD test results are confidential medical records protected by UAE health data law. They are not reported to immigration authorities. This is distinct from visa medical screening, where results are uploaded to the UAE healthcare regulator system.",
       },
       {
         question: "Is HIV testing mandatory in the UAE?",
         answer:
-          "HIV testing is mandatory for residence visa applications and renewals, and for pre-marital screening. It is also recommended by MOHAP for all pregnant women in their first trimester. Voluntary confidential testing is available at all major labs. The UAE has shifted toward promoting treatment as prevention in its public health messaging.",
+          "HIV testing is mandatory for residence visa applications and renewals, and for pre-marital screening. It is also recommended by the UAE healthcare regulator for all pregnant women in their first trimester. Voluntary confidential testing is available at all major labs. The UAE has shifted toward promoting treatment as prevention in its public health messaging.",
       },
       {
         question: "How long does it take to get STD test results in the UAE?",
         answer:
-          "HIV (4th generation antigen/antibody combo), Hepatitis B, and VDRL results are typically available within 18-24 hours at most UAE labs. Urgent HIV results can be expedited to 2-4 hours at some labs for an additional fee. Visa medical results take 3-5 business days as they go through the MOHAP system.",
+          "HIV (4th generation antigen/antibody combo), Hepatitis B, and VDRL results are typically available within 18-24 hours at most UAE labs. Urgent HIV results can be expedited to 2-4 hours at some labs for an additional fee. Visa medical results take 3-5 business days as they go through the UAE healthcare regulator system.",
       },
     ],
   },
@@ -1145,9 +1145,9 @@ export default async function ConditionPage({
                   every individual. Always consult a licensed physician before
                   ordering medical tests or making health decisions. Prices are
                   based on publicly available UAE lab pricing as of March 2026
-                  and may vary. Regulated by the Dubai Health Authority (DHA),
-                  Department of Health Abu Dhabi (DOH), and Ministry of Health
-                  and Prevention (MOHAP).
+                  and may vary. Regulated by the UAE healthcare regulator (Dubai),
+                  the UAE healthcare regulator (Abu Dhabi), and Ministry of Health
+                  and Prevention (the UAE healthcare regulator).
                 </p>
               </div>
             </div>

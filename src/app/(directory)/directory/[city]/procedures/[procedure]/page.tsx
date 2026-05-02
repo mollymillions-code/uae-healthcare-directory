@@ -82,10 +82,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "UAE healthcare regulator (Abu Dhabi)";
+  return "UAE healthcare regulator";
 }
 
 function getCoverageLabel(coverage: MedicalProcedure["insuranceCoverage"]): string {
@@ -278,7 +278,7 @@ export default async function ProcedureCityPage({ params }: Props) {
                   : ""}
               Healthcare in {city.name} is regulated by the {regulator}. Prices
               vary based on facility type (government vs. private vs. premium),
-              doctor experience, and clinical complexity. Data sourced from DOH
+              doctor experience, and clinical complexity. Data sourced from the
               Mandatory Tariff methodology and market-observed ranges, last
               verified March 2026.
             </p>

@@ -41,18 +41,24 @@ interface Props {
 // ─── Regulator helpers ────────────────────────────────────────────────────────
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
+}
+
+function getRegulatorAdjective(citySlug: string): string {
+  if (citySlug === "dubai") return "UAE-licensed (Dubai)";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "UAE-licensed (Abu Dhabi)";
+  return "UAE-licensed";
 }
 
 function getMandatoryNote(citySlug: string): string {
   if (citySlug === "dubai")
     return "Dubai mandates health insurance for all residents and employees under the Dubai Health Insurance Law.";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Abu Dhabi requires mandatory health insurance for all residents and UAE nationals under DOH regulations.";
-  return `Health insurance in ${citySlug.replace(/-/g, " ")} follows UAE federal MOHAP guidelines; while not locally mandated, most employers provide group cover.`;
+    return "Abu Dhabi requires mandatory health insurance for all residents and UAE nationals under emirate regulations.";
+  return `Health insurance in ${citySlug.replace(/-/g, " ")} follows UAE federal guidelines; while not locally mandated, most employers provide group cover.`;
 }
 
 function getInsurerTypeLabel(type: string): string {
@@ -79,7 +85,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     "ins-count-meta",
   );
   const base = getBaseUrl();
-  const regulator = getRegulatorName(city.slug);
+  const regulatorAdj = getRegulatorAdjective(city.slug);
   const page = parsePage(searchParams);
   const pageSuffix = page > 1 ? `?page=${page}` : "";
   const titlePageSuffix = page > 1 ? ` | Page ${page}` : "";
@@ -93,7 +99,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const isIndexable = geoEligible && contentEligible;
 
   const rawTitle = `Clinics Accepting ${insurer.name} Insurance in ${city.name} | ${count} ${count === 1 ? "Provider" : "Providers"}${titlePageSuffix}`;
-  const rawDescription = `Find ${count} ${regulator}-licensed healthcare providers in ${city.name} that accept ${insurer.name} insurance. Includes hospitals, clinics, dental, dermatology & more. Verified listings with ratings, reviews, and contact details. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
+  const rawDescription = `Find ${count} ${regulatorAdj} healthcare providers in ${city.name} that accept ${insurer.name} insurance. Includes hospitals, clinics, dental, dermatology & more. Verified listings with ratings, reviews, and contact details. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
   const title = truncateTitle(rawTitle, 58);
   const description = truncateDescription(rawDescription, 155);
 
@@ -108,7 +114,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     robots: isIndexable ? undefined : { index: false, follow: true },
     openGraph: {
       title: truncateTitle(`${insurer.name} Insurance — ${count} Providers in ${city.name}${titlePageSuffix}`, 58),
-      description: truncateDescription(`${count} ${regulator}-regulated providers in ${city.name} accept ${insurer.name}. Browse hospitals, clinics, dental & specialists — last verified ${INSURANCE_DATA_VERIFIED_AT}.`, 155),
+      description: truncateDescription(`${count} ${regulatorAdj} providers in ${city.name} accept ${insurer.name}. Browse hospitals, clinics, dental & specialists — last verified ${INSURANCE_DATA_VERIFIED_AT}.`, 155),
       url,
       type: "website",
     },
@@ -133,6 +139,7 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
   const count = providers.length;
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
+  const regulatorAdj = getRegulatorAdjective(city.slug);
   const mandatoryNote = getMandatoryNote(city.slug);
 
   // ─── SSR pagination (Item 0.5) ─────────────────────────────────────────────
@@ -192,18 +199,18 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
       : `${insurer.name} is a ${getInsurerTypeLabel(insurer.type).toLowerCase()} insurer widely accepted across the UAE.`;
 
   const answerParagraph = count > 0
-    ? `According to the UAE Open Healthcare Directory, ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} accept ${insurer.name} insurance. ${mandatoryNote} ${coverageNote}${topCategory ? ` The majority of ${insurer.name} providers in ${city.name} fall under the ${topCategory.name} category (${topCategory.insurerCount} ${topCategory.insurerCount === 1 ? "provider" : "providers"}).` : ""} Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`
+    ? `According to the UAE Open Healthcare Directory, ${count} ${regulatorAdj} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} accept ${insurer.name} insurance. ${mandatoryNote} ${coverageNote}${topCategory ? ` The majority of ${insurer.name} providers in ${city.name} fall under the ${topCategory.name} category (${topCategory.insurerCount} ${topCategory.insurerCount === 1 ? "provider" : "providers"}).` : ""} Provider licenses are sourced from ${regulator}'s official register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`
     : `${insurer.name} insurance data for ${city.name} is currently being compiled. ${mandatoryNote} ${coverageNote} Check back soon, or browse the full ${city.name} provider directory below.`;
 
   // ─── FAQs ────────────────────────────────────────────────────────────────────
   const faqs = [
     {
       question: `Does ${insurer.name} cover healthcare in ${city.name}?`,
-      answer: `Yes. ${insurer.name} insurance is accepted at ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name}, UAE, regulated by the ${regulator}. ${insurer.description} Use the UAE Open Healthcare Directory to find specific clinics, hospitals, and specialists that accept ${insurer.name} in ${city.name}.`,
+      answer: `Yes. ${insurer.name} insurance is accepted at ${count} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name}, UAE, regulated by ${regulator}. ${insurer.description} Use the UAE Open Healthcare Directory to find specific clinics, hospitals, and specialists that accept ${insurer.name} in ${city.name}.`,
     },
     {
       question: `How many providers accept ${insurer.name} in ${city.name}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulator}-licensed healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, dental practices, specialist centers, and diagnostics labs. Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulatorAdj} healthcare ${count === 1 ? "provider" : "providers"} in ${city.name} that accept ${insurer.name} insurance. This includes hospitals, clinics, dental practices, specialist centers, and diagnostics labs. Provider licenses are sourced from ${regulator}'s official register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`,
     },
     {
       question: `What is the co-pay for ${insurer.name} in ${city.name}?`,
@@ -211,7 +218,7 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
     },
     {
       question: `Does ${insurer.name} cover emergency care in ${city.name}?`,
-      answer: `Yes, emergency care is covered under all ${insurer.name} plans in ${city.name}. In the UAE, emergency treatment cannot be refused at any ${regulator}-licensed facility. ${insurer.type === "mandatory" || insurer.type === "premium" ? `${insurer.name} covers emergency services at all government and most private hospitals in ${city.name}.` : `For ${insurer.name}, emergency treatment at any hospital in ${city.name} is covered — pre-authorisation is not required for genuine emergencies.`}`,
+      answer: `Yes, emergency care is covered under all ${insurer.name} plans in ${city.name}. In the UAE, emergency treatment cannot be refused at any ${regulatorAdj} facility. ${insurer.type === "mandatory" || insurer.type === "premium" ? `${insurer.name} covers emergency services at all government and most private hospitals in ${city.name}.` : `For ${insurer.name}, emergency treatment at any hospital in ${city.name} is covered — pre-authorisation is not required for genuine emergencies.`}`,
     },
     {
       question: `Can I use ${insurer.name} insurance at hospitals in ${city.name}?`,
@@ -219,7 +226,7 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
     },
     {
       question: `What specialists accept ${insurer.name} insurance in ${city.name}?`,
-      answer: `${insurer.name} is accepted by a wide range of specialists in ${city.name}${catBreakdown.length > 0 ? `, including: ${catBreakdown.slice(0, 5).map((c) => `${c.name} (${c.insurerCount})`).join(", ")}` : ""}. Browse the UAE Open Healthcare Directory listings above to filter by specialty and find the right provider for your needs. All providers are ${regulator}-licensed.`,
+      answer: `${insurer.name} is accepted by a wide range of specialists in ${city.name}${catBreakdown.length > 0 ? `, including: ${catBreakdown.slice(0, 5).map((c) => `${c.name} (${c.insurerCount})`).join(", ")}` : ""}. Browse the UAE Open Healthcare Directory listings above to filter by specialty and find the right provider for your needs. All providers are ${regulatorAdj}.`,
     },
   ];
 
@@ -235,7 +242,7 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
       title={`${insurer.name} Insurance — Providers in ${city.name}.`}
       subtitle={
         <>
-          {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated {INSURANCE_DATA_VERIFIED_AT}
+          {count} verified {count === 1 ? "provider" : "providers"} · {regulatorAdj} · Last updated {INSURANCE_DATA_VERIFIED_AT}
         </>
       }
       aeoAnswer={answerParagraph}
@@ -362,7 +369,7 @@ export default async function InsuranceProviderPage({ params, searchParams }: Pr
           {/* Disclaimer */}
           <div className="border-t border-ink-line pt-4">
             <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-              <strong>Disclaimer:</strong> Provider licenses are sourced from the official {regulator} register.
+              <strong>Disclaimer:</strong> Provider licenses are sourced from {regulator}&apos;s official register.
               Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit.
               For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker. Last verified {INSURANCE_DATA_VERIFIED_AT}.
             </p>

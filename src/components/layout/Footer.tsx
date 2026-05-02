@@ -38,7 +38,7 @@ export function Footer() {
     : "Free for all UAE residents.";
   const dataSources = countryCtx
     ? [...countryCtx.regulators, "Google Places"]
-    : ["DHA — Dubai", "DOH — Abu Dhabi", "MOHAP — Northern Emirates", "Google Places"];
+    : ["Official UAE healthcare licensing data", "Google Places"];
 
   return (
     <footer role="contentinfo" aria-label="Site footer" className="bg-dark text-white mt-16">

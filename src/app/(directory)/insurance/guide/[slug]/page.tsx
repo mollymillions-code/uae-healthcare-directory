@@ -25,19 +25,19 @@ const GUIDES: InsuranceGuide[] = [
     slug: "freelancer-health-insurance",
     title: "Health Insurance for Freelancers & Self-Sponsored Residents in UAE",
     metaDescription:
-      "Complete guide to health insurance for freelancers and self-sponsored residents in the UAE. DHA and DOH requirements, cheapest compliant plans, and how to apply.",
+      "Complete guide to health insurance for freelancers and self-sponsored residents in the UAE. The UAE healthcare regulator and the UAE healthcare regulator requirements, cheapest compliant plans, and how to apply.",
     datePublished: "2026-01-15",
     dateModified: "2026-03-25",
     faqs: [
       {
         question: "Do freelancers need health insurance in the UAE?",
         answer:
-          "Yes. Health insurance is mandatory for all visa holders in Dubai and Abu Dhabi, including freelancers and self-sponsored residents. In Dubai, you must have a DHA-compliant plan. In Abu Dhabi, you need a DOH-compliant plan. Failure to maintain coverage can result in visa renewal rejection and fines.",
+          "Yes. Health insurance is mandatory for all visa holders in Dubai and Abu Dhabi, including freelancers and self-sponsored residents. In Dubai, you must have a UAE healthcare regulator-compliant plan. In Abu Dhabi, you need a UAE healthcare regulator-compliant plan. Failure to maintain coverage can result in visa renewal rejection and fines.",
       },
       {
         question: "What is the cheapest health insurance for freelancers in UAE?",
         answer:
-          "The cheapest DHA-compliant plans in Dubai start from approximately AED 2,200–2,800 per year for an individual. In Abu Dhabi, Daman Basic plans start from around AED 600–750 per year. These basic plans cover inpatient, outpatient, and emergency care but typically exclude dental, optical, and maternity.",
+          "The cheapest the UAE healthcare regulator-compliant plans in Dubai start from approximately AED 2,200–2,800 per year for an individual. In Abu Dhabi, Daman Basic plans start from around AED 600–750 per year. These basic plans cover inpatient, outpatient, and emergency care but typically exclude dental, optical, and maternity.",
       },
       {
         question: "Can I buy health insurance individually in the UAE?",
@@ -47,7 +47,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "What happens if a freelancer has no health insurance in Dubai?",
         answer:
-          "In Dubai, not having health insurance can lead to fines when renewing your visa or Emirates ID. The DHA may flag your application, and you will need to purchase a compliant plan before proceeding. Medical costs without insurance can be extremely expensive.",
+          "In Dubai, not having health insurance can lead to fines when renewing your visa or Emirates ID. The UAE healthcare regulator may flag your application, and you will need to purchase a compliant plan before proceeding. Medical costs without insurance can be extremely expensive.",
       },
     ],
   },
@@ -107,7 +107,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "What do I do if my health insurance claim is rejected?",
         answer:
-          "First, contact your insurer to understand the reason for rejection. Common reasons include missing documents, treatment not in your coverage, or lapsed policy. You can submit additional documentation and request a review. If the dispute is not resolved, you can escalate to DHA (Dubai), DOH (Abu Dhabi), or MOHAP (Northern Emirates) complaints department.",
+          "First, contact your insurer to understand the reason for rejection. Common reasons include missing documents, treatment not in your coverage, or lapsed policy. You can submit additional documentation and request a review. If the dispute is not resolved, you can escalate to the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi), or the UAE healthcare regulator (Northern Emirates) complaints department.",
       },
     ],
   },
@@ -127,12 +127,12 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "What is the cheapest insurance for a domestic worker in Dubai?",
         answer:
-          "Basic DHA-compliant plans for domestic workers in Dubai start from approximately AED 750–1,200 per year. These plans cover essential inpatient, outpatient, and emergency care. Daman also offers specific domestic worker plans in Abu Dhabi starting from around AED 600 per year.",
+          "Basic the UAE healthcare regulator-compliant plans for domestic workers in Dubai start from approximately AED 750–1,200 per year. These plans cover essential inpatient, outpatient, and emergency care. Daman also offers specific domestic worker plans in Abu Dhabi starting from around AED 600 per year.",
       },
       {
         question: "What happens if I don't insure my domestic worker?",
         answer:
-          "Employers who fail to provide health insurance for domestic workers face penalties including fines, inability to renew the worker's visa, and potential labour complaints. In Dubai, the DHA can block visa-related transactions until compliant insurance is in place.",
+          "Employers who fail to provide health insurance for domestic workers face penalties including fines, inability to renew the worker's visa, and potential labour complaints. In Dubai, the UAE healthcare regulator can block visa-related transactions until compliant insurance is in place.",
       },
       {
         question: "What does domestic worker health insurance cover?",
@@ -157,7 +157,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "What happens to pre-existing conditions when I switch?",
         answer:
-          "Under DHA and DOH regulations, if you switch from one compliant plan to another without a gap in coverage, the new insurer must cover pre-existing conditions that were covered under your previous plan. This is called continuity of coverage. However, if there is a gap in coverage, waiting periods for pre-existing conditions may be re-imposed.",
+          "Under the UAE healthcare regulator and the UAE healthcare regulator regulations, if you switch from one compliant plan to another without a gap in coverage, the new insurer must cover pre-existing conditions that were covered under your previous plan. This is called continuity of coverage. However, if there is a gap in coverage, waiting periods for pre-existing conditions may be re-imposed.",
       },
       {
         question: "When is the best time to switch insurance in the UAE?",
@@ -167,7 +167,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "Can my employer switch my health insurance without my consent?",
         answer:
-          "Yes. Employers can change insurance providers at renewal as long as the new plan meets the minimum regulatory requirements (DHA Essential Benefits Plan in Dubai, DOH requirements in Abu Dhabi). You should receive advance notice and details of the new plan.",
+          "Yes. Employers can change insurance providers at renewal as long as the new plan meets the minimum regulatory requirements (Dubai mandatory health insurance plan in Dubai, the UAE healthcare regulator requirements in Abu Dhabi). You should receive advance notice and details of the new plan.",
       },
     ],
   },
@@ -183,7 +183,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "Does my UAE health insurance cover walk-in clinic visits?",
         answer:
-          "Yes — every DHA, DOH and MOHAP-compliant policy covers walk-in (no-appointment) outpatient consultations at any in-network facility. The exception is policies with a referral-only structure (rare on UAE schemes), where you must first see a primary-care GP before specialist visits.",
+          "Yes — every the UAE healthcare regulator-compliant policy covers walk-in (no-appointment) outpatient consultations at any in-network facility. The exception is policies with a referral-only structure (rare on UAE schemes), where you must first see a primary-care GP before specialist visits.",
       },
       {
         question: "How much will I pay at a walk-in clinic with insurance?",
@@ -288,7 +288,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "Is dental included on UAE basic health insurance?",
         answer:
-          "No. Dental is excluded from the DHA Essential Benefits Plan (EBP) and from Daman Basic in Abu Dhabi. Dental coverage is only included on enhanced and premium plans, typically with a sub-limit between AED 2,000 and AED 10,000 per year.",
+          "No. Dental is excluded from the Dubai mandatory health insurance plan (EBP) and from Daman Basic in Abu Dhabi. Dental coverage is only included on enhanced and premium plans, typically with a sub-limit between AED 2,000 and AED 10,000 per year.",
       },
       {
         question: "What dental sub-limit do major UAE carriers offer?",
@@ -323,7 +323,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "Is diabetes covered by UAE health insurance?",
         answer:
-          "Yes. All DHA and DOH compliant plans cover diabetes diagnosis, management consultations, prescription medication (metformin, insulin), and routine HbA1c testing. Many enhanced plans include diabetes nurse education and continuous glucose monitor (CGM) supplies.",
+          "Yes. All the UAE healthcare regulator and the UAE healthcare regulator compliant plans cover diabetes diagnosis, management consultations, prescription medication (metformin, insulin), and routine HbA1c testing. Many enhanced plans include diabetes nurse education and continuous glucose monitor (CGM) supplies.",
       },
       {
         question: "What is a chronic disease management programme?",
@@ -398,7 +398,7 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "Do I need international insurance as an expat in the UAE?",
         answer:
-          "Not for visa compliance — any DHA or DOH compliant plan satisfies the requirement. International cover matters if you travel frequently, plan to deliver a baby outside the UAE, or want continuity if you relocate to another country. For an expat staying full-time in the UAE, a strong domestic plan often delivers better value.",
+          "Not for visa compliance — any the UAE healthcare regulator or the UAE healthcare regulator compliant plan satisfies the requirement. International cover matters if you travel frequently, plan to deliver a baby outside the UAE, or want continuity if you relocate to another country. For an expat staying full-time in the UAE, a strong domestic plan often delivers better value.",
       },
       {
         question: "Which is better value: international or domestic UAE plans?",
@@ -456,14 +456,14 @@ const GUIDES: InsuranceGuide[] = [
     slug: "mandatory-health-insurance-emirates",
     title: "Mandatory Health Insurance in the UAE — Who Must Have It, Who Pays, and What Happens If You Don't (2026)",
     metaDescription:
-      "UAE mandatory health insurance rules by emirate: Dubai DHA, Abu Dhabi DOH, Northern Emirates MOHAP. Who's required to have cover, who pays, and the consequences of non-compliance in 2026.",
+      "UAE mandatory health insurance rules by emirate: Dubai the UAE healthcare regulator, Abu Dhabi the UAE healthcare regulator, Northern Emirates the UAE healthcare regulator. Who's required to have cover, who pays, and the consequences of non-compliance in 2026.",
     datePublished: "2026-05-02",
     dateModified: "2026-05-02",
     faqs: [
       {
         question: "Is health insurance mandatory in the UAE?",
         answer:
-          "Yes — mandatory in Dubai (since 2014, DHA-regulated), Abu Dhabi (since 2006, DOH-regulated), and progressively across the Northern Emirates under MOHAP. Every UAE visa holder must have a compliant policy. Without it, visa renewal, Emirates ID issuance, and trade-licence renewal are blocked.",
+          "Yes — mandatory in Dubai (since 2014, the UAE healthcare regulator-regulated), Abu Dhabi (since 2006, the UAE healthcare regulator-regulated), and progressively across the Northern Emirates under the UAE healthcare regulator. Every UAE visa holder must have a compliant policy. Without it, visa renewal, Emirates ID issuance, and trade-licence renewal are blocked.",
       },
       {
         question: "Who pays for mandatory health insurance?",
@@ -473,12 +473,12 @@ const GUIDES: InsuranceGuide[] = [
       {
         question: "What's the minimum compliant cover in Dubai?",
         answer:
-          "The DHA Essential Benefits Plan (EBP): AED 150,000 annual cap, covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics, and prescribed medications. Excludes dental, optical, maternity (or has reduced maternity), and elective procedures. Premium: ~AED 600–800/year for a single adult.",
+          "The Dubai mandatory health insurance plan (EBP): AED 150,000 annual cap, covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics, and prescribed medications. Excludes dental, optical, maternity (or has reduced maternity), and elective procedures. Premium: ~AED 600–800/year for a single adult.",
       },
       {
         question: "What's the minimum compliant cover in Abu Dhabi?",
         answer:
-          "Daman Basic (the DOH-mandated floor plan): AED 250,000 annual cap, covers inpatient, emergency, outpatient consultations, and basic medications. Network is restricted to public-sector and selected private clinics. Premium: ~AED 600–750/year for a single adult.",
+          "Daman Basic (the UAE healthcare regulator-mandated floor plan): AED 250,000 annual cap, covers inpatient, emergency, outpatient consultations, and basic medications. Network is restricted to public-sector and selected private clinics. Premium: ~AED 600–750/year for a single adult.",
       },
       {
         question: "What if I don't have insurance?",
@@ -558,10 +558,10 @@ function FreelancerGuide() {
     <div className="prose-journal">
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Who Needs Self-Sponsored Health Insurance?</h2>
       <p>
-        If you hold a freelance permit, are self-sponsored on a family visa, or run a sole establishment in the UAE, you are responsible for arranging your own health insurance. Unlike employees whose employers must provide coverage, freelancers and self-sponsored residents must purchase and maintain a compliant plan independently. This applies whether you are in Dubai (DHA-regulated), Abu Dhabi (DOH-regulated), or the Northern Emirates (MOHAP-regulated).
+        If you hold a freelance permit, are self-sponsored on a family visa, or run a sole establishment in the UAE, you are responsible for arranging your own health insurance. Unlike employees whose employers must provide coverage, freelancers and self-sponsored residents must purchase and maintain a compliant plan independently. This applies whether you are in Dubai (the UAE healthcare regulator-regulated), Abu Dhabi (the UAE healthcare regulator-regulated), or the Northern Emirates (the UAE healthcare regulator-regulated).
       </p>
       <p>
-        Since 2014, Dubai has required every visa holder to have health insurance. Abu Dhabi has had a similar mandate since 2006. The Northern Emirates are progressively adopting mandatory requirements under MOHAP. Without valid insurance, you may face difficulties renewing your visa, Emirates ID, or trade licence.
+        Since 2014, Dubai has required every visa holder to have health insurance. Abu Dhabi has had a similar mandate since 2006. The Northern Emirates are progressively adopting mandatory requirements under the UAE healthcare regulator. Without valid insurance, you may face difficulties renewing your visa, Emirates ID, or trade licence.
       </p>
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How to Get Health Insurance as a Freelancer</h2>
@@ -574,23 +574,23 @@ function FreelancerGuide() {
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Cheapest Compliant Plans for Freelancers</h2>
       <p>
-        In Dubai, the cheapest DHA-compliant plans start from approximately AED 2,200-2,800 per year for a single adult. These basic plans meet the Essential Benefits Plan (EBP) requirements, covering inpatient hospitalisation, outpatient consultations, emergency care, and prescribed medications. They typically exclude dental, optical, and maternity coverage.
+        In Dubai, the cheapest the UAE healthcare regulator-compliant plans start from approximately AED 2,200-2,800 per year for a single adult. These basic plans meet the Essential Benefits Plan (EBP) requirements, covering inpatient hospitalisation, outpatient consultations, emergency care, and prescribed medications. They typically exclude dental, optical, and maternity coverage.
       </p>
       <p>
-        In Abu Dhabi, Daman Basic plans start from approximately AED 600-750 per year and meet DOH minimum requirements. These are the most affordable option for Abu Dhabi visa holders. For better coverage — including wider hospital networks, lower co-payments, and dental or maternity add-ons — expect premiums of AED 4,000-8,000 per year.
+        In Abu Dhabi, Daman Basic plans start from approximately AED 600-750 per year and meet the UAE healthcare regulator minimum requirements. These are the most affordable option for Abu Dhabi visa holders. For better coverage — including wider hospital networks, lower co-payments, and dental or maternity add-ons — expect premiums of AED 4,000-8,000 per year.
       </p>
 
-      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">DHA and DOH Requirements</h2>
+      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">The UAE healthcare regulator and the UAE healthcare regulator Requirements</h2>
       <p>
-        In Dubai, the DHA Essential Benefits Plan (EBP) sets minimum standards that all health insurance plans must meet. This includes coverage for inpatient, outpatient, emergency, maternity (with waiting period), and prescribed medication. The annual premium cap for the most basic plan is set by DHA and reviewed periodically.
+        In Dubai, the Dubai mandatory health insurance plan (EBP) sets minimum standards that all health insurance plans must meet. This includes coverage for inpatient, outpatient, emergency, maternity (with waiting period), and prescribed medication. The annual premium cap for the most basic plan is set by the UAE healthcare regulator and reviewed periodically.
       </p>
       <p>
-        In Abu Dhabi, the DOH (formerly HAAD) mandates a basic benefit package through its partnership with Daman. The Abu Dhabi scheme covers both UAE nationals (through Thiqa) and expatriates (through Daman Basic and enhanced plans). Freelancers in Abu Dhabi should ensure their plan is DOH-registered, as non-compliant plans will not be accepted for visa processing.
+        In Abu Dhabi, the UAE healthcare regulator (formerly HAAD) mandates a basic benefit package through its partnership with Daman. The Abu Dhabi scheme covers both UAE nationals (through Thiqa) and expatriates (through Daman Basic and enhanced plans). Freelancers in Abu Dhabi should ensure their plan is the UAE healthcare regulator-registered, as non-compliant plans will not be accepted for visa processing.
       </p>
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Tips for Freelancers</h2>
       <ul>
-        <li>Always check that the plan is regulatory-compliant (DHA in Dubai, DOH in Abu Dhabi) before purchasing.</li>
+        <li>Always check that the plan is regulatory-compliant (the UAE healthcare regulator in Dubai, the UAE healthcare regulator in Abu Dhabi) before purchasing.</li>
         <li>Compare network sizes — a cheaper plan with a small network may leave you without coverage at your preferred hospital.</li>
         <li>Consider adding dental and maternity riders if relevant to your situation.</li>
         <li>Set a calendar reminder 30 days before renewal to compare plans again — premiums and networks change annually.</li>
@@ -609,7 +609,7 @@ function MaternityGuide() {
     <div className="prose-journal">
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Maternity Coverage in UAE Health Insurance</h2>
       <p>
-        Maternity benefits are included in most DHA and DOH compliant health insurance plans in the UAE, but almost always subject to a waiting period. Understanding these waiting periods, coverage limits, and exclusions is critical before you plan a pregnancy — ideally, you should have your insurance in place at least 12 months before your expected delivery date.
+        Maternity benefits are included in most the UAE healthcare regulator and the UAE healthcare regulator compliant health insurance plans in the UAE, but almost always subject to a waiting period. Understanding these waiting periods, coverage limits, and exclusions is critical before you plan a pregnancy — ideally, you should have your insurance in place at least 12 months before your expected delivery date.
       </p>
       <p>
         The UAE is one of the most popular destinations for expatriate families, and its healthcare system offers world-class maternity and obstetrics facilities. Major hospital groups such as Mediclinic, NMC, Aster, and Danat Al Emarat operate dedicated maternity units in Dubai and Abu Dhabi.
@@ -624,7 +624,7 @@ function MaternityGuide() {
       </p>
       <ul>
         <li><strong>Daman Basic (Abu Dhabi)</strong>: 12 months for normal delivery; emergency complications from day one.</li>
-        <li><strong>DHA Essential Benefits Plan</strong>: 12 months standard waiting period.</li>
+        <li><strong>Dubai mandatory health insurance plan</strong>: 12 months standard waiting period.</li>
         <li><strong>AXA SmartHealth Enhanced</strong>: 9-12 months depending on the plan tier.</li>
         <li><strong>Cigna Global/HealthGuard</strong>: 10-12 months on standard plans; 6 months on premium tiers.</li>
         <li><strong>Bupa</strong>: 12 months on most plans; some corporate group plans reduce this to 6 months.</li>
@@ -691,7 +691,7 @@ function ClaimsGuide() {
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Timelines</h2>
       <p>
-        Under UAE insurance regulations (DHA and DOH), insurers are required to acknowledge receipt of a claim within 5 working days and settle or deny the claim within 30 days of receiving complete documentation. In practice, straightforward claims with complete documentation are often processed in 7-15 working days. Complex claims involving pre-authorisation, high-value procedures, or investigation may take the full 30 days.
+        Under UAE insurance regulations (the UAE healthcare regulator and the UAE healthcare regulator), insurers are required to acknowledge receipt of a claim within 5 working days and settle or deny the claim within 30 days of receiving complete documentation. In practice, straightforward claims with complete documentation are often processed in 7-15 working days. Complex claims involving pre-authorisation, high-value procedures, or investigation may take the full 30 days.
       </p>
       <p>
         Reimbursement payments are typically made by bank transfer. Ensure your bank details are correctly recorded with your insurer to avoid delays.
@@ -709,7 +709,7 @@ function ClaimsGuide() {
         <li><strong>Review your policy terms</strong> to confirm whether the treatment should be covered.</li>
         <li><strong>Submit additional documentation</strong> if the rejection was due to missing information. Most insurers allow resubmission within 30-60 days.</li>
         <li><strong>File a formal appeal</strong> through your insurer&apos;s complaints or appeals process.</li>
-        <li><strong>Escalate to the regulator</strong> if the insurer does not resolve the dispute. In Dubai, file a complaint with DHA. In Abu Dhabi, contact DOH. In the Northern Emirates, contact MOHAP. Each authority has a dedicated complaints portal.</li>
+        <li><strong>Escalate to the regulator</strong> if the insurer does not resolve the dispute. In Dubai, file a complaint with the UAE healthcare regulator. In Abu Dhabi, contact the UAE healthcare regulator. In the Northern Emirates, contact the UAE healthcare regulator. Each authority has a dedicated complaints portal.</li>
       </ol>
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Insurer Claims Contact Information</h2>
@@ -735,7 +735,7 @@ function DomesticWorkerGuide() {
     <div className="prose-journal">
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Legal Requirements for Domestic Worker Insurance</h2>
       <p>
-        In the UAE, employers (sponsors) of domestic workers are legally obligated to provide health insurance coverage. This requirement applies to all domestic workers including housemaids, nannies, private drivers, cooks, and gardeners. The mandate is enforced in Dubai by the DHA and in Abu Dhabi by the DOH. Failure to provide coverage can result in visa rejection, fines, and labour complaints.
+        In the UAE, employers (sponsors) of domestic workers are legally obligated to provide health insurance coverage. This requirement applies to all domestic workers including housemaids, nannies, private drivers, cooks, and gardeners. The mandate is enforced in Dubai by the UAE healthcare regulator and in Abu Dhabi by the UAE healthcare regulator. Failure to provide coverage can result in visa rejection, fines, and labour complaints.
       </p>
       <p>
         The requirement became more strictly enforced following the UAE Domestic Workers Law (Federal Law No. 10 of 2017), which established a comprehensive framework of rights for domestic workers including the right to healthcare. Insurance is now a prerequisite for issuing and renewing domestic worker visas in Dubai and Abu Dhabi.
@@ -743,7 +743,7 @@ function DomesticWorkerGuide() {
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Minimum Coverage Requirements</h2>
       <p>
-        The minimum coverage for domestic workers mirrors the basic requirements for all visa holders. In Dubai, the plan must be DHA Essential Benefits Plan (EBP) compliant, covering inpatient hospitalisation, outpatient consultations, emergency care, prescribed medications, and basic diagnostics. In Abu Dhabi, the plan must meet DOH minimum standards as administered through Daman.
+        The minimum coverage for domestic workers mirrors the basic requirements for all visa holders. In Dubai, the plan must be Dubai mandatory health insurance plan (EBP) compliant, covering inpatient hospitalisation, outpatient consultations, emergency care, prescribed medications, and basic diagnostics. In Abu Dhabi, the plan must meet the UAE healthcare regulator minimum standards as administered through Daman.
       </p>
       <p>
         Key coverage elements of compliant plans include:
@@ -771,7 +771,7 @@ function DomesticWorkerGuide() {
       </p>
       <ul>
         <li><strong>Visa rejection</strong>: Immigration authorities will not issue or renew a domestic worker&apos;s visa without proof of valid health insurance.</li>
-        <li><strong>Fines</strong>: DHA and DOH can impose monetary penalties on employers found in violation. Fine amounts are reviewed periodically and can increase for repeat offenders.</li>
+        <li><strong>Fines</strong>: the UAE healthcare regulator and the UAE healthcare regulator can impose monetary penalties on employers found in violation. Fine amounts are reviewed periodically and can increase for repeat offenders.</li>
         <li><strong>Labour complaints</strong>: Domestic workers can file complaints with MOHRE (Ministry of Human Resources and Emiratisation) if their employer fails to provide legally required benefits, including health insurance.</li>
         <li><strong>Personal liability</strong>: Without insurance, the employer is personally liable for all medical costs incurred by the domestic worker. A single hospital admission can cost AED 10,000-50,000 or more.</li>
       </ul>
@@ -801,7 +801,7 @@ function SwitchingGuide() {
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Pre-Existing Conditions and Continuity of Coverage</h2>
       <p>
-        This is the most critical concern when switching. Under DHA and DOH regulations, if you maintain continuous health insurance coverage in the UAE (no gap between your old and new policy), the new insurer <strong>must</strong> cover pre-existing conditions that were covered under your previous plan. This is known as the continuity of coverage rule and protects residents from losing coverage for ongoing conditions when they switch providers.
+        This is the most critical concern when switching. Under the UAE healthcare regulator and the UAE healthcare regulator regulations, if you maintain continuous health insurance coverage in the UAE (no gap between your old and new policy), the new insurer <strong>must</strong> cover pre-existing conditions that were covered under your previous plan. This is known as the continuity of coverage rule and protects residents from losing coverage for ongoing conditions when they switch providers.
       </p>
       <p>
         However, if there is a gap in coverage — even a single day — the new insurer may re-impose waiting periods for pre-existing conditions. This can mean months without coverage for chronic conditions, maternity, or other ongoing treatments. To protect yourself:
@@ -814,7 +814,7 @@ function SwitchingGuide() {
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Continuous Coverage Rules</h2>
       <p>
-        The DHA and DOH require insurers to honour the following when coverage is continuous:
+        The UAE healthcare regulator and the UAE healthcare regulator require insurers to honour the following when coverage is continuous:
       </p>
       <ul>
         <li>No new waiting periods for conditions already covered under the previous plan.</li>
@@ -823,7 +823,7 @@ function SwitchingGuide() {
         <li>Lifetime and annual limits reset with the new policy period but do not go backwards.</li>
       </ul>
       <p>
-        These protections apply as long as the switch is between two DHA-compliant plans (in Dubai) or two DOH-compliant plans (in Abu Dhabi). Switching from a non-compliant or international-only plan may not carry the same protections.
+        These protections apply as long as the switch is between two the UAE healthcare regulator-compliant plans (in Dubai) or two the UAE healthcare regulator-compliant plans (in Abu Dhabi). Switching from a non-compliant or international-only plan may not carry the same protections.
       </p>
 
       <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Employer-Sponsored vs Self-Purchased Plans</h2>
@@ -867,7 +867,7 @@ function WalkInClinicGuide() {
         Most UAE outpatient care is walk-in. You don&apos;t need a referral, you don&apos;t need an appointment in advance, and you don&apos;t need pre-authorisation for a routine consultation. Show up at any in-network facility during operating hours, present your insurance card and Emirates ID at reception, and wait for the next available physician. Total time to consultation is typically 15–45 minutes at major chains like Aster Clinic and NMC Royal Clinic; 5–15 minutes at lower-volume independent practices.
       </p>
       <p>
-        Walk-in cover is built into every DHA, DOH and MOHAP-compliant plan, including the most basic compliance-floor products like Daman Basic and the DHA Essential Benefits Plan. The single exception is policies with a strict primary-care-first structure (which UAE plans almost never use) — those require you to see a GP first before specialist consultations are reimbursed.
+        Walk-in cover is built into every the UAE healthcare regulator-compliant plan, including the most basic compliance-floor products like Daman Basic and the Dubai mandatory health insurance plan. The single exception is policies with a strict primary-care-first structure (which UAE plans almost never use) — those require you to see a GP first before specialist consultations are reimbursed.
       </p>
 
       <h2 className={H2}>What you&apos;ll pay at reception</h2>
@@ -1026,7 +1026,7 @@ function DentalInsuranceGuide() {
     <div className="prose-journal">
       <h2 className={H2}>Dental is not in the UAE basic plan</h2>
       <p>
-        UAE&apos;s mandatory minimum cover (DHA Essential Benefits Plan in Dubai, Daman Basic in Abu Dhabi) excludes routine dental treatment. If you have only a compliance-floor plan, you&apos;ll pay full out-of-pocket cost for cleanings, fillings, root canals, and extractions. Emergency dental treatment is sometimes covered under the broader emergency benefit, but not always — read your policy wording carefully.
+        UAE&apos;s mandatory minimum cover (Dubai mandatory health insurance plan in Dubai, Daman Basic in Abu Dhabi) excludes routine dental treatment. If you have only a compliance-floor plan, you&apos;ll pay full out-of-pocket cost for cleanings, fillings, root canals, and extractions. Emergency dental treatment is sometimes covered under the broader emergency benefit, but not always — read your policy wording carefully.
       </p>
       <p>
         Dental cover is included on enhanced and premium tiers, with a sub-limit between AED 2,000 and AED 10,000 per year. The sub-limit is separate from the policy&apos;s overall annual benefit limit — once you exhaust dental, you can&apos;t draw on the medical benefit pool for dental treatment.
@@ -1074,7 +1074,7 @@ function ChronicDiseaseGuide() {
     <div className="prose-journal">
       <h2 className={H2}>Chronic conditions are well-covered on UAE insurance</h2>
       <p>
-        Diabetes, hypertension, heart disease, asthma, hypothyroidism, chronic kidney disease, and similar long-term conditions are explicitly included in DHA and DOH compliance benchmarks. Every compliant UAE plan covers diagnosis, ongoing specialist consultations, prescription medication, and routine lab monitoring. The differences across plans show up in the depth of disease-management programs, the breadth of formulary coverage, and how aggressively pre-existing waiting periods are applied.
+        Diabetes, hypertension, heart disease, asthma, hypothyroidism, chronic kidney disease, and similar long-term conditions are explicitly included in the UAE healthcare regulator and the UAE healthcare regulator compliance benchmarks. Every compliant UAE plan covers diagnosis, ongoing specialist consultations, prescription medication, and routine lab monitoring. The differences across plans show up in the depth of disease-management programs, the breadth of formulary coverage, and how aggressively pre-existing waiting periods are applied.
       </p>
 
       <h2 className={H2}>Disease management programs — the underrated benefit</h2>
@@ -1234,7 +1234,7 @@ function TopUpGuide() {
       </p>
       <ol>
         <li><strong>Base plan with low cap (under AED 2M)</strong> + family history of high-cost conditions: cancer, heart disease, organ transplant. The math: if your base caps at AED 1M and a year of cancer treatment can cost AED 800K–2M, you&apos;re one diagnosis away from out-of-pocket exposure.</li>
-        <li><strong>Freelancer or self-sponsored</strong> with a basic compliance plan: DHA EBP and Daman Basic cap at AED 150K–250K. Anything serious wipes that out fast. AED 800/year on a top-up adds AED 5M of cover.</li>
+        <li><strong>Freelancer or self-sponsored</strong> with a basic compliance plan: Dubai mandatory plan and Daman Basic cap at AED 150K–250K. Anything serious wipes that out fast. AED 800/year on a top-up adds AED 5M of cover.</li>
         <li><strong>Chronic condition holder</strong>: certain conditions (multiple sclerosis, advanced cancer, end-stage renal disease) routinely consume AED 500K+ in annual treatment. Top-up keeps you out of the gap when the base plan exhausts.</li>
       </ol>
       <p>
@@ -1282,9 +1282,9 @@ function MandatoryInsuranceGuide() {
         Health insurance is mandatory for every UAE visa holder. The specific requirements vary slightly by emirate, but the underlying principle is the same: no insurance, no visa renewal, no Emirates ID issuance, no trade-licence renewal.
       </p>
       <ul>
-        <li><strong>Dubai</strong>: mandatory since 2014, regulated by DHA. Any DHA-compliant policy meets the requirement. The minimum standard is the DHA Essential Benefits Plan (EBP).</li>
-        <li><strong>Abu Dhabi</strong>: mandatory since 2006, regulated by DOH (formerly HAAD). Daman administers the basic scheme on behalf of DOH. UAE nationals automatically receive Thiqa free of charge.</li>
-        <li><strong>Sharjah, Ajman, RAK, Fujairah, Umm Al Quwain</strong>: progressively adopting under MOHAP. Sharjah enforces strictly; the smaller emirates have ramping enforcement timelines.</li>
+        <li><strong>Dubai</strong>: mandatory since 2014, regulated by the UAE healthcare regulator. Any the UAE healthcare regulator-compliant policy meets the requirement. The minimum standard is the Dubai mandatory health insurance plan (EBP).</li>
+        <li><strong>Abu Dhabi</strong>: mandatory since 2006, regulated by the UAE healthcare regulator (formerly HAAD). Daman administers the basic scheme on behalf of the UAE healthcare regulator. UAE nationals automatically receive Thiqa free of charge.</li>
+        <li><strong>Sharjah, Ajman, RAK, Fujairah, Umm Al Quwain</strong>: progressively adopting under the UAE healthcare regulator. Sharjah enforces strictly; the smaller emirates have ramping enforcement timelines.</li>
       </ul>
 
       <h2 className={H2}>Who pays?</h2>
@@ -1292,18 +1292,18 @@ function MandatoryInsuranceGuide() {
         For employees, the employer pays. UAE labour law makes employer-provided health insurance one of the mandatory employment benefits — it&apos;s not optional, not negotiable on the employee side, and not deductible from salary.
       </p>
       <p>
-        For self-sponsored residents (freelancers, sole-proprietors, dependents on family visas), the principal pays. Family visa holders typically pay for their own and dependents&apos; cover. UAE nationals in Abu Dhabi receive Thiqa from the DOH at no cost.
+        For self-sponsored residents (freelancers, sole-proprietors, dependents on family visas), the principal pays. Family visa holders typically pay for their own and dependents&apos; cover. UAE nationals in Abu Dhabi receive Thiqa from the UAE healthcare regulator at no cost.
       </p>
 
       <h2 className={H2}>Minimum compliant cover by jurisdiction</h2>
       <p>
-        <strong>Dubai DHA Essential Benefits Plan (EBP)</strong>: AED 150,000 annual cap. Covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics (X-ray, basic blood tests), and prescribed medications. Excludes dental, optical, maternity (or has limited maternity), elective procedures, and cosmetic treatments. Premium: ~AED 600–800/year for a single adult age 18–60.
+        <strong>Dubai Dubai mandatory health insurance plan (EBP)</strong>: AED 150,000 annual cap. Covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics (X-ray, basic blood tests), and prescribed medications. Excludes dental, optical, maternity (or has limited maternity), elective procedures, and cosmetic treatments. Premium: ~AED 600–800/year for a single adult age 18–60.
       </p>
       <p>
         <strong>Abu Dhabi Daman Basic</strong>: AED 250,000 annual cap. Covers inpatient, emergency, outpatient consultations, basic medications. Network restricted to public-sector facilities (SEHA hospitals, government health centres) plus selected private clinics. Premium: ~AED 600–750/year for a single adult.
       </p>
       <p>
-        <strong>Northern Emirates MOHAP</strong>: requirements vary by emirate. Sharjah enforces a minimum standard similar to DHA EBP; Ajman, RAK, Fujairah, UAQ are still rolling out.
+        <strong>Northern Emirates the UAE healthcare regulator</strong>: requirements vary by emirate. Sharjah enforces a minimum standard similar to Dubai mandatory plan; Ajman, RAK, Fujairah, UAQ are still rolling out.
       </p>
 
       <h2 className={H2}>What happens if you don&apos;t have insurance?</h2>

@@ -109,7 +109,7 @@ export default function TestCategoryPage({
       question: `Can I get ${cat.name.toLowerCase()} tests done at home in the UAE?`,
       answer:
         `Yes, home blood collection is widely available in Dubai, Abu Dhabi, and Sharjah for most ${cat.name.toLowerCase()} tests. ` +
-        `Services like DarDoc, Healthchecks360, and ServiceMarket send DHA-licensed nurses to your location. ` +
+        `Services like DarDoc, Healthchecks360, and ServiceMarket send UAE-licensed (Dubai) nurses to your location. ` +
         `Many labs including Thumbay and Medsol offer free home collection. Results are delivered digitally within 24-48 hours.`,
     },
   ];
@@ -320,7 +320,7 @@ export default function TestCategoryPage({
           coverage, and current promotions. This information is for price
           comparison only and does not constitute medical advice. Consult a
           physician to determine which tests are appropriate for your condition.
-          Data sourced from DHA, DOH, and MOHAP licensed facilities. Last
+          Data sourced from official UAE healthcare licensing data licensed facilities. Last
           verified March 2026.
         </p>
       </div>

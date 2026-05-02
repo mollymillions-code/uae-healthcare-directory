@@ -189,9 +189,9 @@ export async function generateMetadata({
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function regulatorLabel(code: string): string {
-  if (code === "dha") return "DHA";
-  if (code === "doh") return "DOH";
-  if (code === "mohap") return "MOHAP";
+  if (code === "dha") return "the UAE healthcare regulator";
+  if (code === "doh") return "the UAE healthcare regulator";
+  if (code === "mohap") return "the UAE healthcare regulator";
   return code.toUpperCase();
 }
 

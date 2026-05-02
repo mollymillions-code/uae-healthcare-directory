@@ -50,17 +50,17 @@ export async function generateStaticParams() {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getGovernmentOperator(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "SEHA (Abu Dhabi Health Services Company) under DOH oversight";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "SEHA (Abu Dhabi Health Services Company) under emirate health oversight";
+  return "the UAE healthcare regulator";
 }
 
 export function generateMetadata({ params }: Props): Metadata {
@@ -70,7 +70,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const base = getBaseUrl();
   const title = `Government Healthcare in ${area.name}, ${city.name} | Public Facilities`;
-  const description = `Find government hospitals, public health centers, and MOHAP/DHA/SEHA facilities in ${area.name}, ${city.name}, UAE. Free or subsidized services for Emiratis and insured residents. Updated March 2026.`;
+  const description = `Find government hospitals, public health centers, and UAE-licensed government facilities in ${area.name}, ${city.name}, UAE. Free or subsidized services for Emiratis and insured residents. Updated March 2026.`;
   const url = `${base}/directory/${city.slug}/${area.slug}/government`;
 
   return {
@@ -120,7 +120,7 @@ export default async function GovernmentAreaPage({ params }: Props) {
     },
     {
       question: `Is government healthcare free in ${area.name}, ${city.name}?`,
-      answer: `Many government healthcare services in ${area.name} are free or subsidized for UAE nationals with Thiqa or DHA insurance. Insured expatriates typically pay reduced co-payments at government facilities. Emergency services cannot be refused regardless of insurance status. Uninsured patients pay out-of-pocket at government-regulated rates, which are significantly lower than private facility fees.`,
+      answer: `Many government healthcare services in ${area.name} are free or subsidized for UAE nationals with Thiqa or government-sponsored insurance. Insured expatriates typically pay reduced co-payments at government facilities. Emergency services cannot be refused regardless of insurance status. Uninsured patients pay out-of-pocket at government-regulated rates, which are significantly lower than private facility fees.`,
     },
     {
       question: `What government healthcare services are available in ${area.name}?`,
@@ -128,7 +128,7 @@ export default async function GovernmentAreaPage({ params }: Props) {
     },
     {
       question: `How do I book an appointment at a government facility in ${area.name}?`,
-      answer: `${city.slug === "dubai" ? "In Dubai, appointments at DHA government facilities can be booked through the DHA app or by calling the DHA hotline at 800-342." : ""} ${city.slug === "abu-dhabi" || city.slug === "al-ain" ? "In Abu Dhabi, SEHA facility appointments can be booked through the SEHA app or website." : ""} ${city.slug !== "dubai" && city.slug !== "abu-dhabi" && city.slug !== "al-ain" ? "For MOHAP facilities, appointments can be booked through the MOHAP smart app or website." : ""} Walk-in services are available at most government primary healthcare centers, though wait times may be longer than booked appointments. Bring your Emirates ID and insurance card.`,
+      answer: `${city.slug === "dubai" ? "In Dubai, appointments at government facilities can be booked through the official Dubai Health app or by calling the regulator hotline at 800-342." : ""} ${city.slug === "abu-dhabi" || city.slug === "al-ain" ? "In Abu Dhabi, SEHA facility appointments can be booked through the SEHA app or website." : ""} ${city.slug !== "dubai" && city.slug !== "abu-dhabi" && city.slug !== "al-ain" ? "For Northern Emirates facilities, appointments can be booked through the regulator's smart app or website." : ""} Walk-in services are available at most government primary healthcare centers, though wait times may be longer than booked appointments. Bring your Emirates ID and insurance card.`,
     },
     {
       question: `What are the typical operating hours for government facilities in ${area.name}?`,

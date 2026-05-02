@@ -125,7 +125,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         title: truncateTitle(`${displayCount} Best ${resultLabel} in ${city.name} [${year}]${pageTitleSuffix}`),
         description: truncateDescription(
           total > 0
-            ? `Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. DHA/DOH/MOHAP licensed. Free directory.`
+            ? `Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. UAE-licensed. Free directory.`
             : doctorCount > 0
             ? `Browse ${doctorCount} licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}, UAE. Facility listings for this specialty are being expanded.`
             : `No facility-level ${resolved.category.name.toLowerCase()} listings are available in ${city.name} yet. Browse all clinics in ${city.name} instead.`
@@ -460,16 +460,16 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     // ── Editorial intro ───────────────────────────────────────────────
     const regulator =
       city.slug === "dubai"
-        ? "Dubai Health Authority (DHA)"
+        ? "the UAE healthcare regulator (Dubai)"
         : city.slug === "abu-dhabi" || city.slug === "al-ain"
-        ? "Department of Health Abu Dhabi (DOH)"
-        : "Ministry of Health and Prevention (MOHAP)";
+        ? "the UAE healthcare regulator (Abu Dhabi)"
+        : "the UAE healthcare regulator";
     const regulatorAr =
       city.slug === "dubai"
-        ? "هيئة الصحة بدبي (DHA)"
+        ? "الجهة المنظمة للرعاية الصحية في الإمارات (دبي)"
         : city.slug === "abu-dhabi" || city.slug === "al-ain"
-        ? "دائرة الصحة أبوظبي (DOH)"
-        : "وزارة الصحة ووقاية المجتمع (MOHAP)";
+        ? "الجهة المنظمة للرعاية الصحية في الإمارات (أبوظبي)"
+        : "الجهة المنظمة للرعاية الصحية في الإمارات";
     const editorial = getHubEditorial(city.slug, category.slug, {
       city: city.name,
       specialty: category.name,
@@ -1154,16 +1154,16 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
     const totalProviders = areaProviders.length;
 
     const regulator = city.slug === "dubai"
-      ? "the Dubai Health Authority (DHA)"
+      ? "the UAE healthcare regulator (Dubai)"
       : (city.slug === "abu-dhabi" || city.slug === "al-ain")
-        ? "the Department of Health (DOH)"
-        : "the Ministry of Health and Prevention (MOHAP)";
+        ? "the UAE healthcare regulator (Abu Dhabi)"
+        : "the UAE healthcare regulator";
 
     const mandateNote = city.slug === "dubai"
-      ? "Dubai mandates health insurance for all residents and employees under the DHA Essential Benefits Plan."
+      ? "Dubai mandates health insurance for all residents and employees under the Essential Benefits Plan."
       : (city.slug === "abu-dhabi" || city.slug === "al-ain")
-        ? "Abu Dhabi requires mandatory health insurance for all residents under DOH regulations. UAE nationals receive Thiqa coverage."
-        : "Health insurance follows UAE federal MOHAP guidelines. Most employers provide group health plans.";
+        ? "Abu Dhabi requires mandatory health insurance for all residents under emirate regulations. UAE nationals receive Thiqa coverage."
+        : "Health insurance follows UAE federal guidelines. Most employers provide group health plans.";
 
     const areaInsuranceFaqs = [
       {
@@ -1673,8 +1673,8 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
   if (resolved.type === "city-service") {
     const proc = resolved.procedure;
     const pricing = proc.cityPricing[city.slug];
-    const regulator = city.slug === "dubai" ? "Dubai Health Authority (DHA)" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "Department of Health Abu Dhabi (DOH)" : "Ministry of Health and Prevention (MOHAP)";
-    const regulatorShort = city.slug === "dubai" ? "DHA" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "DOH" : "MOHAP";
+    const regulator = city.slug === "dubai" ? "the UAE healthcare regulator (Dubai)" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "the UAE healthcare regulator (Abu Dhabi)" : "the UAE healthcare regulator";
+    const regulatorShort = city.slug === "dubai" ? "UAE-licensed (Dubai)" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "UAE-licensed (Abu Dhabi)" : "UAE-licensed";
 
     // Providers in this category (wrapped in safe())
     type ProvidersResp = Awaited<ReturnType<typeof getProviders>>;
@@ -1778,7 +1778,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
           { label: city.name, href: `/directory/${city.slug}` },
           { label: proc.name },
         ]}
-        eyebrow={`${regulatorShort} Verified · ${city.name}`}
+        eyebrow={`${regulatorShort} · ${city.name}`}
         title={`${proc.name} in ${city.name}`}
         subtitle={subtitle}
         aeoAnswer={aeoAnswer}

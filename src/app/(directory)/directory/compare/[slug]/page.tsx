@@ -42,7 +42,7 @@ export async function generateMetadata({
     const title = `Healthcare in ${data.cityA.name} vs ${data.cityB.name}: Provider Comparison | UAE Open Healthcare Directory`;
     const description =
       `Side-by-side comparison of healthcare in ${data.cityA.name} (${data.statsA.totalProviders} providers) vs ${data.cityB.name} (${data.statsB.totalProviders} providers). ` +
-      `Compare GP costs, hospital counts, average ratings, regulators, and top providers. Data from DHA, DOH, MOHAP registers.`;
+      `Compare GP costs, hospital counts, average ratings, regulators, and top providers. Sourced from official UAE healthcare licensing data.`;
     return {
       title,
       description,
@@ -381,7 +381,7 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
         </div>
         <div className="mt-8 border-t border-ink-line pt-4">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-            <strong>Disclaimer:</strong> Provider counts and ratings are based on data from official UAE health authority registers (DHA, DOH, MOHAP) and Google Maps, last verified March 2026. Consultation fees are indicative ranges and may vary by provider, insurance status, and visit complexity. This comparison is for informational purposes only and does not constitute medical advice.
+            <strong>Disclaimer:</strong> Provider counts and ratings are based on data from official UAE healthcare licensing data and Google Maps, last verified March 2026. Consultation fees are indicative ranges and may vary by provider, insurance status, and visit complexity. This comparison is for informational purposes only and does not constitute medical advice.
           </p>
         </div>
       </section>
@@ -602,7 +602,7 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
         </div>
         <div className="mt-8 border-t border-ink-line pt-4">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-            <strong>Disclaimer:</strong> Provider counts, ratings, and cost estimates are based on data from official UAE health authority registers (DHA, DOH, MOHAP) and Google Maps, last verified March 2026. Consultation fees are indicative ranges. This comparison is for informational purposes only and does not constitute medical advice.
+            <strong>Disclaimer:</strong> Provider counts, ratings, and cost estimates are based on data from official UAE healthcare licensing data and Google Maps, last verified March 2026. Consultation fees are indicative ranges. This comparison is for informational purposes only and does not constitute medical advice.
           </p>
         </div>
       </section>

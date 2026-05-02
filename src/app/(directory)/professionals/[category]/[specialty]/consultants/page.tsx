@@ -46,13 +46,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
-    description: `${count.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai. Consultants are the senior clinical grade, requiring 8+ years of post-specialty experience. Browse the full list with facility details.`,
+    title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} UAE-Licensed (Dubai)`,
+    description: `${count.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals licensed by the UAE healthcare regulator in Dubai. Consultants are the senior clinical grade, requiring 8+ years of post-specialty experience. Browse the full list with facility details.`,
     alternates: {
       canonical: `${base}/professionals/${params.category}/${spec.slug}/consultants`,
     },
     openGraph: {
-      title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
+      title: `Consultant ${spec.name} in Dubai \u2014 ${count.toLocaleString()} UAE-Licensed (Dubai)`,
       description: `${count.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals in Dubai. Full directory sourced from DHA Sheryan.`,
       url: `${base}/professionals/${params.category}/${spec.slug}/consultants`,
       type: "website",
@@ -92,7 +92,7 @@ export default function ConsultantsPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           name: `Consultant ${spec.name} in Dubai`,
-          description: `${consultantsList.length.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai.`,
+          description: `${consultantsList.length.toLocaleString()} consultant-grade ${spec.name.toLowerCase()} professionals licensed by the UAE healthcare regulator in Dubai.`,
           url: `${base}/professionals/${params.category}/${spec.slug}/consultants`,
           mainContentOfPage: {
             "@type": "WebPageElement",
@@ -141,14 +141,14 @@ export default function ConsultantsPage({ params }: Props) {
           Consultant {spec.name} in Dubai
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {consultantsList.length.toLocaleString()} DHA-Licensed Consultants
+          {consultantsList.length.toLocaleString()} UAE-Licensed (Dubai) Consultants
         </p>
 
         {/* Consultant grade explanation */}
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             <strong className="text-[#1c1c1c]">What is a Consultant?</strong> In Dubai&apos;s
-            DHA licensing system, &ldquo;Consultant&rdquo; is the most senior clinical grade a
+            the UAE healthcare regulator licensing system, &ldquo;Consultant&rdquo; is the most senior clinical grade a
             physician or dentist can hold. It requires a minimum of 8 years of post-specialty
             clinical experience, demonstrated expertise in the field, and the ability to
             supervise specialists and lead clinical departments. Consultants serve as the highest
@@ -381,9 +381,9 @@ export default function ConsultantsPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

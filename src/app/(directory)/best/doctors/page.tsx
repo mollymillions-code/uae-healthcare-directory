@@ -20,8 +20,8 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const url = `${base}/best/doctors`;
   const title =
-    "Best Doctors in Dubai 2026 \u2014 Top DHA-Licensed Physicians by Specialty";
-  const description = `Find the best doctors in Dubai across ${DOCTOR_SPECIALTIES.length} medical specialties. ${TOTAL_DOCTORS.toLocaleString()} DHA-licensed physicians and dentists ranked by institutional capacity, sourced from the official Sheryan Medical Registry.`;
+    "Best Doctors in Dubai 2026 \u2014 Top UAE-Licensed (Dubai) Physicians by Specialty";
+  const description = `Find the best doctors in Dubai across ${DOCTOR_SPECIALTIES.length} medical specialties. ${TOTAL_DOCTORS.toLocaleString()} UAE-licensed (Dubai) physicians and dentists ranked by institutional capacity, sourced from the official Sheryan Medical Registry.`;
 
   return {
     title,
@@ -43,22 +43,22 @@ export default function BestDoctorsHubPage() {
   const faqs = [
     {
       question: "How are the best doctors in Dubai ranked?",
-      answer: `Doctors are ranked by institutional capacity \u2014 professionals practicing at larger DHA-registered facilities are ranked higher. Larger facilities undergo more rigorous peer review, quality assurance, and credentialing processes. Only doctors holding a full-time license (FTL) from the Dubai Health Authority are included in the rankings. This methodology avoids subjective reviews and instead relies on verifiable institutional data from the DHA Sheryan Medical Registry.`,
+      answer: `Doctors are ranked by institutional capacity \u2014 professionals practicing at larger the UAE healthcare regulator-registered facilities are ranked higher. Larger facilities undergo more rigorous peer review, quality assurance, and credentialing processes. Only doctors holding a full-time license (FTL) from the UAE healthcare regulator (Dubai) are included in the rankings. This methodology avoids subjective reviews and instead relies on verifiable institutional data from the DHA Sheryan Medical Registry.`,
     },
     {
-      question: "What does DHA licensing mean?",
+      question: "What does the UAE healthcare regulator licensing mean?",
       answer:
-        "The Dubai Health Authority (DHA) is the regulatory body overseeing all healthcare activities in Dubai. Every doctor practicing in Dubai must hold a valid DHA license, issued through the Sheryan system after verifying medical qualifications, experience, and professional standing. A DHA license confirms that a doctor has met the minimum standards required to practice medicine in Dubai. There are two main license types: FTL (Full-Time License) for doctors practicing full-time at a single facility, and REG (Registration) for doctors with part-time or visiting privileges.",
+        "The UAE healthcare regulator (Dubai) is the regulatory body overseeing all healthcare activities in Dubai. Every doctor practicing in Dubai must hold a valid regulator license, issued through the Sheryan system after verifying medical qualifications, experience, and professional standing. A regulator license confirms that a doctor has met the minimum standards required to practice medicine in Dubai. There are two main license types: FTL (Full-Time License) for doctors practicing full-time at a single facility, and REG (Registration) for doctors with part-time or visiting privileges.",
     },
     {
       question: "How do I verify a doctor's credentials?",
       answer:
-        "You can verify any doctor's DHA license status through the official Dubai Health Authority website (dha.gov.ae) or the Sheryan portal. Search by doctor name or license number to confirm their license type, specialty, and facility affiliation. The UAE Open Healthcare Directory sources its data directly from the Sheryan Medical Registry and displays license type (FTL or REG) for every listed professional.",
+        "You can verify any doctor's regulator license status through the official the UAE healthcare regulator (Dubai) website (dha.gov.ae) or the Sheryan portal. Search by doctor name or license number to confirm their license type, specialty, and facility affiliation. The UAE Open Healthcare Directory sources its data directly from the Sheryan Medical Registry and displays license type (FTL or REG) for every listed professional.",
     },
     {
       question: "What is the difference between specialist and consultant?",
       answer:
-        "In the UAE healthcare system, a Specialist is a doctor who has completed specialty training (typically a residency) and holds a specialty license from DHA. A Consultant is a more senior title requiring additional years of experience beyond the specialist level \u2014 usually 10+ years of post-specialty practice. Consultants are often department heads or senior clinicians. Both Specialists and Consultants hold DHA licenses, but Consultant status reflects greater clinical experience and seniority.",
+        "In the UAE healthcare system, a Specialist is a doctor who has completed specialty training (typically a residency) and holds a specialty license from the UAE healthcare regulator. A Consultant is a more senior title requiring additional years of experience beyond the specialist level \u2014 usually 10+ years of post-specialty practice. Consultants are often department heads or senior clinicians. Both Specialists and Consultants hold regulator licenses, but Consultant status reflects greater clinical experience and seniority.",
     },
     {
       question: "How many doctors practice in Dubai?",
@@ -85,7 +85,7 @@ export default function BestDoctorsHubPage() {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: "Best Doctors in Dubai 2026",
-          description: `Find the best doctors in Dubai across ${DOCTOR_SPECIALTIES.length} specialties. ${TOTAL_DOCTORS.toLocaleString()} DHA-licensed physicians and dentists.`,
+          description: `Find the best doctors in Dubai across ${DOCTOR_SPECIALTIES.length} specialties. ${TOTAL_DOCTORS.toLocaleString()} UAE-licensed (Dubai) physicians and dentists.`,
           url: `${base}/best/doctors`,
           mainEntity: {
             "@type": "ItemList",
@@ -126,7 +126,7 @@ export default function BestDoctorsHubPage() {
           Best Doctors in Dubai 2026
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {TOTAL_DOCTORS.toLocaleString()} DHA-Licensed Physicians & Dentists
+          {TOTAL_DOCTORS.toLocaleString()} UAE-Licensed (Dubai) Physicians & Dentists
           &middot; {DOCTOR_SPECIALTIES.length} Specialties
         </p>
 
@@ -135,7 +135,7 @@ export default function BestDoctorsHubPage() {
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             Finding the best doctor in Dubai starts with verified data, not
             marketing claims. This directory ranks{" "}
-            {TOTAL_DOCTORS.toLocaleString()} DHA-licensed physicians and dentists
+            {TOTAL_DOCTORS.toLocaleString()} UAE-licensed (Dubai) physicians and dentists
             across {DOCTOR_SPECIALTIES.length} medical specialties using
             institutional capacity data from the official Sheryan Medical
             Registry. Doctors at larger, established healthcare facilities are
@@ -255,7 +255,7 @@ export default function BestDoctorsHubPage() {
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             Doctors are ranked by{" "}
             <strong>institutional capacity</strong> &mdash; professionals at
-            larger DHA-registered healthcare facilities appear higher in the
+            larger the UAE healthcare regulator-registered healthcare facilities appear higher in the
             rankings. This approach is based on a simple principle: larger
             facilities undergo more rigorous accreditation, maintain
             multi-disciplinary teams for peer review, and have stricter quality
@@ -263,14 +263,14 @@ export default function BestDoctorsHubPage() {
           </p>
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             Only doctors holding a <strong>Full-Time License (FTL)</strong> from
-            the Dubai Health Authority are included. Part-time registrations and
+            the UAE healthcare regulator (Dubai) are included. Part-time registrations and
             visiting privileges are excluded to ensure the ranking reflects
             dedicated, full-time practitioners.
           </p>
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             All data is sourced directly from the{" "}
             <strong>DHA Sheryan Medical Registry</strong> &mdash; the official
-            database maintained by the Dubai Health Authority. There are no paid
+            database maintained by the UAE healthcare regulator (Dubai). There are no paid
             placements, sponsored rankings, or subjective review scores.
           </p>
           <p className="text-[11px] text-black/40">
@@ -329,10 +329,10 @@ export default function BestDoctorsHubPage() {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. Data sourced {PROFESSIONAL_STATS.scraped}. This
           directory is for informational purposes only and does not constitute
-          medical advice. Verify professional credentials directly with DHA
+          medical advice. Verify professional credentials directly with the UAE healthcare regulator
           before making healthcare decisions.
         </p>
       </div>

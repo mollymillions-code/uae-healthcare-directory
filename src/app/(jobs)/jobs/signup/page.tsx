@@ -332,9 +332,9 @@ function Step2License({
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
 }) {
   const options = [
-    { value: "dha", label: "DHA-licensed (Dubai)" },
-    { value: "doh", label: "DOH-licensed (Abu Dhabi)" },
-    { value: "mohap", label: "MOHAP-licensed (federal)" },
+    { value: "dha", label: "Licensed in Dubai" },
+    { value: "doh", label: "Licensed in Abu Dhabi" },
+    { value: "mohap", label: "Licensed in Northern Emirates" },
     { value: "dataflow_pending", label: "Dataflow / Prometric in process" },
     { value: "outside_uae", label: "Licensed outside the UAE" },
     { value: "none", label: "No clinical licence (non-clinical role)" },

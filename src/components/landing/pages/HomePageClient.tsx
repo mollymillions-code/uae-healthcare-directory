@@ -418,7 +418,7 @@ export function HomePageClient() {
                   {
                     Icon: BadgeCheck,
                     title: "Regulator-verified",
-                    desc: "DHA, DOH, MOHAP cross-referenced. A trust badge patients filter by.",
+                    desc: "The UAE healthcare regulator cross-referenced. A trust badge patients filter by.",
                   },
                   {
                     Icon: Users,

@@ -55,10 +55,10 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 export default function ProcedureIndexPage({ params }: Props) {
@@ -109,7 +109,7 @@ export default function ProcedureIndexPage({ params }: Props) {
     },
     {
       question: `Who regulates healthcare pricing in ${city.name}?`,
-      answer: `Healthcare in ${city.name} is regulated by the ${regulator}. In Abu Dhabi, the DOH Mandatory Tariff (Shafafiya) sets base prices using Relative Value Units (RVUs), and facilities can charge 1x to 3x the base rate. Dubai uses DRG-based pricing for inpatient care. All pricing data in the UAE Open Healthcare Directory reflects market-observed ranges as of March 2026.`,
+      answer: `Healthcare in ${city.name} is regulated by ${regulator}. In Abu Dhabi, the Mandatory Tariff (Shafafiya) sets base prices using Relative Value Units (RVUs), and facilities can charge 1x to 3x the base rate. Dubai uses DRG-based pricing for inpatient care. All pricing data in the UAE Open Healthcare Directory reflects market-observed ranges as of March 2026.`,
     },
     {
       question: `How can I find the cheapest provider for a procedure in ${city.name}?`,

@@ -360,7 +360,7 @@ export const LAB_PROFILES: LabProfile[] = [
     branchCount: 0,
     website: "https://dardoc.com",
     phone: "+971-4-XXX-XXXX",
-    accreditations: ["DHA Licensed"],
+    accreditations: ["Regulator Licensed"],
     homeCollection: true,
     homeCollectionFee: 0,
     turnaroundHours: 24,
@@ -368,11 +368,11 @@ export const LAB_PROFILES: LabProfile[] = [
     highlights: [
       "100% home-based testing",
       "App-based booking",
-      "DHA-certified nurses",
+      "The UAE healthcare regulator-certified nurses",
       "200+ lab tests available",
     ],
     description:
-      "DarDoc is a health-tech platform offering at-home lab testing via DHA-certified nurses. With an app-based booking system covering Dubai and Abu Dhabi, DarDoc brings the lab to your door with results delivered digitally within 24 hours.",
+      "DarDoc is a health-tech platform offering at-home lab testing via the UAE healthcare regulator-certified nurses. With an app-based booking system covering Dubai and Abu Dhabi, DarDoc brings the lab to your door with results delivered digitally within 24 hours.",
   },
   {
     slug: "healthchecks360",
@@ -385,7 +385,7 @@ export const LAB_PROFILES: LabProfile[] = [
     branchCount: 0,
     website: "https://healthchecks360.com",
     phone: "+971-4-XXX-XXXX",
-    accreditations: ["DHA Licensed"],
+    accreditations: ["Regulator Licensed"],
     homeCollection: true,
     homeCollectionFee: 0,
     turnaroundHours: 24,
@@ -393,11 +393,11 @@ export const LAB_PROFILES: LabProfile[] = [
     highlights: [
       "4,000+ tests available",
       "Founded 2013 — earliest UAE lab aggregator",
-      "Partners with DHA/MOH-licensed labs",
+      "Partners with the UAE healthcare regulator/MOH-licensed labs",
       "Free home collection",
     ],
     description:
-      "Healthchecks360 is a UAE health-tech marketplace founded in 2013, partnering with DHA and MOH-licensed diagnostic providers. Offering 4,000+ tests with free home sample collection and digital results across Dubai and the Northern Emirates.",
+      "Healthchecks360 is a UAE health-tech marketplace founded in 2013, partnering with the UAE healthcare regulator and MOH-licensed diagnostic providers. Offering 4,000+ tests with free home sample collection and digital results across Dubai and the Northern Emirates.",
   },
   {
     slug: "servicemarket",
@@ -410,7 +410,7 @@ export const LAB_PROFILES: LabProfile[] = [
     branchCount: 0,
     website: "https://servicemarket.com",
     phone: "+971-4-XXX-XXXX",
-    accreditations: ["Partner labs are DHA/DOH licensed"],
+    accreditations: ["Partner labs are the UAE healthcare regulator/UAE-licensed (Abu Dhabi)"],
     homeCollection: true,
     homeCollectionFee: 0,
     turnaroundHours: 24,
@@ -422,7 +422,7 @@ export const LAB_PROFILES: LabProfile[] = [
       "Covers Dubai, Abu Dhabi, Sharjah",
     ],
     description:
-      "ServiceMarket is a home services marketplace that connects patients with DHA/DOH-licensed diagnostic labs for at-home blood testing. Compare prices across partner labs and book home collection starting from AED 99.",
+      "ServiceMarket is a home services marketplace that connects patients with the UAE healthcare regulator/UAE-licensed (Abu Dhabi) diagnostic labs for at-home blood testing. Compare prices across partner labs and book home collection starting from AED 99.",
   },
 ];
 

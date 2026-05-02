@@ -186,7 +186,7 @@ function SignupForm() {
                 Built for patients, not paid placements.
               </h2>
               <p className="mt-5 max-w-[440px] font-['Geist',sans-serif] text-[15px] leading-relaxed text-white/65">
-                Sourced directly from DHA, DOH and MOHAP licensing registers. No fake reviews, no pay-to-rank, no spam — just current healthcare information for the UAE.
+                Built on official UAE healthcare licensing data. No fake reviews, no pay-to-rank, no spam — just current healthcare information for the UAE.
               </p>
             </div>
 
@@ -204,7 +204,7 @@ function SignupForm() {
                   99k+
                 </p>
                 <p className="mt-1 font-['Geist',sans-serif] text-[12px] leading-snug text-white/50">
-                  DHA-registered professionals
+                  Licensed UAE professionals
                 </p>
               </div>
               <div className="bg-[#0e1410] p-5">

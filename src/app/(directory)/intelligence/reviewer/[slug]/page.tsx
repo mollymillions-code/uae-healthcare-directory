@@ -10,7 +10,7 @@
  * `notFound()` here — no "Dr. TBD" byline can leak to a public page.
  *
  * E-E-A-T leapfrog: when a medical reviewer has consented to publishing
- * their DHA / DOH / MOHAP licence, this page emits the licence as a
+ * their the UAE healthcare regulator licence, this page emits the licence as a
  * `schema.org/identifier` PropertyValue inside a `Physician` JSON-LD
  * node — the strongest YMYL expertise signal an emirate-issued ID can
  * carry. No US healthcare-content competitor matches this.
@@ -134,13 +134,13 @@ export default async function ReviewerProfilePage({ params }: PageProps) {
 
   const licenses = [
     reviewer.dhaLicenseNumber
-      ? { label: "DHA License", value: reviewer.dhaLicenseNumber }
+      ? { label: "Regulator License", value: reviewer.dhaLicenseNumber }
       : null,
     reviewer.dohLicenseNumber
-      ? { label: "DOH License", value: reviewer.dohLicenseNumber }
+      ? { label: "Regulator License", value: reviewer.dohLicenseNumber }
       : null,
     reviewer.mohapLicenseNumber
-      ? { label: "MOHAP License", value: reviewer.mohapLicenseNumber }
+      ? { label: "Regulator License", value: reviewer.mohapLicenseNumber }
       : null,
   ].filter((x): x is { label: string; value: string } => x !== null);
 

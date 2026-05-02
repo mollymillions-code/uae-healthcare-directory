@@ -834,15 +834,15 @@ export function getSubcategoriesByCategory(categorySlug: string) {
 
 function getCityInsuranceNote(citySlug: string): string {
   if (citySlug === "dubai") {
-    return "Dubai mandates employer-provided health insurance under the DHA Essential Benefits Plan (since 2014). Major insurers operating in Dubai include Daman, AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz.";
+    return "Dubai mandates employer-provided health insurance under the Essential Benefits Plan (since 2014). Major insurers operating in Dubai include Daman, AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz.";
   }
   if (citySlug === "abu-dhabi" || citySlug === "al-ain") {
-    return "Abu Dhabi requires health insurance for all residents under the DOH (formerly HAAD) framework. UAE nationals receive Thiqa coverage; expatriates are typically covered by Daman or employer-arranged plans. AXA, Cigna, MetLife, and Allianz are also widely accepted.";
+    return "Abu Dhabi requires health insurance for all residents under the UAE healthcare regulator (Abu Dhabi) framework. UAE nationals receive Thiqa coverage; expatriates are typically covered by Daman or employer-arranged plans. AXA, Cigna, MetLife, and Allianz are also widely accepted.";
   }
   if (citySlug === "sharjah") {
-    return "Sharjah follows MOHAP guidelines. Widely accepted plans include Daman, AXA, Cigna, MetLife, Orient Insurance, and Oman Insurance. Many employers offer group health plans.";
+    return "Sharjah follows UAE healthcare regulator guidelines. Widely accepted plans include Daman, AXA, Cigna, MetLife, Orient Insurance, and Oman Insurance. Many employers offer group health plans.";
   }
-  return "The Northern Emirates follow MOHAP coverage rules. Daman, AXA, Cigna, Orient Insurance, and Oman Insurance are commonly accepted. Check individual provider listings for plan specifics.";
+  return "The Northern Emirates follow UAE healthcare regulator coverage rules. Daman, AXA, Cigna, Orient Insurance, and Oman Insurance are commonly accepted. Check individual provider listings for plan specifics.";
 }
 
 // ─── UAE Typical Consultation Fees ─────────────────────────────────────────────
@@ -892,11 +892,11 @@ export function getFaqs(entityType: string, entitySlug: string): { question: str
     return [
       {
         question: `How do I find the best ${cat.name.toLowerCase()} in the UAE?`,
-        answer: `Browse the UAE Open Healthcare Directory ${cat.name.toLowerCase()} listings to compare providers across all UAE cities. Sort by Google rating, read patient reviews, and check accepted insurance plans. All listings are sourced from official DHA, DOH, and MOHAP registers.`,
+        answer: `Browse the UAE Open Healthcare Directory ${cat.name.toLowerCase()} listings to compare providers across all UAE cities. Sort by Google rating, read patient reviews, and check accepted insurance plans. Sourced from official UAE healthcare licensing data.`,
       },
       {
         question: `Are ${cat.name.toLowerCase()} services covered by insurance in the UAE?`,
-        answer: `Most major insurance plans in the UAE — including Daman, Thiqa, AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz — cover core ${cat.name.toLowerCase()} services. Coverage scope and co-payment levels vary by plan tier. Always confirm with your insurer and the provider before booking. Dubai employers are legally required to provide the DHA Essential Benefits Plan as a minimum; Abu Dhabi mandates DOH-compliant coverage.`,
+        answer: `Most major insurance plans in the UAE — including Daman, Thiqa, AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz — cover core ${cat.name.toLowerCase()} services. Coverage scope and co-payment levels vary by plan tier. Always confirm with your insurer and the provider before booking. Dubai employers are legally required to provide the Essential Benefits Plan as a minimum; Abu Dhabi mandates regulator-compliant coverage.`,
       },
       {
         question: `How much do ${cat.name.toLowerCase()} services cost in the UAE?`,
@@ -904,7 +904,7 @@ export function getFaqs(entityType: string, entitySlug: string): { question: str
       },
       {
         question: `Which insurance plans are most widely accepted at ${cat.name.toLowerCase()} in the UAE?`,
-        answer: `The most widely accepted insurance plans at ${cat.name.toLowerCase()} across the UAE are Daman (mandatory in Abu Dhabi for expats), Thiqa (for UAE nationals in Abu Dhabi), the DHA Essential Benefits Plan (mandatory in Dubai), AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz. Use the insurance filter on each provider listing page on the UAE Open Healthcare Directory to confirm acceptance before your visit.`,
+        answer: `The most widely accepted insurance plans at ${cat.name.toLowerCase()} across the UAE are Daman (mandatory in Abu Dhabi for expats), Thiqa (for UAE nationals in Abu Dhabi), the Essential Benefits Plan (mandatory in Dubai), AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz. Use the insurance filter on each provider listing page on the UAE Open Healthcare Directory to confirm acceptance before your visit.`,
       },
     ];
   }

@@ -17,10 +17,10 @@ export const revalidate = 43200;
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 async function getTopRatedForCategory(

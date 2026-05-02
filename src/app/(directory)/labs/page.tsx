@@ -68,7 +68,7 @@ export default function LabsPage() {
     {
       question: "Can I get a blood test at home in the UAE?",
       answer:
-        "Yes, home blood test collection is widely available across Dubai, Abu Dhabi, and Sharjah. DHA-licensed nurses or phlebotomists visit your location, typically arriving within 30-60 minutes. Services like DarDoc, ServiceMarket, and Healthchecks360 operate daily from 7 AM to 10 PM. Many labs including Thumbay, Medsol, and Alpha Medical offer free home collection, while others charge AED 50-100. Results are delivered digitally within 24-48 hours.",
+        "Yes, home blood test collection is widely available across Dubai, Abu Dhabi, and Sharjah. UAE-licensed (Dubai) nurses or phlebotomists visit your location, typically arriving within 30-60 minutes. Services like DarDoc, ServiceMarket, and Healthchecks360 operate daily from 7 AM to 10 PM. Many labs including Thumbay, Medsol, and Alpha Medical offer free home collection, while others charge AED 50-100. Results are delivered digitally within 24-48 hours.",
     },
     {
       question: "Which is the cheapest lab for blood tests in the UAE?",
@@ -277,8 +277,8 @@ export default function LabsPage() {
             <p className="font-sans text-z-body-sm text-ink-muted mt-2 max-w-3xl">
               The UAE has {stats.totalLabs} major diagnostic lab providers, from
               large chains like Al Borg (17 branches, Quest Diagnostics partner)
-              to home-service platforms like DarDoc. Most are licensed by DHA,
-              DOH, or MOHAP and many hold international CAP accreditation.
+              to home-service platforms like DarDoc. Most are licensed by the UAE healthcare regulator,
+              the UAE healthcare regulator, or the UAE healthcare regulator and many hold international CAP accreditation.
             </p>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -314,7 +314,7 @@ export default function LabsPage() {
                     </div>
                     <div className="inline-flex items-center gap-1.5 text-ink-soft col-span-2">
                       <Award className="h-3.5 w-3.5 text-accent-dark" />
-                      {lab.accreditations.join(", ") || "DHA Licensed"}
+                      {lab.accreditations.join(", ") || "Regulator Licensed"}
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-ink-hairline flex items-center justify-between">
@@ -429,8 +429,8 @@ export default function LabsPage() {
             websites, aggregator platforms, and walk-in price lists (2024–2025).
             Actual prices may vary by branch location, insurance coverage,
             promotions, and test methodology. Always confirm pricing directly
-            with the laboratory before booking. Data sourced from DHA, DOH, and
-            MOHAP licensed facility registers. Last verified March 2026.
+            with the laboratory before booking. Data sourced from the UAE healthcare regulator, the UAE healthcare regulator, and
+            UAE-licensed facility registers. Last verified March 2026.
           </p>
         </div>
       </section>

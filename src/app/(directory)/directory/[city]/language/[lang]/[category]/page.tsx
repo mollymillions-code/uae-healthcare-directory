@@ -113,7 +113,7 @@ export default async function LanguageCategoryPage({ params }: Props) {
   const faqs = [
     {
       question: `How many ${language.name}-speaking ${category.name.toLowerCase()} are in ${city.name}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${category.name.toLowerCase()} in ${city.name} with ${language.name}-speaking staff. All listings are sourced from official DHA, DOH, and MOHAP registers. Last verified March 2026.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${category.name.toLowerCase()} in ${city.name} with ${language.name}-speaking staff. Sourced from official UAE healthcare licensing data. Last verified March 2026.`,
     },
     {
       question: `Do I need to speak English at ${category.name.toLowerCase()} in ${city.name}?`,
@@ -147,7 +147,7 @@ export default async function LanguageCategoryPage({ params }: Props) {
       }
       aeoAnswer={
         <>
-          {count} {category.name.toLowerCase()} in {city.name} have staff who speak {language.name}, according to the UAE Open Healthcare Directory. The UAE&apos;s diverse healthcare workforce ensures patients can access specialist care in their preferred language. Providers are sorted by Google rating below. Data sourced from official government registers (DHA, DOH, MOHAP), last verified March 2026.
+          {count} {category.name.toLowerCase()} in {city.name} have staff who speak {language.name}, according to the UAE Open Healthcare Directory. The UAE&apos;s diverse healthcare workforce ensures patients can access specialist care in their preferred language. Providers are sorted by Google rating below. Sourced from official UAE healthcare licensing data, last verified March 2026.
         </>
       }
       total={count}

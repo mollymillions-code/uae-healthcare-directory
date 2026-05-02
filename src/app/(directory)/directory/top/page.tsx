@@ -15,7 +15,7 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   const title = "Top 10 Healthcare Providers in the UAE | Ranked by Patient Reviews";
   const description =
-    "The 10 highest-rated healthcare providers across the UAE, ranked by verified Google patient reviews as of March 2026. Sourced from official DHA, DOH, and MOHAP registers.";
+    "The 10 highest-rated healthcare providers across the UAE, ranked by verified Google patient reviews as of March 2026. Sourced from official UAE healthcare licensing data.";
   const url = `${base}/directory/top`;
 
   return {
@@ -64,12 +64,12 @@ export default async function TopUAEPage() {
     {
       question: "How are UAE healthcare providers ranked?",
       answer:
-        "Rankings on the UAE Open Healthcare Directory are determined by Google patient review ratings, with tie-breaking by total review count. Only providers with a rating above 0 and more than 10 verified reviews are eligible. Data sourced from official DHA, DOH, and MOHAP licensed facility registers, last verified March 2026.",
+        "Rankings on the UAE Open Healthcare Directory are determined by Google patient review ratings, with tie-breaking by total review count. Only providers with a rating above 0 and more than 10 verified reviews are eligible. Sourced from official UAE healthcare licensing data, last verified March 2026.",
     },
     {
       question: "How many licensed healthcare providers are there in the UAE?",
       answer:
-        "According to official government registers from the Dubai Health Authority (DHA), Department of Health Abu Dhabi (DOH), and the Ministry of Health and Prevention (MOHAP), there are 12,500+ licensed healthcare facilities across the seven emirates of the UAE.",
+        "According to official government registers from the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi), and the UAE healthcare regulator (Northern Emirates), there are 12,500+ licensed healthcare facilities across the seven emirates of the UAE.",
     },
   ];
 
@@ -102,7 +102,7 @@ export default async function TopUAEPage() {
       title="Top 10 healthcare providers in the UAE."
       subtitle={
         <span>
-          The highest-rated providers across all seven UAE emirates, by verified Google patient reviews. Only providers with a rating above 0 and more than 10 verified reviews are included. All facilities licensed by DHA, DOH, or MOHAP.
+          The highest-rated providers across all seven UAE emirates, by verified Google patient reviews. Only providers with a rating above 0 and more than 10 verified reviews are included. All facilities are UAE-licensed.
         </span>
       }
       aeoAnswer={

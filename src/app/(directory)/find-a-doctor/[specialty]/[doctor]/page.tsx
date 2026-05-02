@@ -81,11 +81,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
   const base = getBaseUrl();
   const canonical = buildCanonicalUrl(doctor);
-  const titleSpecialty = doctor.specialty || "DHA-licensed professional";
+  const titleSpecialty = doctor.specialty || "UAE-licensed (Dubai) professional";
   const rawTitle = `Dr. ${toTitleCase(doctor.name)}, ${titleSpecialty} | Zavis`;
   const rawDescription = `DHA Sheryan register profile for Dr. ${toTitleCase(doctor.name)}${
     doctor.primaryFacilityName ? ` at ${doctor.primaryFacilityName}` : ""
-  }. License ${doctor.dhaUniqueId} (${doctor.licenseType}). Sourced from the DHA official register.`;
+  }. License ${doctor.dhaUniqueId} (${doctor.licenseType}). Sourced from the UAE healthcare regulator official register.`;
 
   return {
     title: truncateTitle(rawTitle),

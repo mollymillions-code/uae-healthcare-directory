@@ -106,15 +106,15 @@ const GUIDE_DATA: Record<
 // ─── City-Specific Regulatory Info ──────────────────────────────────────────
 
 function getRegulator(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getRegulatorShort(citySlug: string): string {
-  if (citySlug === "dubai") return "DHA";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (citySlug === "dubai") return "the UAE healthcare regulator";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the UAE healthcare regulator";
+  return "the UAE healthcare regulator";
 }
 
 // ─── City-Specific Context ──────────────────────────────────────────────────
@@ -128,89 +128,89 @@ type CityContextMap = Record<string, Record<string, {
 const CITY_CONTEXT: CityContextMap = {
   "visa-medical": {
     dubai: {
-      intro: "In Dubai, visa medical tests are managed through DHA-approved medical fitness centres. Major centres include those in Al Muhaisnah, Al Twar, and Port Rashid. AMER centres and some ICA-approved typing centres with medical wings also process visa medicals. Dubai processes the highest volume of visa medicals in the UAE due to its large expat workforce.",
+      intro: "In Dubai, visa medical tests are managed through UAE-approved (Dubai) medical fitness centres. Major centres include those in Al Muhaisnah, Al Twar, and Port Rashid. AMER centres and some ICA-approved typing centres with medical wings also process visa medicals. Dubai processes the highest volume of visa medicals in the UAE due to its large expat workforce.",
       areas: "Al Muhaisnah, Al Twar, Port Rashid, Deira, Bur Dubai",
       tips: "Arrive before 8 AM to avoid queues. AMER centres near Dubai Frame and Al Twar tend to be less crowded than the main Muhaisnah centre.",
     },
     "abu-dhabi": {
-      intro: "In Abu Dhabi, the DOH oversees visa medical fitness through SEHA-approved health screening centres. Primary locations are in Mussafah, Tourist Club Area, and Al Ain. Abu Dhabi's system is fully digital with results uploaded to the DOH portal automatically.",
+      intro: "In Abu Dhabi, the UAE healthcare regulator oversees visa medical fitness through SEHA-approved health screening centres. Primary locations are in Mussafah, Tourist Club Area, and Al Ain. Abu Dhabi's system is fully digital with results uploaded to the UAE healthcare regulator portal automatically.",
       areas: "Mussafah, Tourist Club Area, Khalifa City, Al Shamkha",
       tips: "SEHA centres accept online bookings through the SEHA app. The Mussafah branch handles the highest volume; Tourist Club Area is typically faster.",
     },
     sharjah: {
-      intro: "In Sharjah, visa medical fitness testing is handled by MOHAP-accredited private polyclinics and government health centres. The main MOHAP health centre in Al Qasimia processes most visa medicals, with several private polyclinics in Al Nahda and Al Majaz also approved.",
+      intro: "In Sharjah, visa medical fitness testing is handled by the UAE healthcare regulator-accredited private polyclinics and government health centres. The main the UAE healthcare regulator health centre in Al Qasimia processes most visa medicals, with several private polyclinics in Al Nahda and Al Majaz also approved.",
       areas: "Al Qasimia, Al Nahda, Al Majaz, Al Taawun",
       tips: "Sharjah centres tend to be less crowded than Dubai. Many Sharjah residents get their visa medicals done in Sharjah to avoid Dubai's longer queues.",
     },
     ajman: {
-      intro: "In Ajman, MOHAP-licensed health centres and approved polyclinics in Al Nuaimia and the Ajman downtown area handle visa medical fitness testing. Ajman processes visa medicals for both Ajman-based and some Sharjah-based visa applicants.",
+      intro: "In Ajman, UAE-licensed health centres and approved polyclinics in Al Nuaimia and the Ajman downtown area handle visa medical fitness testing. Ajman processes visa medicals for both Ajman-based and some Sharjah-based visa applicants.",
       areas: "Al Nuaimia, Ajman Downtown, Al Rashidiya",
       tips: "Ajman centres are typically less busy and offer shorter wait times. Most centres open at 7 AM and accept walk-ins.",
     },
     "ras-al-khaimah": {
-      intro: "In Ras Al Khaimah, MOHAP-approved medical fitness centres near Al Nakheel and the city centre area handle visa medicals. The Saqr Hospital medical fitness wing is the primary government facility for visa testing in the emirate.",
+      intro: "In Ras Al Khaimah, UAE-approved medical fitness centres near Al Nakheel and the city centre area handle visa medicals. The Saqr Hospital medical fitness wing is the primary government facility for visa testing in the emirate.",
       areas: "Al Nakheel, RAK City Centre, Khuzam",
       tips: "RAK centres have the shortest queues in the UAE. Most applicants are processed within 30 minutes of arrival.",
     },
     fujairah: {
-      intro: "In Fujairah, the MOHAP-approved fitness centre near Fujairah City Centre handles the majority of visa medicals. Being on the east coast, Fujairah processes a smaller volume, resulting in shorter wait times.",
+      intro: "In Fujairah, the UAE-approved fitness centre near Fujairah City Centre handles the majority of visa medicals. Being on the east coast, Fujairah processes a smaller volume, resulting in shorter wait times.",
       areas: "Fujairah City Centre",
       tips: "Fujairah has limited centres; arrive early on weekday mornings. Some applicants travel from Fujairah to Sharjah or Dubai for faster processing.",
     },
     "umm-al-quwain": {
-      intro: "In Umm Al Quwain, the MOHAP-licensed health centre in the city centre is the primary facility for visa medical testing. As the smallest emirate, processing volumes are low and waits are minimal.",
+      intro: "In Umm Al Quwain, the UAE-licensed health centre in the city centre is the primary facility for visa medical testing. As the smallest emirate, processing volumes are low and waits are minimal.",
       areas: "UAQ City Centre",
       tips: "UAQ has the lowest wait times in the UAE for visa medicals. The single centre typically processes applicants within 20 minutes.",
     },
     "al-ain": {
-      intro: "In Al Ain, the DOH-approved SEHA health screening centre handles visa medicals for Al Ain residents. Located in the Al Jimi area, it operates under the same Abu Dhabi DOH framework. Tawam Hospital's referral wing handles complex cases.",
+      intro: "In Al Ain, the UAE-approved (Abu Dhabi) SEHA health screening centre handles visa medicals for Al Ain residents. Located in the Al Jimi area, it operates under the same Abu Dhabi the UAE healthcare regulator framework. Tawam Hospital's referral wing handles complex cases.",
       areas: "Al Jimi, Tawam, Al Ain Central",
-      tips: "Al Ain's centre is significantly less crowded than Abu Dhabi city. The SEHA app works for Al Ain bookings under the Abu Dhabi DOH system.",
+      tips: "Al Ain's centre is significantly less crowded than Abu Dhabi city. The SEHA app works for Al Ain bookings under the Abu Dhabi the UAE healthcare regulator system.",
     },
   },
   "pre-marital-screening": {
     dubai: {
-      intro: "In Dubai, pre-marital screening is managed by DHA health centres including Al Manara, Al Mizhar, and Rashidiya Centre. Licensed private labs such as Al Borg Diagnostics and Thumbay Labs in Dubai can conduct the blood tests, with results uploaded to the DHA system. The genetic counselling session is typically at a DHA health centre.",
+      intro: "In Dubai, pre-marital screening is managed by the UAE healthcare regulator health centres including Al Manara, Al Mizhar, and Rashidiya Centre. Licensed private labs such as Al Borg Diagnostics and Thumbay Labs in Dubai can conduct the blood tests, with results uploaded to the UAE healthcare regulator system. The genetic counselling session is typically at a UAE healthcare regulator health centre.",
       areas: "Al Manara, Al Mizhar, Rashidiya, Healthcare City, Deira",
-      tips: "Book at the DHA health centre nearest your home for the genetic counselling session. Private labs can draw the blood faster but you may still need to visit a DHA centre for the certificate.",
+      tips: "Book at the UAE healthcare regulator health centre nearest your home for the genetic counselling session. Private labs can draw the blood faster but you may still need to visit a UAE healthcare regulator centre for the certificate.",
     },
     "abu-dhabi": {
-      intro: "In Abu Dhabi, SEHA primary care centres handle pre-marital screening under the DOH framework. The SEHA centres in Tourist Club Area, Al Bateen, and Khalifa City offer the complete panel. The DOH MALAK system tracks all pre-marital results electronically.",
+      intro: "In Abu Dhabi, SEHA primary care centres handle pre-marital screening under the UAE healthcare regulator framework. The SEHA centres in Tourist Club Area, Al Bateen, and Khalifa City offer the complete panel. The UAE healthcare regulator MALAK system tracks all pre-marital results electronically.",
       areas: "Tourist Club Area, Al Bateen, Khalifa City, Al Mushrif",
       tips: "Book through the SEHA app for the shortest wait. Abu Dhabi's genetic counselling is typically same-day with results.",
     },
     sharjah: {
-      intro: "In Sharjah, MOHAP-operated primary health care centres process pre-marital screening. The Al Qasimia and Al Majaz health centres are the primary locations. Licensed private labs in Sharjah can conduct the blood tests at competitive prices.",
+      intro: "In Sharjah, the UAE healthcare regulator-operated primary health care centres process pre-marital screening. The Al Qasimia and Al Majaz health centres are the primary locations. Licensed private labs in Sharjah can conduct the blood tests at competitive prices.",
       areas: "Al Qasimia, Al Majaz, Al Nahda, Muwaileh",
       tips: "Sharjah government centres charge AED 200-300, significantly less than private labs. Walk-in sample collection is available 7 AM-11 AM.",
     },
     "abu-dhabi|al-ain": {
-      intro: "In Al Ain, the SEHA primary care centre handles pre-marital screening under the same Abu Dhabi DOH framework. The centre in Al Jimi is the main location, with Tawam Hospital available for complex genetic counselling cases.",
+      intro: "In Al Ain, the SEHA primary care centre handles pre-marital screening under the same Abu Dhabi the UAE healthcare regulator framework. The centre in Al Jimi is the main location, with Tawam Hospital available for complex genetic counselling cases.",
       areas: "Al Jimi, Tawam, Al Ain Central",
       tips: "Al Ain's SEHA centre is less crowded than Abu Dhabi city. Walk-ins are accepted but SEHA app bookings are recommended.",
     },
     ajman: {
-      intro: "In Ajman, the MOHAP health centre handles pre-marital screening for Ajman residents. Private labs in Al Nuaimia also conduct the tests. Results are uploaded to the national pre-marital database.",
+      intro: "In Ajman, the UAE healthcare regulator health centre handles pre-marital screening for Ajman residents. Private labs in Al Nuaimia also conduct the tests. Results are uploaded to the national pre-marital database.",
       areas: "Al Nuaimia, Ajman Downtown",
-      tips: "Ajman residents can also use Sharjah MOHAP centres if closer. Government centre pricing is the most affordable option.",
+      tips: "Ajman residents can also use Sharjah the UAE healthcare regulator centres if closer. Government centre pricing is the most affordable option.",
     },
     "ras-al-khaimah": {
-      intro: "In Ras Al Khaimah, the MOHAP primary health care centre near Al Nakheel handles pre-marital screening. RAK residents benefit from shorter wait times compared to Dubai or Abu Dhabi.",
+      intro: "In Ras Al Khaimah, the UAE healthcare regulator primary health care centre near Al Nakheel handles pre-marital screening. RAK residents benefit from shorter wait times compared to Dubai or Abu Dhabi.",
       areas: "Al Nakheel, RAK City Centre",
-      tips: "RAK processes pre-marital screening typically within 3 business days. The MOHAP centre also provides the genetic counselling session.",
+      tips: "RAK processes pre-marital screening typically within 3 business days. The UAE healthcare regulator centre also provides the genetic counselling session.",
     },
     fujairah: {
-      intro: "In Fujairah, the MOHAP health centre provides pre-marital screening services. As a smaller emirate, processing times are faster and the service is less crowded.",
+      intro: "In Fujairah, the UAE healthcare regulator health centre provides pre-marital screening services. As a smaller emirate, processing times are faster and the service is less crowded.",
       areas: "Fujairah City Centre",
-      tips: "Fujairah's MOHAP centre handles both sample collection and genetic counselling. Walk-in service available mornings.",
+      tips: "Fujairah's the UAE healthcare regulator centre handles both sample collection and genetic counselling. Walk-in service available mornings.",
     },
     "umm-al-quwain": {
-      intro: "In Umm Al Quwain, the MOHAP health centre handles pre-marital screening. Being the smallest emirate, UAQ offers the fastest processing times for this service.",
+      intro: "In Umm Al Quwain, the UAE healthcare regulator health centre handles pre-marital screening. Being the smallest emirate, UAQ offers the fastest processing times for this service.",
       areas: "UAQ City Centre",
-      tips: "UAQ residents can also access Ajman or Sharjah MOHAP centres if preferred. The local centre is rarely crowded.",
+      tips: "UAQ residents can also access Ajman or Sharjah the UAE healthcare regulator centres if preferred. The local centre is rarely crowded.",
     },
     "al-ain": {
-      intro: "In Al Ain, the SEHA primary care centre handles pre-marital screening under the Abu Dhabi DOH framework. The centre in Al Jimi is the main location, with Tawam Hospital available for complex genetic counselling cases.",
+      intro: "In Al Ain, the SEHA primary care centre handles pre-marital screening under the Abu Dhabi the UAE healthcare regulator framework. The centre in Al Jimi is the main location, with Tawam Hospital available for complex genetic counselling cases.",
       areas: "Al Jimi, Tawam, Al Ain Central",
       tips: "Al Ain's SEHA centre is less crowded than Abu Dhabi city. Walk-ins are accepted but SEHA app bookings are recommended.",
     },
@@ -222,7 +222,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Ask your OB-GYN which tests are bundled in the hospital's antenatal package versus which you should get separately at a standalone lab to save costs.",
     },
     "abu-dhabi": {
-      intro: "Abu Dhabi's prenatal care is regulated by the DOH. Major hospitals including Cleveland Clinic Abu Dhabi, Corniche Hospital, and NMC Royal Hospital offer full antenatal panels. The National Reference Laboratory (NRL) provides specialised prenatal testing including NIPT. DarDoc home collection operates in Abu Dhabi for routine prenatal blood work.",
+      intro: "Abu Dhabi's prenatal care is regulated by the UAE healthcare regulator. Major hospitals including Cleveland Clinic Abu Dhabi, Corniche Hospital, and NMC Royal Hospital offer full antenatal panels. The National Reference Laboratory (NRL) provides specialised prenatal testing including NIPT. DarDoc home collection operates in Abu Dhabi for routine prenatal blood work.",
       areas: "Al Maryah Island, Corniche, Khalifa City, Al Reem Island",
       tips: "Corniche Hospital is the government maternity reference centre and offers subsidised prenatal panels for insurance holders. NRL handles complex genetic and prenatal screenings.",
     },
@@ -232,7 +232,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Many Sharjah residents access Dubai Healthcare City labs for specialised tests like NIPT while using local labs for routine panels.",
     },
     "abu-dhabi|al-ain": {
-      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide antenatal care under the DOH framework. Private labs in Al Jimi and Al Ain Central offer routine prenatal blood tests. NRL provides reference testing for complex prenatal cases.",
+      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide antenatal care under the UAE healthcare regulator framework. Private labs in Al Jimi and Al Ain Central offer routine prenatal blood tests. NRL provides reference testing for complex prenatal cases.",
       areas: "Tawam, Al Jimi, Al Ain Central",
       tips: "Tawam Hospital is the government reference hospital for Al Ain. For NIPT and advanced prenatal testing, samples may be sent to Abu Dhabi for processing.",
     },
@@ -257,7 +257,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Basic CBC and blood group tests are available locally. For the full first-trimester panel, Sharjah labs are the nearest comprehensive option.",
     },
     "al-ain": {
-      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide antenatal care under the DOH framework. Private labs in Al Jimi and Al Ain Central offer routine prenatal blood tests. NRL provides reference testing for complex prenatal cases.",
+      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide antenatal care under the UAE healthcare regulator framework. Private labs in Al Jimi and Al Ain Central offer routine prenatal blood tests. NRL provides reference testing for complex prenatal cases.",
       areas: "Tawam, Al Jimi, Al Ain Central",
       tips: "Tawam Hospital is the government reference hospital for Al Ain. For NIPT and advanced prenatal testing, samples may be sent to Abu Dhabi for processing.",
     },
@@ -299,7 +299,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "For routine blood work, Ajman labs (15-20 minutes away) offer more walk-in options at competitive prices.",
     },
     "al-ain": {
-      intro: "In Al Ain, walk-in lab services are available at private labs in Al Jimi and Al Ain Central. Hospital-based labs at Tawam and Al Ain Hospital require referrals. The DOH-approved private labs accept walk-in patients for self-requested blood tests.",
+      intro: "In Al Ain, walk-in lab services are available at private labs in Al Jimi and Al Ain Central. Hospital-based labs at Tawam and Al Ain Hospital require referrals. The UAE-approved (Abu Dhabi) private labs accept walk-in patients for self-requested blood tests.",
       areas: "Al Jimi, Al Ain Central, Al Muwaiji",
       tips: "Al Ain has fewer walk-in lab options than Abu Dhabi or Dubai. Morning visits (7-9 AM) are recommended for fasting tests.",
     },
@@ -341,7 +341,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "For weekend blood work, Ajman or Sharjah labs (20-30 minutes drive) are more reliable options than UAQ facilities.",
     },
     "al-ain": {
-      intro: "In Al Ain, weekend lab availability follows the Abu Dhabi DOH pattern. Saturday is generally available at private labs. SEHA health centres may have limited Saturday hours. Sunday is a normal working day.",
+      intro: "In Al Ain, weekend lab availability follows the Abu Dhabi the UAE healthcare regulator pattern. Saturday is generally available at private labs. SEHA health centres may have limited Saturday hours. Sunday is a normal working day.",
       areas: "Al Jimi, Al Ain Central",
       tips: "Confirm Saturday hours with your chosen lab. Hospital-based labs at Tawam operate for emergencies on weekends.",
     },
@@ -395,9 +395,9 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Medsol Standard Wellness at AED 230 offers the best value for the core panel. Add testosterone and PSA separately for approximately AED 130-230 extra.",
     },
     "abu-dhabi": {
-      intro: "Abu Dhabi offers executive health screening through Unilabs, Al Borg, and NRL. Cleveland Clinic Abu Dhabi and NMC Royal Hospital offer premium executive health checks including imaging. DOH insurance plans typically cover annual wellness blood work.",
+      intro: "Abu Dhabi offers executive health screening through Unilabs, Al Borg, and NRL. Cleveland Clinic Abu Dhabi and NMC Royal Hospital offer premium executive health checks including imaging. The UAE healthcare regulator insurance plans typically cover annual wellness blood work.",
       areas: "Al Maryah Island, Khalifa City, Tourist Club Area",
-      tips: "NRL offers the most comprehensive panels in Abu Dhabi. Check if your DOH-mandated insurance plan covers annual wellness screening before paying out of pocket.",
+      tips: "NRL offers the most comprehensive panels in Abu Dhabi. Check if your the UAE healthcare regulator-mandated insurance plan covers annual wellness screening before paying out of pocket.",
     },
     sharjah: {
       intro: "In Sharjah, Al Borg and Thumbay Labs offer men's wellness packages. Standalone labs in Al Nahda and Al Majaz provide self-requested blood work including testosterone and PSA. Sharjah labs are typically 10-20% cheaper than Dubai equivalents.",
@@ -425,9 +425,9 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Sharjah labs (25 minutes drive) offer the nearest comprehensive men's wellness packages at competitive prices.",
     },
     "al-ain": {
-      intro: "In Al Ain, men's health screening is available at private labs and Tawam Hospital's wellness services. NRL handles specialised testing. DOH-insured residents may have coverage for annual wellness blood panels.",
+      intro: "In Al Ain, men's health screening is available at private labs and Tawam Hospital's wellness services. NRL handles specialised testing. The UAE healthcare regulator-insured residents may have coverage for annual wellness blood panels.",
       areas: "Al Jimi, Al Ain Central, Tawam",
-      tips: "Check DOH insurance coverage for annual wellness panels. Private labs in Al Ain Central offer competitive self-pay pricing.",
+      tips: "Check the UAE healthcare regulator insurance coverage for annual wellness panels. Private labs in Al Ain Central offer competitive self-pay pricing.",
     },
   },
   "womens-health-30-plus": {
@@ -437,7 +437,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Medsol Women's Health Panel at AED 399 covers the most comprehensive gender-specific markers. DarDoc home collection is ideal for cycle-timed hormone tests.",
     },
     "abu-dhabi": {
-      intro: "Abu Dhabi's women's health screening is available at NRL, Al Borg, and Unilabs. Cleveland Clinic and Corniche Hospital offer premium women's wellness programmes. The DOH insurance framework covers routine annual blood work for most residents. DarDoc home collection operates in Abu Dhabi.",
+      intro: "Abu Dhabi's women's health screening is available at NRL, Al Borg, and Unilabs. Cleveland Clinic and Corniche Hospital offer premium women's wellness programmes. The UAE healthcare regulator insurance framework covers routine annual blood work for most residents. DarDoc home collection operates in Abu Dhabi.",
       areas: "Al Maryah Island, Corniche, Khalifa City, Al Reem Island",
       tips: "Corniche Hospital offers women's wellness packages through its obstetrics department. NRL is the reference lab for complex reproductive hormone panels.",
     },
@@ -467,9 +467,9 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Sharjah labs (25 minutes drive) are the nearest option for comprehensive women's health panels.",
     },
     "al-ain": {
-      intro: "In Al Ain, women's health screening is available at private labs and Tawam Hospital. NRL in Abu Dhabi handles specialised reproductive hormone testing. DOH insurance typically covers annual wellness blood panels for women.",
+      intro: "In Al Ain, women's health screening is available at private labs and Tawam Hospital. NRL in Abu Dhabi handles specialised reproductive hormone testing. The UAE healthcare regulator insurance typically covers annual wellness blood panels for women.",
       areas: "Al Jimi, Al Ain Central, Tawam",
-      tips: "Tawam Hospital offers women's wellness screening through its obstetrics department. Check DOH insurance coverage before paying out of pocket.",
+      tips: "Tawam Hospital offers women's wellness screening through its obstetrics department. Check the UAE healthcare regulator insurance coverage before paying out of pocket.",
     },
   },
   "senior-health-screening": {
@@ -479,7 +479,7 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Executive packages are the most cost-effective approach for seniors who need 10+ tests annually. DarDoc home collection (AED 0-50 fee) saves travel time.",
     },
     "abu-dhabi": {
-      intro: "Abu Dhabi's senior health screening is available through NRL, Al Borg, Unilabs, and major hospital wellness programmes. Cleveland Clinic Abu Dhabi offers premium executive health checks including imaging. The DOH insurance framework covers annual wellness screening for insured residents.",
+      intro: "Abu Dhabi's senior health screening is available through NRL, Al Borg, Unilabs, and major hospital wellness programmes. Cleveland Clinic Abu Dhabi offers premium executive health checks including imaging. The UAE healthcare regulator insurance framework covers annual wellness screening for insured residents.",
       areas: "Al Maryah Island, Khalifa City, Tourist Club Area, Corniche",
       tips: "NRL specialises in complex CKD monitoring panels relevant to seniors with kidney disease. Cleveland Clinic's executive health programme is the most comprehensive but premium-priced.",
     },
@@ -509,21 +509,21 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Ajman's Thumbay University Hospital (15 minutes) is the nearest facility offering broader wellness packages.",
     },
     "al-ain": {
-      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide senior health screening under the DOH framework. NRL handles specialised testing including CKD monitoring panels. Private labs offer basic wellness blood work.",
+      intro: "In Al Ain, Tawam Hospital and Al Ain Hospital provide senior health screening under the UAE healthcare regulator framework. NRL handles specialised testing including CKD monitoring panels. Private labs offer basic wellness blood work.",
       areas: "Tawam, Al Jimi, Al Ain Central",
       tips: "Tawam Hospital has the most comprehensive testing capability in Al Ain. NRL's CKD monitoring panels are particularly relevant for seniors with kidney disease.",
     },
   },
   "corporate-health-check": {
     dubai: {
-      intro: "Dubai has the widest selection of corporate health screening providers in the UAE. Al Borg, Medsol, Unilabs, and Thumbay Labs all offer corporate packages with volume discounts. DHA-regulated corporate health checks are required for some free zone employees. Many labs offer on-site screening for companies with 20+ employees.",
+      intro: "Dubai has the widest selection of corporate health screening providers in the UAE. Al Borg, Medsol, Unilabs, and Thumbay Labs all offer corporate packages with volume discounts. The UAE healthcare regulator-regulated corporate health checks are required for some free zone employees. Many labs offer on-site screening for companies with 20+ employees.",
       areas: "Business Bay, DIFC, JLT, Healthcare City, Al Quoz, Deira, Bur Dubai",
-      tips: "Request quotes from at least three labs. On-site screening is available for 20+ employees and eliminates the need for staff to travel. DHA approval is required for free zone companies.",
+      tips: "Request quotes from at least three labs. On-site screening is available for 20+ employees and eliminates the need for staff to travel. The UAE healthcare regulator approval is required for free zone companies.",
     },
     "abu-dhabi": {
-      intro: "Abu Dhabi corporate health screening is regulated by the DOH. NRL, Al Borg, and Unilabs provide corporate packages. ADNOC, Mubadala, and government entities typically use NRL or SEHA-contracted labs. Many DOH-insured employers have annual wellness screening included in their insurance coverage.",
+      intro: "Abu Dhabi corporate health screening is regulated by the UAE healthcare regulator. NRL, Al Borg, and Unilabs provide corporate packages. ADNOC, Mubadala, and government entities typically use NRL or SEHA-contracted labs. Many the UAE healthcare regulator-insured employers have annual wellness screening included in their insurance coverage.",
       areas: "Al Maryah Island, Khalifa City, Mussafah, Mohammed Bin Zayed City",
-      tips: "Check if your DOH insurance plan includes annual corporate wellness screening before arranging a separate provider. NRL offers competitive corporate rates.",
+      tips: "Check if your the UAE healthcare regulator insurance plan includes annual corporate wellness screening before arranging a separate provider. NRL offers competitive corporate rates.",
     },
     sharjah: {
       intro: "Sharjah corporate health screening is available through Al Borg, Thumbay Labs, and several private diagnostic centres. Sharjah's lower lab pricing makes it an attractive option for companies based in both Sharjah and Dubai. On-site screening is available for larger companies.",
@@ -551,9 +551,9 @@ const CITY_CONTEXT: CityContextMap = {
       tips: "Ajman labs (15-20 minutes) are the most practical option for UAQ-based companies. Mobile screening can be arranged for larger groups.",
     },
     "al-ain": {
-      intro: "In Al Ain, corporate health screening is available through private labs and Tawam Hospital's occupational health department. NRL provides corporate packages for Al Ain-based companies. DOH-insured companies may have annual wellness screening coverage.",
+      intro: "In Al Ain, corporate health screening is available through private labs and Tawam Hospital's occupational health department. NRL provides corporate packages for Al Ain-based companies. The UAE healthcare regulator-insured companies may have annual wellness screening coverage.",
       areas: "Al Jimi, Al Ain Central, Al Ain Industrial Area",
-      tips: "Check DOH insurance coverage for corporate wellness screening. NRL offers competitive rates for Al Ain companies with 20+ employees.",
+      tips: "Check the UAE healthcare regulator insurance coverage for corporate wellness screening. NRL offers competitive rates for Al Ain companies with 20+ employees.",
     },
   },
 };
@@ -572,19 +572,19 @@ function generateCityFaqs(
     "visa-medical": [
       {
         question: `Where can I get a visa medical test in ${cityName}?`,
-        answer: `In ${cityName}, visa medical tests are conducted at ${regulator}-approved medical fitness centres. You must attend a centre specifically approved for medical fitness testing — regular clinics and hospitals are not authorised to conduct official visa medicals. Check the MOHAP Tasheel portal for the list of approved centres in ${cityName}.`,
+        answer: `In ${cityName}, visa medical tests are conducted at ${regulator}-approved medical fitness centres. You must attend a centre specifically approved for medical fitness testing — regular clinics and hospitals are not authorised to conduct official visa medicals. Check the UAE healthcare regulator Tasheel portal for the list of approved centres in ${cityName}.`,
       },
       {
         question: `How much does a visa medical test cost in ${cityName}?`,
-        answer: `The visa medical test in ${cityName} typically costs AED 250-350 at government-approved centres. This includes the chest X-ray, blood draw (HIV, Hepatitis B, Hepatitis C, VDRL), physical examination, and MOHAP e-platform fee. Private approved centres may charge up to AED 450.`,
+        answer: `The visa medical test in ${cityName} typically costs AED 250-350 at government-approved centres. This includes the chest X-ray, blood draw (HIV, Hepatitis B, Hepatitis C, VDRL), physical examination, and the UAE healthcare regulator e-platform fee. Private approved centres may charge up to AED 450.`,
       },
       {
         question: `How long does the visa medical take in ${cityName}?`,
-        answer: `Standard processing time in ${cityName} is 3-5 business days. Urgent processing (1-2 days) may be available at some centres for an additional AED 50-150. Results are uploaded electronically to the MOHAP system.`,
+        answer: `Standard processing time in ${cityName} is 3-5 business days. Urgent processing (1-2 days) may be available at some centres for an additional AED 50-150. Results are uploaded electronically to the UAE healthcare regulator system.`,
       },
       {
         question: `Can I walk in for a visa medical in ${cityName}?`,
-        answer: `Most ${regulator}-approved medical fitness centres in ${cityName} accept walk-in patients, typically from 7 AM to 9 PM. Some centres also offer online appointment booking through the MOHAP system. Arrive early (7-8 AM) for the shortest queues.`,
+        answer: `Most ${regulator}-approved medical fitness centres in ${cityName} accept walk-in patients, typically from 7 AM to 9 PM. Some centres also offer online appointment booking through the UAE healthcare regulator system. Arrive early (7-8 AM) for the shortest queues.`,
       },
     ],
     "pre-marital-screening": [

@@ -41,12 +41,12 @@ const faqs = [
   {
     question: "What should I look for when choosing a lab in the UAE?",
     answer:
-      "Beyond price, consider four factors: (1) Accreditation — CAP (College of American Pathologists) and JCI-accredited labs follow internationally standardised protocols, reducing error rates. (2) Turnaround time — urgent results may be needed same-day. (3) Home collection — several UAE labs including Thumbay Labs, PureLab, and DarDoc offer free or low-cost home phlebotomy, saving time. (4) Regulator — labs in Dubai are licensed by the DHA, Abu Dhabi labs by the DOH, and other emirates by MOHAP.",
+      "Beyond price, consider four factors: (1) Accreditation — CAP (College of American Pathologists) and JCI-accredited labs follow internationally standardised protocols, reducing error rates. (2) Turnaround time — urgent results may be needed same-day. (3) Home collection — several UAE labs including Thumbay Labs, PureLab, and DarDoc offer free or low-cost home phlebotomy, saving time. (4) Regulator — labs in Dubai are licensed by the UAE healthcare regulator, Abu Dhabi labs by the UAE healthcare regulator, and other emirates by the UAE healthcare regulator.",
   },
   {
     question: "Is the cheapest lab always the best choice?",
     answer:
-      "Not necessarily. Price differences in the UAE often reflect accreditation overhead, equipment quality, and reporting standards rather than test accuracy alone. For routine monitoring (e.g., HbA1c, cholesterol), an ISO 15189-accredited budget lab is generally sufficient. For complex panels, cancer markers, or reference testing, a CAP/JCI-accredited lab such as Al Borg Diagnostics or NRL is worth the premium. Always ensure any lab you use is licensed by the relevant UAE health authority (DHA, DOH, or MOHAP).",
+      "Not necessarily. Price differences in the UAE often reflect accreditation overhead, equipment quality, and reporting standards rather than test accuracy alone. For routine monitoring (e.g., HbA1c, cholesterol), an ISO 15189-accredited budget lab is generally sufficient. For complex panels, cancer markers, or reference testing, a CAP/JCI-accredited lab such as Al Borg Diagnostics or NRL is worth the premium. Always ensure any lab you use is licensed by the relevant UAE health authority (the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator).",
   },
   {
     question: "Do lab prices vary by branch location in the UAE?",
@@ -56,7 +56,7 @@ const faqs = [
   {
     question: "Does UAE health insurance cover lab tests at all labs?",
     answer:
-      "Insurance coverage depends on your plan and the lab's network status. Dubai's mandatory basic health insurance (DHA Essential Benefits Plan) covers a defined list of diagnostic tests at in-network labs. Thiqa (Abu Dhabi nationals) and Daman (expats) maintain their own network lists. Hospital-affiliated labs — such as those within Aster, Mediclinic, or Cleveland Clinic Abu Dhabi — are more commonly in-network. Home-service labs like DarDoc may or may not be covered; check directly with your insurer before booking.",
+      "Insurance coverage depends on your plan and the lab's network status. Dubai's mandatory basic health insurance (Dubai mandatory health insurance plan) covers a defined list of diagnostic tests at in-network labs. Thiqa (Abu Dhabi nationals) and Daman (expats) maintain their own network lists. Hospital-affiliated labs — such as those within Aster, Mediclinic, or Cleveland Clinic Abu Dhabi — are more commonly in-network. Home-service labs like DarDoc may or may not be covered; check directly with your insurer before booking.",
   },
 ];
 

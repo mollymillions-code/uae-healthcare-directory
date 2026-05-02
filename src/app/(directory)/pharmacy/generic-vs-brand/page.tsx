@@ -31,12 +31,12 @@ const genericFaqs = [
   {
     question: "Are generic medications as effective as brand-name drugs in the UAE?",
     answer:
-      "Yes. MOHAP and DHA require every registered generic to demonstrate bioequivalence — meaning it delivers the same active ingredient, at the same strength, at essentially the same rate as the brand. The two are therapeutically interchangeable for the vast majority of patients.",
+      "Yes. The UAE healthcare regulator and the UAE healthcare regulator require every registered generic to demonstrate bioequivalence — meaning it delivers the same active ingredient, at the same strength, at essentially the same rate as the brand. The two are therapeutically interchangeable for the vast majority of patients.",
   },
   {
     question: "Can UAE pharmacists substitute a generic for my brand-name prescription?",
     answer:
-      "In most cases, yes. Under MOHAP and DHA rules, a pharmacist can dispense an approved generic equivalent unless your doctor has written \"brand necessary\" on the prescription. Ask the pharmacist directly — they will confirm availability and explain the cost difference.",
+      "In most cases, yes. Under the UAE healthcare regulator and the UAE healthcare regulator rules, a pharmacist can dispense an approved generic equivalent unless your doctor has written \"brand necessary\" on the prescription. Ask the pharmacist directly — they will confirm availability and explain the cost difference.",
   },
   {
     question: "When would a doctor insist on a brand-name medication?",
@@ -46,7 +46,7 @@ const genericFaqs = [
   {
     question: "How much can I save by choosing the generic?",
     answer:
-      "Generics are typically priced 30–70% below the reference brand. MOHAP enforces a ceiling price on every registered medicine, and if your insurance calculates copay as a percentage of drug cost, switching to generics lowers both the insurer's share and your out-of-pocket amount.",
+      "Generics are typically priced 30–70% below the reference brand. The UAE healthcare regulator enforces a ceiling price on every registered medicine, and if your insurance calculates copay as a percentage of drug cost, switching to generics lowers both the insurer's share and your out-of-pocket amount.",
   },
 ];
 
@@ -96,7 +96,7 @@ export default function GenericVsBrandPage() {
           <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
               Generic medications contain the same active ingredient, in the same dose and form,
-              as their brand-name counterparts. In the UAE, the Ministry of Health and Prevention (MOHAP)
+              as their brand-name counterparts. In the UAE, the UAE healthcare regulator
               requires generics to meet bioequivalence standards before they can be sold. Generics typically
               cost 30&ndash;70% less than brand-name drugs. Pharmacists in the UAE are permitted &mdash; and often
               encouraged &mdash; to substitute generics unless a prescribing physician has marked a prescription
@@ -121,7 +121,7 @@ export default function GenericVsBrandPage() {
                 expires, which removes the research and marketing costs that inflate brand prices.
               </p>
               <p>
-                In the UAE, generics must be registered with MOHAP or the Dubai Health Authority (DHA)
+                In the UAE, generics must be registered with the UAE healthcare regulator or the UAE healthcare regulator (Dubai)
                 before they can be sold. Registration requires proof of bioequivalence, meaning the generic
                 reaches the bloodstream at essentially the same rate and to the same extent as the original
                 brand. The two are considered therapeutically interchangeable for most patients.
@@ -146,7 +146,7 @@ export default function GenericVsBrandPage() {
                 manufacturers can produce the same molecule without repeating those costs.
               </p>
               <p>
-                MOHAP maintains a price control framework for registered medicines. Generics are generally
+                the UAE healthcare regulator maintains a price control framework for registered medicines. Generics are generally
                 priced below their reference brand, and pharmacies are not permitted to sell medicines
                 above the registered ceiling price. This means a patient in Dubai or Abu Dhabi can
                 typically save 30&ndash;70% by choosing the generic version of a common medication such as
@@ -169,15 +169,15 @@ export default function GenericVsBrandPage() {
             </h2>
             <div className="space-y-5">
               <p>
-                Under MOHAP rules, pharmacists across the UAE may substitute a prescribed brand-name
+                Under the UAE healthcare regulator rules, pharmacists across the UAE may substitute a prescribed brand-name
                 medication with an approved generic equivalent &mdash; provided the prescribing doctor has not
                 written &ldquo;brand necessary&rdquo; (sometimes abbreviated as &ldquo;BN&rdquo; or marked on
-                the electronic prescription) on the prescription. DHA and DOH (Abu Dhabi) follow similar
+                the electronic prescription) on the prescription. The UAE healthcare regulator and the UAE healthcare regulator (Abu Dhabi) follow similar
                 generic substitution policies within their respective emirates.
               </p>
               <p>
                 For medications on the UAE Essential Medicines List, generic availability is generally
-                mandated. Government health facilities &mdash; including DHA hospitals and SEHA facilities in
+                mandated. Government health facilities &mdash; including the UAE healthcare regulator hospitals and SEHA facilities in
                 Abu Dhabi &mdash; primarily dispense generics from their formularies, reserving brands for cases
                 where clinical need is documented.
               </p>

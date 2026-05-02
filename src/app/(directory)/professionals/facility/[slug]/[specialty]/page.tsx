@@ -43,7 +43,7 @@ export function generateMetadata({ params }: Props): Metadata {
       ? `${spec.name} at ${profile.name} — ${count.toLocaleString()} Licensed ${count === 1 ? "Professional" : "Professionals"}`
       : `${spec.name} at ${profile.name}`,
     description: count > 0
-      ? `${count.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai. Browse the full staff list with license types, sourced from the official Sheryan Medical Registry.`
+      ? `${count.toLocaleString()} UAE-licensed (Dubai) ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai. Browse the full staff list with license types, sourced from the official Sheryan Medical Registry.`
       : `Looking for ${spec.name.toLowerCase()} professionals at ${profile.name}? No staff currently listed for this specialty.`,
     // noindex when zero professionals — empty page has no unique value
     ...(count === 0 ? { robots: { index: false, follow: true } } : {}),
@@ -124,7 +124,7 @@ export default function FacilitySpecialtyPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           name: `${spec.name} at ${profile.name}`,
-          description: `${professionals.length.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai.`,
+          description: `${professionals.length.toLocaleString()} UAE-licensed (Dubai) ${spec.name.toLowerCase()} professionals at ${profile.name} in Dubai.`,
           url: `${base}/professionals/facility/${profile.slug}/${spec.slug}`,
           about: {
             "@type": "MedicalSpecialty",
@@ -161,7 +161,7 @@ export default function FacilitySpecialtyPage({ params }: Props) {
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            {profile.name} has {professionals.length.toLocaleString()} DHA-licensed{" "}
+            {profile.name} has {professionals.length.toLocaleString()} UAE-licensed (Dubai){" "}
             {spec.name.toLowerCase()} professionals on its team
             {ftlCount > 0 && regCount > 0
               ? `, including ${ftlCount.toLocaleString()} with full trade licenses (FTL) and ${regCount.toLocaleString()} with regular licenses (REG)`
@@ -272,9 +272,9 @@ export default function FacilitySpecialtyPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

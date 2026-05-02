@@ -87,17 +87,17 @@ export default async function InsuranceNavigatorPage() {
     {
       question: "Is health insurance mandatory in the UAE?",
       answer:
-        "Yes. Health insurance is mandatory for all residents in Abu Dhabi (since 2006) and Dubai (since 2014). Other emirates are progressively implementing mandatory schemes under MOHAP regulations. Employers are required to provide health insurance for their employees, and in many cases, for dependants as well.",
+        "Yes. Health insurance is mandatory for all residents in Abu Dhabi (since 2006) and Dubai (since 2014). Other emirates are progressively implementing mandatory schemes under the UAE healthcare regulator regulations. Employers are required to provide health insurance for their employees, and in many cases, for dependants as well.",
     },
     {
       question: "What is the cheapest health insurance in the UAE?",
       answer:
-        "The most affordable plans start from around AED 600–750/year for Daman Basic (Abu Dhabi mandatory scheme) and AED 2,200–2,800/year for basic DHA-compliant plans in Dubai. These cover inpatient, outpatient, and emergency care but typically exclude dental, optical, and maternity.",
+        "The most affordable plans start from around AED 600–750/year for Daman Basic (Abu Dhabi mandatory scheme) and AED 2,200–2,800/year for basic the UAE healthcare regulator-compliant plans in Dubai. These cover inpatient, outpatient, and emergency care but typically exclude dental, optical, and maternity.",
     },
     {
       question: "What does health insurance typically cover in the UAE?",
       answer:
-        "All DHA/HAAD-compliant plans must cover inpatient hospitalisation, outpatient consultations, emergency treatment, prescribed medications, maternity (with waiting periods), and preventive care. Enhanced and premium plans add dental, optical, mental health, alternative medicine, and international coverage.",
+        "All the UAE healthcare regulator/HAAD-compliant plans must cover inpatient hospitalisation, outpatient consultations, emergency treatment, prescribed medications, maternity (with waiting periods), and preventive care. Enhanced and premium plans add dental, optical, mental health, alternative medicine, and international coverage.",
     },
     {
       question: "How do I choose between insurance providers in the UAE?",
@@ -107,17 +107,17 @@ export default async function InsuranceNavigatorPage() {
     {
       question: "Can I use my health insurance across different emirates?",
       answer:
-        "It depends on the plan. Basic plans from DHA or HAAD may only cover providers in their respective emirate. Enhanced and premium plans from national insurers like AXA, Cigna, Bupa, and Oman Insurance typically provide multi-emirate coverage across all UAE cities.",
+        "It depends on the plan. Basic plans from the UAE healthcare regulator or HAAD may only cover providers in their respective emirate. Enhanced and premium plans from national insurers like AXA, Cigna, Bupa, and Oman Insurance typically provide multi-emirate coverage across all UAE cities.",
     },
     {
       question: "What happens if my insurance doesn't cover a treatment?",
       answer:
-        "If a treatment is excluded from your plan, you have several options: (1) pay out-of-pocket at the provider, (2) request a pre-authorisation exception from your insurer with a supporting letter from your doctor, (3) appeal the rejection in writing within 30 days — DHA and DOH mandate formal grievance processes for insurers, (4) escalate to the DHA Complaints Centre (Dubai) or DOH (Abu Dhabi) if the insurer's response is unsatisfactory. Some plans offer supplemental riders (add-ons) that can be purchased to cover excluded treatments such as oncology, physiotherapy, or bariatric surgery.",
+        "If a treatment is excluded from your plan, you have several options: (1) pay out-of-pocket at the provider, (2) request a pre-authorisation exception from your insurer with a supporting letter from your doctor, (3) appeal the rejection in writing within 30 days — the UAE healthcare regulator and the UAE healthcare regulator mandate formal grievance processes for insurers, (4) escalate to the UAE healthcare regulator Complaints Centre (Dubai) or the UAE healthcare regulator (Abu Dhabi) if the insurer's response is unsatisfactory. Some plans offer supplemental riders (add-ons) that can be purchased to cover excluded treatments such as oncology, physiotherapy, or bariatric surgery.",
     },
     {
       question: "Can I switch health insurance providers in the UAE?",
       answer:
-        "Yes, but the timing and process depend on your situation. Employees can request to change plans at renewal with employer approval. Self-sponsored residents can switch at any time by purchasing a new policy and cancelling the old one, though pre-existing conditions may face waiting periods under the new plan. In Dubai, the DHA requires continuous coverage — there must be no gap between cancellation and new policy activation. When switching, confirm the new plan's network includes your preferred hospitals and check if any ongoing treatments require continuity of cover.",
+        "Yes, but the timing and process depend on your situation. Employees can request to change plans at renewal with employer approval. Self-sponsored residents can switch at any time by purchasing a new policy and cancelling the old one, though pre-existing conditions may face waiting periods under the new plan. In Dubai, the UAE healthcare regulator requires continuous coverage — there must be no gap between cancellation and new policy activation. When switching, confirm the new plan's network includes your preferred hospitals and check if any ongoing treatments require continuity of cover.",
     },
     {
       question: "What is the difference between an insurer and a TPA?",
@@ -247,7 +247,7 @@ export default async function InsuranceNavigatorPage() {
               {
                 title: "Mandatory coverage",
                 body:
-                  "Health insurance is compulsory for all UAE residents. Abu Dhabi mandated employer-sponsored coverage in 2006 under HAAD (now DOH). Dubai followed in 2014 under the DHA's mandatory health insurance law. The Northern Emirates are progressively implementing schemes under MOHAP federal supervision.",
+                  "Health insurance is compulsory for all UAE residents. Abu Dhabi mandated employer-sponsored coverage in 2006 under Abu Dhabi regulator. Dubai followed in 2014 under the UAE healthcare regulator's mandatory health insurance law. The Northern Emirates are progressively implementing schemes under the UAE healthcare regulator federal supervision.",
                 tags: ["Abu Dhabi: 2006", "Dubai: 2014", "Others: phased"],
               },
               {
@@ -431,21 +431,21 @@ export default async function InsuranceNavigatorPage() {
             {[
               {
                 scope: "Dubai",
-                name: "Dubai Health Authority (DHA)",
+                name: "The UAE healthcare regulator (Dubai)",
                 body:
-                  "The DHA regulates all health insurance activity in the Emirate of Dubai, including licensing insurers and TPAs, setting mandatory benefit structures, and managing the Saada basic benefits plan for low-income workers. All health insurance sold in Dubai must comply with DHA's Essential Benefits Plan (EBP).",
+                  "The UAE healthcare regulator regulates all health insurance activity in the Emirate of Dubai, including licensing insurers and TPAs, setting mandatory benefit structures, and managing the Saada basic benefits plan for low-income workers. All health insurance sold in Dubai must comply with the UAE healthcare regulator's Essential Benefits Plan (EBP).",
               },
               {
                 scope: "Abu Dhabi",
-                name: "Department of Health — Abu Dhabi (DOH)",
+                name: "Department of Health — Abu Dhabi (the UAE healthcare regulator)",
                 body:
-                  "Formerly HAAD, the DOH oversees healthcare regulation and mandatory insurance in Abu Dhabi and Al Ain. Daman administers the Thiqa scheme for Emirati nationals and the Basic plan for expatriate dependants. The DOH sets minimum benefit standards and conducts annual audits.",
+                  "Formerly HAAD, the UAE healthcare regulator oversees healthcare regulation and mandatory insurance in Abu Dhabi and Al Ain. Daman administers the Thiqa scheme for Emirati nationals and the Basic plan for expatriate dependants. The UAE healthcare regulator sets minimum benefit standards and conducts annual audits.",
               },
               {
                 scope: "Federal",
-                name: "Ministry of Health & Prevention (MOHAP)",
+                name: "Ministry of Health & Prevention (the UAE healthcare regulator)",
                 body:
-                  "MOHAP is the federal health authority covering the Northern Emirates — Sharjah, Ajman, Ras Al Khaimah, Fujairah, Umm Al Quwain — and sets national policy. It coordinates cross-emirate standards, supervises rollout in non-DHA/DOH emirates, and maintains the federal Malaffi record exchange.",
+                  "The UAE healthcare regulator is the federal health authority covering the Northern Emirates — Sharjah, Ajman, Ras Al Khaimah, Fujairah, Umm Al Quwain — and sets national policy. It coordinates cross-emirate standards, supervises rollout in non-the UAE healthcare regulator emirates, and maintains the federal Malaffi record exchange.",
               },
             ].map((card) => (
               <div key={card.name} className="rounded-z-md bg-white border border-ink-line p-5">
@@ -462,8 +462,8 @@ export default async function InsuranceNavigatorPage() {
             ))}
           </div>
           <p className="font-sans text-z-caption text-ink-muted mt-4">
-            Source: DHA circular No. 16/2013 (mandatory insurance Dubai), DOH
-            Resolution No. 1/2014 (Abu Dhabi updates), MOHAP federal mandate
+            Source: the UAE healthcare regulator circular No. 16/2013 (mandatory insurance Dubai), the UAE healthcare regulator
+            Resolution No. 1/2014 (Abu Dhabi updates), the UAE healthcare regulator federal mandate
             2023.
           </p>
         </section>

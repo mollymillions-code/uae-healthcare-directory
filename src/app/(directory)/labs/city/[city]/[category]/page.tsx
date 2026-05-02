@@ -23,10 +23,10 @@ export const revalidate = 43200;
 // ─── Regulator helper ────────────────────────────────────────────────────────
 
 function getCityRegulator(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 // ─── Category medical content ─────────────────────────────────────────────────
@@ -86,7 +86,7 @@ const CATEGORY_MEDICAL_CONTENT: Record<TestCategory, CategoryContent> = {
     whenToTest:
       "Annual diabetes screening for all adults over 35 in the UAE; every 6 months for those in the pre-diabetic range or with risk factors. Fasting glucose requires an 8–12 hour overnight fast. HbA1c does not require fasting and can be drawn at any time.",
     uaeContext:
-      "The International Diabetes Federation ranks the UAE among the top 10 countries globally for diabetes prevalence. The UAE Ministry of Health has launched national diabetes awareness campaigns, and DHA has mandated diabetes screening as part of periodic health assessments in workplaces. Approximately 1 in 6 UAE adults has diagnosed diabetes; the true figure including undiagnosed cases is estimated higher. Early detection through HbA1c screening can defer or prevent progression from pre-diabetes to full Type 2 diabetes.",
+      "The International Diabetes Federation ranks the UAE among the top 10 countries globally for diabetes prevalence. The UAE Ministry of Health has launched national diabetes awareness campaigns, and the UAE healthcare regulator has mandated diabetes screening as part of periodic health assessments in workplaces. Approximately 1 in 6 UAE adults has diagnosed diabetes; the true figure including undiagnosed cases is estimated higher. Early detection through HbA1c screening can defer or prevent progression from pre-diabetes to full Type 2 diabetes.",
   },
   liver: {
     shortDescription:
@@ -110,7 +110,7 @@ const CATEGORY_MEDICAL_CONTENT: Record<TestCategory, CategoryContent> = {
     whenToTest:
       "Include kidney function in your annual metabolic panel. Most KFT panels require fasting for accurate creatinine and BUN measurement. For diabetics, testing every 6 months alongside HbA1c is the UAE Diabetes Society's recommended protocol.",
     uaeContext:
-      "The UAE has among the highest rates of end-stage renal disease (ESRD) requiring dialysis in the MENA region, driven primarily by the diabetes epidemic. Dubai Health Authority has established dedicated chronic kidney disease clinics at several public hospitals. The high-protein, red-meat-heavy dietary patterns common in Gulf cuisine also place additional strain on renal filtration and contribute to elevated uric acid levels — a major driver of gout prevalence in Emirati and Saudi males.",
+      "The UAE has among the highest rates of end-stage renal disease (ESRD) requiring dialysis in the MENA region, driven primarily by the diabetes epidemic. The UAE healthcare regulator (Dubai) has established dedicated chronic kidney disease clinics at several public hospitals. The high-protein, red-meat-heavy dietary patterns common in Gulf cuisine also place additional strain on renal filtration and contribute to elevated uric acid levels — a major driver of gout prevalence in Emirati and Saudi males.",
   },
   cardiac: {
     shortDescription:
@@ -122,7 +122,7 @@ const CATEGORY_MEDICAL_CONTENT: Record<TestCategory, CategoryContent> = {
     whenToTest:
       "Annual cardiac risk screening from age 35 (or age 25 if family history of early CVD). Lipid profiles require 9–12 hours of fasting for accurate results. hs-CRP does not require fasting. If you are on statins or cardiac medication, retest every 3–6 months to assess treatment response.",
     uaeContext:
-      "The UAE has among the youngest-onset cardiovascular disease profiles in the world, with heart attacks occurring in men as young as their 30s and 40s — driven by the combination of uncontrolled diabetes, hypertension, heavy smoking, stress, poor diet, and sedentary lifestyles. Dubai Health Authority has prioritised cardiac screening in their National Agenda Health Indicators. Studies from Rashid Hospital and Cleveland Clinic Abu Dhabi show UAE patients presenting with ACS (acute coronary syndrome) have more severe multi-vessel disease at younger ages than equivalent European cohorts.",
+      "The UAE has among the youngest-onset cardiovascular disease profiles in the world, with heart attacks occurring in men as young as their 30s and 40s — driven by the combination of uncontrolled diabetes, hypertension, heavy smoking, stress, poor diet, and sedentary lifestyles. The UAE healthcare regulator (Dubai) has prioritised cardiac screening in their National Agenda Health Indicators. Studies from Rashid Hospital and Cleveland Clinic Abu Dhabi show UAE patients presenting with ACS (acute coronary syndrome) have more severe multi-vessel disease at younger ages than equivalent European cohorts.",
   },
   thyroid: {
     shortDescription:
@@ -192,7 +192,7 @@ const CATEGORY_MEDICAL_CONTENT: Record<TestCategory, CategoryContent> = {
     whoShouldTest:
       "Chest X-ray is required for all new UAE residents as part of the visa medical process. Abdominal ultrasound is recommended annually for those with elevated liver enzymes, fatty liver diagnosis, or abdominal symptoms. DEXA scan is recommended for all post-menopausal women and men over 65. Pelvic ultrasound is indicated for women with menstrual irregularity, pelvic pain, or suspected PCOS.",
     whenToTest:
-      "Visa medical imaging is done at any MOHAP/DHA/DOH-approved centre upon entry to the UAE. Elective ultrasound studies generally do not require fasting (except gallbladder/upper abdominal ultrasound, which requires 4–6 hours fasting). DEXA scans require no special preparation.",
+      "Visa medical imaging is done at any the UAE healthcare regulator/UAE-approved (Abu Dhabi) centre upon entry to the UAE. Elective ultrasound studies generally do not require fasting (except gallbladder/upper abdominal ultrasound, which requires 4–6 hours fasting). DEXA scans require no special preparation.",
     uaeContext:
       "The UAE operates a mandatory chest X-ray screening programme for all residents and long-term visa applicants — one of the largest tuberculosis surveillance programmes in the world. Given the large South Asian and Sub-Saharan African expatriate populations (regions with high TB prevalence), this programme has significant public health value. UAE radiology centres in Dubai Healthcare City and Abu Dhabi's Healthpoint Hospital offer some of the most advanced diagnostic imaging capabilities in the MENA region.",
   },

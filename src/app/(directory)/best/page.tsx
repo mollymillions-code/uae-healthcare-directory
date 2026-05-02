@@ -21,7 +21,7 @@ export function generateMetadata(): Metadata {
 
   const title = "Best Healthcare Providers in the UAE — Top-Rated Clinics & Hospitals [2026]";
   const description =
-    "Find the best-rated hospitals, clinics, dental practices, and specialists across all UAE cities. Ranked by Google rating. 12,000+ providers from DHA, DOH, and MOHAP registers.";
+    "Find the best-rated hospitals, clinics, dental practices, and specialists across all UAE cities. Ranked by Google rating. 12,000+ providers from the UAE healthcare regulator registers.";
 
   return {
     title,
@@ -85,7 +85,7 @@ export default async function BestIndexPage() {
     {
       question: "How does the UAE Open Healthcare Directory rank providers?",
       answer:
-        "Providers are ranked by Google rating (highest first), with review count used as a tiebreaker. Only providers with a rating above 0 are included. All data is sourced from official DHA, DOH, and MOHAP government registers.",
+        "Providers are ranked by Google rating (highest first), with review count used as a tiebreaker. Only providers with a rating above 0 are included. All data is sourced from official the UAE healthcare regulator government registers.",
     },
     {
       question: "Which UAE city has the most healthcare providers?",
@@ -101,7 +101,7 @@ export default async function BestIndexPage() {
     {
       question: "How often are rankings updated?",
       answer:
-        "Provider data is regularly updated and cross-referenced with official DHA, DOH, and MOHAP registers. Google ratings and review counts are refreshed periodically. Last verified March 2026.",
+        "Provider data is regularly updated and cross-referenced with official the UAE healthcare regulator registers. Google ratings and review counts are refreshed periodically. Last verified March 2026.",
     },
     {
       question: "Can I find the best specialists in my area?",
@@ -136,7 +136,7 @@ export default async function BestIndexPage() {
         </h1>
         <p className="font-['Geist',sans-serif] text-sm text-black/40">
           {totalProviders.toLocaleString()} providers across {cityData.length} cities
-          {" "}&middot; Ranked by Google rating &middot; DHA / DOH / MOHAP
+          {" "}&middot; Ranked by Google rating &middot; the UAE healthcare regulator
           {" "}&middot; Updated March 2026
         </p>
       </div>
@@ -147,7 +147,7 @@ export default async function BestIndexPage() {
           The UAE Open Healthcare Directory lists {totalProviders.toLocaleString()} healthcare
           providers across {cityData.length} cities in the United Arab Emirates. Select a city
           below to find the best-rated hospitals, clinics, dental practices, and specialists —
-          all ranked by Google rating and verified against official DHA, DOH, and MOHAP
+          all ranked by Google rating and verified against official the UAE healthcare regulator
           government registers. Data last verified March 2026.
         </p>
       </div>
@@ -240,9 +240,9 @@ export default async function BestIndexPage() {
           </p>
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             All provider data is sourced from three official UAE health authority registers:
-            the <strong>Dubai Health Authority (DHA)</strong>, the{" "}
-            <strong>Department of Health Abu Dhabi (DOH)</strong>, and the{" "}
-            <strong>Ministry of Health and Prevention (MOHAP)</strong>.
+            the <strong>The UAE healthcare regulator (Dubai)</strong>, the{" "}
+            <strong>The UAE healthcare regulator (Abu Dhabi)</strong>, and the{" "}
+            <strong>The UAE healthcare regulator</strong>.
           </p>
           <p className="text-[11px] text-black/40">
             These rankings do not constitute medical advice. Always verify credentials and
@@ -256,7 +256,7 @@ export default async function BestIndexPage() {
         <p className="text-[11px] text-black/40 leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings
           and review counts and do not constitute a medical recommendation. Provider data is
-          sourced from official DHA, DOH, and MOHAP registers, last verified March 2026.
+          sourced from official the UAE healthcare regulator registers, last verified March 2026.
         </p>
       </div>
     </div>

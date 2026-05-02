@@ -27,13 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: truncateTitle(`UAE Healthcare Directory — 12,500+ Providers [${year}]`),
     description: truncateDescription(
-      `Compare 12,500+ DHA/DOH/MOHAP-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`
+      `Compare 12,500+ UAE-licensed hospitals, clinics & dentists across Dubai, Abu Dhabi & Sharjah. Ratings, reviews, insurance, hours & directions. Free.`
     ),
     openGraph: {
       type: "website",
       title: "UAE Healthcare Directory — 12,500+ Doctors, Clinics & Hospitals",
       description:
-        "Free directory of 12,500+ DHA/DOH/MOHAP-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
+        "Free directory of 12,500+ UAE-licensed healthcare providers. Compare hospitals, clinics & dentists in Dubai, Abu Dhabi, Sharjah by rating, insurance & specialty.",
       locale: "en_AE",
       siteName: "UAE Open Healthcare Directory by Zavis",
       url: `${base}/directory`,
@@ -130,7 +130,7 @@ export default async function DirectoryHomePage() {
     {
       question: "What is the UAE Open Healthcare Directory?",
       answer:
-        "A free, comprehensive directory of licensed healthcare providers across all seven Emirates. Data sourced from official DHA, DOH, and MOHAP registers. Ratings from Google Maps. By Zavis.",
+        "A free, comprehensive directory of licensed healthcare providers across all seven Emirates. Sourced from official UAE healthcare licensing data. Ratings from Google Maps. By Zavis.",
     },
     {
       question: "How do I find a doctor near me?",
@@ -140,12 +140,12 @@ export default async function DirectoryHomePage() {
     {
       question: "Where does the data come from?",
       answer:
-        "All listings are sourced from official UAE health authority registers: DHA (Dubai), DOH (Abu Dhabi & Al Ain), and MOHAP (Sharjah, Ajman, RAK, Fujairah, UAQ).",
+        "All listings are sourced from official UAE healthcare licensing data covering Dubai, Abu Dhabi & Al Ain, and the Northern Emirates (Sharjah, Ajman, RAK, Fujairah, UAQ).",
     },
     {
       question: "Can clinics update their listing?",
       answer:
-        "Yes. Healthcare providers can claim their listing for free with a DHA/DOH/MOHAP licence. Once verified, update contact details, hours, and services.",
+        "Yes. Healthcare providers can claim their listing for free with a UAE healthcare regulator licence. Once verified, update contact details, hours, and services.",
     },
   ];
 
@@ -210,10 +210,10 @@ export default async function DirectoryHomePage() {
             const isLarge = idx === 0;
             const regulator =
               city.slug === "dubai"
-                ? "DHA Verified"
+                ? "UAE-licensed (Dubai)"
                 : city.slug === "abu-dhabi" || city.slug === "al-ain"
-                ? "DOH Verified"
-                : "MOHAP Verified";
+                ? "UAE-licensed (Abu Dhabi)"
+                : "UAE-licensed";
             return (
               <div
                 key={city.slug}
@@ -282,7 +282,7 @@ export default async function DirectoryHomePage() {
               Icon: ShieldCheck,
               title: "Government-verified",
               desc:
-                "Every listing is cross-referenced against DHA, DOH, or MOHAP licensed facility registers. If it isn't licensed, it isn't here.",
+                "Every listing is cross-referenced against official UAE healthcare licensing data. If it isn't licensed, it isn't here.",
             },
             {
               Icon: Star,
@@ -319,8 +319,8 @@ export default async function DirectoryHomePage() {
             there are {totalProviders.toLocaleString()}+ licensed healthcare providers listed across all seven
             emirates of the United Arab Emirates — Dubai, Abu Dhabi, Sharjah, Ajman, Al Ain, Ras Al Khaimah,
             Fujairah, and Umm Al Quwain. These facilities are regulated by three government health authorities:
-            the Dubai Health Authority (DHA) oversees Dubai, the Department of Health (DOH) regulates Abu Dhabi
-            and Al Ain, and the Ministry of Health and Prevention (MOHAP) governs Sharjah, Ajman, Ras Al Khaimah,
+            the UAE healthcare regulator (Dubai) oversees Dubai, the UAE healthcare regulator (Abu Dhabi) regulates Abu Dhabi
+            and Al Ain, and the UAE healthcare regulator governs Sharjah, Ajman, Ras Al Khaimah,
             Fujairah, and Umm Al Quwain. The directory covers 26 medical specialties — hospitals, dental clinics,
             dermatology, cardiology, ophthalmology, mental health, pharmacy, and pediatrics among them — with
             each listing providing verified contact details, Google ratings from patient reviews, accepted
@@ -343,7 +343,7 @@ export default async function DirectoryHomePage() {
                 Own a clinic? Claim your free listing.
               </h2>
               <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
-                Verify in under 2 minutes with your DHA/DOH/MOHAP licence. Update hours, insurance, services.
+                Verify in under 2 minutes with your UAE healthcare regulator licence. Update hours, insurance, services.
                 Reach thousands of patients actively searching — for free.
               </p>
               <Link

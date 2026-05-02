@@ -35,7 +35,7 @@ export function generateMetadata({ params }: Props): Metadata {
     return {
       title: "Healthcare Professionals by Area",
       description:
-        "Browse DHA-licensed healthcare professionals by area in Dubai.",
+        "Browse UAE-licensed (Dubai) healthcare professionals by area in Dubai.",
     };
   }
   const professionals = getProfessionalsByArea(params.area);
@@ -43,13 +43,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
   return {
     title: `Healthcare Professionals in ${areaInfo.name}, Dubai — ${count.toLocaleString()} Licensed Staff`,
-    description: `Browse ${count.toLocaleString()} DHA-licensed healthcare professionals in ${areaInfo.name}, Dubai. Physicians, dentists, nurses, and allied health workers by specialty and facility. Sourced from the official Sheryan Medical Registry.`,
+    description: `Browse ${count.toLocaleString()} UAE-licensed (Dubai) healthcare professionals in ${areaInfo.name}, Dubai. Physicians, dentists, nurses, and allied health workers by specialty and facility. Sourced from the official Sheryan Medical Registry.`,
     alternates: {
       canonical: `${base}/professionals/area/${areaInfo.slug}`,
     },
     openGraph: {
       title: `Healthcare Professionals in ${areaInfo.name}, Dubai`,
-      description: `${count.toLocaleString()} DHA-licensed professionals practicing in ${areaInfo.name}.`,
+      description: `${count.toLocaleString()} UAE-licensed (Dubai) professionals practicing in ${areaInfo.name}.`,
       url: `${base}/professionals/area/${areaInfo.slug}`,
       type: "website",
       siteName: "UAE Open Healthcare Directory",
@@ -115,7 +115,7 @@ export default function AreaProfessionalsPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: `Healthcare Professionals in ${areaInfo.name}, Dubai`,
-          description: `${professionals.length.toLocaleString()} DHA-licensed healthcare professionals in ${areaInfo.name}, Dubai.`,
+          description: `${professionals.length.toLocaleString()} UAE-licensed (Dubai) healthcare professionals in ${areaInfo.name}, Dubai.`,
           url: `${base}/professionals/area/${areaInfo.slug}`,
           about: {
             "@type": "Place",
@@ -144,13 +144,13 @@ export default function AreaProfessionalsPage({ params }: Props) {
           Healthcare Professionals in {areaInfo.name}
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {professionals.length.toLocaleString()} DHA-Licensed Staff in{" "}
+          {professionals.length.toLocaleString()} UAE-Licensed (Dubai) Staff in{" "}
           {areaInfo.name}, Dubai
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             {areaInfo.name} is home to{" "}
-            {professionals.length.toLocaleString()} DHA-licensed healthcare
+            {professionals.length.toLocaleString()} UAE-licensed (Dubai) healthcare
             professionals, including{" "}
             {categoryBreakdown
               .map(
@@ -317,9 +317,9 @@ export default function AreaProfessionalsPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. This directory is for informational purposes
-          only. Verify professional credentials directly with DHA before making
+          only. Verify professional credentials directly with the UAE healthcare regulator before making
           healthcare decisions.
         </p>
       </div>

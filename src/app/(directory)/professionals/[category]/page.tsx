@@ -32,11 +32,11 @@ export function generateMetadata({ params }: Props): Metadata {
   if (!cat) return {};
   const base = getBaseUrl();
   return {
-    title: `${cat.name} in Dubai — ${cat.count.toLocaleString()} DHA-Licensed Professionals`,
-    description: `Browse ${cat.count.toLocaleString()} DHA-licensed ${cat.name.toLowerCase()} in Dubai. ${cat.description} Sourced from the official Sheryan Medical Registry.`,
+    title: `${cat.name} in Dubai — ${cat.count.toLocaleString()} UAE-Licensed (Dubai) Professionals`,
+    description: `Browse ${cat.count.toLocaleString()} UAE-licensed (Dubai) ${cat.name.toLowerCase()} in Dubai. ${cat.description} Sourced from the official Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/professionals/${cat.slug}` },
     openGraph: {
-      title: `${cat.name} in Dubai — ${cat.count.toLocaleString()} DHA-Licensed Professionals`,
+      title: `${cat.name} in Dubai — ${cat.count.toLocaleString()} UAE-Licensed (Dubai) Professionals`,
       description: `${cat.count.toLocaleString()} licensed ${cat.name.toLowerCase()} practicing in Dubai, sourced from the DHA Sheryan Registry.`,
       url: `${base}/professionals/${cat.slug}`,
       type: "website",
@@ -90,7 +90,7 @@ export default function CategoryPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: `${cat.name} in Dubai`,
-          description: `${cat.count.toLocaleString()} DHA-licensed ${cat.name.toLowerCase()} in Dubai.`,
+          description: `${cat.count.toLocaleString()} UAE-licensed (Dubai) ${cat.name.toLowerCase()} in Dubai.`,
           url: `${base}/professionals/${cat.slug}`,
           mainEntity: {
             "@type": "ItemList",
@@ -132,11 +132,11 @@ export default function CategoryPage({ params }: Props) {
           {cat.name} in Dubai
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {cat.count.toLocaleString()} DHA-Licensed Professionals
+          {cat.count.toLocaleString()} UAE-Licensed (Dubai) Professionals
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            {cat.description} This data is sourced from the Dubai Health Authority Sheryan
+            {cat.description} This data is sourced from the UAE healthcare regulator (Dubai) Sheryan
             Medical Registry and covers {specialties.length} tracked specialties across{" "}
             {Object.keys(facCounts).length.toLocaleString()} healthcare facilities.
           </p>
@@ -255,9 +255,9 @@ export default function CategoryPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

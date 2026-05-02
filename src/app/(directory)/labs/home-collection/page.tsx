@@ -40,7 +40,7 @@ export function generateMetadata(): Metadata {
   ).length;
   return {
     title: `At-Home Lab Test Collection UAE — Compare ${stats.labsWithHomeCollection} Services`,
-    description: `Compare at-home blood test collection services across the UAE. ${freeCount} labs offer free home collection. DHA-licensed nurses visit your location in Dubai, Abu Dhabi & Sharjah. Results within 24h. From AED 99.`,
+    description: `Compare at-home blood test collection services across the UAE. ${freeCount} labs offer free home collection. UAE-licensed (Dubai) nurses visit your location in Dubai, Abu Dhabi & Sharjah. Results within 24h. From AED 99.`,
     alternates: { canonical: `${base}/labs/home-collection` },
     openGraph: {
       title: "At-Home Lab Test Collection in the UAE — Compare Services & Prices",
@@ -92,12 +92,12 @@ export default function HomeCollectionPage() {
     {
       question: "How long does it take to get a home blood test nurse in Dubai?",
       answer:
-        "Most home collection services in Dubai aim to send a DHA-licensed nurse within 30 to 90 minutes of booking, though next-day slots are also available. DarDoc and ServiceMarket are generally the fastest, offering same-day and urgent appointments. For a guaranteed early-morning fasting draw (which many tests require), it is best to book the night before and schedule a 7-8 AM slot. Operating hours are typically 7 AM to 10 or 11 PM daily across Dubai and Abu Dhabi.",
+        "Most home collection services in Dubai aim to send a UAE-licensed (Dubai) nurse within 30 to 90 minutes of booking, though next-day slots are also available. DarDoc and ServiceMarket are generally the fastest, offering same-day and urgent appointments. For a guaranteed early-morning fasting draw (which many tests require), it is best to book the night before and schedule a 7-8 AM slot. Operating hours are typically 7 AM to 10 or 11 PM daily across Dubai and Abu Dhabi.",
     },
     {
       question: "Is home blood test collection safe in the UAE?",
       answer:
-        "Yes. All home collection services operating in the UAE must use DHA-licensed (Dubai) or DOH-licensed (Abu Dhabi) phlebotomists and nurses. They use sterile single-use lancets and vacutainer systems, follow standard infection control protocols, and transport samples in temperature-controlled containers to partner laboratories. The labs processing the samples are the same accredited facilities used for walk-in testing. Results are delivered via secure app or email, not paper.",
+        "Yes. All home collection services operating in the UAE must use UAE-licensed (Dubai) (Dubai) or UAE-licensed (Abu Dhabi) (Abu Dhabi) phlebotomists and nurses. They use sterile single-use lancets and vacutainer systems, follow standard infection control protocols, and transport samples in temperature-controlled containers to partner laboratories. The labs processing the samples are the same accredited facilities used for walk-in testing. Results are delivered via secure app or email, not paper.",
     },
     {
       question: "Does insurance cover home blood test collection in the UAE?",
@@ -126,7 +126,7 @@ export default function HomeCollectionPage() {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "At-Home Lab Test Collection in the UAE",
-    description: `Compare ${homeCollectionLabs.length} home blood test collection services across the UAE. DHA-licensed nurses, free collection at ${freeHomeLabs.length} labs, results within 24 hours.`,
+    description: `Compare ${homeCollectionLabs.length} home blood test collection services across the UAE. UAE-licensed (Dubai) nurses, free collection at ${freeHomeLabs.length} labs, results within 24 hours.`,
     url: `${base}/labs/home-collection`,
     numberOfItems: homeCollectionLabs.length,
     itemListElement: homeCollectionLabs.map((lab, i) => ({
@@ -167,8 +167,8 @@ export default function HomeCollectionPage() {
 
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
           <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-            Home blood test collection is widely available across the UAE. A DHA or
-            DOH-licensed phlebotomist visits your home, office, or hotel, draws the
+            Home blood test collection is widely available across the UAE. A the UAE healthcare regulator or
+            UAE-licensed (Abu Dhabi) phlebotomist visits your home, office, or hotel, draws the
             sample using sterile equipment, and delivers results digitally within
             24 hours. Of the {stats.totalLabs} diagnostic labs tracked by this
             directory, {homeCollectionLabs.length} offer home collection services
@@ -289,11 +289,11 @@ export default function HomeCollectionPage() {
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
         <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
           Home blood test collection in the UAE follows a tightly regulated process.
-          Under DHA and DOH rules, all phlebotomists operating in patients&apos; homes
+          Under the UAE healthcare regulator and the UAE healthcare regulator rules, all phlebotomists operating in patients&apos; homes
           must hold a current UAE health authority license. Samples are collected
           using the same sterile vacutainer systems used in clinical labs, transported
-          in validated cold-chain containers, and processed in the same DHA or
-          DOH-accredited laboratories used for walk-in patients. The result is
+          in validated cold-chain containers, and processed in the same the UAE healthcare regulator or
+          the UAE healthcare regulator-accredited laboratories used for walk-in patients. The result is
           clinically equivalent to a lab visit — the only difference is where the
           needle enters your arm.
         </p>
@@ -312,7 +312,7 @@ export default function HomeCollectionPage() {
             icon: UserCheck,
             step: "2",
             title: "Licensed Nurse Arrives",
-            body: "A DHA or DOH-licensed phlebotomist arrives at your home, office, or hotel at the booked time. They carry all equipment: sterile needles, vacutainers, gloves, antiseptic wipes, sample labels, and a cold-chain transport bag. ID verification may be required.",
+            body: "A the UAE healthcare regulator or UAE-licensed (Abu Dhabi) phlebotomist arrives at your home, office, or hotel at the booked time. They carry all equipment: sterile needles, vacutainers, gloves, antiseptic wipes, sample labels, and a cold-chain transport bag. ID verification may be required.",
           },
           {
             icon: TestTube,
@@ -453,7 +453,7 @@ export default function HomeCollectionPage() {
       </div>
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
         <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-4">
-          Both home collection and walk-in labs use the same DHA-licensed processing
+          Both home collection and walk-in labs use the same UAE-licensed (Dubai) processing
           facilities and produce clinically equivalent results. The choice comes down
           to convenience, timing, and cost. Here is a direct comparison:
         </p>
@@ -564,7 +564,7 @@ export default function HomeCollectionPage() {
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-4" data-answer-block="true">
         <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-4">
           Home collection coverage varies by emirate. Dubai has the most providers
-          due to its population density and regulatory maturity under DHA. Abu Dhabi
+          due to its population density and regulatory maturity under the UAE healthcare regulator. Abu Dhabi
           is well-served by PureLab, NRL, MenaLabs, DarDoc, and ServiceMarket. The
           Northern Emirates (Sharjah, Ajman, Fujairah) are covered primarily by
           Thumbay, Medsol, and Healthchecks360.
@@ -620,14 +620,14 @@ export default function HomeCollectionPage() {
               Regulatory framework for home collection in the UAE
             </p>
             <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-              The Dubai Health Authority (DHA) and Abu Dhabi&apos;s Department of Health
-              (DOH) license both the healthcare professionals collecting samples and
+              The UAE healthcare regulator (Dubai) and Abu Dhabi&apos;s Department of Health
+              (the UAE healthcare regulator) license both the healthcare professionals collecting samples and
               the laboratories processing them. Home collection nurses must hold
-              a DHA/DOH nursing or phlebotomy license. Sample transport must comply
+              a UAE healthcare regulator/the UAE healthcare regulator nursing or phlebotomy license. Sample transport must comply
               with IATA P650 standards for biological substances. Results are
               subject to the same quality control and proficiency testing
               requirements as walk-in lab results. The Ministry of Health and
-              Prevention (MOHAP) governs the Northern Emirates. All labs listed
+              Prevention (the UAE healthcare regulator) governs the Northern Emirates. All labs listed
               here operate under one or more of these regulatory frameworks.
             </p>
           </div>
@@ -666,7 +666,7 @@ export default function HomeCollectionPage() {
           directly with the provider before booking. This directory is for
           informational purposes only and does not constitute medical advice.
           Consult a physician before ordering diagnostic tests. All listed providers
-          are licensed by DHA, DOH, or MOHAP. Data last verified March 2026.
+          are licensed by the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator. Data last verified March 2026.
         </p>
       </div>
     </div>

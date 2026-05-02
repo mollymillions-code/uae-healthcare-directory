@@ -1,14 +1,14 @@
 /**
  * UAE health-insurance claim rejection code reference.
  *
- * Sourced from publicly-available DHA/DOH publications, NEXtCARE training
+ * Sourced from publicly-available the UAE healthcare regulator publications, NEXtCARE training
  * materials, eClaimLink documentation (Daman/HAAD), and Shafafiya operator
  * guidance. Every entry is the editorial team's distillation of the
  * canonical source — verify against the platform's own current docs before
  * using in clinical billing decisions.
  *
  * Coverage: ~80 codes across DHPO (Dubai), eClaimLink (Abu Dhabi), Shafafiya
- * (DHA TPA platform), and NEXtCARE (private TPA shared by MetLife and others).
+ * (the UAE healthcare regulator TPA platform), and NEXtCARE (private TPA shared by MetLife and others).
  */
 
 export type ClaimPlatform = "DHPO" | "eClaimLink" | "Shafafiya" | "NEXtCARE";
@@ -114,7 +114,7 @@ export const CLAIM_CODES: ClaimCode[] = [
     platform: "DHPO",
     explanation: "Claim header information incorrect or incomplete.",
     commonCause: "Member ID typo, date-of-service mismatch with documentation, provider license number missing or expired.",
-    fix: "Cross-check member ID, DoS, and provider license number against source documents. Ensure provider license is current — DHA license expiry will trigger this rejection until renewed.",
+    fix: "Cross-check member ID, DoS, and provider license number against source documents. Ensure provider license is current — regulator license expiry will trigger this rejection until renewed.",
   },
   {
     code: "TIME-070",
@@ -138,7 +138,7 @@ export const CLAIM_CODES: ClaimCode[] = [
     fix: "Verify the correct age-appropriate code. If age-restriction was clinically overridden, document the specific medical indication.",
   },
 
-  // ─── eClaimLink (Abu Dhabi DOH) ──────────────────────────────────────
+  // ─── eClaimLink (Abu Dhabi the UAE healthcare regulator) ──────────────────────────────────────
   {
     code: "EC-1.01",
     platform: "eClaimLink",
@@ -227,17 +227,17 @@ export const CLAIM_CODES: ClaimCode[] = [
     code: "EC-13.02",
     platform: "eClaimLink",
     explanation: "Provider license expired or under suspension on date of service.",
-    commonCause: "DHA/DOH professional license lapsed or under temporary suspension; eClaimLink rejects all claims from suspended providers.",
+    commonCause: "The UAE healthcare regulator professional license lapsed or under temporary suspension; eClaimLink rejects all claims from suspended providers.",
     fix: "Renew the license immediately. Claims for service-dates during the suspension period typically can't be recovered. Use this as a forcing function for license-renewal calendar (see /tools/compliance-calendar).",
   },
 
-  // ─── Shafafiya (DHA TPA platform) ─────────────────────────────────────
+  // ─── Shafafiya (the UAE healthcare regulator TPA platform) ─────────────────────────────────────
   {
     code: "SH-100",
     platform: "Shafafiya",
     explanation: "Submission file format invalid — not Shafafiya-compliant XML.",
     commonCause: "Billing software exporting in eClaimLink format instead of Shafafiya format. Different schemas for different platforms.",
-    fix: "Configure billing system to use Shafafiya XSD when submitting to DHA TPAs. If using third-party RCM, confirm they support Shafafiya — some only support eClaimLink.",
+    fix: "Configure billing system to use Shafafiya XSD when submitting to the UAE healthcare regulator TPAs. If using third-party RCM, confirm they support Shafafiya — some only support eClaimLink.",
   },
   {
     code: "SH-201",
@@ -249,37 +249,37 @@ export const CLAIM_CODES: ClaimCode[] = [
   {
     code: "SH-305",
     platform: "Shafafiya",
-    explanation: "Service code not in DHA Master Price List.",
-    commonCause: "Use of CPT/HCPCS codes outside the DHA-approved subset. DHA maintains its own master price list distinct from US CPT.",
-    fix: "Map to the closest DHA-approved code. Reference the DHA Master Price List published quarterly.",
+    explanation: "Service code not in the UAE healthcare regulator Master Price List.",
+    commonCause: "Use of CPT/HCPCS codes outside the UAE-approved (Dubai) subset. The UAE healthcare regulator maintains its own master price list distinct from US CPT.",
+    fix: "Map to the closest UAE-approved (Dubai) code. Reference the UAE healthcare regulator Master Price List published quarterly.",
   },
   {
     code: "SH-410",
     platform: "Shafafiya",
     explanation: "Pre-auth required for radiology / imaging service.",
-    commonCause: "MRI, CT, PET without pre-authorisation. DHA enforces pre-auth on all advanced imaging.",
+    commonCause: "MRI, CT, PET without pre-authorisation. The UAE healthcare regulator enforces pre-auth on all advanced imaging.",
     fix: "Submit retro-auth with clinical justification (initial symptoms, examination findings, ruling out). Build the workflow into the radiology booking system.",
   },
   {
     code: "SH-505",
     platform: "Shafafiya",
     explanation: "Bundle violation — services billed separately should be bundled.",
-    commonCause: "Surgical procedure billed with all incidental services unbundled (anaesthesia, recovery room, supplies). DHA bundles many components into the primary code.",
-    fix: "Rebill as a bundle per the DHA bundling rules. Audit billing rules quarterly — bundling logic updates.",
+    commonCause: "Surgical procedure billed with all incidental services unbundled (anaesthesia, recovery room, supplies). The UAE healthcare regulator bundles many components into the primary code.",
+    fix: "Rebill as a bundle per the UAE healthcare regulator bundling rules. Audit billing rules quarterly — bundling logic updates.",
   },
   {
     code: "SH-606",
     platform: "Shafafiya",
     explanation: "Multiple-procedure discount not applied.",
-    commonCause: "Two or more procedures performed in the same session billed at full rate. DHA mandates discount on the second and subsequent procedures.",
-    fix: "Apply multiple-procedure discount per DHA rules: typically 100% of primary, 50% of subsequent procedures.",
+    commonCause: "Two or more procedures performed in the same session billed at full rate. The UAE healthcare regulator mandates discount on the second and subsequent procedures.",
+    fix: "Apply multiple-procedure discount per the UAE healthcare regulator rules: typically 100% of primary, 50% of subsequent procedures.",
   },
   {
     code: "SH-707",
     platform: "Shafafiya",
     explanation: "Claim status query timeout — TPA didn't respond within SLA.",
     commonCause: "TPA platform issue, not a clinic-side issue. Most resolve automatically within 24 hours.",
-    fix: "Wait 24–48 hours and re-query. If persistent, contact DHA TPA support with claim ID.",
+    fix: "Wait 24–48 hours and re-query. If persistent, contact the UAE healthcare regulator TPA support with claim ID.",
   },
   {
     code: "SH-808",

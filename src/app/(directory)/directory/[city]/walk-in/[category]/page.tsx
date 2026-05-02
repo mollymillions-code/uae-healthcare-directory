@@ -20,9 +20,9 @@ interface Props { params: { city: string; category: string } }
 const WALK_IN_CATEGORY_SLUGS = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
 
 function getRegulatorName(s: string): string {
-  if (s === "dubai") return "the Dubai Health Authority (DHA)";
-  if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+  if (s === "dubai") return "the UAE healthcare regulator (Dubai)";
+  if (s === "abu-dhabi" || s === "al-ain") return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 function getGPFeeRange(s: string): string {
   if (s === "dubai") return "AED 150-300";

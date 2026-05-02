@@ -39,7 +39,7 @@ const faqs = [
   {
     question: "How does Dubai healthcare compare to Abu Dhabi?",
     answer:
-      "Dubai and Abu Dhabi are the two largest healthcare markets in the UAE. Dubai is regulated by the DHA and has the highest provider density, with typical GP consultation fees of AED 150-300. Abu Dhabi is regulated by the DOH, with GP fees of AED 100-250. Both mandate employer-provided health insurance. Dubai has more private specialty clinics, while Abu Dhabi has major academic medical centers like Cleveland Clinic Abu Dhabi. Browse the individual comparison pages for exact provider counts and ratings.",
+      "Dubai and Abu Dhabi are the two largest healthcare markets in the UAE. Dubai is regulated by the UAE healthcare regulator (Dubai) and has the highest provider density, with typical GP consultation fees of AED 150-300. Abu Dhabi is regulated by the UAE healthcare regulator (Abu Dhabi), with GP fees of AED 100-250. Both mandate employer-provided health insurance. Dubai has more private specialty clinics, while Abu Dhabi has major academic medical centers like Cleveland Clinic Abu Dhabi. Browse the individual comparison pages for exact provider counts and ratings.",
   },
   {
     question: "Which UAE city has the cheapest healthcare?",
@@ -119,9 +119,9 @@ export default async function CompareHubPage() {
         <>
           According to the UAE Open Healthcare Directory, there are{" "}
           {totalProviders.toLocaleString()}+ licensed healthcare providers across
-          8 UAE cities. Healthcare in the UAE is regulated by three authorities:
-          the Dubai Health Authority (DHA), the Department of Health Abu Dhabi
-          (DOH), and the Ministry of Health and Prevention (MOHAP). Costs,
+          8 UAE cities. Healthcare in the UAE is regulated by three jurisdictions
+          under the UAE healthcare regulator: Dubai, Abu Dhabi, and the
+          Northern Emirates. Costs,
           provider availability, insurance mandates, and quality vary
           significantly by emirate. This page provides {totalPages}{" "}
           data-driven side-by-side comparisons to help patients, families, and
@@ -166,7 +166,7 @@ export default async function CompareHubPage() {
           <div className="mt-8 border-t border-ink-line pt-4">
             <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
               <strong>Disclaimer:</strong> All provider counts, ratings, and cost estimates are based
-              on data from official UAE health authority registers (DHA, DOH, MOHAP) and Google Maps,
+              on data from official UAE healthcare licensing data and Google Maps,
               last verified March 2026. Consultation fees are indicative ranges and may vary by provider,
               insurance status, and visit complexity. This information is for comparison and educational
               purposes only and does not constitute medical advice.

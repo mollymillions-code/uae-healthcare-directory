@@ -45,17 +45,17 @@ export async function generateStaticParams() {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getGovernmentOperator(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "SEHA (Abu Dhabi Health Services Company) under DOH oversight";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "SEHA (Abu Dhabi Health Services Company) under emirate health oversight";
+  return "the UAE healthcare regulator";
 }
 
 export function generateMetadata({ params }: Props): Metadata {
@@ -112,15 +112,15 @@ export default async function GovernmentCategoryCityPage({ params }: Props) {
     },
     {
       question: `Are government ${catLower} in ${city.name} free?`,
-      answer: `Many government ${catLower} in ${city.name} offer free or subsidized services for UAE nationals with Thiqa or DHA insurance coverage. Expatriates with valid health insurance typically pay reduced co-payments. Emergency services cannot be refused regardless of insurance status. Uninsured patients pay out-of-pocket at government-regulated rates, which are substantially lower than private facility fees. Contact the facility directly to confirm costs for your specific situation.`,
+      answer: `Many government ${catLower} in ${city.name} offer free or subsidized services for UAE nationals with Thiqa or government-sponsored insurance coverage. Expatriates with valid health insurance typically pay reduced co-payments. Emergency services cannot be refused regardless of insurance status. Uninsured patients pay out-of-pocket at government-regulated rates, which are substantially lower than private facility fees. Contact the facility directly to confirm costs for your specific situation.`,
     },
     {
       question: `What are the wait times at government ${catLower} in ${city.name}?`,
-      answer: `Wait times at government ${catLower} in ${city.name} vary by service type and demand. General consultations: 30 minutes to 2 hours for walk-ins. Specialist referrals: 1 to 4 weeks. Diagnostic tests: results typically available within 1 to 3 days. Emergency departments provide immediate triage for critical cases. Booking appointments through the DHA app (Dubai), SEHA app (Abu Dhabi), or MOHAP portal (Northern Emirates) can reduce wait times significantly.`,
+      answer: `Wait times at government ${catLower} in ${city.name} vary by service type and demand. General consultations: 30 minutes to 2 hours for walk-ins. Specialist referrals: 1 to 4 weeks. Diagnostic tests: results typically available within 1 to 3 days. Emergency departments provide immediate triage for critical cases. Booking appointments through the official Dubai Health app (Dubai), SEHA app (Abu Dhabi), or the UAE healthcare regulator portal (Northern Emirates) can reduce wait times significantly.`,
     },
     {
       question: `Which insurance plans are accepted at government ${catLower} in ${city.name}?`,
-      answer: `Government ${catLower} in ${city.name} accept Thiqa (UAE nationals, Abu Dhabi), Daman (expatriates, Abu Dhabi), DHA Essential Benefits Plan (Dubai), and most major private plans including AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz. Coverage levels and co-payments depend on your specific plan tier. Always carry your Emirates ID and insurance card. Check the insurance details on each provider listing on the UAE Open Healthcare Directory.`,
+      answer: `Government ${catLower} in ${city.name} accept Thiqa (UAE nationals, Abu Dhabi), Daman (expatriates, Abu Dhabi), the Essential Benefits Plan (Dubai), and most major private plans including AXA, Cigna, MetLife, Bupa, Oman Insurance, and Allianz. Coverage levels and co-payments depend on your specific plan tier. Always carry your Emirates ID and insurance card. Check the insurance details on each provider listing on the UAE Open Healthcare Directory.`,
     },
     {
       question: `How do government ${catLower} in ${city.name} compare to private ones?`,

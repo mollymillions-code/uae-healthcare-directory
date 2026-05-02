@@ -102,7 +102,7 @@ export default function PackagesPage() {
     {
       question: "Does insurance cover health check packages in the UAE?",
       answer:
-        "Many UAE employer health insurance plans include an annual preventive health screening benefit — check your policy's preventive care or wellness rider. Daman's enhanced plans and some corporate AXA, Cigna, and MSH plans cover annual check-up packages. However, many plans that cover individual tests require a physician's referral and may not cover a self-referral package booking directly at a lab. Thiqa (Daman's government employee plan for Abu Dhabi) typically covers annual health checks at DOH-licensed facilities. Always verify with your insurer and the lab before booking.",
+        "Many UAE employer health insurance plans include an annual preventive health screening benefit — check your policy's preventive care or wellness rider. Daman's enhanced plans and some corporate AXA, Cigna, and MSH plans cover annual check-up packages. However, many plans that cover individual tests require a physician's referral and may not cover a self-referral package booking directly at a lab. Thiqa (Daman's government employee plan for Abu Dhabi) typically covers annual health checks at UAE-licensed (Abu Dhabi) facilities. Always verify with your insurer and the lab before booking.",
     },
     {
       question: "Do I need to fast before a health check package?",
@@ -575,7 +575,7 @@ export default function PackagesPage() {
             profile: "Busy professional, doesn't want to leave home or office",
             recommendation: "DarDoc At-Home Comprehensive — AED 449 (78 biomarkers)",
             details:
-              "Full wellness panel with DHA-licensed nurse visiting your location. Home collection included in the price. Results digitally within 24 hours. Book via app.",
+              "Full wellness panel with UAE-licensed (Dubai) nurse visiting your location. Home collection included in the price. Results digitally within 24 hours. Book via app.",
           },
         ].map(({ icon: Icon, profile, recommendation, details }) => (
           <div key={profile} className="border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors">
@@ -640,7 +640,7 @@ export default function PackagesPage() {
           test prices at the same lab and are indicative only. This directory does not
           provide medical advice. Consult a physician to determine which health
           screening is appropriate for your individual circumstances. All labs listed
-          are licensed by DHA, DOH, or MOHAP. Data last verified March 2026.
+          are licensed by the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator. Data last verified March 2026.
         </p>
       </div>
     </div>

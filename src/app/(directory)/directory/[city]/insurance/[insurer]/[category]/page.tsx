@@ -43,16 +43,22 @@ interface Props {
 // ─── Regulator helpers ────────────────────────────────────────────────────────
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getRegulatorSlug(citySlug: string): "dha" | "doh" | "mohap" {
   if (citySlug === "dubai") return "dha";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "doh";
   return "mohap";
+}
+
+function getRegulatorAdjective(citySlug: string): string {
+  if (citySlug === "dubai") return "UAE-licensed (Dubai)";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "UAE-licensed (Abu Dhabi)";
+  return "UAE-licensed";
 }
 
 export const dynamicParams = true;
@@ -73,7 +79,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     "providersAcceptingInsurance-meta",
   );
   const base = getBaseUrl();
-  const regulator = getRegulatorName(city.slug);
+  const regulatorAdj = getRegulatorAdjective(city.slug);
   const page = parsePage(searchParams);
   const pageSuffix = page > 1 ? `?page=${page}` : "";
   const titlePageSuffix = page > 1 ? ` | Page ${page}` : "";
@@ -92,7 +98,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   );
 
   const rawTitle = `${category.name} Accepting ${plan.nameEn} Insurance in ${city.name} | ${count} ${count === 1 ? "Provider" : "Providers"}${titlePageSuffix}`;
-  const rawDescription = `Find ${count} ${regulator}-licensed ${category.name.toLowerCase()} in ${city.name} that accept ${plan.nameEn} insurance. Verified listings with ratings, reviews, and contact details. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
+  const rawDescription = `Find ${count} ${regulatorAdj} ${category.name.toLowerCase()} in ${city.name} that accept ${plan.nameEn} insurance. Verified listings with ratings, reviews, and contact details. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
   const title = truncateTitle(rawTitle, 58);
   const description = truncateDescription(rawDescription, 155);
 
@@ -106,7 +112,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       : { index: false, follow: true, nocache: false },
     openGraph: {
       title: truncateTitle(`${category.name} Accepting ${plan.nameEn} in ${city.name} — ${count} Providers${titlePageSuffix}`, 58),
-      description: truncateDescription(`${count} ${regulator}-regulated ${category.name.toLowerCase()} in ${city.name} accept ${plan.nameEn}. Browse verified listings with ratings and contact details.`, 155),
+      description: truncateDescription(`${count} ${regulatorAdj} ${category.name.toLowerCase()} in ${city.name} accept ${plan.nameEn}. Browse verified listings with ratings and contact details.`, 155),
       url,
       type: "website",
     },
@@ -167,6 +173,9 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
 
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
+  const regulatorAdj = getRegulatorAdjective(city.slug);
+  // Internal slug retained for typing/identifiers; not surfaced in user copy.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const regulatorSlug = getRegulatorSlug(city.slug);
 
   // ─── Quick stats ──────────────────────────────────────────────────────────────
@@ -199,10 +208,10 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
     plan.geoScope === "abu-dhabi"
       ? ` Note: ${plan.nameEn} coverage is restricted to Abu Dhabi and Al Ain, so the providers listed on this page are physically located inside that emirate.`
       : "";
-  const editorialIntroEn = `According to the UAE Open Healthcare Directory, ${count} ${regulator}-licensed ${category.name.toLowerCase()} in ${city.name} currently accept ${plan.nameEn} insurance. ${payerBlurb}${geoCaveat} Co-pay, annual benefit limits and pre-authorisation rules for ${category.name.toLowerCase()} depend on your specific ${plan.nameEn} plan tier — always confirm with the provider's insurance desk before your visit, and with ${plan.nameEn} or your employer's HR broker for plan-specific schedules. Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
+  const editorialIntroEn = `According to the UAE Open Healthcare Directory, ${count} ${regulatorAdj} ${category.name.toLowerCase()} in ${city.name} currently accept ${plan.nameEn} insurance. ${payerBlurb}${geoCaveat} Co-pay, annual benefit limits and pre-authorisation rules for ${category.name.toLowerCase()} depend on your specific ${plan.nameEn} plan tier — always confirm with the provider's insurance desk before your visit, and with ${plan.nameEn} or your employer's HR broker for plan-specific schedules. Provider licenses are sourced from ${regulator}'s official register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
 
   // ─── Answer paragraph (kept short for the green answer-block card) ──────────
-  const answerParagraph = `According to the UAE Open Healthcare Directory, there are ${count} ${category.name.toLowerCase()} in ${city.name} that accept ${plan.nameEn} insurance. Healthcare providers in ${city.name} are licensed by the ${regulator}. ${insurer.description} Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
+  const answerParagraph = `According to the UAE Open Healthcare Directory, there are ${count} ${category.name.toLowerCase()} in ${city.name} that accept ${plan.nameEn} insurance. Healthcare providers in ${city.name} are licensed by ${regulator}. ${insurer.description} Last verified ${INSURANCE_DATA_VERIFIED_AT}.`;
 
   // ─── FAQs (6 questions — spec requires at least 6) ───────────────────────────
   const catLower = category.name.toLowerCase();
@@ -210,11 +219,11 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
   const faqs = [
     {
       question: `Does ${plan.nameEn} cover ${catLower} in ${city.name}?`,
-      answer: `Yes. ${plan.nameEn} insurance is accepted at ${count} ${catLower} in ${city.name}, regulated by the ${regulator}. Coverage details, co-pay rates, and pre-authorisation requirements depend on your specific ${plan.nameEn} plan tier. Contact ${plan.nameEn} directly or your employer's HR broker for plan-specific details.`,
+      answer: `Yes. ${plan.nameEn} insurance is accepted at ${count} ${catLower} in ${city.name}, regulated by ${regulator}. Coverage details, co-pay rates, and pre-authorisation requirements depend on your specific ${plan.nameEn} plan tier. Contact ${plan.nameEn} directly or your employer's HR broker for plan-specific details.`,
     },
     {
       question: `How many ${catLower} accept ${plan.nameEn} in ${city.name}?`,
-      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulatorSlug.toUpperCase()}-licensed ${catLower} in ${city.name} that accept ${plan.nameEn} insurance. Provider licenses are sourced from the official ${regulator} register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`,
+      answer: `According to the UAE Open Healthcare Directory, there are ${count} ${regulatorAdj} ${catLower} in ${city.name} that accept ${plan.nameEn} insurance. Provider licenses are sourced from ${regulator}'s official register. Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit. Last verified ${INSURANCE_DATA_VERIFIED_AT}.`,
     },
     {
       question: `What is the co-pay for ${catSingular} visits on ${plan.nameEn} in ${city.name}?`,
@@ -224,11 +233,11 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
       question: `What is the best ${catSingular} accepting ${plan.nameEn} in ${city.name}?`,
       answer: highestRated
         ? `The highest-rated ${catSingular} accepting ${plan.nameEn} in ${city.name} is ${highestRated.name} with a ${highestRated.googleRating}-star Google rating${highestRated.googleReviewCount > 0 ? ` based on ${highestRated.googleReviewCount.toLocaleString()} patient reviews` : ""}. Browse all ${count} ${catLower} on this page to compare ratings, services, and contact details.`
-        : `Browse all ${count} ${catLower} accepting ${plan.nameEn} in ${city.name} on this page to compare services, locations, and contact details. All providers are ${regulator}-licensed.`,
+        : `Browse all ${count} ${catLower} accepting ${plan.nameEn} in ${city.name} on this page to compare services, locations, and contact details. All providers are ${regulatorAdj}.`,
     },
     {
       question: `Are there Arabic-speaking ${catLower} in ${city.name} that accept ${plan.nameEn}?`,
-      answer: `Arabic is an official language of the UAE and most ${regulator}-licensed ${catLower} in ${city.name} offer Arabic-speaking staff or physicians on request. Use the Zavis directory language filter to browse ${catLower} that explicitly advertise Arabic-speaking clinicians, and cross-reference with the ${plan.nameEn} accepted list on this page.`,
+      answer: `Arabic is an official language of the UAE and most ${regulatorAdj} ${catLower} in ${city.name} offer Arabic-speaking staff or physicians on request. Use the Zavis directory language filter to browse ${catLower} that explicitly advertise Arabic-speaking clinicians, and cross-reference with the ${plan.nameEn} accepted list on this page.`,
     },
     {
       question: `How do I find a ${catSingular} near me in ${city.name} that accepts ${plan.nameEn}?`,
@@ -274,7 +283,7 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
       title={`${category.name} Accepting ${insurer.name} in ${city.name}.`}
       subtitle={
         <>
-          {count} verified {count === 1 ? "provider" : "providers"} · {regulator} licensed · Last updated {INSURANCE_DATA_VERIFIED_AT}
+          {count} verified {count === 1 ? "provider" : "providers"} · {regulatorAdj} · Last updated {INSURANCE_DATA_VERIFIED_AT}
         </>
       }
       aeoAnswer={
@@ -374,7 +383,7 @@ export default async function InsuranceCategoryPage({ params, searchParams }: Pr
           {/* Disclaimer */}
           <div className="border-t border-ink-line pt-4">
             <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-              <strong>Disclaimer:</strong> Provider licenses are sourced from the official {regulator} register.
+              <strong>Disclaimer:</strong> Provider licenses are sourced from {regulator}&apos;s official register.
               Insurance acceptance is self-reported by providers and may change — please confirm with the clinic before your visit.
               For plan-specific coverage, co-pay, and pre-authorisation queries, contact {insurer.name} directly or your employer&apos;s HR broker. Last verified {INSURANCE_DATA_VERIFIED_AT}.
             </p>

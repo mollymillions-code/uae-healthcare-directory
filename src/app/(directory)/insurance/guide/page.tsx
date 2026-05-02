@@ -13,7 +13,7 @@ const GUIDES = [
     slug: "freelancer-health-insurance",
     title: "Health Insurance for Freelancers & Self-Sponsored Residents in UAE",
     description:
-      "Who needs self-sponsored insurance, how to get it, the cheapest DHA and DOH compliant options, and what freelance permit holders must know about mandatory coverage.",
+      "Who needs self-sponsored insurance, how to get it, the cheapest the UAE healthcare regulator and the UAE healthcare regulator compliant options, and what freelance permit holders must know about mandatory coverage.",
   },
   {
     slug: "maternity-insurance-uae",
@@ -92,7 +92,7 @@ const GUIDES = [
     slug: "mandatory-health-insurance-emirates",
     title: "Mandatory Health Insurance in the UAE — Rules by Emirate",
     description:
-      "DHA, DOH, and MOHAP mandatory cover rules by emirate, who pays, the minimum compliant cover, and the consequences of non-compliance.",
+      "The UAE healthcare regulator mandatory cover rules by emirate, who pays, the minimum compliant cover, and the consequences of non-compliance.",
   },
   {
     slug: "insurance-claim-process-uae",
@@ -146,7 +146,7 @@ export default function InsuranceGuideIndexPage() {
 
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
         <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-          These guides cover the most common questions about health insurance in the United Arab Emirates — from choosing a plan as a freelancer or self-sponsored resident, to understanding maternity coverage, filing and disputing claims, walk-in versus inpatient cover, dental and chronic-disease sub-limits, and the differences between expat-international and UAE-domestic plans. Each guide is written for UAE residents and references DHA, DOH, and MOHAP regulations.
+          These guides cover the most common questions about health insurance in the United Arab Emirates — from choosing a plan as a freelancer or self-sponsored resident, to understanding maternity coverage, filing and disputing claims, walk-in versus inpatient cover, dental and chronic-disease sub-limits, and the differences between expat-international and UAE-domestic plans. Each guide is written for UAE residents and references the UAE healthcare regulator regulations.
         </p>
       </div>
 

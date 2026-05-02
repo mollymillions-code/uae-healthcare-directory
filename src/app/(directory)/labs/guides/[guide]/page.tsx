@@ -49,30 +49,30 @@ const GUIDES: Record<string, LabGuide> = {
     title: "UAE Visa Medical Test — What's Included, Cost & Where to Get It",
     h1: "UAE Visa Medical Test: What's Included, Cost & Where to Go",
     metaDescription:
-      "Everything you need to know about the UAE visa medical fitness test. Required tests, cost (AED 250–350), MOHAP-approved centres, processing time, and which labs offer the individual blood tests. Updated March 2026.",
+      "Everything you need to know about the UAE visa medical fitness test. Required tests, cost (AED 250–350), UAE-approved centres, processing time, and which labs offer the individual blood tests. Updated March 2026.",
     heroText:
-      "Anyone applying for a UAE residence visa or renewing one must pass a medical fitness test at a MOHAP-approved medical fitness centre. The test checks for communicable diseases as required under Federal Law No. 6 of 1973 and its amendments. The full process typically takes 3–5 business days and costs AED 250–350 at government-approved centres.",
+      "Anyone applying for a UAE residence visa or renewing one must pass a medical fitness test at a UAE-approved medical fitness centre. The test checks for communicable diseases as required under Federal Law No. 6 of 1973 and its amendments. The full process typically takes 3–5 business days and costs AED 250–350 at government-approved centres.",
     quickFacts: [
       { icon: "DollarSign", label: "Typical Cost", value: "AED 250–350" },
       { icon: "Clock", label: "Processing Time", value: "3–5 business days" },
-      { icon: "MapPin", label: "Where", value: "MOHAP-approved fitness centres" },
+      { icon: "MapPin", label: "Where", value: "UAE-approved fitness centres" },
       { icon: "FileText", label: "Who Needs It", value: "All new/renewing residents" },
     ],
     sections: [
       {
         heading: "What Tests Are Required",
         content:
-          "The UAE visa medical fitness test includes four components. First, a chest X-ray to screen for active pulmonary tuberculosis — the UAE uses digital X-ray technology and results are read by a radiologist on-site. Second, a blood draw covering: HIV 1 & 2 antigen/antibody (4th generation), Hepatitis B Surface Antigen (HBsAg), Hepatitis C Antibody (anti-HCV), and VDRL/RPR for syphilis. Third, a basic physical examination by a doctor — blood pressure, weight, and a general health assessment. Fourth, a leprosy skin examination. The results are uploaded directly to the MOHAP electronic health system and are not handed to you in paper form; your employer or PRO will access them via the MOHAP portal.\n\nNote: Some nationalities may face additional requirements. The MOHAP website publishes an updated country-specific list. If a positive result is returned for any communicable disease, the applicant is typically notified by the centre and referred for further evaluation. HIV-positive individuals are generally not granted a UAE residence visa under current federal policy.",
+          "The UAE visa medical fitness test includes four components. First, a chest X-ray to screen for active pulmonary tuberculosis — the UAE uses digital X-ray technology and results are read by a radiologist on-site. Second, a blood draw covering: HIV 1 & 2 antigen/antibody (4th generation), Hepatitis B Surface Antigen (HBsAg), Hepatitis C Antibody (anti-HCV), and VDRL/RPR for syphilis. Third, a basic physical examination by a doctor — blood pressure, weight, and a general health assessment. Fourth, a leprosy skin examination. The results are uploaded directly to the UAE healthcare regulator electronic health system and are not handed to you in paper form; your employer or PRO will access them via the UAE healthcare regulator portal.\n\nNote: Some nationalities may face additional requirements. The UAE healthcare regulator website publishes an updated country-specific list. If a positive result is returned for any communicable disease, the applicant is typically notified by the centre and referred for further evaluation. HIV-positive individuals are generally not granted a UAE residence visa under current federal policy.",
       },
       {
         heading: "Where to Get the Visa Medical Test Done",
         content:
-          "The UAE has 26 MOHAP-approved medical fitness centres operating across all emirates as of 2026. In Dubai, AMER centres, ICA-approved typing centres with medical wings, and some DHA health centres handle visa medicals. In Abu Dhabi, Seha's health screening centres (including those in Al Ain) are the primary option for DOH-jurisdicted residents. In Sharjah, Ajman, Fujairah, Ras Al Khaimah, and Umm Al Quwain, MOHAP-accredited private polyclinics handle most visa medicals.\n\nImportant: You cannot get the visa medical at a standalone diagnostic lab, hospital, or clinic that is not specifically MOHAP-approved for medical fitness testing. If you attempt to do so, the results will not be accepted by the immigration system. Always verify the centre is listed on the MOHAP Tasheel portal before booking.\n\nSome approved centres offer walk-in service (7 AM–9 PM), while others require an appointment through the MOHAP online system. Bring your original passport, passport-sized photo, and Emirates ID (for renewals) or visa copy (for new applicants).",
+          "The UAE has 26 UAE-approved medical fitness centres operating across all emirates as of 2026. In Dubai, AMER centres, ICA-approved typing centres with medical wings, and some UAE healthcare regulator health centres handle visa medicals. In Abu Dhabi, Seha's health screening centres (including those in Al Ain) are the primary option for the UAE healthcare regulator-jurisdicted residents. In Sharjah, Ajman, Fujairah, Ras Al Khaimah, and Umm Al Quwain, the UAE healthcare regulator-accredited private polyclinics handle most visa medicals.\n\nImportant: You cannot get the visa medical at a standalone diagnostic lab, hospital, or clinic that is not specifically UAE-approved for medical fitness testing. If you attempt to do so, the results will not be accepted by the immigration system. Always verify the centre is listed on the UAE healthcare regulator Tasheel portal before booking.\n\nSome approved centres offer walk-in service (7 AM–9 PM), while others require an appointment through the UAE healthcare regulator online system. Bring your original passport, passport-sized photo, and Emirates ID (for renewals) or visa copy (for new applicants).",
       },
       {
         heading: "Cost Breakdown",
         content:
-          "Government medical fitness centres charge a standardised fee of approximately AED 150–200 for the base medical test. Add the X-ray (AED 50–80), blood draw fees (AED 50–100), and the MOHAP e-platform fee (AED 10–30) and the total typically lands between AED 250 and AED 350. Private MOHAP-approved centres may charge up to AED 450.\n\nDomestic worker visa medicals are slightly different — employers typically arrange them through typing centres and the bundled cost is often AED 270–320 including the biometrics appointment. Company account holders (PROs) often get preferential rates at approved centres.\n\nIf you are doing the individual blood tests separately at a standalone lab prior to attending the fitness centre (which is not standard practice and generally not accepted), costs for the four blood tests individually would be: HIV test AED 80–120, Hepatitis B AED 60–100, Hepatitis C AED 70–110, VDRL/Syphilis AED 45–70. However, these private lab results are not accepted in lieu of the official medical fitness test.",
+          "Government medical fitness centres charge a standardised fee of approximately AED 150–200 for the base medical test. Add the X-ray (AED 50–80), blood draw fees (AED 50–100), and the UAE healthcare regulator e-platform fee (AED 10–30) and the total typically lands between AED 250 and AED 350. Private UAE-approved centres may charge up to AED 450.\n\nDomestic worker visa medicals are slightly different — employers typically arrange them through typing centres and the bundled cost is often AED 270–320 including the biometrics appointment. Company account holders (PROs) often get preferential rates at approved centres.\n\nIf you are doing the individual blood tests separately at a standalone lab prior to attending the fitness centre (which is not standard practice and generally not accepted), costs for the four blood tests individually would be: HIV test AED 80–120, Hepatitis B AED 60–100, Hepatitis C AED 70–110, VDRL/Syphilis AED 45–70. However, these private lab results are not accepted in lieu of the official medical fitness test.",
       },
       {
         heading: "Who Needs the Visa Medical",
@@ -82,7 +82,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Processing Time and Results",
         content:
-          "Most approved centres process standard visa medicals in 3–5 business days (not including weekends). Urgent processing (1–2 days) is available at some centres for an additional fee of AED 50–150. Results are uploaded electronically to the MOHAP system and are accessible to your employer, PRO, or typing centre immediately upon upload.\n\nYou will receive an SMS notification when your results are ready. If you passed, a medical fitness certificate is issued in the MOHAP portal. If there is a flag on any test result, you will receive a separate notification and may be referred to a government hospital for confirmatory testing.\n\nMedical fitness certificates are valid for 3 months from the date of issue. If your visa is not stamped within 3 months, you may need to redo the medical. This is particularly relevant for new recruits arriving from abroad.",
+          "Most approved centres process standard visa medicals in 3–5 business days (not including weekends). Urgent processing (1–2 days) is available at some centres for an additional fee of AED 50–150. Results are uploaded electronically to the UAE healthcare regulator system and are accessible to your employer, PRO, or typing centre immediately upon upload.\n\nYou will receive an SMS notification when your results are ready. If you passed, a medical fitness certificate is issued in the UAE healthcare regulator portal. If there is a flag on any test result, you will receive a separate notification and may be referred to a government hospital for confirmatory testing.\n\nMedical fitness certificates are valid for 3 months from the date of issue. If your visa is not stamped within 3 months, you may need to redo the medical. This is particularly relevant for new recruits arriving from abroad.",
       },
       {
         heading: "Tips and Common Mistakes",
@@ -96,7 +96,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "Can I use a private lab blood test for the UAE visa medical?",
         answer:
-          "No. Private lab results are not accepted for UAE visa medicals. You must attend a MOHAP-approved medical fitness centre where all tests are conducted under the official system and uploaded directly to the MOHAP Tasheel portal. Independent lab results cannot be substituted.",
+          "No. Private lab results are not accepted for UAE visa medicals. You must attend a UAE-approved medical fitness centre where all tests are conducted under the official system and uploaded directly to the UAE healthcare regulator Tasheel portal. Independent lab results cannot be substituted.",
       },
       {
         question: "How long is the UAE visa medical certificate valid?",
@@ -116,12 +116,12 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "How much does the UAE visa medical test cost in 2026?",
         answer:
-          "The UAE visa medical test costs between AED 250 and AED 350 at government-approved centres. This covers the chest X-ray, blood draw, physical examination, and MOHAP e-platform fee. Private MOHAP-approved centres may charge up to AED 450 for the full package.",
+          "The UAE visa medical test costs between AED 250 and AED 350 at government-approved centres. This covers the chest X-ray, blood draw, physical examination, and the UAE healthcare regulator e-platform fee. Private UAE-approved centres may charge up to AED 450 for the full package.",
       },
       {
         question: "Can I do the visa medical at any lab or clinic in the UAE?",
         answer:
-          "No. You must attend a facility specifically approved by MOHAP for medical fitness testing. Regular clinics, hospitals, and diagnostic labs — even large chains like Al Borg or Thumbay — are not authorised to conduct official visa medicals unless they have a separate MOHAP-approved medical fitness wing.",
+          "No. You must attend a facility specifically approved by the UAE healthcare regulator for medical fitness testing. Regular clinics, hospitals, and diagnostic labs — even large chains like Al Borg or Thumbay — are not authorised to conduct official visa medicals unless they have a separate UAE-approved medical fitness wing.",
       },
     ],
   },
@@ -133,18 +133,18 @@ const GUIDES: Record<string, LabGuide> = {
     metaDescription:
       "UAE pre-marital screening is mandatory by federal law since 2006. Full guide: required tests (blood group, CBC, sickle cell, thalassemia, HIV, hepatitis, syphilis, rubella), cost AED 200–500, certificate validity, and where to get tested. Updated March 2026.",
     heroText:
-      "Pre-marital screening is compulsory in the UAE under Federal Law No. 22 of 2006, later reinforced by MOHAP Circular 34/2006. All UAE nationals and residents planning to marry in the UAE must complete the screening at an approved government health centre or licensed private laboratory. The certificate is valid for 3 months and must be presented to the court or marriage registrar.",
+      "Pre-marital screening is compulsory in the UAE under Federal Law No. 22 of 2006, later reinforced by the UAE healthcare regulator Circular 34/2006. All UAE nationals and residents planning to marry in the UAE must complete the screening at an approved government health centre or licensed private laboratory. The certificate is valid for 3 months and must be presented to the court or marriage registrar.",
     quickFacts: [
       { icon: "DollarSign", label: "Cost", value: "AED 200–500" },
       { icon: "Clock", label: "Certificate Validity", value: "3 months" },
       { icon: "FileText", label: "Legal Basis", value: "Federal Law No. 22 of 2006" },
-      { icon: "MapPin", label: "Where", value: "DHA/DOH/MOHAP health centres + approved private labs" },
+      { icon: "MapPin", label: "Where", value: "The UAE healthcare regulator health centres + approved private labs" },
     ],
     sections: [
       {
         heading: "Why Pre-Marital Screening is Mandatory in the UAE",
         content:
-          "The UAE introduced mandatory pre-marital screening in 2006 primarily to reduce the incidence of hereditary blood disorders — particularly sickle cell anaemia and thalassemia — which have a high carrier prevalence in the Gulf population. The UAE Ministry of Health and Prevention (MOHAP) estimates that approximately 8–10% of UAE nationals carry the sickle cell trait, and thalassemia carrier rates in some communities exceed 5%. Without screening, couples who are both carriers of the same disorder have a 25% chance of having an affected child per pregnancy.\n\nThe screening also includes STD testing (HIV, hepatitis B/C, syphilis) to protect both partners and future children. Critically, a positive or incompatible result does not legally prevent marriage — the law requires informed disclosure, not prohibition. Couples are counselled by a genetic counsellor and given the choice to proceed with full knowledge of the risks.",
+          "The UAE introduced mandatory pre-marital screening in 2006 primarily to reduce the incidence of hereditary blood disorders — particularly sickle cell anaemia and thalassemia — which have a high carrier prevalence in the Gulf population. The UAE the UAE healthcare regulator estimates that approximately 8–10% of UAE nationals carry the sickle cell trait, and thalassemia carrier rates in some communities exceed 5%. Without screening, couples who are both carriers of the same disorder have a 25% chance of having an affected child per pregnancy.\n\nThe screening also includes STD testing (HIV, hepatitis B/C, syphilis) to protect both partners and future children. Critically, a positive or incompatible result does not legally prevent marriage — the law requires informed disclosure, not prohibition. Couples are counselled by a genetic counsellor and given the choice to proceed with full knowledge of the risks.",
       },
       {
         heading: "Complete List of Required Tests",
@@ -154,17 +154,17 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Where to Get Pre-Marital Screening Done",
         content:
-          "Government health centres operated by DHA (Dubai), DOH (Abu Dhabi), or MOHAP (other emirates) offer the complete pre-marital panel and provide the official certificate through the government health system. DHA health centres in Dubai such as Al Manara, Al Mizhar, and Rashidiya Centre offer this service. In Abu Dhabi, Seha primary care centres handle pre-marital screening. In Sharjah and the Northern Emirates, MOHAP-operated primary health care centres process these tests.\n\nApproved private laboratories — including Al Borg Diagnostics, Thumbay Labs, and MenaLabs — are licensed to conduct the tests and issue results that are fed into the national pre-marital screening database (MALAK system in some emirates). However, the formal certificate must often still be collected from the health authority system. Confirm with the private lab whether they can issue the full legal certificate or only the test results.\n\nThe process at a government centre is typically walk-in for sample collection (7 AM–11 AM is quietest), with results available in 3–5 business days. Certificate collection may require an appointment with a genetic counsellor.",
+          "Government health centres operated by the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi), or the UAE healthcare regulator (other emirates) offer the complete pre-marital panel and provide the official certificate through the government health system. The UAE healthcare regulator health centres in Dubai such as Al Manara, Al Mizhar, and Rashidiya Centre offer this service. In Abu Dhabi, Seha primary care centres handle pre-marital screening. In Sharjah and the Northern Emirates, the UAE healthcare regulator-operated primary health care centres process these tests.\n\nApproved private laboratories — including Al Borg Diagnostics, Thumbay Labs, and MenaLabs — are licensed to conduct the tests and issue results that are fed into the national pre-marital screening database (MALAK system in some emirates). However, the formal certificate must often still be collected from the health authority system. Confirm with the private lab whether they can issue the full legal certificate or only the test results.\n\nThe process at a government centre is typically walk-in for sample collection (7 AM–11 AM is quietest), with results available in 3–5 business days. Certificate collection may require an appointment with a genetic counsellor.",
       },
       {
         heading: "Cost Breakdown",
         content:
-          "At government DHA, DOH, or MOHAP health centres, the pre-marital screening panel costs approximately AED 200–300 for the full bundle. This is heavily subsidised for UAE nationals. Expat residents pay slightly more, typically AED 250–350.\n\nAt private licensed laboratories, the pre-marital bundle ranges from AED 350–500. Al Borg charges approximately AED 420–480 for the full panel. Thumbay Labs offers the panel at around AED 350–400. MenaLabs bundles it for approximately AED 390–450.\n\nIf you need to buy the tests separately at a private lab: CBC AED 69–120, Blood Group AED 30–50, Haemoglobin Electrophoresis AED 100–180, HIV test AED 80–120, Hepatitis B AED 60–100, Hepatitis C AED 70–100, VDRL AED 45–70, Rubella IgG AED 70–110.",
+          "At government the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator health centres, the pre-marital screening panel costs approximately AED 200–300 for the full bundle. This is heavily subsidised for UAE nationals. Expat residents pay slightly more, typically AED 250–350.\n\nAt private licensed laboratories, the pre-marital bundle ranges from AED 350–500. Al Borg charges approximately AED 420–480 for the full panel. Thumbay Labs offers the panel at around AED 350–400. MenaLabs bundles it for approximately AED 390–450.\n\nIf you need to buy the tests separately at a private lab: CBC AED 69–120, Blood Group AED 30–50, Haemoglobin Electrophoresis AED 100–180, HIV test AED 80–120, Hepatitis B AED 60–100, Hepatitis C AED 70–100, VDRL AED 45–70, Rubella IgG AED 70–110.",
       },
       {
         heading: "Required Documents and Process",
         content:
-          "To complete pre-marital screening you need: Original Emirates ID (both partners must be in the system as UAE residents), Passport copy, Visa page copy (for expat residents). Both partners need not attend simultaneously — each can go separately and the system links records via Emirates ID.\n\nThe genetic counselling session (mandatory at government centres) lasts 15–30 minutes. The counsellor explains any positive or carrier findings using a visual risk chart. For hereditary conditions, couples are classified as: Compatible (neither or only one carries the trait), Cautious (both carry traits for different conditions), Incompatible (both carry the same recessive condition, meaning 25% risk per child). The classification appears on the certificate but does not prevent marriage.\n\nAfter counselling and certificate issuance, present the certificate to the marriage registrar (court, DHA marriage section, or DIWAN office for nationals) at the time of marriage registration.",
+          "To complete pre-marital screening you need: Original Emirates ID (both partners must be in the system as UAE residents), Passport copy, Visa page copy (for expat residents). Both partners need not attend simultaneously — each can go separately and the system links records via Emirates ID.\n\nThe genetic counselling session (mandatory at government centres) lasts 15–30 minutes. The counsellor explains any positive or carrier findings using a visual risk chart. For hereditary conditions, couples are classified as: Compatible (neither or only one carries the trait), Cautious (both carry traits for different conditions), Incompatible (both carry the same recessive condition, meaning 25% risk per child). The classification appears on the certificate but does not prevent marriage.\n\nAfter counselling and certificate issuance, present the certificate to the marriage registrar (court, the UAE healthcare regulator marriage section, or DIWAN office for nationals) at the time of marriage registration.",
       },
       {
         heading: "Special Considerations for Expat Couples",
@@ -198,7 +198,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "Can pre-marital screening be done at a private lab like Al Borg or Thumbay?",
         answer:
-          "Yes, licensed private labs including Al Borg Diagnostics and Thumbay Labs can conduct the blood tests and submit results to the MOHAP/DHA system. However, the formal certificate may need to be collected from the health authority or genetic counselling centre. Confirm with the private lab whether they issue the full legal pre-marital certificate.",
+          "Yes, licensed private labs including Al Borg Diagnostics and Thumbay Labs can conduct the blood tests and submit results to the UAE healthcare regulator system. However, the formal certificate may need to be collected from the health authority or genetic counselling centre. Confirm with the private lab whether they issue the full legal pre-marital certificate.",
       },
     ],
   },
@@ -210,7 +210,7 @@ const GUIDES: Record<string, LabGuide> = {
     metaDescription:
       "Complete guide to pregnancy blood tests in the UAE. First trimester (beta-hCG, CBC, rubella, thyroid), second trimester (GDM glucose test), third trimester (CBC, Group B Strep), NIPT (AED 2,500–4,000), and which labs offer home collection. Updated March 2026.",
     heroText:
-      "Prenatal blood testing in the UAE follows internationally recognised guidelines (ACOG/WHO) with additional protocols recommended by DHA and DOH. Antenatal care begins with a confirmation visit at 6–8 weeks gestation, with structured blood panels at each trimester. NIPT (non-invasive prenatal testing) is widely available at UAE private labs starting from AED 2,500.",
+      "Prenatal blood testing in the UAE follows internationally recognised guidelines (ACOG/WHO) with additional protocols recommended by the UAE healthcare regulator and the UAE healthcare regulator. Antenatal care begins with a confirmation visit at 6–8 weeks gestation, with structured blood panels at each trimester. NIPT (non-invasive prenatal testing) is widely available at UAE private labs starting from AED 2,500.",
     quickFacts: [
       { icon: "Calendar", label: "First Tests", value: "6–10 weeks gestation" },
       { icon: "DollarSign", label: "NIPT Cost", value: "AED 2,500–4,000" },
@@ -221,7 +221,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "First Trimester Blood Tests (Weeks 6–13)",
         content:
-          "The first antenatal blood panel is typically ordered at 6–10 weeks gestation during the booking appointment with your OB-GYN. Standard tests include: Beta-hCG quantitative (to confirm viable pregnancy and track early progression). Blood Group (ABO) and Rh factor — critical for Rh-negative mothers who may need anti-D immunoglobulin. Complete Blood Count (CBC) — to check for anaemia, which is common in pregnancy and may require iron supplementation. Rubella IgG antibody — to check immunity; non-immune women should be counselled about risk avoidance (vaccination is contraindicated during pregnancy). HIV 1/2 test — recommended by MOHAP and DHA for all pregnant women. Hepatitis B Surface Antigen (HBsAg) — to plan neonatal vaccination at birth if mother is positive. VDRL/RPR for syphilis — congenital syphilis is preventable with early treatment. TSH (Thyroid Stimulating Hormone) — thyroid dysfunction affects foetal brain development; UAE guidelines recommend routine TSH in early pregnancy.",
+          "The first antenatal blood panel is typically ordered at 6–10 weeks gestation during the booking appointment with your OB-GYN. Standard tests include: Beta-hCG quantitative (to confirm viable pregnancy and track early progression). Blood Group (ABO) and Rh factor — critical for Rh-negative mothers who may need anti-D immunoglobulin. Complete Blood Count (CBC) — to check for anaemia, which is common in pregnancy and may require iron supplementation. Rubella IgG antibody — to check immunity; non-immune women should be counselled about risk avoidance (vaccination is contraindicated during pregnancy). HIV 1/2 test — recommended by the UAE healthcare regulator and the UAE healthcare regulator for all pregnant women. Hepatitis B Surface Antigen (HBsAg) — to plan neonatal vaccination at birth if mother is positive. VDRL/RPR for syphilis — congenital syphilis is preventable with early treatment. TSH (Thyroid Stimulating Hormone) — thyroid dysfunction affects foetal brain development; UAE guidelines recommend routine TSH in early pregnancy.",
       },
       {
         heading: "Second Trimester Tests (Weeks 14–27)",
@@ -231,7 +231,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Third Trimester Tests (Weeks 28–40)",
         content:
-          "At 28 weeks, Rh-negative mothers receive anti-D prophylaxis after a blood test confirms Rh status and absence of antibodies (indirect Coombs test). A second anti-D dose is given at 34 weeks and again after delivery if the baby is Rh-positive.\n\nAt 35–37 weeks, Group B Streptococcus (GBS) screening is recommended by DHA and ACOG guidelines — a vaginal/rectal swab rather than blood draw, but included in the prenatal care pathway. Women who are GBS-positive receive intravenous antibiotics during labour.\n\nFinal CBC at 36–38 weeks to confirm haemoglobin levels before delivery. Platelet count is specifically reviewed for women with pregnancy-induced hypertension or pre-eclampsia. Coagulation studies (PT, APTT) may be ordered if caesarean section is planned.",
+          "At 28 weeks, Rh-negative mothers receive anti-D prophylaxis after a blood test confirms Rh status and absence of antibodies (indirect Coombs test). A second anti-D dose is given at 34 weeks and again after delivery if the baby is Rh-positive.\n\nAt 35–37 weeks, Group B Streptococcus (GBS) screening is recommended by the UAE healthcare regulator and ACOG guidelines — a vaginal/rectal swab rather than blood draw, but included in the prenatal care pathway. Women who are GBS-positive receive intravenous antibiotics during labour.\n\nFinal CBC at 36–38 weeks to confirm haemoglobin levels before delivery. Platelet count is specifically reviewed for women with pregnancy-induced hypertension or pre-eclampsia. Coagulation studies (PT, APTT) may be ordered if caesarean section is planned.",
       },
       {
         heading: "NIPT (Non-Invasive Prenatal Testing) in the UAE",
@@ -255,7 +255,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "Is the gestational diabetes test mandatory in the UAE?",
         answer:
-          "The GDM glucose challenge test at 24–28 weeks is standard practice in UAE antenatal care and recommended by both DHA and DOH guidelines. Given the UAE's high diabetes prevalence, most OB-GYNs order it routinely rather than selectively.",
+          "The GDM glucose challenge test at 24–28 weeks is standard practice in UAE antenatal care and recommended by both the UAE healthcare regulator and the UAE healthcare regulator guidelines. Given the UAE's high diabetes prevalence, most OB-GYNs order it routinely rather than selectively.",
       },
       {
         question: "Which labs in the UAE offer NIPT?",
@@ -308,7 +308,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "What to Bring for a Walk-In Visit",
         content:
-          "Emirates ID — required at all UAE labs for patient registration and for linking to the DHA/DOH/MOHAP electronic health record system. Without an Emirates ID, many labs cannot register you (some accept a passport for tourists or new arrivals still awaiting Emirates ID issuance).\n\nTest request form — if your doctor has requested specific tests, bring their printed or emailed request form. Without a doctor's request, you can self-request most routine tests (CBC, lipid profile, glucose, vitamins, thyroid), but some tests (e.g., tumour markers, certain hormone tests) may require a doctor's letter at specific labs.\n\nFasting status — if you know you need fasting tests, fast for 10–12 hours prior (water and plain black coffee are typically acceptable). If you are unsure whether your test requires fasting, check with the lab by phone before your visit.\n\nLoose-sleeved clothing — wear a shirt with sleeves that roll up easily above the elbow. Compression wear, tight long sleeves, or short-sleeved garments can make venepuncture difficult. Many UAE women wear abayas — simply roll the sleeve under the abaya at the lab.",
+          "Emirates ID — required at all UAE labs for patient registration and for linking to the UAE healthcare regulator electronic health record system. Without an Emirates ID, many labs cannot register you (some accept a passport for tourists or new arrivals still awaiting Emirates ID issuance).\n\nTest request form — if your doctor has requested specific tests, bring their printed or emailed request form. Without a doctor's request, you can self-request most routine tests (CBC, lipid profile, glucose, vitamins, thyroid), but some tests (e.g., tumour markers, certain hormone tests) may require a doctor's letter at specific labs.\n\nFasting status — if you know you need fasting tests, fast for 10–12 hours prior (water and plain black coffee are typically acceptable). If you are unsure whether your test requires fasting, check with the lab by phone before your visit.\n\nLoose-sleeved clothing — wear a shirt with sleeves that roll up easily above the elbow. Compression wear, tight long sleeves, or short-sleeved garments can make venepuncture difficult. Many UAE women wear abayas — simply roll the sleeve under the abaya at the lab.",
       },
       {
         heading: "Walk-In Labs by Area — Dubai",
@@ -447,7 +447,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Fastest Labs in the UAE by Turnaround Time",
         content:
-          "PureLab (Abu Dhabi): Routine panel turnaround of 12 hours. The UAE's most technologically advanced standalone lab with automated robotic processing lines capable of 30 million samples per year. CBC, LFT, KFT results in 4 hours. TSH, Vitamin D results in 12 hours. Home collection available with free pickup.\n\nMedsol Diagnostics: 18-hour average turnaround for routine tests. Their Dubai branches offer same-day results for CBC and metabolic panels if samples arrive before 10 AM. Results delivered via email and WhatsApp.\n\nAlpha Medical Laboratory: Similar to Medsol — 18-hour routine turnaround. Results emailed and available on their portal.\n\nAl Borg Diagnostics: 24-hour standard turnaround with online results via their app. Express service (12-hour) available for a surcharge of approximately AED 50.\n\nUnilabs Dubai: 24-hour standard. Premium positioning with UKAS and CAP accreditation — precision over speed. Express service available for critical tests.\n\nDarDoc (home collection): Results delivered digitally within the lab partner's turnaround window (18–24 hours for routine). DarDoc partners with multiple DHA-licensed labs and results are accessible via their app.",
+          "PureLab (Abu Dhabi): Routine panel turnaround of 12 hours. The UAE's most technologically advanced standalone lab with automated robotic processing lines capable of 30 million samples per year. CBC, LFT, KFT results in 4 hours. TSH, Vitamin D results in 12 hours. Home collection available with free pickup.\n\nMedsol Diagnostics: 18-hour average turnaround for routine tests. Their Dubai branches offer same-day results for CBC and metabolic panels if samples arrive before 10 AM. Results delivered via email and WhatsApp.\n\nAlpha Medical Laboratory: Similar to Medsol — 18-hour routine turnaround. Results emailed and available on their portal.\n\nAl Borg Diagnostics: 24-hour standard turnaround with online results via their app. Express service (12-hour) available for a surcharge of approximately AED 50.\n\nUnilabs Dubai: 24-hour standard. Premium positioning with UKAS and CAP accreditation — precision over speed. Express service available for critical tests.\n\nDarDoc (home collection): Results delivered digitally within the lab partner's turnaround window (18–24 hours for routine). DarDoc partners with multiple UAE-licensed (Dubai) labs and results are accessible via their app.",
       },
       {
         heading: "How to Get Results Faster — Express Services",
@@ -509,7 +509,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "PSA and Cancer Screening for Men",
         content:
-          "Prostate-Specific Antigen (PSA): DHA and international guidelines (ACS, USPSTF) recommend PSA screening discussion with a doctor starting at age 50 for average-risk men. Men of African or Caribbean descent and those with a family history of prostate cancer should start at 45. In the UAE, PSA screening is included in many executive health packages and can be self-requested at any lab without a doctor's referral.\n\nPSA does not diagnose prostate cancer — it is a screening marker. A PSA above 4.0 ng/mL warrants urology referral; between 2.5–4.0 is a 'grey zone' that may warrant repeat testing or referral depending on age and family history. Price range at UAE labs: AED 75–120.\n\nCarcinoembryonic Antigen (CEA): Non-specific cancer marker primarily used to monitor colorectal cancer. For screening purposes in men over 50, particularly current or former smokers, it is sometimes included in executive packages. Price range: AED 90–150.\n\nNote: Cancer screening markers in blood tests are not diagnostic — they are screening tools that require clinical interpretation. Always review results with a physician.",
+          "Prostate-Specific Antigen (PSA): the UAE healthcare regulator and international guidelines (ACS, USPSTF) recommend PSA screening discussion with a doctor starting at age 50 for average-risk men. Men of African or Caribbean descent and those with a family history of prostate cancer should start at 45. In the UAE, PSA screening is included in many executive health packages and can be self-requested at any lab without a doctor's referral.\n\nPSA does not diagnose prostate cancer — it is a screening marker. A PSA above 4.0 ng/mL warrants urology referral; between 2.5–4.0 is a 'grey zone' that may warrant repeat testing or referral depending on age and family history. Price range at UAE labs: AED 75–120.\n\nCarcinoembryonic Antigen (CEA): Non-specific cancer marker primarily used to monitor colorectal cancer. For screening purposes in men over 50, particularly current or former smokers, it is sometimes included in executive packages. Price range: AED 90–150.\n\nNote: Cancer screening markers in blood tests are not diagnostic — they are screening tools that require clinical interpretation. Always review results with a physician.",
       },
       {
         heading: "UAE-Specific Health Context for Men",
@@ -538,7 +538,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "When should men in the UAE start PSA testing?",
         answer:
-          "DHA guidelines and international consensus recommend PSA screening discussion with a doctor starting at age 50 for average-risk men. Men with African ancestry or family history of prostate cancer should start at 45. PSA screening before 40 is not recommended.",
+          "The UAE healthcare regulator guidelines and international consensus recommend PSA screening discussion with a doctor starting at age 50 for average-risk men. Men with African ancestry or family history of prostate cancer should start at 45. PSA screening before 40 is not recommended.",
       },
       {
         question: "How often should men over 40 get blood tests?",
@@ -697,20 +697,20 @@ const GUIDES: Record<string, LabGuide> = {
     title: "Corporate Health Screening in the UAE — Employer Guide",
     h1: "Corporate Health Screening in the UAE — What Employers Need to Know",
     metaDescription:
-      "Guide to corporate health screening in the UAE. DHA/MOHAP occupational health requirements, standard employer check-up panels, B2B lab options (MenaLabs, Al Borg, Thumbay), on-site screening, and volume pricing (20–40% discount for 50+ employees). Updated March 2026.",
+      "Guide to corporate health screening in the UAE. The UAE healthcare regulator occupational health requirements, standard employer check-up panels, B2B lab options (MenaLabs, Al Borg, Thumbay), on-site screening, and volume pricing (20–40% discount for 50+ employees). Updated March 2026.",
     heroText:
       "Corporate health screening in the UAE is both a regulatory requirement (for certain employee categories) and an increasingly common employee benefit across white-collar sectors. Labs like MenaLabs, Al Borg, and Thumbay offer dedicated B2B programmes with volume discounts, results portals, and on-site collection options. Group testing for 50+ employees typically commands 20–40% discounts off standard pricing.",
     quickFacts: [
       { icon: "Briefcase", label: "Volume Discount", value: "20–40% for 50+ employees" },
       { icon: "Building2", label: "B2B Labs", value: "MenaLabs, Al Borg, Thumbay, NRL" },
-      { icon: "FileText", label: "Regulatory Basis", value: "DHA / MOHAP Occupational Health guidelines" },
+      { icon: "FileText", label: "Regulatory Basis", value: "The UAE healthcare regulator / the UAE healthcare regulator Occupational Health guidelines" },
       { icon: "MapPin", label: "On-Site Screening", value: "Available via DarDoc, MenaLabs" },
     ],
     sections: [
       {
         heading: "Regulatory Requirements for Occupational Health in the UAE",
         content:
-          "The UAE requires pre-employment and periodic health screening for specific employee categories under Federal Law No. 8 of 1980 (UAE Labour Law) and MOHAP Occupational Health regulations. The Dubai Health Authority maintains separate DHA Occupational Health requirements for workers in certain sectors.\n\nFood handlers (restaurant staff, catering workers) must hold a valid Food Handler's Medical Certificate, renewed annually. This includes: CBC, HBsAg, stool analysis, VDRL, and a physical examination. The certificate is issued by approved MOHAP/DHA centres and is a condition of operating a food establishment under DED licence conditions.\n\nHealthcare workers (doctors, nurses, lab staff, allied health) must have pre-employment and annual occupational health screening as per DHA/DOH licensing requirements. This includes: HIV, Hepatitis B immunity (HBsAg, HBcAb, HBsAb), Hepatitis C, Tuberculosis screening (Chest X-ray ± Mantoux/IGRA), and a general fitness assessment.\n\nConstruction and industrial workers in some free zones require baseline audiometry, spirometry, and blood lead levels under specific site safety regulations. The MOHAP Occupational Health Department publishes sector-specific requirements.",
+          "The UAE requires pre-employment and periodic health screening for specific employee categories under Federal Law No. 8 of 1980 (UAE Labour Law) and the UAE healthcare regulator Occupational Health regulations. The UAE healthcare regulator (Dubai) maintains separate the UAE healthcare regulator Occupational Health requirements for workers in certain sectors.\n\nFood handlers (restaurant staff, catering workers) must hold a valid Food Handler's Medical Certificate, renewed annually. This includes: CBC, HBsAg, stool analysis, VDRL, and a physical examination. The certificate is issued by approved the UAE healthcare regulator centres and is a condition of operating a food establishment under DED licence conditions.\n\nHealthcare workers (doctors, nurses, lab staff, allied health) must have pre-employment and annual occupational health screening as per the UAE healthcare regulator licensing requirements. This includes: HIV, Hepatitis B immunity (HBsAg, HBcAb, HBsAb), Hepatitis C, Tuberculosis screening (Chest X-ray ± Mantoux/IGRA), and a general fitness assessment.\n\nConstruction and industrial workers in some free zones require baseline audiometry, spirometry, and blood lead levels under specific site safety regulations. The UAE healthcare regulator Occupational Health Department publishes sector-specific requirements.",
       },
       {
         heading: "Standard Corporate Health Check Panel",
@@ -730,7 +730,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "On-Site Screening and Logistics",
         content:
-          "On-site corporate screening brings phlebotomists and basic diagnostic equipment to the employer's premises. This is increasingly popular with UAE employers seeking to minimise employee downtime.\n\nDarDoc offers on-site corporate phlebotomy for groups of 10+ in Dubai and Abu Dhabi. DHA-licensed nurses arrive at your office with mobile phlebotomy kits. Samples are transported to partner labs for processing and results delivered to employees digitally and to HR via the DarDoc corporate portal.\n\nMenaLabs deploys on-site screening teams for groups of 20+ anywhere in Dubai and Abu Dhabi. Their corporate offering includes a mobile unit option with portable ECG, blood pressure stations, BMI assessment, and blood draw — a full health screening station.\n\nFor large-scale annual health days (500+ employees), companies often engage health screening companies (not just labs) that manage the entire event including registration, flow management, physician consultations, and individualised reports. Companies like Activ8 Health and Avivo Group in the UAE specialise in corporate health screening events.\n\nLogistics considerations: Fasting tests require employees to fast from the evening before, creating scheduling complexity for large groups. Consider offering two sessions — a morning session for fasting test employees (arriving 7–9 AM before work), and a midday session for non-fasting employees.",
+          "On-site corporate screening brings phlebotomists and basic diagnostic equipment to the employer's premises. This is increasingly popular with UAE employers seeking to minimise employee downtime.\n\nDarDoc offers on-site corporate phlebotomy for groups of 10+ in Dubai and Abu Dhabi. UAE-licensed (Dubai) nurses arrive at your office with mobile phlebotomy kits. Samples are transported to partner labs for processing and results delivered to employees digitally and to HR via the DarDoc corporate portal.\n\nMenaLabs deploys on-site screening teams for groups of 20+ anywhere in Dubai and Abu Dhabi. Their corporate offering includes a mobile unit option with portable ECG, blood pressure stations, BMI assessment, and blood draw — a full health screening station.\n\nFor large-scale annual health days (500+ employees), companies often engage health screening companies (not just labs) that manage the entire event including registration, flow management, physician consultations, and individualised reports. Companies like Activ8 Health and Avivo Group in the UAE specialise in corporate health screening events.\n\nLogistics considerations: Fasting tests require employees to fast from the evening before, creating scheduling complexity for large groups. Consider offering two sessions — a morning session for fasting test employees (arriving 7–9 AM before work), and a midday session for non-fasting employees.",
       },
     ],
     relatedTests: ["cbc", "lipid-profile", "hba1c", "lft", "kft", "tsh", "urinalysis", "hepatitis-b"],
@@ -739,7 +739,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "Are employers in the UAE legally required to provide health screenings?",
         answer:
-          "Mandatory occupational health screening applies to specific categories: food handlers (annual medical certificate required by DED), healthcare workers (DHA/DOH licensing requirement), and certain industrial workers under MOHAP sector guidelines. For general white-collar employees, periodic health screening is not legally mandated but is strongly encouraged under UAE Labour Law duty-of-care provisions.",
+          "Mandatory occupational health screening applies to specific categories: food handlers (annual medical certificate required by DED), healthcare workers (the UAE healthcare regulator licensing requirement), and certain industrial workers under the UAE healthcare regulator sector guidelines. For general white-collar employees, periodic health screening is not legally mandated but is strongly encouraged under UAE Labour Law duty-of-care provisions.",
       },
       {
         question: "Which UAE labs offer B2B corporate health screening?",
@@ -1025,8 +1025,8 @@ export default async function LabGuidePage({
                   recommendations, price ranges, and regulatory information are based on publicly
                   available UAE health authority data and lab pricing as of March 2026. Prices may
                   vary. Always consult a licensed physician before ordering medical tests or making
-                  health decisions. Regulated by the Dubai Health Authority (DHA), Department of
-                  Health Abu Dhabi (DOH), and Ministry of Health and Prevention (MOHAP).
+                  health decisions. Regulated by the UAE healthcare regulator (Dubai), Department of
+                  Health Abu Dhabi (the UAE healthcare regulator), and the UAE healthcare regulator.
                 </p>
               </div>
             </div>

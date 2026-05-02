@@ -78,9 +78,9 @@ function avgRating(providers: LocalProvider[]): string {
 }
 
 function getRegulatorShort(citySlug: string): string {
-  if (citySlug === "dubai") return "DHA";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (citySlug === "dubai") return "the UAE healthcare regulator";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the UAE healthcare regulator";
+  return "the UAE healthcare regulator";
 }
 
 /**

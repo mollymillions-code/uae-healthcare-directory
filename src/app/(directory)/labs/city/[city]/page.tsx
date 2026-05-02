@@ -55,83 +55,83 @@ interface CityLabContent {
 
 const CITY_LAB_CONTENT: Record<string, CityLabContent> = {
   dubai: {
-    regulator: "Dubai Health Authority (DHA)",
-    regulatorAbbrev: "DHA",
+    regulator: "The UAE healthcare regulator (Dubai)",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Dubai has the UAE's most competitive laboratory market, with over a dozen DHA-licensed diagnostic labs spanning every price tier. Deira and Bur Dubai remain the go-to hubs for budget-conscious patients — standalone labs here routinely undercut hospital-based pricing by 30–50%. At the premium end, Dubai Healthcare City (DHCC) hosts international chains like Unilabs and MenaLabs catering to DIFC professionals and medical-tourism patients. Expats in JLT, Dubai Marina, and Business Bay are well-served by home-collection platforms such as DarDoc, which deploy DHA-certified nurses daily between 7 AM and 11 PM.",
+      "Dubai has the UAE's most competitive laboratory market, with over a dozen UAE-licensed (Dubai) diagnostic labs spanning every price tier. Deira and Bur Dubai remain the go-to hubs for budget-conscious patients — standalone labs here routinely undercut hospital-based pricing by 30–50%. At the premium end, Dubai Healthcare City (DHCC) hosts international chains like Unilabs and MenaLabs catering to DIFC professionals and medical-tourism patients. Expats in JLT, Dubai Marina, and Business Bay are well-served by home-collection platforms such as DarDoc, which deploy the UAE healthcare regulator-certified nurses daily between 7 AM and 11 PM.",
     deepDive:
-      "Lab testing in Dubai is regulated by the Dubai Health Authority, which mandates quality standards and licensing for every diagnostic facility operating in the emirate. All licensed labs must comply with DHA Clinical Laboratory Standards, and many of the larger chains hold additional international accreditations — CAP (College of American Pathologists), ISO 15189, and JCI — which ensure testing accuracy comparable to European and US labs. For routine blood work (CBC, lipid profile, liver and kidney function), walk-in pricing at standalone labs in Deira, Al Karama, and Al Quoz is typically AED 69–99 for a CBC and AED 85–120 for Vitamin D. Hospital-based labs in Jumeirah or Downtown can charge two to three times as much for identical tests. Visa medical tests — a mandatory requirement for new UAE residents — are processed at DHA-approved centres such as the Al Rashidiya and Bur Dubai clinics, typically costing AED 320–380 all-in. Home collection is widely available across all Dubai districts; most providers guarantee a phlebotomist within 60 minutes. Results for routine tests arrive digitally within 4–24 hours.",
+      "Lab testing in Dubai is regulated by the UAE healthcare regulator (Dubai), which mandates quality standards and licensing for every diagnostic facility operating in the emirate. All licensed labs must comply with the UAE healthcare regulator Clinical Laboratory Standards, and many of the larger chains hold additional international accreditations — CAP (College of American Pathologists), ISO 15189, and JCI — which ensure testing accuracy comparable to European and US labs. For routine blood work (CBC, lipid profile, liver and kidney function), walk-in pricing at standalone labs in Deira, Al Karama, and Al Quoz is typically AED 69–99 for a CBC and AED 85–120 for Vitamin D. Hospital-based labs in Jumeirah or Downtown can charge two to three times as much for identical tests. Visa medical tests — a mandatory requirement for new UAE residents — are processed at UAE-approved (Dubai) centres such as the Al Rashidiya and Bur Dubai clinics, typically costing AED 320–380 all-in. Home collection is widely available across all Dubai districts; most providers guarantee a phlebotomist within 60 minutes. Results for routine tests arrive digitally within 4–24 hours.",
     popularAreas: ["Deira", "Bur Dubai", "Al Karama", "Dubai Healthcare City", "JLT", "Business Bay"],
     visaMedical:
-      "Visa medical tests in Dubai are conducted at DHA-approved Preventive Medicine centres in Al Rashidiya, Bur Dubai, and Al Quoz. The standard visa screening (blood group, chest X-ray, HIV, Hepatitis B, TB) costs AED 320–380. Appointments can be booked via the DHA app (Salama) or AMER service centres.",
+      "Visa medical tests in Dubai are conducted at UAE-approved (Dubai) Preventive Medicine centres in Al Rashidiya, Bur Dubai, and Al Quoz. The standard visa screening (blood group, chest X-ray, HIV, Hepatitis B, TB) costs AED 320–380. Appointments can be booked via the UAE healthcare regulator app (Salama) or AMER service centres.",
     insuranceTip:
-      "Most DHA-licensed labs in Dubai accept Daman, AXA, Cigna, Bupa, and Dubai Insurance Company. For Thiqa holders (Abu Dhabi government plan), coverage is typically limited to DOH-licensed facilities unless the plan has out-of-emirate benefits. Always confirm insurance acceptance when booking.",
+      "Most UAE-licensed (Dubai) labs in Dubai accept Daman, AXA, Cigna, Bupa, and Dubai Insurance Company. For Thiqa holders (Abu Dhabi government plan), coverage is typically limited to UAE-licensed (Abu Dhabi) facilities unless the plan has out-of-emirate benefits. Always confirm insurance acceptance when booking.",
     cbcFrom: 69,
     vitaminDFrom: 85,
     homeCollectionNote:
       "DarDoc, ServiceMarket, and Healthchecks360 all operate home collection in Dubai from 7 AM daily. Many offer free sample collection with results delivered to your phone.",
   },
   "abu-dhabi": {
-    regulator: "Department of Health Abu Dhabi (DOH)",
-    regulatorAbbrev: "DOH",
+    regulator: "The UAE healthcare regulator (Abu Dhabi)",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
       "Abu Dhabi's lab ecosystem is anchored by two institutional giants: National Reference Laboratory (NRL), part of the M42/Mubadala Health network and the capital's primary reference lab for complex diagnostics, and PureLab — the UAE's largest AI-powered standalone laboratory at 70,000 sq ft in the Industrial City of Abu Dhabi, capable of processing 30 million samples annually. For residents on Al Reem Island, Al Maryah Island, and Khalifa City, both labs offer home collection. MenaLabs (Cerba HealthCare) and Medsol Diagnostics round out the market with more accessible walk-in pricing.",
     deepDive:
-      "All diagnostic laboratories in Abu Dhabi operate under the Department of Health (DOH) licensing framework, which sets rigorous standards for equipment, staff qualifications, and reporting timelines. The emirate has among the highest Thiqa (government employee) insurance coverage rates in the UAE, and many labs are contracted into the Daman network — the DOH-regulated mandatory health insurance scheme. NRL is the default reference laboratory for complex, specialised, and molecular diagnostic work, receiving overflow from clinics and hospitals throughout Abu Dhabi and Al Ain. PureLab, launched in 2023 under PureHealth (the Middle East's largest healthcare conglomerate), has introduced AI-assisted quality checks that reduce result error rates and processing times — routine tests are often ready in 12 hours, faster than the UAE average. For residents in Mohammed Bin Zayed City, Khalifa City, and Al Shamkha, home collection via NRL or DarDoc (DOH-licensed) is the most practical option. Visa medical tests for Abu Dhabi residency visas are processed at dedicated ADPH-approved centres, separate from routine clinical labs.",
+      "All diagnostic laboratories in Abu Dhabi operate under the UAE healthcare regulator (Abu Dhabi) licensing framework, which sets rigorous standards for equipment, staff qualifications, and reporting timelines. The emirate has among the highest Thiqa (government employee) insurance coverage rates in the UAE, and many labs are contracted into the Daman network — the UAE healthcare regulator-regulated mandatory health insurance scheme. NRL is the default reference laboratory for complex, specialised, and molecular diagnostic work, receiving overflow from clinics and hospitals throughout Abu Dhabi and Al Ain. PureLab, launched in 2023 under PureHealth (the Middle East's largest healthcare conglomerate), has introduced AI-assisted quality checks that reduce result error rates and processing times — routine tests are often ready in 12 hours, faster than the UAE average. For residents in Mohammed Bin Zayed City, Khalifa City, and Al Shamkha, home collection via NRL or DarDoc (UAE-licensed (Abu Dhabi)) is the most practical option. Visa medical tests for Abu Dhabi residency visas are processed at dedicated ADPH-approved centres, separate from routine clinical labs.",
     popularAreas: ["Corniche", "Al Reem Island", "Khalifa City", "Al Mushrif", "Mohammed Bin Zayed City"],
     visaMedical:
       "Abu Dhabi residency visa medical tests are conducted at ADPHC (Abu Dhabi Public Health Centre) approved screening centres. The standard package — blood tests, chest X-ray, and infectious disease screening — costs AED 330–400. Book via the ADPHC app or TAMM services platform.",
     insuranceTip:
-      "In Abu Dhabi, Thiqa holders (government employees) and Daman Basic insured patients have lab test coverage at DOH-licensed facilities. Most major labs — NRL, PureLab, MenaLabs — are contracted with Daman. Al Borg Diagnostics also accepts Thiqa for eligible tests. Confirm with your insurer whether the specific test requires pre-authorisation.",
+      "In Abu Dhabi, Thiqa holders (government employees) and Daman Basic insured patients have lab test coverage at UAE-licensed (Abu Dhabi) facilities. Most major labs — NRL, PureLab, MenaLabs — are contracted with Daman. Al Borg Diagnostics also accepts Thiqa for eligible tests. Confirm with your insurer whether the specific test requires pre-authorisation.",
     cbcFrom: 75,
     vitaminDFrom: 90,
     homeCollectionNote:
       "NRL and DarDoc both offer home collection across Abu Dhabi island and the mainland suburbs. PureLab also offers mobile phlebotomy. NRL charges AED 75 for home collection; DarDoc is free for most panels.",
   },
   sharjah: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Sharjah offers some of the most affordable lab testing in the UAE, with a concentration of MOHAP-licensed standalone labs in Al Nahda, Al Majaz, and Al Taawun — all within easy reach of Dubai residents who commute via the E311 or Al Ittihad Road. Thumbay Labs, headquartered in Ajman but with a strong Sharjah presence, is the dominant chain here; Medsol Diagnostics and Healthchecks360 provide budget walk-in options and home collection. The Muwaileh and University City areas near American University of Sharjah have seen growing demand for expat-friendly lab services.",
+      "Sharjah offers some of the most affordable lab testing in the UAE, with a concentration of UAE-licensed standalone labs in Al Nahda, Al Majaz, and Al Taawun — all within easy reach of Dubai residents who commute via the E311 or Al Ittihad Road. Thumbay Labs, headquartered in Ajman but with a strong Sharjah presence, is the dominant chain here; Medsol Diagnostics and Healthchecks360 provide budget walk-in options and home collection. The Muwaileh and University City areas near American University of Sharjah have seen growing demand for expat-friendly lab services.",
     deepDive:
-      "MOHAP licenses and inspects all diagnostic laboratories operating in Sharjah and the Northern Emirates, enforcing national quality benchmarks for clinical laboratories. Sharjah's lower real-estate costs compared to Dubai translate directly into more competitive lab pricing — a CBC typically costs AED 60–85 at standalone labs here, compared to AED 69–120 in Dubai. For residents who commute between Dubai and Sharjah, some labs in Al Nahda accept both DHA-referred and walk-in patients. Thumbay Labs (CAP-accredited, part of Gulf Medical University's Thumbay Group) offers the best combination of accreditation quality and affordable pricing in the emirate. Healthchecks360 operates across Sharjah for home collection, making it practical for residents in Al Taawun and Al Khan who prefer not to travel. MOHAP-approved visa medical centres in Sharjah process residency screenings for around AED 300–350, slightly below Dubai rates.",
+      "regulator licenses and inspects all diagnostic laboratories operating in Sharjah and the Northern Emirates, enforcing national quality benchmarks for clinical laboratories. Sharjah's lower real-estate costs compared to Dubai translate directly into more competitive lab pricing — a CBC typically costs AED 60–85 at standalone labs here, compared to AED 69–120 in Dubai. For residents who commute between Dubai and Sharjah, some labs in Al Nahda accept both the UAE healthcare regulator-referred and walk-in patients. Thumbay Labs (CAP-accredited, part of Gulf Medical University's Thumbay Group) offers the best combination of accreditation quality and affordable pricing in the emirate. Healthchecks360 operates across Sharjah for home collection, making it practical for residents in Al Taawun and Al Khan who prefer not to travel. UAE-approved visa medical centres in Sharjah process residency screenings for around AED 300–350, slightly below Dubai rates.",
     popularAreas: ["Al Nahda", "Al Majaz", "Al Taawun", "Muwaileh", "Al Qasimia"],
     visaMedical:
-      "Sharjah residency visa medicals are processed at MOHAP-approved health centres. The standard package (blood group, HIV, Hepatitis B, chest X-ray, tuberculosis) costs AED 300–350. Processing time is typically same-day at most centres.",
+      "Sharjah residency visa medicals are processed at UAE-approved health centres. The standard package (blood group, HIV, Hepatitis B, chest X-ray, tuberculosis) costs AED 300–350. Processing time is typically same-day at most centres.",
     insuranceTip:
-      "In Sharjah, most private insurance plans (AXA, Cigna, Oman Insurance) cover lab tests at MOHAP-licensed facilities. However, government employee Thiqa cards issued in Abu Dhabi may have limited coverage outside DOH-licensed facilities. Check your policy's inter-emirate coverage before booking.",
+      "In Sharjah, most private insurance plans (AXA, Cigna, Oman Insurance) cover lab tests at UAE-licensed facilities. However, government employee Thiqa cards issued in Abu Dhabi may have limited coverage outside UAE-licensed (Abu Dhabi) facilities. Check your policy's inter-emirate coverage before booking.",
     cbcFrom: 60,
     vitaminDFrom: 80,
     homeCollectionNote:
       "Healthchecks360 and Medsol Diagnostics both offer free home collection across Sharjah. ServiceMarket also covers parts of Sharjah for at-home blood testing.",
   },
   ajman: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Ajman is home to Thumbay Labs' headquarters — the CAP-accredited chain affiliated with Gulf Medical University, which draws patients from across the Northern Emirates for its combination of accreditation quality and accessible pricing. The compact emirate is well-served by MOHAP-licensed labs in Al Nuaimia and Ajman Downtown, and benefits from its proximity to Sharjah's lab network. Healthchecks360 provides home collection across Ajman's residential areas.",
+      "Ajman is home to Thumbay Labs' headquarters — the CAP-accredited chain affiliated with Gulf Medical University, which draws patients from across the Northern Emirates for its combination of accreditation quality and accessible pricing. The compact emirate is well-served by UAE-licensed labs in Al Nuaimia and Ajman Downtown, and benefits from its proximity to Sharjah's lab network. Healthchecks360 provides home collection across Ajman's residential areas.",
     deepDive:
-      "MOHAP regulates all clinical laboratories in Ajman, and the emirate's relatively small size means that most residents are within 10 minutes of a licensed diagnostic facility. Thumbay Labs' flagship Ajman branch, co-located with the Thumbay Hospital cluster in Al Jurf, offers the most comprehensive test menu in the emirate — over 1,000 tests with CAP-accredited methodology. For straightforward blood work and routine panels, standalone walk-in labs in Al Nuaimia and Al Rashidiya offer competitive pricing, typically 10–20% below Dubai equivalents for the same tests. Home collection via Healthchecks360 is practical given Ajman's density, usually delivering a phlebotomist within 45 minutes. Visa medical screenings for Ajman-based workers are handled at MOHAP-approved centres in the city, often with same-day results.",
+      "The UAE healthcare regulator regulates all clinical laboratories in Ajman, and the emirate's relatively small size means that most residents are within 10 minutes of a licensed diagnostic facility. Thumbay Labs' flagship Ajman branch, co-located with the Thumbay Hospital cluster in Al Jurf, offers the most comprehensive test menu in the emirate — over 1,000 tests with CAP-accredited methodology. For straightforward blood work and routine panels, standalone walk-in labs in Al Nuaimia and Al Rashidiya offer competitive pricing, typically 10–20% below Dubai equivalents for the same tests. Home collection via Healthchecks360 is practical given Ajman's density, usually delivering a phlebotomist within 45 minutes. Visa medical screenings for Ajman-based workers are handled at UAE-approved centres in the city, often with same-day results.",
     popularAreas: ["Al Nuaimia", "Al Jurf", "Ajman Downtown", "Al Rashidiya"],
     visaMedical:
-      "Ajman residency visa medicals are conducted at MOHAP-approved health centres in Al Nuaimia and Al Jurf. The standard package costs AED 290–340, often the most affordable in the UAE.",
+      "Ajman residency visa medicals are conducted at UAE-approved health centres in Al Nuaimia and Al Jurf. The standard package costs AED 290–340, often the most affordable in the UAE.",
     insuranceTip:
-      "Most insurers with UAE-wide networks — AXA, Cigna, Bupa, Oman Insurance — cover tests at MOHAP-licensed Ajman labs. Thumbay Labs is widely recognised across insurance networks given its CAP accreditation.",
+      "Most insurers with UAE-wide networks — AXA, Cigna, Bupa, Oman Insurance — cover tests at UAE-licensed Ajman labs. Thumbay Labs is widely recognised across insurance networks given its CAP accreditation.",
     cbcFrom: 60,
     vitaminDFrom: 79,
     homeCollectionNote:
       "Healthchecks360 covers Ajman with free home sample collection. Thumbay Labs also offers home phlebotomy for select panels.",
   },
   "ras-al-khaimah": {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Ras Al Khaimah's healthcare sector is growing rapidly, with Al Borg Diagnostics — the GCC's largest lab chain and exclusive Quest Diagnostics partner — operating branches here alongside MOHAP-licensed standalone labs in Al Nakheel and the city centre. RAK's proximity to Fujairah and Umm Al Quwain makes it a regional diagnostic hub for the East Coast. Home collection is available but more limited than in Dubai or Abu Dhabi; booking ahead is recommended.",
+      "Ras Al Khaimah's healthcare sector is growing rapidly, with Al Borg Diagnostics — the GCC's largest lab chain and exclusive Quest Diagnostics partner — operating branches here alongside UAE-licensed standalone labs in Al Nakheel and the city centre. RAK's proximity to Fujairah and Umm Al Quwain makes it a regional diagnostic hub for the East Coast. Home collection is available but more limited than in Dubai or Abu Dhabi; booking ahead is recommended.",
     deepDive:
-      "MOHAP oversees all clinical laboratory licensing in Ras Al Khaimah. The emirate has historically been underserved by diagnostic infrastructure relative to its population size, but Al Borg Diagnostics' entry with ISO 15189 and CAP-accredited facilities has raised the quality bar significantly. Routine blood tests at Al Borg's RAK branches are priced competitively — typically on par with Dubai standalone lab pricing. For residents in Al Hamra and the surrounding tourism and industrial districts, home collection via Al Borg is the most practical option (AED 50 fee). The RAK Government Hospital's in-house lab handles more complex diagnostics, though private labs offer faster turnaround for routine work. MOHAP visa medical centres in RAK process residency screenings, typically at AED 300–360 with same-day results.",
+      "The UAE healthcare regulator oversees all clinical laboratory licensing in Ras Al Khaimah. The emirate has historically been underserved by diagnostic infrastructure relative to its population size, but Al Borg Diagnostics' entry with ISO 15189 and CAP-accredited facilities has raised the quality bar significantly. Routine blood tests at Al Borg's RAK branches are priced competitively — typically on par with Dubai standalone lab pricing. For residents in Al Hamra and the surrounding tourism and industrial districts, home collection via Al Borg is the most practical option (AED 50 fee). The RAK Government Hospital's in-house lab handles more complex diagnostics, though private labs offer faster turnaround for routine work. The UAE healthcare regulator visa medical centres in RAK process residency screenings, typically at AED 300–360 with same-day results.",
     popularAreas: ["Al Nakheel", "RAK City Centre", "Al Hamra", "Khuzam"],
     visaMedical:
-      "RAK residency visa medicals are processed at MOHAP-approved health centres in the city centre. The standard screening costs AED 300–360, with same-day processing for most applicants.",
+      "RAK residency visa medicals are processed at UAE-approved health centres in the city centre. The standard screening costs AED 300–360, with same-day processing for most applicants.",
     insuranceTip:
       "Al Borg Diagnostics is contracted with most major UAE insurers, making it the safest bet for insured patients in RAK. Standalone independent labs may not be on all insurance networks — confirm before booking.",
     cbcFrom: 70,
@@ -140,15 +140,15 @@ const CITY_LAB_CONTENT: Record<string, CityLabContent> = {
       "Al Borg Diagnostics offers home collection in RAK for AED 50. Healthchecks360 covers parts of RAK for their home-service offering.",
   },
   fujairah: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Fujairah, on the UAE's East Coast, is primarily served by MOHAP-licensed labs attached to the Fujairah Hospital and a cluster of private clinics near the city centre. Al Borg Diagnostics does not yet operate directly in Fujairah, but their RAK branches are accessible for non-urgent testing. Thumbay Labs covers Fujairah through its Northern Emirates network, offering the most recognised accredited private lab option in the emirate.",
+      "Fujairah, on the UAE's East Coast, is primarily served by UAE-licensed labs attached to the Fujairah Hospital and a cluster of private clinics near the city centre. Al Borg Diagnostics does not yet operate directly in Fujairah, but their RAK branches are accessible for non-urgent testing. Thumbay Labs covers Fujairah through its Northern Emirates network, offering the most recognised accredited private lab option in the emirate.",
     deepDive:
-      "MOHAP licenses all diagnostic labs in Fujairah. The emirate has a smaller commercial lab sector than Dubai or Abu Dhabi, with most diagnostic volume flowing through the Fujairah Hospital's lab and a handful of private clinic-attached labs. For residents needing comprehensive panels — extended thyroid, hormone, or tumour marker testing — travelling to RAK or using home-collection aggregators like Healthchecks360 (which ship samples to partner labs in Dubai or Sharjah) is often more practical. Thumbay Labs, through its Northern Emirates presence, is the primary accredited chain for private diagnostic testing in the region. Routine blood tests — CBC, lipid profile, diabetes screening — are available at competitive MOHAP-licensed prices, typically slightly below Dubai rates. Visa medical tests for Fujairah-based employees are processed at MOHAP-approved centres in Fujairah city.",
+      "regulator licenses all diagnostic labs in Fujairah. The emirate has a smaller commercial lab sector than Dubai or Abu Dhabi, with most diagnostic volume flowing through the Fujairah Hospital's lab and a handful of private clinic-attached labs. For residents needing comprehensive panels — extended thyroid, hormone, or tumour marker testing — travelling to RAK or using home-collection aggregators like Healthchecks360 (which ship samples to partner labs in Dubai or Sharjah) is often more practical. Thumbay Labs, through its Northern Emirates presence, is the primary accredited chain for private diagnostic testing in the region. Routine blood tests — CBC, lipid profile, diabetes screening — are available at competitive UAE-licensed prices, typically slightly below Dubai rates. Visa medical tests for Fujairah-based employees are processed at UAE-approved centres in Fujairah city.",
     popularAreas: ["Fujairah City Centre", "Dibba Al Fujairah"],
     visaMedical:
-      "Fujairah residency visa medicals are processed at MOHAP-approved health centres in Fujairah city. Processing typically takes same-day to 24 hours for standard screenings.",
+      "Fujairah residency visa medicals are processed at UAE-approved health centres in Fujairah city. Processing typically takes same-day to 24 hours for standard screenings.",
     insuranceTip:
       "In Fujairah, Thumbay Labs is the safest choice for insured patients given its broad insurance network coverage. For smaller independent labs, always verify your plan's network before booking.",
     cbcFrom: 65,
@@ -157,34 +157,34 @@ const CITY_LAB_CONTENT: Record<string, CityLabContent> = {
       "Healthchecks360 covers Fujairah through its partner network. Sample collection agents visit your location; samples are processed at accredited partner labs in Dubai or Sharjah.",
   },
   "umm-al-quwain": {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
-      "Umm Al Quwain is the UAE's least populous emirate, with diagnostic services centred around the main city area through MOHAP-licensed clinics and the UAQ Medical District. For residents requiring comprehensive panels or accredited lab work, Ajman (Thumbay Labs) and Sharjah are accessible within 20–30 minutes. Home-collection platforms like Healthchecks360 serve UAQ residents through their Northern Emirates network.",
+      "Umm Al Quwain is the UAE's least populous emirate, with diagnostic services centred around the main city area through UAE-licensed clinics and the UAQ Medical District. For residents requiring comprehensive panels or accredited lab work, Ajman (Thumbay Labs) and Sharjah are accessible within 20–30 minutes. Home-collection platforms like Healthchecks360 serve UAQ residents through their Northern Emirates network.",
     deepDive:
-      "MOHAP regulates lab services in Umm Al Quwain. The emirate's small scale means that most diagnostic needs beyond basic blood work are met by travelling to Ajman or Sharjah, or using home-collection aggregators that partner with DHA/MOHAP-licensed labs. For routine tests, the UAQ city centre clinics offer accessible walk-in pricing without the travel. MOHAP visa medical centres in UAQ process residency screenings typically in one day. The emirate's healthcare infrastructure is expanding slowly, with the government prioritising primary care access; complex diagnostics remain most reliably sourced from adjacent Northern Emirates.",
+      "The UAE healthcare regulator regulates lab services in Umm Al Quwain. The emirate's small scale means that most diagnostic needs beyond basic blood work are met by travelling to Ajman or Sharjah, or using home-collection aggregators that partner with the UAE healthcare regulator/UAE-licensed labs. For routine tests, the UAQ city centre clinics offer accessible walk-in pricing without the travel. The UAE healthcare regulator visa medical centres in UAQ process residency screenings typically in one day. The emirate's healthcare infrastructure is expanding slowly, with the government prioritising primary care access; complex diagnostics remain most reliably sourced from adjacent Northern Emirates.",
     popularAreas: ["UAQ City Centre", "Al Salamah"],
     visaMedical:
-      "UAQ residency visa medicals are processed at MOHAP health centres in the main city area. The standard screening costs approximately AED 290–320.",
+      "UAQ residency visa medicals are processed at the UAE healthcare regulator health centres in the main city area. The standard screening costs approximately AED 290–320.",
     insuranceTip:
-      "For insured patients in UAQ, using a home-collection service that partners with DHA/MOHAP-licensed labs ensures your tests are processed at a facility your insurer will recognise. Always confirm with your insurance provider.",
+      "For insured patients in UAQ, using a home-collection service that partners with the UAE healthcare regulator/UAE-licensed labs ensures your tests are processed at a facility your insurer will recognise. Always confirm with your insurance provider.",
     cbcFrom: 65,
     vitaminDFrom: 82,
     homeCollectionNote:
       "Healthchecks360 covers Umm Al Quwain through their Northern Emirates home-collection network. Results are processed at partner labs in Dubai or Sharjah and delivered digitally.",
   },
   "al-ain": {
-    regulator: "Department of Health Abu Dhabi (DOH)",
-    regulatorAbbrev: "DOH",
+    regulator: "The UAE healthcare regulator (Abu Dhabi)",
+    regulatorAbbrev: "The UAE healthcare regulator",
     intro:
       "Al Ain, the Garden City of the UAE, is served by the National Reference Laboratory (NRL) — part of the Mubadala Health / M42 network — with branches covering the city's key districts. Tawam Hospital, the region's tertiary referral centre and a Johns Hopkins Medicine affiliate, has its own in-house laboratory for complex diagnostics. Al Borg Diagnostics operates branches in Al Ain for routine blood work, providing CAP-accredited testing closer to the Abu Dhabi mainland pricing tier.",
     deepDive:
-      "All clinical labs in Al Ain operate under the Department of Health Abu Dhabi (DOH) licensing framework — the same regulator as the capital island, reflecting Al Ain's status as Abu Dhabi emirate's second city. NRL's Al Ain branches serve as the primary reference laboratory for the region, handling overflow from Tawam Hospital and the network of private clinics across Al Jimi, Al Muwaiji, and Al Ain Central. For DOH-insured Thiqa holders, NRL and Al Borg are both contracted facilities. Al Borg provides the most accessible walk-in pricing for routine tests in Al Ain, while NRL handles more complex molecular, genetic, and specialised diagnostic work. Home collection is available through NRL (AED 75 fee) and DarDoc (DOH-licensed in Abu Dhabi emirate including Al Ain). Routine tests such as CBC, lipid profile, and Vitamin D are priced on par with Abu Dhabi island labs, typically AED 75–90 for a CBC and AED 90–120 for Vitamin D.",
+      "All clinical labs in Al Ain operate under the UAE healthcare regulator (Abu Dhabi) licensing framework — the same regulator as the capital island, reflecting Al Ain's status as Abu Dhabi emirate's second city. NRL's Al Ain branches serve as the primary reference laboratory for the region, handling overflow from Tawam Hospital and the network of private clinics across Al Jimi, Al Muwaiji, and Al Ain Central. For the UAE healthcare regulator-insured Thiqa holders, NRL and Al Borg are both contracted facilities. Al Borg provides the most accessible walk-in pricing for routine tests in Al Ain, while NRL handles more complex molecular, genetic, and specialised diagnostic work. Home collection is available through NRL (AED 75 fee) and DarDoc (UAE-licensed (Abu Dhabi) in Abu Dhabi emirate including Al Ain). Routine tests such as CBC, lipid profile, and Vitamin D are priced on par with Abu Dhabi island labs, typically AED 75–90 for a CBC and AED 90–120 for Vitamin D.",
     popularAreas: ["Al Ain Central", "Al Jimi", "Al Muwaiji", "Tawam", "Al Hili"],
     visaMedical:
       "Al Ain residency visa medicals are conducted at ADPHC-approved screening centres in the city. The standard package costs AED 330–400, consistent with Abu Dhabi emirate pricing.",
     insuranceTip:
-      "Thiqa (Abu Dhabi government insurance) covers lab tests at DOH-licensed NRL and Al Borg branches in Al Ain. Daman Basic holders should confirm coverage at the specific branch before booking. Most major private insurers cover Al Borg and NRL.",
+      "Thiqa (Abu Dhabi government insurance) covers lab tests at UAE-licensed (Abu Dhabi) NRL and Al Borg branches in Al Ain. Daman Basic holders should confirm coverage at the specific branch before booking. Most major private insurers cover Al Borg and NRL.",
     cbcFrom: 75,
     vitaminDFrom: 90,
     homeCollectionNote:
@@ -219,7 +219,7 @@ export async function generateMetadata({
   const testCount = LAB_TESTS.length;
   const homeCollectionCount = labs.filter((l) => l.homeCollection).length;
   const cbcFrom = content?.cbcFrom ?? 69;
-  const regulator = content?.regulatorAbbrev ?? "MOHAP";
+  const regulator = content?.regulatorAbbrev ?? "The UAE healthcare regulator";
 
   return {
     title: `Lab Tests in ${city.name} — Compare Prices Across ${labs.length} Laboratories | UAE Lab Test Comparison`,
@@ -284,7 +284,7 @@ export default async function LabCityPage({
     },
     {
       question: `Can I get a blood test at home in ${city.name}?`,
-      answer: `Yes. ${content?.homeCollectionNote ?? `Home blood collection is available in ${city.name} through multiple DHA/MOHAP-licensed providers. A DHA-certified nurse or phlebotomist visits your location and collects samples; results are delivered digitally within 24 hours.`} Most home collection services operate daily from 7 AM to 10–11 PM. Free home collection is available at several labs including Medsol Diagnostics and Thumbay Labs. Some providers charge AED 50–100 for the home visit.`,
+      answer: `Yes. ${content?.homeCollectionNote ?? `Home blood collection is available in ${city.name} through multiple the UAE healthcare regulator/UAE-licensed providers. A the UAE healthcare regulator-certified nurse or phlebotomist visits your location and collects samples; results are delivered digitally within 24 hours.`} Most home collection services operate daily from 7 AM to 10–11 PM. Free home collection is available at several labs including Medsol Diagnostics and Thumbay Labs. Some providers charge AED 50–100 for the home visit.`,
     },
     {
       question: `Do I need a prescription for lab tests in ${city.name}?`,
@@ -370,7 +370,7 @@ export default async function LabCityPage({
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
           <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
             {content?.intro ??
-              `Compare lab test prices across ${labs.length} ${content?.regulatorAbbrev ?? "MOHAP"}-licensed diagnostic laboratories in ${city.name}, UAE. CBC from AED ${content?.cbcFrom ?? 69}. Vitamin D from AED ${content?.vitaminDFrom ?? 85}. ${homeCollectionLabs.length} labs offer home sample collection — many for free.`}
+              `Compare lab test prices across ${labs.length} ${content?.regulatorAbbrev ?? "The UAE healthcare regulator"}-licensed diagnostic laboratories in ${city.name}, UAE. CBC from AED ${content?.cbcFrom ?? 69}. Vitamin D from AED ${content?.vitaminDFrom ?? 85}. ${homeCollectionLabs.length} labs offer home sample collection — many for free.`}
           </p>
         </div>
 
@@ -526,7 +526,7 @@ export default async function LabCityPage({
         </div>
         <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
           {content?.deepDive ??
-            `Lab testing in ${city.name} is regulated by the ${content?.regulator ?? "UAE Ministry of Health and Prevention (MOHAP)"}. All licensed diagnostic laboratories must meet national quality standards and are subject to regular inspection. Most routine blood tests — including CBC, lipid profile, liver and kidney function, and glucose — do not require a doctor's prescription at standalone labs. Vitamin D deficiency is particularly prevalent among UAE residents despite abundant sunshine, due to indoor lifestyles and protective clothing; routine screening is recommended annually. Home collection is available across ${city.name} through multiple licensed providers. Always confirm that your chosen lab is on your insurance plan's network before booking.`}
+            `Lab testing in ${city.name} is regulated by the ${content?.regulator ?? "UAE the UAE healthcare regulator"}. All licensed diagnostic laboratories must meet national quality standards and are subject to regular inspection. Most routine blood tests — including CBC, lipid profile, liver and kidney function, and glucose — do not require a doctor's prescription at standalone labs. Vitamin D deficiency is particularly prevalent among UAE residents despite abundant sunshine, due to indoor lifestyles and protective clothing; routine screening is recommended annually. Home collection is available across ${city.name} through multiple licensed providers. Always confirm that your chosen lab is on your insurance plan's network before booking.`}
         </p>
 
         {/* Popular areas */}

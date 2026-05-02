@@ -87,7 +87,7 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
       question: `Does ${lab.name} offer home collection?`,
       answer: lab.homeCollection
         ? `Yes, ${lab.name} offers home sample collection ${lab.homeCollectionFee === 0 ? "for free" : `for AED ${lab.homeCollectionFee}`}. ` +
-          `DHA-licensed nurses visit your location and results are delivered digitally within ${lab.turnaroundHours} hours.`
+          `UAE-licensed (Dubai) nurses visit your location and results are delivered digitally within ${lab.turnaroundHours} hours.`
         : `${lab.name} currently operates as a walk-in laboratory. You can visit any of their ${lab.branchCount} branch${lab.branchCount !== 1 ? "es" : ""} during operating hours.`,
     },
     {
@@ -242,7 +242,7 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
                 </p>
               </div>
               <p className="font-sans text-z-body-sm text-ink">
-                {lab.accreditations.join(", ") || "DHA Licensed"}
+                {lab.accreditations.join(", ") || "Regulator Licensed"}
               </p>
             </div>
           </div>

@@ -54,7 +54,7 @@ export default function ConditionIndexPage({ params }: Props) {
       subtitle={
         <>
           Find specialists and treatment pathways for the most-searched conditions in {city.name}, UAE.
-          Every provider is cross-referenced against official DHA, DOH, or MOHAP registers.
+          Every provider is cross-referenced against official UAE healthcare licensing data.
         </>
       }
       stats={[

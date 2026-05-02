@@ -44,7 +44,7 @@ export const revalidate = 43200;
 
 interface CityHomeContent {
   regulator: string;
-  regulatorAbbrev: "DHA" | "DOH" | "MOHAP";
+  regulatorAbbrev: "The UAE healthcare regulator" | "The UAE healthcare regulator" | "The UAE healthcare regulator";
   regulatorFullNote: string;
   turnaround: string;
   intro: string;
@@ -57,15 +57,15 @@ interface CityHomeContent {
 
 const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
   dubai: {
-    regulator: "Dubai Health Authority (DHA)",
-    regulatorAbbrev: "DHA",
+    regulator: "The UAE healthcare regulator (Dubai)",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "All home collection nurses operating in Dubai must hold a current DHA nursing or phlebotomy licence. The DHA inspects home healthcare providers annually and sets mandatory cold-chain transport standards for biological samples.",
+      "All home collection nurses operating in Dubai must hold a current the UAE healthcare regulator nursing or phlebotomy licence. The UAE healthcare regulator inspects home healthcare providers annually and sets mandatory cold-chain transport standards for biological samples.",
     turnaround: "6–24 hours",
     intro:
-      "Dubai has the most developed home collection market in the UAE. Home-service platforms like DarDoc and Healthchecks360 were built specifically for the Dubai residential market, deploying DHA-licensed phlebotomists across Jumeirah, JLT, Dubai Marina, Business Bay, Mirdif, and the inner suburbs seven days a week. Traditional lab chains — Al Borg, Medsol, Alpha Medical, STAR Metropolis, Unilabs, and MenaLabs — have added home collection as a parallel service channel to their branch networks. The result is one of the most price-competitive home testing environments in the region.",
+      "Dubai has the most developed home collection market in the UAE. Home-service platforms like DarDoc and Healthchecks360 were built specifically for the Dubai residential market, deploying UAE-licensed (Dubai) phlebotomists across Jumeirah, JLT, Dubai Marina, Business Bay, Mirdif, and the inner suburbs seven days a week. Traditional lab chains — Al Borg, Medsol, Alpha Medical, STAR Metropolis, Unilabs, and MenaLabs — have added home collection as a parallel service channel to their branch networks. The result is one of the most price-competitive home testing environments in the region.",
     howItWorks:
-      "Book via the lab's app or website, or call directly. Choose a time window — most Dubai services run 7 AM to 10 or 11 PM daily, with DarDoc extending to 11 PM. A DHA-licensed nurse arrives at your home, hotel, or office with all sterile equipment. The draw takes 10–15 minutes. Samples are sealed and transported in temperature-controlled containers to the partner lab for processing. Results reach you by app notification, email, or WhatsApp PDF within 6–24 hours for routine tests.",
+      "Book via the lab's app or website, or call directly. Choose a time window — most Dubai services run 7 AM to 10 or 11 PM daily, with DarDoc extending to 11 PM. A UAE-licensed (Dubai) nurse arrives at your home, hotel, or office with all sterile equipment. The draw takes 10–15 minutes. Samples are sealed and transported in temperature-controlled containers to the partner lab for processing. Results reach you by app notification, email, or WhatsApp PDF within 6–24 hours for routine tests.",
     coverageNote:
       "Coverage extends across all major Dubai districts including Old Dubai (Deira, Bur Dubai, Al Karama), mid-town (Al Qusais, Al Nahda, Mirdif), new developments (Dubai Marina, JLT, JBR, Palm Jumeirah, Dubai Hills), and business districts (DIFC, Business Bay, DHCC, Downtown). Al Quoz industrial clients and Jebel Ali are covered by select providers — confirm coverage when booking.",
     areas: [
@@ -73,20 +73,20 @@ const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
       "Deira", "Bur Dubai", "Al Karama", "Mirdif", "Dubai Hills", "Palm Jumeirah",
     ],
     insuranceNote:
-      "Most DHA-licensed labs in Dubai are contracted with Daman, AXA Gulf, Cigna, Bupa Arabia, and Dubai Insurance Company. The home collection visit fee is typically treated as an out-of-pocket convenience charge by insurers, but the tests themselves are often reimbursable. DarDoc and ServiceMarket work with select insurance partners — call to confirm your plan.",
+      "Most UAE-licensed (Dubai) labs in Dubai are contracted with Daman, AXA Gulf, Cigna, Bupa Arabia, and Dubai Insurance Company. The home collection visit fee is typically treated as an out-of-pocket convenience charge by insurers, but the tests themselves are often reimbursable. DarDoc and ServiceMarket work with select insurance partners — call to confirm your plan.",
     fastingTip:
       "For fasting tests (lipid profile, fasting glucose, HbA1c, insulin, iron studies), book the earliest available morning slot. Stop eating 8–12 hours before. Water, black coffee (no milk or sugar), and regular medications are generally fine unless your doctor advises otherwise. Drinking at least 500 ml of water 30 minutes before collection makes veins easier to access and reduces the chance of a failed draw.",
   },
   "abu-dhabi": {
-    regulator: "Department of Health Abu Dhabi (DOH)",
-    regulatorAbbrev: "DOH",
+    regulator: "The UAE healthcare regulator (Abu Dhabi)",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "All home collection services in Abu Dhabi must be licensed by the Department of Health (DOH). The DOH requires phlebotomists to hold a current health professional licence, and sample transport must comply with biosafety standards for category B biological substances.",
+      "All home collection services in Abu Dhabi must be licensed by the UAE healthcare regulator (Abu Dhabi). The UAE healthcare regulator requires phlebotomists to hold a current health professional licence, and sample transport must comply with biosafety standards for category B biological substances.",
     turnaround: "12–24 hours",
     intro:
-      "Abu Dhabi's home collection market is anchored by two institutional-grade providers: PureLab, the UAE's largest AI-powered standalone diagnostic lab (part of the PureHealth group), and National Reference Laboratory (NRL), the capital's primary clinical reference lab within the M42/Mubadala Health ecosystem. Both offer DOH-supervised home collection. DarDoc (DOH-licensed) and ServiceMarket extend the home-service model to a broader range of price points. PureLab's free home collection and 12-hour turnaround are the standout offering for Abu Dhabi residents.",
+      "Abu Dhabi's home collection market is anchored by two institutional-grade providers: PureLab, the UAE's largest AI-powered standalone diagnostic lab (part of the PureHealth group), and National Reference Laboratory (NRL), the capital's primary clinical reference lab within the M42/Mubadala Health ecosystem. Both offer the UAE healthcare regulator-supervised home collection. DarDoc (UAE-licensed (Abu Dhabi)) and ServiceMarket extend the home-service model to a broader range of price points. PureLab's free home collection and 12-hour turnaround are the standout offering for Abu Dhabi residents.",
     howItWorks:
-      "Book online, via app, or by phone with your preferred provider. PureLab and NRL operate extended hours across Abu Dhabi island and the western and eastern suburbs. DarDoc and ServiceMarket have flexible booking windows. A DOH-licensed phlebotomist arrives at your home or office, collects blood (and urine if required), and transports samples to the processing lab. Results for routine tests (CBC, chemistry, thyroid) are ready within 12–24 hours — PureLab is typically faster due to its AI-assisted processing pipeline.",
+      "Book online, via app, or by phone with your preferred provider. PureLab and NRL operate extended hours across Abu Dhabi island and the western and eastern suburbs. DarDoc and ServiceMarket have flexible booking windows. A UAE-licensed (Abu Dhabi) phlebotomist arrives at your home or office, collects blood (and urine if required), and transports samples to the processing lab. Results for routine tests (CBC, chemistry, thyroid) are ready within 12–24 hours — PureLab is typically faster due to its AI-assisted processing pipeline.",
     coverageNote:
       "Home collection covers Abu Dhabi island (Corniche, Al Reem Island, Al Khalidiyah, Al Maryah Island), mainland suburbs (Khalifa City, Mohammed Bin Zayed City, Al Shamkha, Masdar City), and Al Maqta. Outlying areas such as Al Rahba, Yas Island, and Saadiyat Island are covered by select providers — confirm at booking.",
     areas: [
@@ -94,20 +94,20 @@ const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
       "Al Maryah Island", "Masdar City", "Saadiyat Island", "Yas Island",
     ],
     insuranceNote:
-      "Abu Dhabi's Daman (mandatory health insurance) and Thiqa (government employees) programmes cover laboratory tests at DOH-licensed facilities. PureLab and NRL are both contracted with Daman. The home collection visit fee may be covered under enhanced Thiqa benefits — check with your HR department. MenaLabs and Medsol Diagnostics also accept Daman for walk-in tests, though their Abu Dhabi home collection coverage is more limited.",
+      "Abu Dhabi's Daman (mandatory health insurance) and Thiqa (government employees) programmes cover laboratory tests at UAE-licensed (Abu Dhabi) facilities. PureLab and NRL are both contracted with Daman. The home collection visit fee may be covered under enhanced Thiqa benefits — check with your HR department. MenaLabs and Medsol Diagnostics also accept Daman for walk-in tests, though their Abu Dhabi home collection coverage is more limited.",
     fastingTip:
-      "Many of the most common tests ordered in Abu Dhabi — lipid profile, fasting glucose, insulin, LFT — require a minimum 8-hour fast. Schedule your home collection for 7–9 AM to minimise disruption to your day. Keep your Emirates ID handy for the nurse's identity verification step. If you are collecting for a government occupational health or visa requirement, confirm that your chosen provider issues official DOH-stamped reports.",
+      "Many of the most common tests ordered in Abu Dhabi — lipid profile, fasting glucose, insulin, LFT — require a minimum 8-hour fast. Schedule your home collection for 7–9 AM to minimise disruption to your day. Keep your Emirates ID handy for the nurse's identity verification step. If you are collecting for a government occupational health or visa requirement, confirm that your chosen provider issues official the UAE healthcare regulator-stamped reports.",
   },
   sharjah: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "Diagnostic laboratories and home healthcare services in Sharjah are licensed by the Ministry of Health and Prevention (MOHAP). MOHAP enforces national clinical laboratory standards and requires home collection nurses to hold a valid MOHAP or equivalent health authority licence.",
+      "Diagnostic laboratories and home healthcare services in Sharjah are licensed by the UAE healthcare regulator. The UAE healthcare regulator enforces national clinical laboratory standards and requires home collection nurses to hold a valid the UAE healthcare regulator or equivalent health authority licence.",
     turnaround: "18–24 hours",
     intro:
       "Sharjah is served by three home collection providers with meaningful coverage across the emirate: Thumbay Labs (CAP-accredited, part of Gulf Medical University's Thumbay Group, with a strong Al Nahda and Al Taawun presence), Medsol Diagnostics (free collection, budget-friendly pricing), and Healthchecks360 (a home-service platform with broad Northern Emirates reach). ServiceMarket also covers parts of Sharjah. For Sharjah residents commuting to Dubai, several Dubai-based providers can also reach Al Nahda and Al Qasimia — confirm with the provider at booking.",
     howItWorks:
-      "Call or book online with Thumbay Labs, Medsol, or Healthchecks360. Operating hours in Sharjah are typically 7:30 AM to 9 PM (Thumbay) and 7 AM to 10 PM (Healthchecks360). A MOHAP-licensed phlebotomist visits your location with sterile equipment. Samples are transported to the Sharjah processing lab (Thumbay Lab in Ajman, Medsol hub in Dubai, or Healthchecks360's partner lab). Routine results are ready in 18–24 hours. The slightly longer turnaround compared to Dubai reflects transport logistics from the Northern Emirates.",
+      "Call or book online with Thumbay Labs, Medsol, or Healthchecks360. Operating hours in Sharjah are typically 7:30 AM to 9 PM (Thumbay) and 7 AM to 10 PM (Healthchecks360). A UAE-licensed phlebotomist visits your location with sterile equipment. Samples are transported to the Sharjah processing lab (Thumbay Lab in Ajman, Medsol hub in Dubai, or Healthchecks360's partner lab). Routine results are ready in 18–24 hours. The slightly longer turnaround compared to Dubai reflects transport logistics from the Northern Emirates.",
     coverageNote:
       "Core coverage spans Al Nahda, Al Majaz, Al Taawun, Al Qasimia, Muwaileh, and University City. Areas near the Sharjah–Ajman border (Al Jurf, Al Rashidiya) are accessible from both Sharjah and Ajman-based providers. Remote areas and industrial zones (Hamriyah, Khorfakkan highway corridor) may have limited availability — confirm before booking.",
     areas: [
@@ -115,20 +115,20 @@ const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
       "University City", "Al Rashidiya", "Al Khan", "Al Qulayaa",
     ],
     insuranceNote:
-      "MOHAP regulates insurance coverage for lab tests in Sharjah. Most major UAE insurers (Daman, AXA, Cigna, Oman Insurance) cover laboratory tests at MOHAP-licensed facilities. Home collection fees are usually out-of-pocket. Thumbay Labs is widely contracted with UAE corporate health plans — check your employee benefit booklet or insurer portal.",
+      "The UAE healthcare regulator regulates insurance coverage for lab tests in Sharjah. Most major UAE insurers (Daman, AXA, Cigna, Oman Insurance) cover laboratory tests at UAE-licensed facilities. Home collection fees are usually out-of-pocket. Thumbay Labs is widely contracted with UAE corporate health plans — check your employee benefit booklet or insurer portal.",
     fastingTip:
-      "For residents in Sharjah ordering fasting blood tests, the morning slot is especially important given slightly longer turnaround times. Book the night before for a 7 AM draw. Inform the phlebotomist of any medications you are taking — some labs request medication lists for accurate result interpretation. Thumbay Labs can issue MOHAP-compliant reports for occupational health and visa purposes.",
+      "For residents in Sharjah ordering fasting blood tests, the morning slot is especially important given slightly longer turnaround times. Book the night before for a 7 AM draw. Inform the phlebotomist of any medications you are taking — some labs request medication lists for accurate result interpretation. Thumbay Labs can issue the UAE healthcare regulator-compliant reports for occupational health and visa purposes.",
   },
   ajman: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "Ajman's diagnostic labs and home healthcare services are regulated by MOHAP. All home collection nurses must hold valid federal health professional licences, and samples are transported to MOHAP-licensed processing laboratories.",
+      "Ajman's diagnostic labs and home healthcare services are regulated by the UAE healthcare regulator. All home collection nurses must hold valid federal health professional licences, and samples are transported to UAE-licensed processing laboratories.",
     turnaround: "18–24 hours",
     intro:
       "Thumbay Labs — headquartered in Ajman at Gulf Medical University — is the primary home collection provider serving Ajman residents. With free home collection and CAP accreditation, Thumbay offers the strongest combination of quality and value in the emirate. Healthchecks360 also covers Ajman within its Northern Emirates service area. For Ajman residents near the Sharjah border, Sharjah-based providers (Medsol, ServiceMarket) may also be accessible.",
     howItWorks:
-      "Book via Thumbay Labs or Healthchecks360 by phone or their online platforms. A MOHAP-licensed phlebotomist visits your home or office. Because Ajman is compact and the Thumbay Labs processing facility is local, turnaround times are among the better ones in the Northern Emirates — routine blood work is typically ready in 18–24 hours.",
+      "Book via Thumbay Labs or Healthchecks360 by phone or their online platforms. A UAE-licensed phlebotomist visits your home or office. Because Ajman is compact and the Thumbay Labs processing facility is local, turnaround times are among the better ones in the Northern Emirates — routine blood work is typically ready in 18–24 hours.",
     coverageNote:
       "Coverage spans the main Ajman city area, Al Jurf, Al Nuaimia, Al Rashidiya, and Al Rumaila. Industrial zones and the Ajman Free Zone are served by select providers. Confirm coverage for remote residential areas (Al Hamidiya, Al Tallah) at booking.",
     areas: ["Al Nuaimia", "Al Jurf", "Al Rashidiya", "Al Rumaila", "Al Hamidiya"],
@@ -138,10 +138,10 @@ const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
       "Book morning slots for fasting tests — Thumbay Labs starts home collection at 7:30 AM. Since Thumbay's Ajman headquarters and processing lab are in close proximity, the sample transport window is shorter than for labs that ship to Dubai. This can mean faster results for urgent panels.",
   },
   "ras-al-khaimah": {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "Ras Al Khaimah's healthcare services are regulated by MOHAP. All diagnostic laboratories and home collection services must be licensed under the federal framework, with nurses and phlebotomists holding current national health authority licences.",
+      "Ras Al Khaimah's healthcare services are regulated by the UAE healthcare regulator. All diagnostic laboratories and home collection services must be licensed under the federal framework, with nurses and phlebotomists holding current national health authority licences.",
     turnaround: "24 hours",
     intro:
       "Al Borg Diagnostics, with its UAE-wide branch network, is the primary home collection provider in Ras Al Khaimah. As the GCC's largest private lab chain, Al Borg offers CAP, JCI, and ISO 15189 accreditation and charges AED 50 for home collection visits. Coverage extends across RAK city and the surrounding residential areas. For residents in Dhayah, Sha'am, or Dafan Al Nakheel, confirm coverage with Al Borg at booking as these areas are further from the main branch network.",
@@ -159,20 +159,20 @@ const CITY_HOME_CONTENT: Record<string, CityHomeContent> = {
       "Schedule morning fasting draws for 7–9 AM to ensure the nurse arrives while you are still fasting. RAK phlebotomists typically carry all equipment; no preparation of your home is needed. For fasting glucose, lipid profile, or insulin tests, drink at least 300–500 ml of water beforehand to aid venous access.",
   },
   fujairah: {
-    regulator: "Ministry of Health and Prevention (MOHAP)",
-    regulatorAbbrev: "MOHAP",
+    regulator: "The UAE healthcare regulator",
+    regulatorAbbrev: "The UAE healthcare regulator",
     regulatorFullNote:
-      "Fujairah's diagnostic and home health services fall under MOHAP federal licensing. All healthcare professionals conducting home visits must hold current national licences, and processing labs must meet MOHAP quality standards for clinical chemistry.",
+      "Fujairah's diagnostic and home health services fall under the UAE healthcare regulator federal licensing. All healthcare professionals conducting home visits must hold current national licences, and processing labs must meet the UAE healthcare regulator quality standards for clinical chemistry.",
     turnaround: "24 hours",
     intro:
       "Thumbay Labs' Northern Emirates network extends into Fujairah, making it the primary home collection option for residents on the east coast. Given Fujairah's more dispersed geography compared to Dubai or Abu Dhabi, home collection here is best suited for residents in the main city area. Those in Dibba, Khor Fakkan, or Kalba should confirm availability directly with Thumbay as service reach varies.",
     howItWorks:
-      "Book with Thumbay Labs by calling the nearest branch or using their online booking form. A MOHAP-licensed phlebotomist visits your home. Given the logistics involved in getting samples from Fujairah to the processing facility (typically the Ajman or Sharjah hub), turnaround time is approximately 24 hours for routine tests — slightly longer than in Dubai or Abu Dhabi.",
+      "Book with Thumbay Labs by calling the nearest branch or using their online booking form. A UAE-licensed phlebotomist visits your home. Given the logistics involved in getting samples from Fujairah to the processing facility (typically the Ajman or Sharjah hub), turnaround time is approximately 24 hours for routine tests — slightly longer than in Dubai or Abu Dhabi.",
     coverageNote:
       "Core coverage is the Fujairah city area (Al Faseel, Merashid, Rugaylat, Fujairah Corniche). Outlying coastal towns (Dibba, Khor Fakkan, Kalba) may be available on request but require advance planning.",
     areas: ["Fujairah City", "Al Faseel", "Merashid", "Rugaylat"],
     insuranceNote:
-      "Thumbay Labs accepts major UAE insurance plans. Given Fujairah's status as part of the federal MOHAP zone, most national insurance plans that cover MOHAP-licensed labs will apply. Home collection fees are out-of-pocket. Call Thumbay to confirm insurance acceptance and whether your specific tests require pre-authorisation.",
+      "Thumbay Labs accepts major UAE insurance plans. Given Fujairah's status as part of the federal the UAE healthcare regulator zone, most national insurance plans that cover UAE-licensed labs will apply. Home collection fees are out-of-pocket. Call Thumbay to confirm insurance acceptance and whether your specific tests require pre-authorisation.",
     fastingTip:
       "Because sample transport from Fujairah to the processing lab adds time, book fasting tests early in the morning to maximise the window before results are needed. Thumbay aims for 24-hour turnaround; urgent panels may be prioritised if flagged at booking.",
   },

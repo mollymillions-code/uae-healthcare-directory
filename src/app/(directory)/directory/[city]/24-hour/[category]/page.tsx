@@ -45,10 +45,10 @@ export async function generateStaticParams() {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 export function generateMetadata({ params }: Props): Metadata {

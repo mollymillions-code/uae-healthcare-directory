@@ -117,7 +117,7 @@ export function medicalOrganizationSchema(
   if (provider.website && /^https?:\/\//i.test(provider.website)) sameAs.push(provider.website);
   if (provider.googleMapsUri && /^https?:\/\//i.test(provider.googleMapsUri)) sameAs.push(provider.googleMapsUri);
 
-  // Regulator identifier: DHA / DOH / MOHAP license → PropertyValue
+  // Regulator identifier: the UAE healthcare regulator license → PropertyValue
   // (only when the license number is actually populated).
   const regulatorPropertyId = getRegulatorPropertyId(resolvedCitySlug);
   const identifierNode = provider.licenseNumber
@@ -808,15 +808,15 @@ function getCategoryPriceRange(categorySlug: string, citySlug: string, countryCo
  */
 function getCityInsuranceContext(citySlug: string): string {
   if (citySlug === "dubai") {
-    return "Dubai mandates employer-provided health insurance under the DHA Essential Benefits Plan (since 2014). Major plans accepted include Daman, AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz.";
+    return "Dubai mandates employer-provided health insurance under the Dubai mandatory health insurance plan (since 2014). Major plans accepted include Daman, AXA, Cigna, MetLife, Bupa, Oman Insurance, Orient Insurance, and Allianz.";
   }
   if (citySlug === "abu-dhabi" || citySlug === "al-ain") {
-    return "Abu Dhabi mandates health insurance under the HAAD (now DOH) framework. UAE nationals are covered by Thiqa; expats are typically covered by Daman or employer plans. AXA, Cigna, MetLife, and Allianz are also widely accepted.";
+    return "Abu Dhabi mandates health insurance under the Abu Dhabi regulator framework. UAE nationals are covered by Thiqa; expats are typically covered by Daman or employer plans. AXA, Cigna, MetLife, and Allianz are also widely accepted.";
   }
   if (citySlug === "sharjah") {
-    return "Sharjah follows MOHAP guidelines. Daman, AXA, Cigna, MetLife, Orient Insurance, and Oman Insurance are widely accepted. Many employers offer group plans.";
+    return "Sharjah follows the UAE healthcare regulator guidelines. Daman, AXA, Cigna, MetLife, Orient Insurance, and Oman Insurance are widely accepted. Many employers offer group plans.";
   }
-  return "MOHAP basic coverage applies in the Northern Emirates. Common plans include Daman, AXA, Cigna, Orient Insurance, and Oman Insurance. Check individual provider listings for plan-specific acceptance.";
+  return "Federal regulator basic coverage applies in the Northern Emirates. Common plans include Daman, AXA, Cigna, Orient Insurance, and Oman Insurance. Check individual provider listings for plan-specific acceptance.";
 }
 
 /**
@@ -1048,7 +1048,7 @@ export function physicianListSchema(
                   : pro.licenseType,
                 recognizedBy: {
                   "@type": "Organization",
-                  name: "Dubai Health Authority (DHA)",
+                  name: "The UAE healthcare regulator (Dubai)",
                 },
               },
             }
@@ -1281,24 +1281,24 @@ export function insuranceLandingPageSchema(
 }
 
 function getRegulator(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 /**
  * Maps a UAE city slug → the regulator license identifier used in
  * schema.org PropertyValue nodes. Zavis is the only UAE directory that
- * can confidently cite DHA/DOH/MOHAP license numbers directly in JSON-LD,
+ * can confidently cite the UAE healthcare regulator license numbers directly in JSON-LD,
  * which is a structured-data moat over every US-originated competitor.
  */
 function getRegulatorPropertyId(
   citySlug: string
-): "DHA License" | "DOH License" | "MOHAP License" {
-  if (citySlug === "dubai") return "DHA License";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH License";
-  return "MOHAP License";
+): "Regulator License" | "Regulator License" | "Regulator License" {
+  if (citySlug === "dubai") return "Regulator License";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "Regulator License";
+  return "Regulator License";
 }
 
 // ─── Full provider schema composer ─────────────────────────────────────────

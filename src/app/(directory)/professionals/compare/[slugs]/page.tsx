@@ -421,11 +421,11 @@ export default function CompareSpecialtiesPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. Data scraped {PROFESSIONAL_STATS.scraped}. This
           comparison is for informational purposes only and does not constitute
           medical advice. Consult your GP for referrals to the appropriate
-          specialist. Verify professional credentials directly with DHA.
+          specialist. Verify professional credentials directly with the UAE healthcare regulator.
         </p>
       </div>
     </div>

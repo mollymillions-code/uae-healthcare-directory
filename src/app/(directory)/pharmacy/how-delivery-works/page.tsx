@@ -117,7 +117,7 @@ export default function PharmacyDeliveryPage() {
             <div className="space-y-5">
               <p>
                 Pharmacy delivery in the UAE has expanded significantly since 2020. Regulatory frameworks
-                set by DHA (Dubai), DOH (Abu Dhabi), and MOHAP allow licensed pharmacies to fulfill home
+                set by the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi), and the UAE healthcare regulator allow licensed pharmacies to fulfill home
                 delivery orders, subject to specific rules around prescription verification and drug types.
               </p>
               <p>

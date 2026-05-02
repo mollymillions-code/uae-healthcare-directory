@@ -1,7 +1,7 @@
 /**
  * Specialty hub — /find-a-doctor/[specialty]
  *
- * Lists DHA-licensed doctors for a given specialty, paginated via `?page=`
+ * Lists UAE-licensed (Dubai) doctors for a given specialty, paginated via `?page=`
  * for crawlability (SSR). Uses the new `professionals_index` table.
  * Graceful zero-state when the table is empty OR when the specialty has no
  * matching rows.
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `${specialtyName} Doctors in Dubai | Zavis`;
   const rawDescription =
     total > 0
-      ? `Browse ${total} DHA-licensed ${specialtyName} doctors in Dubai, sourced from the official Sheryan register. Facility, license type, and specialty details verified monthly.`
+      ? `Browse ${total} UAE-licensed (Dubai) ${specialtyName} doctors in Dubai, sourced from the official Sheryan register. Facility, license type, and specialty details verified monthly.`
       : `${specialtyName} doctors in Dubai, sourced from the official DHA Sheryan register.`;
 
   const canonical = `${base}/find-a-doctor/${params.specialty}`;
@@ -126,15 +126,15 @@ export default async function SpecialtyHubPage({ params, searchParams }: Props) 
   const canonical = `${base}/find-a-doctor/${params.specialty}`;
   const faqs = [
     {
-      question: `How many ${specialtyName} doctors are on the DHA register?`,
+      question: `How many ${specialtyName} doctors are on the UAE healthcare regulator register?`,
       answer:
         total > 0
           ? `The DHA Sheryan register currently lists ${total} active ${specialtyName} doctors practicing in Dubai.`
-          : `The Zavis professional index has not yet been populated for ${specialtyName}. This page will populate after the next DHA data refresh.`,
+          : `The Zavis professional index has not yet been populated for ${specialtyName}. This page will populate after the next the UAE healthcare regulator data refresh.`,
     },
     {
       question: `What is the difference between Specialist and Consultant for ${specialtyName}?`,
-      answer: `In the DHA classification, a Specialist has completed specialty training and holds a recognized specialist qualification, while a Consultant is a more senior grade requiring additional post-specialty experience. Both require DHA licensing.`,
+      answer: `In the UAE healthcare regulator classification, a Specialist has completed specialty training and holds a recognized specialist qualification, while a Consultant is a more senior grade requiring additional post-specialty experience. Both require the UAE healthcare regulator licensing.`,
     },
     {
       question: `Does Zavis book appointments with ${specialtyName} doctors?`,
@@ -213,18 +213,18 @@ export default async function SpecialtyHubPage({ params, searchParams }: Props) 
           </h1>
           <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-3xl leading-relaxed">
             {total > 0
-              ? `${total} DHA-licensed ${specialtyName} doctors are indexed from the official Sheryan register.`
-              : `No ${specialtyName} doctors are indexed yet. This page will populate after the next DHA data refresh.`}
+              ? `${total} UAE-licensed (Dubai) ${specialtyName} doctors are indexed from the official Sheryan register.`
+              : `No ${specialtyName} doctors are indexed yet. This page will populate after the next the UAE healthcare regulator data refresh.`}
           </p>
 
           <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
               {total > 0
-                ? `Every profile below links to a facility listing when available and surfaces DHA license details rather than fabricated trust signals.`
-                : `This page will populate after the next DHA data refresh. In the meantime, browse the facility-first directory below.`}
+                ? `Every profile below links to a facility listing when available and surfaces regulator license details rather than fabricated trust signals.`
+                : `This page will populate after the next the UAE healthcare regulator data refresh. In the meantime, browse the facility-first directory below.`}
               {" "}
               Zavis does not show fake insurance acceptance, availability,
-              languages, or ratings. If a field is not in the DHA register, we
+              languages, or ratings. If a field is not in the UAE healthcare regulator register, we
               don&rsquo;t invent one.
             </p>
           </div>
@@ -240,7 +240,7 @@ export default async function SpecialtyHubPage({ params, searchParams }: Props) 
                 Licensed specialists
               </p>
               <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
-                {specialtyName} doctors on the DHA register.
+                {specialtyName} doctors on the UAE healthcare regulator register.
               </h2>
             </header>
             <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -295,7 +295,7 @@ export default async function SpecialtyHubPage({ params, searchParams }: Props) 
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-sans font-semibold text-ink text-z-body leading-tight group-hover:underline decoration-1 underline-offset-2">
-                    All DHA-licensed professionals
+                    All UAE-licensed (Dubai) professionals
                   </p>
                   <p className="font-sans text-z-caption text-ink-muted mt-0.5">
                     Physicians, dentists, nurses, allied health
@@ -371,7 +371,7 @@ function DoctorCard({ doctor }: { doctor: ProfessionalIndexRecord }) {
             {doctor.licenseType === "FTL" ? "FTL" : "REG"}
           </span>
           <span className="font-sans text-z-micro text-ink-muted">
-            DHA #{doctor.dhaUniqueId}
+            the UAE healthcare regulator #{doctor.dhaUniqueId}
           </span>
         </div>
       </div>

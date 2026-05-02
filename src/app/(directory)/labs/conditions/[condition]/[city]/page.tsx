@@ -50,21 +50,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     ],
     cityContext: {
       dubai:
-        "Dubai Healthcare City and several DHA-licensed labs across Jumeirah, Deira, and Al Barsha offer comprehensive PCOS panels. Many clinics in Dubai bundle hormonal and metabolic tests into a single PCOS screening package.",
+        "Dubai Healthcare City and several UAE-licensed (Dubai) labs across Jumeirah, Deira, and Al Barsha offer comprehensive PCOS panels. Many clinics in Dubai bundle hormonal and metabolic tests into a single PCOS screening package.",
       "abu-dhabi":
-        "Abu Dhabi has DOH-regulated labs on Al Reem Island and in Khalifa City offering full PCOS assessments. Women in Abu Dhabi can access integrated PCOS care combining lab work with endocrinology consultations.",
+        "Abu Dhabi has the UAE healthcare regulator-regulated labs on Al Reem Island and in Khalifa City offering full PCOS assessments. Women in Abu Dhabi can access integrated PCOS care combining lab work with endocrinology consultations.",
       sharjah:
         "Sharjah's labs in Al Nahda and Al Majaz provide affordable PCOS test panels. The proximity to Dubai means patients can compare prices across both emirates easily.",
       ajman:
         "Labs in Ajman offer PCOS screening packages at competitive prices. Patients often benefit from lower overhead costs in the Northern Emirates.",
       "ras-al-khaimah":
-        "Ras Al Khaimah has MOHAP-licensed facilities providing PCOS blood work. Home collection services make testing more convenient for residents across the emirate.",
+        "Ras Al Khaimah has UAE-licensed facilities providing PCOS blood work. Home collection services make testing more convenient for residents across the emirate.",
       fujairah:
-        "Fujairah residents can access PCOS testing through local MOHAP-licensed labs, with some chain labs offering home sample collection along the eastern coast.",
+        "Fujairah residents can access PCOS testing through local UAE-licensed labs, with some chain labs offering home sample collection along the eastern coast.",
       "umm-al-quwain":
-        "Umm Al Quwain residents have access to PCOS testing through MOHAP-regulated labs. Home collection services extend coverage across the emirate.",
+        "Umm Al Quwain residents have access to PCOS testing through the UAE healthcare regulator-regulated labs. Home collection services extend coverage across the emirate.",
       "al-ain":
-        "Al Ain has several DOH-licensed labs near Tawam Hospital and in Al Jimi that offer hormonal panels for PCOS diagnosis at prices generally lower than Abu Dhabi city.",
+        "Al Ain has several UAE-licensed (Abu Dhabi) labs near Tawam Hospital and in Al Jimi that offer hormonal panels for PCOS diagnosis at prices generally lower than Abu Dhabi city.",
     },
   },
   diabetes: {
@@ -82,21 +82,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     ],
     cityContext: {
       dubai:
-        "Dubai has extensive DHA-licensed diabetes screening programs. Labs in Healthcare City, Al Barsha, and Deira offer walk-in glucose and HbA1c tests, often with same-day results.",
+        "Dubai has extensive UAE-licensed (Dubai) diabetes screening programs. Labs in Healthcare City, Al Barsha, and Deira offer walk-in glucose and HbA1c tests, often with same-day results.",
       "abu-dhabi":
-        "Abu Dhabi's DOH encourages annual diabetes screening for residents over 30. Labs across the capital, from Corniche to Khalifa City, offer comprehensive metabolic panels.",
+        "Abu Dhabi's the UAE healthcare regulator encourages annual diabetes screening for residents over 30. Labs across the capital, from Corniche to Khalifa City, offer comprehensive metabolic panels.",
       sharjah:
         "Sharjah's affordable lab network makes diabetes screening accessible. Several labs in Al Nahda and Muwaileh offer budget-friendly glucose and HbA1c packages.",
       ajman:
-        "Ajman's labs provide competitively priced diabetes panels. The emirate's MOHAP-regulated facilities offer fasting glucose and HbA1c testing with quick turnaround.",
+        "Ajman's labs provide competitively priced diabetes panels. The emirate's the UAE healthcare regulator-regulated facilities offer fasting glucose and HbA1c testing with quick turnaround.",
       "ras-al-khaimah":
-        "Ras Al Khaimah has MOHAP-licensed labs offering diabetes screening at lower price points than Dubai and Abu Dhabi, with home collection available in most areas.",
+        "Ras Al Khaimah has UAE-licensed labs offering diabetes screening at lower price points than Dubai and Abu Dhabi, with home collection available in most areas.",
       fujairah:
         "Fujairah labs offer essential diabetes screening tests. Residents on the eastern coast can access fasting glucose and HbA1c through local facilities.",
       "umm-al-quwain":
-        "Umm Al Quwain residents can access diabetes screening through MOHAP-regulated labs, with home collection extending access across the emirate.",
+        "Umm Al Quwain residents can access diabetes screening through the UAE healthcare regulator-regulated labs, with home collection extending access across the emirate.",
       "al-ain":
-        "Al Ain, home to a significant diabetes research community at UAE University, has DOH-licensed labs offering comprehensive diabetes panels near Tawam Hospital and central areas.",
+        "Al Ain, home to a significant diabetes research community at UAE University, has UAE-licensed (Abu Dhabi) labs offering comprehensive diabetes panels near Tawam Hospital and central areas.",
     },
   },
   anemia: {
@@ -107,9 +107,9 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["cbc", "iron-studies", "vitamin-b12", "folate"],
     cityContext: {
       dubai:
-        "Dubai labs offer rapid CBC and iron panels, often with results within hours. DHA-licensed labs in Deira and Al Barsha are popular for walk-in blood work.",
+        "Dubai labs offer rapid CBC and iron panels, often with results within hours. UAE-licensed (Dubai) labs in Deira and Al Barsha are popular for walk-in blood work.",
       "abu-dhabi":
-        "Abu Dhabi's DOH-regulated labs provide comprehensive anemia panels. The emirate's thalassemia screening program means labs are well-equipped for detailed blood analysis.",
+        "Abu Dhabi's the UAE healthcare regulator-regulated labs provide comprehensive anemia panels. The emirate's thalassemia screening program means labs are well-equipped for detailed blood analysis.",
       sharjah:
         "Sharjah labs in Al Nahda and Al Majaz offer some of the most affordable CBC and iron study packages in the northern UAE.",
       ajman:
@@ -119,7 +119,7 @@ const CONDITIONS: Record<string, ConditionDef> = {
       fujairah:
         "Fujairah residents can access anemia screening through local labs, with CBC results often available the same day.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-licensed labs providing essential blood work including CBC and iron studies.",
+        "Umm Al Quwain has UAE-licensed labs providing essential blood work including CBC and iron studies.",
       "al-ain":
         "Al Ain labs near Tawam Hospital and Al Jimi offer thorough anemia panels, often at prices lower than the coastal cities.",
     },
@@ -132,9 +132,9 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["tsh", "thyroid-panel"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer rapid TSH and full thyroid panels. Labs in Healthcare City and Jumeirah specialize in endocrine diagnostics with quick turnaround.",
+        "Dubai's UAE-licensed (Dubai) labs offer rapid TSH and full thyroid panels. Labs in Healthcare City and Jumeirah specialize in endocrine diagnostics with quick turnaround.",
       "abu-dhabi":
-        "Abu Dhabi's labs provide thyroid screening as part of routine health checks. DOH-regulated facilities across the city offer both basic TSH and comprehensive panels.",
+        "Abu Dhabi's labs provide thyroid screening as part of routine health checks. The UAE healthcare regulator-regulated facilities across the city offer both basic TSH and comprehensive panels.",
       sharjah:
         "Sharjah residents find affordable thyroid testing in labs across Al Nahda and Al Taawun, often bundled with annual health check packages.",
       ajman:
@@ -142,11 +142,11 @@ const CONDITIONS: Record<string, ConditionDef> = {
       "ras-al-khaimah":
         "Ras Al Khaimah labs provide thyroid panels with home collection, suited for regular monitoring of thyroid medication dosages.",
       fujairah:
-        "Fujairah's labs offer basic and comprehensive thyroid panels through MOHAP-licensed facilities in the city center.",
+        "Fujairah's labs offer basic and comprehensive thyroid panels through UAE-licensed facilities in the city center.",
       "umm-al-quwain":
-        "Umm Al Quwain residents can access thyroid testing through local MOHAP-regulated labs and chain lab branches.",
+        "Umm Al Quwain residents can access thyroid testing through local the UAE healthcare regulator-regulated labs and chain lab branches.",
       "al-ain":
-        "Al Ain has DOH-licensed labs offering affordable thyroid panels, particularly near the medical district around Tawam Hospital.",
+        "Al Ain has UAE-licensed (Abu Dhabi) labs offering affordable thyroid panels, particularly near the medical district around Tawam Hospital.",
     },
   },
   "heart-disease": {
@@ -164,21 +164,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     ],
     cityContext: {
       dubai:
-        "Dubai has world-class cardiac care facilities. DHA-licensed labs throughout the city offer comprehensive cardiac panels, and many cardiologists in Healthcare City recommend regular lipid and CRP screening.",
+        "Dubai has world-class cardiac care facilities. UAE-licensed (Dubai) labs throughout the city offer comprehensive cardiac panels, and many cardiologists in Healthcare City recommend regular lipid and CRP screening.",
       "abu-dhabi":
-        "Abu Dhabi's DOH has promoted cardiovascular screening through public health campaigns. Labs on Al Maryah Island and in Khalifa City offer advanced cardiac biomarker panels.",
+        "Abu Dhabi's the UAE healthcare regulator has promoted cardiovascular screening through public health campaigns. Labs on Al Maryah Island and in Khalifa City offer advanced cardiac biomarker panels.",
       sharjah:
         "Sharjah labs offer cardiac screening panels at competitive prices. Residents in Al Majaz and Al Taawun can access lipid profiles and cardiac markers without long waits.",
       ajman:
         "Ajman's labs provide essential cardiac screening tests including lipid profiles and glucose panels at lower price points than neighboring Dubai.",
       "ras-al-khaimah":
-        "Ras Al Khaimah's MOHAP-licensed labs offer cardiac risk panels with home collection, making preventive screening convenient across the emirate.",
+        "Ras Al Khaimah's UAE-licensed labs offer cardiac risk panels with home collection, making preventive screening convenient across the emirate.",
       fujairah:
         "Fujairah residents can access cardiac screening through local labs, with lipid profiles and glucose tests available at affordable rates.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-regulated labs offering cardiac risk panels. Home collection services extend access to residents across the emirate.",
+        "Umm Al Quwain has the UAE healthcare regulator-regulated labs offering cardiac risk panels. Home collection services extend access to residents across the emirate.",
       "al-ain":
-        "Al Ain has DOH-licensed labs with cardiac panels priced competitively. Tawam Hospital's proximity means advanced cardiac biomarkers are readily available.",
+        "Al Ain has UAE-licensed (Abu Dhabi) labs with cardiac panels priced competitively. Tawam Hospital's proximity means advanced cardiac biomarkers are readily available.",
     },
   },
   "liver-disease": {
@@ -189,21 +189,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["lft", "hepatitis-b"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer liver function panels with rapid results. Labs in Deira and Healthcare City often include hepatitis B screening in standard liver packages.",
+        "Dubai's UAE-licensed (Dubai) labs offer liver function panels with rapid results. Labs in Deira and Healthcare City often include hepatitis B screening in standard liver packages.",
       "abu-dhabi":
-        "Abu Dhabi's DOH mandates hepatitis B screening for visa medicals. Labs across the capital offer combined LFT and hepatitis panels at competitive rates.",
+        "Abu Dhabi's the UAE healthcare regulator mandates hepatitis B screening for visa medicals. Labs across the capital offer combined LFT and hepatitis panels at competitive rates.",
       sharjah:
         "Sharjah labs provide affordable liver function testing. Many labs in Al Nahda offer bundled LFT and hepatitis packages.",
       ajman:
-        "Ajman's MOHAP-licensed labs offer liver panels at some of the lowest prices in the UAE, convenient for routine monitoring.",
+        "Ajman's UAE-licensed labs offer liver panels at some of the lowest prices in the UAE, convenient for routine monitoring.",
       "ras-al-khaimah":
         "Ras Al Khaimah labs offer liver function and hepatitis screening with home collection, extending access across the emirate.",
       fujairah:
         "Fujairah residents can access liver function tests through local labs, with results typically available within 24 hours.",
       "umm-al-quwain":
-        "Umm Al Quwain has labs providing basic and comprehensive liver panels through MOHAP-regulated facilities.",
+        "Umm Al Quwain has labs providing basic and comprehensive liver panels through the UAE healthcare regulator-regulated facilities.",
       "al-ain":
-        "Al Ain's DOH-licensed labs offer liver function testing at competitive prices, with several options near the city center and Tawam area.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs offer liver function testing at competitive prices, with several options near the city center and Tawam area.",
     },
   },
   "kidney-disease": {
@@ -214,21 +214,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["kft", "uric-acid", "urinalysis"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer comprehensive kidney panels. Labs in Healthcare City and across the city provide KFT with quick turnaround, often bundled with diabetes screening.",
+        "Dubai's UAE-licensed (Dubai) labs offer comprehensive kidney panels. Labs in Healthcare City and across the city provide KFT with quick turnaround, often bundled with diabetes screening.",
       "abu-dhabi":
-        "Abu Dhabi's DOH promotes kidney health screening. Labs throughout the capital offer KFT panels, often combined with diabetes markers for a complete metabolic assessment.",
+        "Abu Dhabi's the UAE healthcare regulator promotes kidney health screening. Labs throughout the capital offer KFT panels, often combined with diabetes markers for a complete metabolic assessment.",
       sharjah:
         "Sharjah labs in Al Nahda and Al Majaz offer affordable kidney function panels, accessible for routine monitoring.",
       ajman:
         "Ajman's labs provide kidney function tests at competitive prices, making regular monitoring affordable for at-risk populations.",
       "ras-al-khaimah":
-        "Ras Al Khaimah's MOHAP-licensed labs offer KFT and urinalysis with home collection, convenient for patients requiring regular monitoring.",
+        "Ras Al Khaimah's UAE-licensed labs offer KFT and urinalysis with home collection, convenient for patients requiring regular monitoring.",
       fujairah:
-        "Fujairah residents can access kidney function screening through local MOHAP-licensed labs, with same-day results for routine KFT.",
+        "Fujairah residents can access kidney function screening through local UAE-licensed labs, with same-day results for routine KFT.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-regulated labs providing kidney function panels at affordable rates.",
+        "Umm Al Quwain has the UAE healthcare regulator-regulated labs providing kidney function panels at affordable rates.",
       "al-ain":
-        "Al Ain's DOH-licensed labs near Tawam Hospital offer kidney function panels, often bundled with diabetes screening for comprehensive metabolic assessment.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs near Tawam Hospital offer kidney function panels, often bundled with diabetes screening for comprehensive metabolic assessment.",
     },
   },
   fertility: {
@@ -246,21 +246,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     ],
     cityContext: {
       dubai:
-        "Dubai is a hub for fertility treatment in the region. DHA-licensed labs in Healthcare City and across the city offer comprehensive fertility panels, often coordinated with IVF clinics.",
+        "Dubai is a hub for fertility treatment in the region. UAE-licensed (Dubai) labs in Healthcare City and across the city offer comprehensive fertility panels, often coordinated with IVF clinics.",
       "abu-dhabi":
-        "Abu Dhabi's DOH-regulated labs provide fertility hormone panels, with many facilities near the medical district on Al Maryah Island and in Khalifa City.",
+        "Abu Dhabi's the UAE healthcare regulator-regulated labs provide fertility hormone panels, with many facilities near the medical district on Al Maryah Island and in Khalifa City.",
       sharjah:
         "Sharjah offers affordable fertility testing through labs in Al Nahda and Al Majaz, providing an alternative to higher-priced Dubai labs just across the border.",
       ajman:
         "Ajman's labs offer fertility hormone panels at competitive rates, making initial fertility screening accessible.",
       "ras-al-khaimah":
-        "Ras Al Khaimah's MOHAP-licensed labs provide fertility testing with home collection, convenient for patients undergoing monitored cycles.",
+        "Ras Al Khaimah's UAE-licensed labs provide fertility testing with home collection, convenient for patients undergoing monitored cycles.",
       fujairah:
         "Fujairah residents can access basic fertility panels through local labs, with comprehensive panels available at chain lab branches.",
       "umm-al-quwain":
-        "Umm Al Quwain has labs offering fertility hormone tests through MOHAP-regulated facilities and chain lab branches.",
+        "Umm Al Quwain has labs offering fertility hormone tests through the UAE healthcare regulator-regulated facilities and chain lab branches.",
       "al-ain":
-        "Al Ain's DOH-licensed labs offer fertility panels at lower prices than coastal cities, with good access near the medical district.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs offer fertility panels at lower prices than coastal cities, with good access near the medical district.",
     },
   },
   "std-screening": {
@@ -271,21 +271,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["hiv-test", "vdrl", "hepatitis-b"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer confidential STD screening. Labs in Healthcare City, Jumeirah, and Deira provide discreet testing with quick results and secure digital reporting.",
+        "Dubai's UAE-licensed (Dubai) labs offer confidential STD screening. Labs in Healthcare City, Jumeirah, and Deira provide discreet testing with quick results and secure digital reporting.",
       "abu-dhabi":
-        "Abu Dhabi's DOH-regulated labs provide confidential STD testing. Several labs across the capital offer private screening rooms and digital result delivery.",
+        "Abu Dhabi's the UAE healthcare regulator-regulated labs provide confidential STD testing. Several labs across the capital offer private screening rooms and digital result delivery.",
       sharjah:
         "Sharjah labs offer confidential STD panels at affordable prices. Labs in Al Nahda and Al Majaz provide discreet testing services.",
       ajman:
-        "Ajman's MOHAP-licensed labs provide confidential STD screening at competitive prices with quick turnaround times.",
+        "Ajman's UAE-licensed labs provide confidential STD screening at competitive prices with quick turnaround times.",
       "ras-al-khaimah":
-        "Ras Al Khaimah labs offer confidential STD testing through MOHAP-licensed facilities, with some labs providing home collection for added privacy.",
+        "Ras Al Khaimah labs offer confidential STD testing through UAE-licensed facilities, with some labs providing home collection for added privacy.",
       fujairah:
-        "Fujairah residents can access confidential STD screening through local MOHAP-licensed labs, with results delivered digitally.",
+        "Fujairah residents can access confidential STD screening through local UAE-licensed labs, with results delivered digitally.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-regulated labs providing confidential STD testing with home collection options.",
+        "Umm Al Quwain has the UAE healthcare regulator-regulated labs providing confidential STD testing with home collection options.",
       "al-ain":
-        "Al Ain's DOH-licensed labs offer confidential STD screening, with several options providing discrete testing near the city center.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs offer confidential STD screening, with several options providing discrete testing near the city center.",
     },
   },
   "vitamin-deficiency": {
@@ -303,9 +303,9 @@ const CONDITIONS: Record<string, ConditionDef> = {
     ],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs frequently report vitamin D deficiency in residents. Labs across the city, from Marina to Deira, offer comprehensive vitamin panels, often as part of annual health check-ups.",
+        "Dubai's UAE-licensed (Dubai) labs frequently report vitamin D deficiency in residents. Labs across the city, from Marina to Deira, offer comprehensive vitamin panels, often as part of annual health check-ups.",
       "abu-dhabi":
-        "Abu Dhabi's DOH promotes regular vitamin screening. Labs throughout the capital offer vitamin and mineral panels, with vitamin D testing being one of the most commonly ordered tests.",
+        "Abu Dhabi's the UAE healthcare regulator promotes regular vitamin screening. Labs throughout the capital offer vitamin and mineral panels, with vitamin D testing being one of the most commonly ordered tests.",
       sharjah:
         "Sharjah labs offer some of the most affordable vitamin panels in the UAE. Labs in Al Nahda and Muwaileh provide budget-friendly screening packages.",
       ajman:
@@ -313,11 +313,11 @@ const CONDITIONS: Record<string, ConditionDef> = {
       "ras-al-khaimah":
         "Ras Al Khaimah's labs provide vitamin panels with home collection, convenient for routine monitoring of supplementation.",
       fujairah:
-        "Fujairah residents can access vitamin testing through local MOHAP-licensed labs, with vitamin D and B12 being the most commonly ordered tests.",
+        "Fujairah residents can access vitamin testing through local UAE-licensed labs, with vitamin D and B12 being the most commonly ordered tests.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-regulated labs offering vitamin panels at affordable rates, with home collection extending access across the emirate.",
+        "Umm Al Quwain has the UAE healthcare regulator-regulated labs offering vitamin panels at affordable rates, with home collection extending access across the emirate.",
       "al-ain":
-        "Al Ain's DOH-licensed labs offer affordable vitamin and mineral panels. The inland climate and lifestyle make regular vitamin D screening particularly relevant.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs offer affordable vitamin and mineral panels. The inland climate and lifestyle make regular vitamin D screening particularly relevant.",
     },
   },
   "allergy-testing": {
@@ -328,21 +328,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["ige-total", "food-intolerance-panel"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer comprehensive allergy panels. Labs in Healthcare City and across the city provide IgE testing and food intolerance panels, often with dietitian referrals.",
+        "Dubai's UAE-licensed (Dubai) labs offer comprehensive allergy panels. Labs in Healthcare City and across the city provide IgE testing and food intolerance panels, often with dietitian referrals.",
       "abu-dhabi":
-        "Abu Dhabi's DOH-regulated labs provide allergy testing with detailed reporting. Labs on Al Reem Island and in Khalifa City offer both basic IgE and comprehensive food panels.",
+        "Abu Dhabi's the UAE healthcare regulator-regulated labs provide allergy testing with detailed reporting. Labs on Al Reem Island and in Khalifa City offer both basic IgE and comprehensive food panels.",
       sharjah:
         "Sharjah labs offer affordable allergy testing. Labs in Al Majaz and Al Taawun provide IgE panels at lower prices than Dubai while maintaining licensed quality standards.",
       ajman:
-        "Ajman's MOHAP-licensed labs offer allergy panels at competitive rates, making testing accessible for families.",
+        "Ajman's UAE-licensed labs offer allergy panels at competitive rates, making testing accessible for families.",
       "ras-al-khaimah":
-        "Ras Al Khaimah's labs provide allergy testing through MOHAP-licensed facilities, with home collection available for blood-based IgE panels.",
+        "Ras Al Khaimah's labs provide allergy testing through UAE-licensed facilities, with home collection available for blood-based IgE panels.",
       fujairah:
         "Fujairah residents can access allergy testing through local labs, with basic IgE panels available and comprehensive panels through chain lab branches.",
       "umm-al-quwain":
-        "Umm Al Quwain has labs offering allergy testing through MOHAP-regulated facilities, with home collection for added convenience.",
+        "Umm Al Quwain has labs offering allergy testing through the UAE healthcare regulator-regulated facilities, with home collection for added convenience.",
       "al-ain":
-        "Al Ain's DOH-licensed labs offer allergy panels at affordable prices, with comprehensive food intolerance testing available at chain lab branches.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs offer allergy panels at affordable prices, with comprehensive food intolerance testing available at chain lab branches.",
     },
   },
   "prostate-health": {
@@ -353,21 +353,21 @@ const CONDITIONS: Record<string, ConditionDef> = {
     testSlugs: ["psa", "testosterone"],
     cityContext: {
       dubai:
-        "Dubai's DHA-licensed labs offer PSA screening as part of men's health packages. Labs in Healthcare City and across the city provide rapid PSA results, often coordinated with urology clinics.",
+        "Dubai's UAE-licensed (Dubai) labs offer PSA screening as part of men's health packages. Labs in Healthcare City and across the city provide rapid PSA results, often coordinated with urology clinics.",
       "abu-dhabi":
-        "Abu Dhabi's DOH promotes prostate screening for men over 50. Labs throughout the capital offer PSA testing, often bundled with comprehensive men's health panels.",
+        "Abu Dhabi's the UAE healthcare regulator promotes prostate screening for men over 50. Labs throughout the capital offer PSA testing, often bundled with comprehensive men's health panels.",
       sharjah:
         "Sharjah labs offer affordable PSA testing. Labs in Al Nahda and Al Majaz provide men's health screening at competitive prices.",
       ajman:
         "Ajman's labs offer PSA and testosterone testing at some of the lowest prices in the UAE, making regular screening affordable.",
       "ras-al-khaimah":
-        "Ras Al Khaimah's MOHAP-licensed labs provide PSA testing with home collection, convenient for routine annual screening.",
+        "Ras Al Khaimah's UAE-licensed labs provide PSA testing with home collection, convenient for routine annual screening.",
       fujairah:
-        "Fujairah residents can access prostate screening through local MOHAP-licensed labs, with PSA results typically available within 24 hours.",
+        "Fujairah residents can access prostate screening through local UAE-licensed labs, with PSA results typically available within 24 hours.",
       "umm-al-quwain":
-        "Umm Al Quwain has MOHAP-regulated labs offering PSA testing at affordable rates.",
+        "Umm Al Quwain has the UAE healthcare regulator-regulated labs offering PSA testing at affordable rates.",
       "al-ain":
-        "Al Ain's DOH-licensed labs near Tawam Hospital and in Al Jimi offer prostate screening at prices lower than Abu Dhabi city.",
+        "Al Ain's UAE-licensed (Abu Dhabi) labs near Tawam Hospital and in Al Jimi offer prostate screening at prices lower than Abu Dhabi city.",
     },
   },
 };
@@ -384,16 +384,16 @@ function getCityName(slug: string): string {
 }
 
 function getRegulator(citySlug: string): string {
-  if (citySlug === "dubai") return "Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "Department of Health Abu Dhabi (DOH)";
-  return "Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getRegulatorShort(citySlug: string): string {
-  if (citySlug === "dubai") return "DHA";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (citySlug === "dubai") return "the UAE healthcare regulator";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "the UAE healthcare regulator";
+  return "the UAE healthcare regulator";
 }
 
 /**

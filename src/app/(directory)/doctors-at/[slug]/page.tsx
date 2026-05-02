@@ -132,7 +132,7 @@ export default function DoctorsAtPage({ params }: Props) {
             medicalSpecialty: d.specialty || undefined,
             hasCredential: {
               "@type": "EducationalOccupationalCredential",
-              credentialCategory: `DHA ${d.licenseType}`,
+              credentialCategory: `The UAE healthcare regulator ${d.licenseType}`,
             },
           })),
           areaServed: {
@@ -218,7 +218,7 @@ export default function DoctorsAtPage({ params }: Props) {
                 {doctors.length.toLocaleString()}
               </strong>{" "}
               licensed doctors (physicians and dentists) on record with the
-              Dubai Health Authority.
+              the UAE healthcare regulator (Dubai).
               {physicianCount > 0 && (
                 <> This includes {physicianCount.toLocaleString()} physicians</>
               )}
@@ -437,7 +437,7 @@ export default function DoctorsAtPage({ params }: Props) {
                   </p>
                   <p className="font-sans text-z-caption text-ink-muted mt-0.5">
                     {PROFESSIONAL_STATS.total.toLocaleString()} licensed
-                    professionals on the DHA register
+                    professionals on the UAE healthcare regulator register
                   </p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-ink-muted group-hover:translate-x-0.5 transition-transform shrink-0 mt-1" />
@@ -449,10 +449,10 @@ export default function DoctorsAtPage({ params }: Props) {
         <div className="rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
             <strong className="text-ink-soft">Source.</strong> Dubai Health
-            Authority (DHA) Sheryan Medical Professional Registry. Data scraped{" "}
+            Authority (the UAE healthcare regulator) Sheryan Medical Professional Registry. Data scraped{" "}
             {PROFESSIONAL_STATS.scraped}. This directory is for informational
             purposes only and does not constitute medical advice. Verify
-            professional credentials directly with DHA before making healthcare
+            professional credentials directly with the UAE healthcare regulator before making healthcare
             decisions.
           </p>
         </div>

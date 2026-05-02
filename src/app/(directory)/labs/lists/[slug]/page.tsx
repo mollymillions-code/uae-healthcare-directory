@@ -110,7 +110,7 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
       } else {
         answer += `there are meaningful price differences across labs. `;
       }
-      answer += `All labs listed are licensed by DHA, DOH, or MOHAP. Prices verified March 2026.`;
+      answer += `All labs listed are licensed by the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator. Prices verified March 2026.`;
       return answer;
     }
 
@@ -157,7 +157,7 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
     case "lab-type": {
       let answer = `${top.name} ranks as the top lab chain in ${cityName} by network size, accreditation, and test range. `;
       answer += `The ${items.length} chains listed below collectively cover all major cities across the UAE, with combined branch counts in the hundreds. `;
-      answer += `All hold DHA, DOH, and/or MOHAP licences. Rankings updated March 2026.`;
+      answer += `All hold the UAE healthcare regulator, the UAE healthcare regulator, and/or the UAE healthcare regulator licences. Rankings updated March 2026.`;
       return answer;
     }
 
@@ -181,7 +181,7 @@ function WhyItMattersSection({ list }: { list: LabList }) {
       case "cheapest-labs":
         return {
           heading: "Why Lab Price Comparison Matters",
-          body: `A routine blood test in ${cityName} can cost anywhere from AED 50 at a neighbourhood lab to AED 250 at a hospital-based facility — for the identical test. Over the course of a year, a family tracking cholesterol, diabetes markers, and vitamin D levels could easily overpay by AED 1,000–2,000 without comparing prices first. All major UAE labs — standalone chains, boutique diagnostics, and home-service providers — are licensed under DHA, DOH, or MOHAP and must meet the same quality and accuracy standards. The price difference is driven by location, brand premium, and overhead, not by better results.`,
+          body: `A routine blood test in ${cityName} can cost anywhere from AED 50 at a neighbourhood lab to AED 250 at a hospital-based facility — for the identical test. Over the course of a year, a family tracking cholesterol, diabetes markers, and vitamin D levels could easily overpay by AED 1,000–2,000 without comparing prices first. All major UAE labs — standalone chains, boutique diagnostics, and home-service providers — are licensed under the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator and must meet the same quality and accuracy standards. The price difference is driven by location, brand premium, and overhead, not by better results.`,
         };
       case "cheapest-test": {
         const testName = list.testSlug
@@ -199,12 +199,12 @@ function WhyItMattersSection({ list }: { list: LabList }) {
           case "free-home-collection":
             return {
               heading: "Why Home Blood Collection Matters",
-              body: `Home blood collection saves 1–2 hours versus visiting a lab, eliminates fasting-while-driving risks, and is ideal for elderly patients, young children, and people with mobility limitations. In ${cityName}, DHA-licensed phlebotomists can reach most locations within 30–60 minutes. Many services now offer same-day results. The fee varies from free to AED 100 depending on the lab — with no compromise on accuracy, since the sample is processed at the same CLIA/CAP-accredited lab used for walk-in patients.`,
+              body: `Home blood collection saves 1–2 hours versus visiting a lab, eliminates fasting-while-driving risks, and is ideal for elderly patients, young children, and people with mobility limitations. In ${cityName}, UAE-licensed (Dubai) phlebotomists can reach most locations within 30–60 minutes. Many services now offer same-day results. The fee varies from free to AED 100 depending on the lab — with no compromise on accuracy, since the sample is processed at the same CLIA/CAP-accredited lab used for walk-in patients.`,
             };
           case "cap-accredited":
             return {
               heading: "Why CAP Accreditation Matters",
-              body: `CAP (College of American Pathologists) accreditation is the gold standard in lab quality — stricter than DHA/DOH licensing alone. CAP-accredited labs undergo unannounced inspections, use external proficiency testing programmes, and must document every step of the test process. In practical terms, CAP accreditation means results are reproducible, calibration is verified by an independent body, and the lab meets the same standards as top US hospital labs. For critical tests like HbA1c, cardiac markers, or hormone panels, accreditation quality matters.`,
+              body: `CAP (College of American Pathologists) accreditation is the gold standard in lab quality — stricter than the UAE healthcare regulator licensing alone. CAP-accredited labs undergo unannounced inspections, use external proficiency testing programmes, and must document every step of the test process. In practical terms, CAP accreditation means results are reproducible, calibration is verified by an independent body, and the lab meets the same standards as top US hospital labs. For critical tests like HbA1c, cardiac markers, or hormone panels, accreditation quality matters.`,
             };
           default:
             return {
@@ -316,7 +316,7 @@ function buildFaqs(
         },
         {
           question: `Is ${top?.name ?? "the cheapest lab"} accredited?`,
-          answer: `All labs listed in the UAE Open Healthcare Directory hold valid licences issued by UAE health authorities (DHA, DOH, or MOHAP). Many labs in this ranking also hold international accreditations such as CAP (College of American Pathologists) or ISO 15189. Check the individual lab profile for specific accreditation details.`,
+          answer: `All labs listed in the UAE Open Healthcare Directory hold valid licences issued by UAE health authorities (the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator). Many labs in this ranking also hold international accreditations such as CAP (College of American Pathologists) or ISO 15189. Check the individual lab profile for specific accreditation details.`,
         },
         {
           question: `Does ${top?.name ?? "the cheapest lab"} offer home collection?`,
@@ -368,7 +368,7 @@ function buildFaqs(
             {
               question: "How does home blood collection work in the UAE?",
               answer:
-                "Book online or by phone. A DHA/DOH-licensed nurse or phlebotomist visits your home or office, typically within 30–60 minutes. They collect blood, urine, or other samples and transport them to the lab in approved containers. Results are sent digitally within 24–48 hours. Most services operate 7 days a week, 7 AM to 10 PM.",
+                "Book online or by phone. A the UAE healthcare regulator/UAE-licensed (Abu Dhabi) nurse or phlebotomist visits your home or office, typically within 30–60 minutes. They collect blood, urine, or other samples and transport them to the lab in approved containers. Results are sent digitally within 24–48 hours. Most services operate 7 days a week, 7 AM to 10 PM.",
             },
             {
               question: "Is home blood collection as accurate as lab visits?",
@@ -457,7 +457,7 @@ function buildFaqs(
         {
           question: "Are these labs licensed?",
           answer:
-            "Yes. All labs in the UAE Open Healthcare Directory are licensed by UAE health authorities — DHA (Dubai), DOH (Abu Dhabi), or MOHAP (Northern Emirates). Many also hold international CAP or ISO 15189 accreditation.",
+            "Yes. All labs in the UAE Open Healthcare Directory are licensed by UAE health authorities — the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi), or the UAE healthcare regulator (Northern Emirates). Many also hold international CAP or ISO 15189 accreditation.",
         },
         {
           question: "How do I book a test?",
@@ -786,7 +786,7 @@ export default function LabListPage({ params }: { params: { slug: string } }) {
           laboratory before booking. This ranking is for informational purposes only and
           does not constitute medical advice or an endorsement of any particular lab.
           Consult a physician before ordering lab tests. All labs listed hold valid UAE
-          health authority licences. Data sourced from DHA, DOH, and MOHAP licensed
+          health authority licences. Data sourced from official UAE healthcare licensing data licensed
           facility registers. Last verified March 2026.
         </p>
       </div>

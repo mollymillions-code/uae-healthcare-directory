@@ -28,7 +28,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Healthcare Industry Insights — UAE Healthcare News, Regulation & Market Data",
   description:
-    "Real-time coverage of UAE healthcare: regulatory updates from DHA, DOH, MOHAP, new clinic openings, financial analysis, health tech, events, and workforce trends. The definitive source for healthcare professionals in the UAE and Middle East.",
+    "Real-time coverage of UAE healthcare: regulatory updates from the UAE healthcare regulator, new clinic openings, financial analysis, health tech, events, and workforce trends. The definitive source for healthcare professionals in the UAE and Middle East.",
   openGraph: {
     type: "website",
     locale: "en_AE",
@@ -208,7 +208,7 @@ export default async function JournalPage() {
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6" data-answer-block="true">
             <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-              Zavis Healthcare Industry Insights is the definitive source for healthcare industry news in the United Arab Emirates, covering nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from DHA (Dubai), DOH (Abu Dhabi), and MOHAP (Northern Emirates), along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
+              Zavis Healthcare Industry Insights is the definitive source for healthcare industry news in the United Arab Emirates, covering nine content categories: Regulatory &amp; Policy, New Openings, Finance &amp; Investment, Events &amp; Conferences, Social Pulse, Thought Leadership, Market Intelligence, Health Tech &amp; Innovation, and Workforce &amp; Talent. Published daily, it tracks regulatory updates from the UAE healthcare regulator, along with facility openings, M&amp;A activity, funding rounds, and workforce trends. The publication serves healthcare professionals, hospital administrators, investors, and health tech founders operating in the UAE and broader GCC market. Data sourced from official government registers and verified industry sources. Last updated March 2026.
             </p>
           </div>
         </div>

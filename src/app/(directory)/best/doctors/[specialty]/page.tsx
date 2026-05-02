@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const isDentist = spec.category === "dentists";
   const doctorLabel = isDentist ? "Dentists" : "Doctors";
   const title = `Best ${spec.name} in Dubai 2026 \u2014 Top 10 ${spec.name} ${doctorLabel}`;
-  const description = `Find the best ${spec.name.toLowerCase()} in Dubai. Top 10 ${spec.name.toLowerCase()} ${doctorLabel.toLowerCase()} ranked by institutional capacity, plus the leading hospitals and clinics for ${spec.name.toLowerCase()} in Dubai. ${spec.count.toLocaleString()} DHA-licensed professionals. Data from the official Sheryan Medical Registry.`;
+  const description = `Find the best ${spec.name.toLowerCase()} in Dubai. Top 10 ${spec.name.toLowerCase()} ${doctorLabel.toLowerCase()} ranked by institutional capacity, plus the leading hospitals and clinics for ${spec.name.toLowerCase()} in Dubai. ${spec.count.toLocaleString()} UAE-licensed (Dubai) professionals. Data from the official Sheryan Medical Registry.`;
 
   return {
     title,
@@ -94,15 +94,15 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
     },
     {
       question: `How are the best ${spec.name.toLowerCase()} ${doctorLabel} in Dubai ranked?`,
-      answer: `${spec.name} ${doctorLabel} are ranked by institutional capacity \u2014 professionals at larger DHA-registered healthcare facilities appear higher. Only doctors with a full-time license (FTL) are included. This methodology uses verifiable data from the DHA Sheryan Medical Registry rather than subjective patient reviews or paid placements.`,
+      answer: `${spec.name} ${doctorLabel} are ranked by institutional capacity \u2014 professionals at larger the UAE healthcare regulator-registered healthcare facilities appear higher. Only doctors with a full-time license (FTL) are included. This methodology uses verifiable data from the DHA Sheryan Medical Registry rather than subjective patient reviews or paid placements.`,
     },
     {
       question: `What is the difference between a ${spec.name.toLowerCase()} specialist and consultant?`,
-      answer: `A ${spec.name} Specialist has completed specialty training and holds a DHA specialty license. A ${spec.name} Consultant is a more senior title requiring 10+ years of post-specialty clinical experience. Both are fully licensed to practice in Dubai, but Consultant status indicates greater seniority and expertise. In the DHA Sheryan Registry, both levels are tracked separately.`,
+      answer: `A ${spec.name} Specialist has completed specialty training and holds a UAE healthcare regulator specialty license. A ${spec.name} Consultant is a more senior title requiring 10+ years of post-specialty clinical experience. Both are fully licensed to practice in Dubai, but Consultant status indicates greater seniority and expertise. In the DHA Sheryan Registry, both levels are tracked separately.`,
     },
     {
       question: `How do I verify a ${spec.name.toLowerCase()} doctor's license in Dubai?`,
-      answer: `You can verify any ${spec.name.toLowerCase()} doctor's license through the Dubai Health Authority website (dha.gov.ae) or the Sheryan portal. Search by doctor name or license number to confirm their license status, specialty, and current facility affiliation. All ${stats.totalProfessionals.toLocaleString()} ${spec.name.toLowerCase()} professionals listed here are verified against the Sheryan Medical Registry.`,
+      answer: `You can verify any ${spec.name.toLowerCase()} doctor's license through the UAE healthcare regulator (Dubai) website (dha.gov.ae) or the Sheryan portal. Search by doctor name or license number to confirm their license status, specialty, and current facility affiliation. All ${stats.totalProfessionals.toLocaleString()} ${spec.name.toLowerCase()} professionals listed here are verified against the Sheryan Medical Registry.`,
     },
   ];
 
@@ -112,7 +112,7 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
       <JsonLd
         data={medicalWebPageSchema(
           `Best ${spec.name} in Dubai 2026`,
-          `Top 10 ${spec.name.toLowerCase()} ${doctorLabel} in Dubai ranked by institutional capacity. ${stats.totalProfessionals.toLocaleString()} DHA-licensed professionals.`,
+          `Top 10 ${spec.name.toLowerCase()} ${doctorLabel} in Dubai ranked by institutional capacity. ${stats.totalProfessionals.toLocaleString()} UAE-licensed (Dubai) professionals.`,
           PROFESSIONAL_STATS.scraped
         )}
       />
@@ -139,7 +139,7 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
                 credentialCategory: pro.licenseType === "FTL" ? "Full-Time License" : "Registration",
                 recognizedBy: {
                   "@type": "Organization",
-                  name: "Dubai Health Authority (DHA)",
+                  name: "The UAE healthcare regulator (Dubai)",
                 },
               },
             },
@@ -181,19 +181,19 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
         {/* Editorial intro */}
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            Dubai has {stats.totalProfessionals.toLocaleString()} DHA-licensed{" "}
+            Dubai has {stats.totalProfessionals.toLocaleString()} UAE-licensed (Dubai){" "}
             {spec.name.toLowerCase()} {doctorLabel} practicing across{" "}
             {stats.totalFacilities.toLocaleString()} healthcare facilities. The
             ranking below identifies the top 10 based on institutional
             capacity &mdash; {doctorLabel} at{" "}
             {stats.topFacilities[0]?.name || "major hospitals"},{" "}
             {stats.topFacilities[1]?.name || "leading clinics"}, and other large
-            DHA-registered facilities rank highest. Of all{" "}
+            the UAE healthcare regulator-registered facilities rank highest. Of all{" "}
             {spec.name.toLowerCase()} professionals in Dubai,{" "}
             {stats.ftlCount.toLocaleString()} hold a full-time license (FTL) and{" "}
             {stats.regCount.toLocaleString()} are registered (REG). All data is
             sourced from the official Sheryan Medical Registry maintained by the
-            Dubai Health Authority.
+            the UAE healthcare regulator (Dubai).
           </p>
         </div>
 
@@ -361,7 +361,7 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
             The {spec.name.toLowerCase()} ranking is based on{" "}
             <strong>facility size</strong> as reported in the DHA Sheryan
-            Medical Registry. Doctors at larger DHA-registered facilities are
+            Medical Registry. Doctors at larger the UAE healthcare regulator-registered facilities are
             ranked higher because larger institutions typically maintain stricter
             credentialing, multi-disciplinary peer review committees, and
             JCI/CBAHI accreditation standards.
@@ -375,7 +375,7 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
           <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed">
             This methodology avoids the unreliability of subjective patient
             reviews and the bias of paid placements. It instead relies on
-            verifiable institutional data from the Dubai Health Authority.
+            verifiable institutional data from the UAE healthcare regulator (Dubai).
           </p>
         </div>
       </section>
@@ -463,14 +463,14 @@ export default function BestDoctorsBySpecialtyPage({ params }: Props) {
         </div>
       </section>
 
-      {/* DHA Disclaimer */}
+      {/* the UAE healthcare regulator Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. Data sourced {PROFESSIONAL_STATS.scraped}.
           Rankings are based on institutional capacity and do not constitute
           medical advice or endorsement. Verify professional credentials
-          directly with DHA (dha.gov.ae) before making healthcare decisions.
+          directly with the UAE healthcare regulator (dha.gov.ae) before making healthcare decisions.
           There are no paid placements or sponsored rankings on this page.
         </p>
       </div>

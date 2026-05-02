@@ -99,7 +99,7 @@ export default async function ReportsHubPage() {
             What UAE patients actually experience — measured, mapped, published.
           </h1>
           <p className="font-['Geist',sans-serif] text-base text-black/50 mt-5 max-w-2xl leading-relaxed">
-            Zavis publishes tentpole data reports on UAE healthcare access, affordability, patient experience and provider supply. Every report is open-access, methodologically disclosed, and built on the Zavis corpus of 12,519 DHA, DOH and MOHAP-licensed facilities plus proprietary analyst review.
+            Zavis publishes tentpole data reports on UAE healthcare access, affordability, patient experience and provider supply. Every report is open-access, methodologically disclosed, and built on the Zavis corpus of 12,519 UAE-licensed facilities plus proprietary analyst review.
           </p>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default async function ReportsHubPage() {
                 Data source
               </p>
               <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-                DHA, DOH and MOHAP public registers plus Zavis provider analysis of 12,519 UAE facilities.
+                the UAE healthcare regulator public registers plus Zavis provider analysis of 12,519 UAE facilities.
               </p>
             </div>
             <div>
@@ -266,7 +266,7 @@ export default async function ReportsHubPage() {
             </div>
             <div className="lg:col-span-2 space-y-4">
               <p className="font-['Geist',sans-serif] text-sm text-white/70 leading-relaxed">
-                Zavis Intelligence Reports are built on the same provider corpus that powers the UAE Open Healthcare Directory — 12,519 DHA, DOH and MOHAP-licensed facilities, verified against the public regulator registers. Every finding is traceable back to a specific provider, specialty and emirate, and every report publishes its full methodology, sample size and the analyst who produced it.
+                Zavis Intelligence Reports are built on the same provider corpus that powers the UAE Open Healthcare Directory — 12,519 UAE-licensed facilities, verified against the public regulator registers. Every finding is traceable back to a specific provider, specialty and emirate, and every report publishes its full methodology, sample size and the analyst who produced it.
               </p>
               <p className="font-['Geist',sans-serif] text-sm text-white/70 leading-relaxed">
                 Reports are never gated, paywalled or email-walled. Journalists, researchers, policy makers and healthcare operators can download the full PDF, embed charts, and request raw data. For embargo access and analyst interviews, see the{" "}

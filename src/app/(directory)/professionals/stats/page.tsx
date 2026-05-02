@@ -22,7 +22,7 @@ export const revalidate = 43200;
 const FAQS = [
   {
     question: "How many healthcare professionals are licensed in Dubai?",
-    answer: `As of ${PROFESSIONAL_STATS.scraped}, there are ${PROFESSIONAL_STATS.total.toLocaleString()} healthcare professionals licensed by the Dubai Health Authority (DHA). This includes ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, ${PROFESSIONAL_STATS.dentists.toLocaleString()} dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals.`,
+    answer: `As of ${PROFESSIONAL_STATS.scraped}, there are ${PROFESSIONAL_STATS.total.toLocaleString()} healthcare professionals licensed by the UAE healthcare regulator (Dubai). This includes ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, ${PROFESSIONAL_STATS.dentists.toLocaleString()} dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals.`,
   },
   {
     question: "What is the physician-to-population ratio in Dubai?",
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     question: "What is the largest hospital in Dubai by staff count?",
-    answer: `Rashid Hospital is the largest healthcare facility in Dubai by licensed staff, with ${PROFESSIONAL_STATS.topFacilities[0].staff.toLocaleString()} DHA-licensed professionals. It is followed by Dubai Hospital (${PROFESSIONAL_STATS.topFacilities[1].staff.toLocaleString()} staff) and American Hospital Dubai (${PROFESSIONAL_STATS.topFacilities[2].staff.toLocaleString()} staff).`,
+    answer: `Rashid Hospital is the largest healthcare facility in Dubai by licensed staff, with ${PROFESSIONAL_STATS.topFacilities[0].staff.toLocaleString()} UAE-licensed (Dubai) professionals. It is followed by Dubai Hospital (${PROFESSIONAL_STATS.topFacilities[1].staff.toLocaleString()} staff) and American Hospital Dubai (${PROFESSIONAL_STATS.topFacilities[2].staff.toLocaleString()} staff).`,
   },
   {
     question: "What are the most common medical specialties in Dubai?",
@@ -42,7 +42,7 @@ const FAQS = [
   },
   {
     question: "Where does this healthcare workforce data come from?",
-    answer: `All data in this report is sourced from the Dubai Health Authority (DHA) Sheryan Medical Professional Registry, the official licensing database for healthcare professionals in Dubai. Data was last scraped on ${PROFESSIONAL_STATS.scraped}.`,
+    answer: `All data in this report is sourced from the UAE healthcare regulator (Dubai) Sheryan Medical Professional Registry, the official licensing database for healthcare professionals in Dubai. Data was last scraped on ${PROFESSIONAL_STATS.scraped}.`,
   },
 ];
 
@@ -106,7 +106,7 @@ export default function StatsPage() {
           mainEntity: {
             "@type": "Dataset",
             name: "Dubai Healthcare Workforce Statistics",
-            description: `Workforce data for ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals.`,
+            description: `Workforce data for ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) healthcare professionals.`,
             creator: {
               "@type": "Organization",
               name: "Zavis",
@@ -149,7 +149,7 @@ export default function StatsPage() {
           Dubai Healthcare Workforce: By the Numbers
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {PROFESSIONAL_STATS.total.toLocaleString()} DHA-Licensed Professionals
+          {PROFESSIONAL_STATS.total.toLocaleString()} UAE-Licensed (Dubai) Professionals
           &middot; Data as of {PROFESSIONAL_STATS.scraped}
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
@@ -355,7 +355,7 @@ export default function StatsPage() {
       </div>
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
         <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-          DHA issues two primary license types: <strong>FTL</strong> (Full Trade
+          the UAE healthcare regulator issues two primary license types: <strong>FTL</strong> (Full Trade
           License) for professionals operating under their own license, and{" "}
           <strong>REG</strong> (Registered) for professionals working under a
           facility&apos;s license. License type reflects the employment arrangement,
@@ -461,7 +461,7 @@ export default function StatsPage() {
       </div>
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
         <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-          In the DHA system, <strong>Specialists</strong> are physicians who have
+          In the UAE healthcare regulator system, <strong>Specialists</strong> are physicians who have
           completed specialty training and hold board certification.{" "}
           <strong>Consultants</strong> are senior specialists with additional
           experience, typically 5+ years post-specialty certification. The table
@@ -566,11 +566,11 @@ export default function StatsPage() {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. Data scraped {PROFESSIONAL_STATS.scraped}.
           Population estimates based on Dubai Statistics Center data. This page is
           for informational purposes only and does not constitute medical advice.
-          Verify professional credentials directly with DHA before making healthcare
+          Verify professional credentials directly with the UAE healthcare regulator before making healthcare
           decisions.
         </p>
       </div>

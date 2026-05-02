@@ -16,7 +16,7 @@ export const COUNTRIES: Country[] = [
     nameAr: "\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0645\u062a\u062d\u062f\u0629",
     slug: "ae",
     currency: "AED",
-    regulators: ["DHA", "DOH", "MOHAP"],
+    regulators: ["the UAE healthcare regulator"],
     callingCode: "+971",
     flagEmoji: "\ud83c\udde6\ud83c\uddea",
   },

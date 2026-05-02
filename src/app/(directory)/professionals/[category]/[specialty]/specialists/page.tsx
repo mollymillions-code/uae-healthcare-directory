@@ -46,13 +46,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
 
   return {
-    title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
-    description: `${count.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai. Specialists have completed advanced specialty training and hold recognized qualifications. Browse the full list with facility details.`,
+    title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} UAE-Licensed (Dubai)`,
+    description: `${count.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals licensed by the UAE healthcare regulator in Dubai. Specialists have completed advanced specialty training and hold recognized qualifications. Browse the full list with facility details.`,
     alternates: {
       canonical: `${base}/professionals/${params.category}/${spec.slug}/specialists`,
     },
     openGraph: {
-      title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} DHA-Licensed`,
+      title: `Specialist ${spec.name} in Dubai \u2014 ${count.toLocaleString()} UAE-Licensed (Dubai)`,
       description: `${count.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals in Dubai. Full directory sourced from DHA Sheryan.`,
       url: `${base}/professionals/${params.category}/${spec.slug}/specialists`,
       type: "website",
@@ -92,7 +92,7 @@ export default function SpecialistsPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           name: `Specialist ${spec.name} in Dubai`,
-          description: `${specialists.length.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals licensed by DHA in Dubai.`,
+          description: `${specialists.length.toLocaleString()} specialist-grade ${spec.name.toLowerCase()} professionals licensed by the UAE healthcare regulator in Dubai.`,
           url: `${base}/professionals/${params.category}/${spec.slug}/specialists`,
           mainContentOfPage: {
             "@type": "WebPageElement",
@@ -141,14 +141,14 @@ export default function SpecialistsPage({ params }: Props) {
           Specialist {spec.name} in Dubai
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {specialists.length.toLocaleString()} DHA-Licensed Specialists
+          {specialists.length.toLocaleString()} UAE-Licensed (Dubai) Specialists
         </p>
 
         {/* Specialist grade explanation */}
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
             <strong className="text-[#1c1c1c]">What is a Specialist?</strong> In Dubai&apos;s
-            DHA licensing system, a &ldquo;Specialist&rdquo; is a physician or dentist who has
+            the UAE healthcare regulator licensing system, a &ldquo;Specialist&rdquo; is a physician or dentist who has
             completed advanced specialty training beyond their primary medical degree and holds a
             recognized postgraduate qualification (e.g., board certification, fellowship, or
             equivalent). Specialists are qualified to independently diagnose and treat conditions
@@ -378,9 +378,9 @@ export default function SpecialistsPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

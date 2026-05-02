@@ -47,10 +47,10 @@ export async function generateStaticParams() {
 }
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 export function generateMetadata({ params }: Props): Metadata {
@@ -97,7 +97,7 @@ export default async function EmergencyAreaPage({ params }: Props) {
   const faqs = [
     {
       question: `What is the emergency number in ${area.name}, ${city.name}, UAE?`,
-      answer: `The UAE emergency numbers are 998 for ambulance services and 999 for police and fire. These numbers work across all emirates including ${city.name}. For non-life-threatening emergencies, you can visit any hospital emergency department listed in the UAE Open Healthcare Directory. Dubai also operates the DHA hotline at 800-342.`,
+      answer: `The UAE emergency numbers are 998 for ambulance services and 999 for police and fire. These numbers work across all emirates including ${city.name}. For non-life-threatening emergencies, you can visit any hospital emergency department listed in the UAE Open Healthcare Directory. Dubai also operates the regulator hotline at 800-342.`,
     },
     {
       question: `How many hospitals have emergency departments near ${area.name}, ${city.name}?`,
@@ -113,7 +113,7 @@ export default async function EmergencyAreaPage({ params }: Props) {
     },
     {
       question: `Does insurance cover emergency visits near ${area.name}, ${city.name}?`,
-      answer: `Yes. Under UAE health insurance regulations, all basic health plans must cover emergency services. This applies to plans under both ${regulator} and MOHAP frameworks. Major insurers including Daman, Thiqa, AXA, Cigna, MetLife, Bupa, and Allianz cover emergency department visits. Co-payments for emergencies are typically lower than for scheduled visits. Always carry your insurance card and Emirates ID to the emergency department.`,
+      answer: `Yes. Under UAE health insurance regulations, all basic health plans must cover emergency services. This applies to plans under ${regulator} and federal frameworks. Major insurers including Daman, Thiqa, AXA, Cigna, MetLife, Bupa, and Allianz cover emergency department visits. Co-payments for emergencies are typically lower than for scheduled visits. Always carry your insurance card and Emirates ID to the emergency department.`,
     },
     {
       question: `What should I bring to an emergency room near ${area.name}, ${city.name}?`,

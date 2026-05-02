@@ -33,16 +33,16 @@ function is24Hour(p: LocalProvider): boolean {
 // ─── Regulator helpers ──────────────────────────────────────────────────────
 
 function getRegulatorName(citySlug: string): string {
-  if (citySlug === "dubai") return "the Dubai Health Authority (DHA)";
+  if (citySlug === "dubai") return "the UAE healthcare regulator (Dubai)";
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+    return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 
 function getRegulatorShort(citySlug: string): string {
-  if (citySlug === "dubai") return "DHA";
-  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (citySlug === "dubai") return "UAE-licensed (Dubai)";
+  if (citySlug === "abu-dhabi" || citySlug === "al-ain") return "UAE-licensed (Abu Dhabi)";
+  return "UAE-licensed";
 }
 
 // ─── generateStaticParams ───────────────────────────────────────────────────
@@ -136,7 +136,7 @@ export default async function TwentyFourHoursPage({ params }: Props) {
     },
     {
       question: `Are there 24-hour pharmacies in ${city.name}?`,
-      answer: `Yes. The UAE Open Healthcare Directory lists ${pharmacyCount} 24-hour ${pharmacyCount === 1 ? "pharmacy" : "pharmacies"} in ${city.name}. These pharmacies dispense prescription and over-the-counter medications around the clock. ${regulatorShort}-licensed pharmacies must have a registered pharmacist present at all times during operating hours.`,
+      answer: `Yes. The UAE Open Healthcare Directory lists ${pharmacyCount} 24-hour ${pharmacyCount === 1 ? "pharmacy" : "pharmacies"} in ${city.name}. These pharmacies dispense prescription and over-the-counter medications around the clock. ${regulatorShort} pharmacies must have a registered pharmacist present at all times during operating hours.`,
     },
     {
       question: `Can I visit a clinic at night in ${city.name}?`,
@@ -144,7 +144,7 @@ export default async function TwentyFourHoursPage({ params }: Props) {
     },
     {
       question: `Do I need insurance for emergency care in ${city.name}?`,
-      answer: `No. In the UAE, all ${regulatorShort}-licensed hospital emergency departments must accept and treat emergency patients regardless of insurance status. You may be billed afterward if uninsured, but treatment cannot be denied. ${city.slug === "dubai" ? "Dubai mandates health insurance for all residents under the DHA Essential Benefits Plan." : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "Abu Dhabi requires mandatory health insurance for all residents under DOH regulations." : `Health insurance in ${city.name} follows MOHAP federal guidelines.`} If you have insurance, bring your insurance card for direct billing.`,
+      answer: `No. In the UAE, all ${regulatorShort} hospital emergency departments must accept and treat emergency patients regardless of insurance status. You may be billed afterward if uninsured, but treatment cannot be denied. ${city.slug === "dubai" ? "Dubai mandates health insurance for all residents under the Essential Benefits Plan." : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "Abu Dhabi requires mandatory health insurance for all residents under emirate regulations." : `Health insurance in ${city.name} follows UAE federal guidelines.`} If you have insurance, bring your insurance card for direct billing.`,
     },
     {
       question: "What is the emergency number in UAE?",

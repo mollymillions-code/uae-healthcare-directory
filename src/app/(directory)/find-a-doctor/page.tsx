@@ -19,25 +19,25 @@ export const revalidate = 43200;
 
 const FAQS = [
   {
-    question: "How do I verify a doctor's DHA license?",
+    question: "How do I verify a doctor's regulator license?",
     answer:
-      "You can verify any healthcare professional's DHA license through the official Sheryan portal (sheryan.dha.gov.ae). Search by the professional's name or license number to confirm their credentials, specialty, and current status. The Zavis Professional Directory also lists license type (FTL or REG) for every professional sourced directly from the Sheryan registry.",
+      "You can verify any healthcare professional's regulator license through the official Sheryan portal (sheryan.dha.gov.ae). Search by the professional's name or license number to confirm their credentials, specialty, and current status. The Zavis Professional Directory also lists license type (FTL or REG) for every professional sourced directly from the Sheryan registry.",
   },
   {
     question:
       "What is the difference between a Specialist and Consultant in Dubai?",
     answer:
-      "In the DHA classification system, a Specialist is a physician who has completed specialty training and holds a recognized specialist qualification. A Consultant is a more senior grade, requiring additional years of post-specialty experience (typically 8+ years in the specialty). Consultants are permitted to supervise Specialists and often lead departments. Both grades require separate DHA licensing.",
+      "In the UAE healthcare regulator classification system, a Specialist is a physician who has completed specialty training and holds a recognized specialist qualification. A Consultant is a more senior grade, requiring additional years of post-specialty experience (typically 8+ years in the specialty). Consultants are permitted to supervise Specialists and often lead departments. Both grades require separate the UAE healthcare regulator licensing.",
   },
   {
     question: "How many doctors are in Dubai?",
-    answer: `As of ${PROFESSIONAL_STATS.scraped}, there are ${PROFESSIONAL_STATS.physicians.toLocaleString()} DHA-licensed physicians and doctors practicing in Dubai, according to the official Sheryan Medical Registry. This includes general practitioners, specialists, and consultants across all medical disciplines. In addition, there are ${PROFESSIONAL_STATS.dentists.toLocaleString()} licensed dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals, for a total of ${PROFESSIONAL_STATS.total.toLocaleString()} licensed healthcare professionals.`,
+    answer: `As of ${PROFESSIONAL_STATS.scraped}, there are ${PROFESSIONAL_STATS.physicians.toLocaleString()} UAE-licensed (Dubai) physicians and doctors practicing in Dubai, according to the official Sheryan Medical Registry. This includes general practitioners, specialists, and consultants across all medical disciplines. In addition, there are ${PROFESSIONAL_STATS.dentists.toLocaleString()} licensed dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals, for a total of ${PROFESSIONAL_STATS.total.toLocaleString()} licensed healthcare professionals.`,
   },
   {
     question:
-      "What types of healthcare professionals are licensed by DHA?",
+      "What types of healthcare professionals are licensed by the UAE healthcare regulator?",
     answer:
-      "The Dubai Health Authority licenses four main categories of healthcare professionals: Physicians and Doctors (including GPs, specialists, and consultants), Dentists (general dentists and dental specialists), Nurses and Midwives (registered nurses, assistant nurses, practical nurses, and midwives), and Allied Health Professionals (pharmacists, physiotherapists, lab technologists, optometrists, psychologists, radiographers, and many others). Each professional must pass DHA examinations and meet specific qualification requirements.",
+      "The UAE healthcare regulator (Dubai) licenses four main categories of healthcare professionals: Physicians and Doctors (including GPs, specialists, and consultants), Dentists (general dentists and dental specialists), Nurses and Midwives (registered nurses, assistant nurses, practical nurses, and midwives), and Allied Health Professionals (pharmacists, physiotherapists, lab technologists, optometrists, psychologists, radiographers, and many others). Each professional must pass the UAE healthcare regulator examinations and meet specific qualification requirements.",
   },
   {
     question: "How do I find a female doctor in Dubai?",
@@ -47,19 +47,19 @@ const FAQS = [
   {
     question: "What is the difference between FTL and REG license types?",
     answer:
-      "FTL (Full Trade License) indicates a healthcare professional licensed to practice at a privately owned facility. REG (Registered) indicates a professional registered to practice at a government or semi-government healthcare facility such as DHA hospitals. Both license types confirm that the professional has met DHA qualification and examination requirements.",
+      "FTL (Full Trade License) indicates a healthcare professional licensed to practice at a privately owned facility. REG (Registered) indicates a professional registered to practice at a government or semi-government healthcare facility such as the UAE healthcare regulator hospitals. Both license types confirm that the professional has met the UAE healthcare regulator qualification and examination requirements.",
   },
 ];
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
-    title: `Find a Doctor in Dubai — Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-Licensed Professionals`,
-    description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities in Dubai. Find physicians, dentists, nurses, and allied health professionals by specialty or facility. Sourced from the official Sheryan Medical Registry.`,
+    title: `Find a Doctor in Dubai — Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ UAE-Licensed (Dubai) Professionals`,
+    description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities in Dubai. Find physicians, dentists, nurses, and allied health professionals by specialty or facility. Sourced from the official Sheryan Medical Registry.`,
     alternates: { canonical: `${base}/find-a-doctor` },
     openGraph: {
-      title: `Find a Doctor in Dubai — ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-Licensed Professionals`,
-      description: `Search the largest directory of DHA-licensed healthcare professionals in Dubai. ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, ${PROFESSIONAL_STATS.dentists.toLocaleString()} dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals.`,
+      title: `Find a Doctor in Dubai — ${PROFESSIONAL_STATS.total.toLocaleString()}+ UAE-Licensed (Dubai) Professionals`,
+      description: `Search the largest directory of UAE-licensed (Dubai) healthcare professionals in Dubai. ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, ${PROFESSIONAL_STATS.dentists.toLocaleString()} dentists, ${PROFESSIONAL_STATS.nurses.toLocaleString()} nurses, and ${PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health professionals.`,
       url: `${base}/find-a-doctor`,
       type: "website",
       siteName: "UAE Open Healthcare Directory",
@@ -190,7 +190,7 @@ export default async function FindADoctorPage() {
         ]}
         eyebrow="DHA Sheryan register"
         title="Find a Doctor in Dubai"
-        subtitle={`Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-licensed healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()}+ facilities in Dubai.`}
+        subtitle={`Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ UAE-licensed (Dubai) healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()}+ facilities in Dubai.`}
         stats={[
           { n: PROFESSIONAL_STATS.total.toLocaleString(), l: "Licensed professionals" },
           { n: PROFESSIONAL_STATS.uniqueFacilities.toLocaleString(), l: "Healthcare facilities" },
@@ -199,7 +199,7 @@ export default async function FindADoctorPage() {
         ]}
         aeoAnswer={
           <>
-            Browse the largest publicly searchable directory of DHA-licensed
+            Browse the largest publicly searchable directory of UAE-licensed (Dubai)
             healthcare professionals in Dubai, sourced from the official Sheryan
             Medical Registry. This directory includes{" "}
             {PROFESSIONAL_STATS.physicians.toLocaleString()} physicians,{" "}
@@ -217,7 +217,7 @@ export default async function FindADoctorPage() {
                 "@context": "https://schema.org",
                 "@type": "WebPage",
                 name: "Find a Doctor in Dubai",
-                description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals in Dubai.`,
+                description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) healthcare professionals in Dubai.`,
                 url: `${base}/find-a-doctor`,
                 mainEntity: {
                   "@type": "ItemList",
@@ -266,10 +266,10 @@ export default async function FindADoctorPage() {
         <div className="mt-12 rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
             <strong className="text-ink-soft">Source.</strong> Dubai Health
-            Authority (DHA) Sheryan Medical Professional Registry. Data scraped{" "}
+            Authority (the UAE healthcare regulator) Sheryan Medical Professional Registry. Data scraped{" "}
             {PROFESSIONAL_STATS.scraped}. This directory is for informational
             purposes only and does not constitute medical advice. Verify
-            professional credentials directly with DHA before making healthcare
+            professional credentials directly with the UAE healthcare regulator before making healthcare
             decisions.
           </p>
         </div>

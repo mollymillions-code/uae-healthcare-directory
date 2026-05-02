@@ -186,9 +186,9 @@ const CATEGORY_CONTENT: Record<string, CategoryContent> = {
     whatItMeasures:
       "STD screening blood tests detect sexually transmitted infections including HIV (4th generation antigen/antibody), syphilis (VDRL/RPR), Hepatitis B, and Hepatitis C. These tests are part of the mandatory UAE visa medical and are also available for routine personal screening. Fourth-generation HIV tests detect both p24 antigen and antibodies — significantly shortening the window period compared to older antibody-only tests.",
     whyHomeConvenient:
-      "Privacy is the primary driver for at-home STD testing. Receiving a blood draw at home for HIV, syphilis, and hepatitis screening avoids potential visibility in a lab waiting room. All results are delivered digitally and confidentially. Home collection for STD panels is particularly popular among expats and those undergoing pre-marital health screening, which is required for UAE nationals marrying under DHA-mandated premarital counselling programmes.",
+      "Privacy is the primary driver for at-home STD testing. Receiving a blood draw at home for HIV, syphilis, and hepatitis screening avoids potential visibility in a lab waiting room. All results are delivered digitally and confidentially. Home collection for STD panels is particularly popular among expats and those undergoing pre-marital health screening, which is required for UAE nationals marrying under the UAE healthcare regulator-mandated premarital counselling programmes.",
     prepTips:
-      "HIV, syphilis, and hepatitis B/C tests do not require fasting. They can be drawn at any time of day with no dietary preparation. Results are fully confidential and delivered via secure digital channels. If you are testing as part of a UAE visa medical, confirm that the provider issues DOH- or DHA-stamped reports in the format required by the issuing authority.",
+      "HIV, syphilis, and hepatitis B/C tests do not require fasting. They can be drawn at any time of day with no dietary preparation. Results are fully confidential and delivered via secure digital channels. If you are testing as part of a UAE visa medical, confirm that the provider issues the UAE healthcare regulator- or the UAE healthcare regulator-stamped reports in the format required by the issuing authority.",
     fastingNote:
       "No fasting required for any STD screening blood test.",
   },
@@ -206,10 +206,10 @@ const CATEGORY_CONTENT: Record<string, CategoryContent> = {
 
 // Regulator label per city
 function getCityRegulator(citySlug: string): { abbrev: string; full: string } {
-  if (citySlug === "dubai") return { abbrev: "DHA", full: "Dubai Health Authority (DHA)" };
+  if (citySlug === "dubai") return { abbrev: "The UAE healthcare regulator", full: "The UAE healthcare regulator (Dubai)" };
   if (citySlug === "abu-dhabi" || citySlug === "al-ain")
-    return { abbrev: "DOH", full: "Department of Health Abu Dhabi (DOH)" };
-  return { abbrev: "MOHAP", full: "Ministry of Health and Prevention (MOHAP)" };
+    return { abbrev: "The UAE healthcare regulator", full: "The UAE healthcare regulator (Abu Dhabi)" };
+  return { abbrev: "The UAE healthcare regulator", full: "The UAE healthcare regulator" };
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────

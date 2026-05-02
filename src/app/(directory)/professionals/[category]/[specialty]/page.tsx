@@ -42,7 +42,7 @@ export function generateMetadata({ params }: Props): Metadata {
     alternates: { canonical: `${base}/find-a-doctor/${spec.slug}` },
     openGraph: {
       title: `Find a ${spec.name} in Dubai — ${spec.count.toLocaleString()} Licensed Professionals`,
-      description: `${spec.count.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals in Dubai. Full directory sourced from DHA.`,
+      description: `${spec.count.toLocaleString()} licensed ${spec.name.toLowerCase()} professionals in Dubai. Full directory sourced from the UAE healthcare regulator.`,
       url: `${base}/professionals/${params.category}/${spec.slug}`,
       type: "website",
       siteName: "UAE Open Healthcare Directory",
@@ -73,7 +73,7 @@ export default function SpecialtyPage({ params }: Props) {
     },
     {
       question: `What qualifications do ${spec.name.toLowerCase()} professionals need in Dubai?`,
-      answer: `${spec.name} professionals in Dubai must be licensed by the Dubai Health Authority (DHA) through the Sheryan system. Applicants need a recognised medical degree, relevant postgraduate training, and must pass the DHA licensing examination. Licenses are issued as either Full-Time License (FTL) for permanent practitioners or Registration (REG) for those under supervision or on temporary assignments.`,
+      answer: `${spec.name} professionals in Dubai must be licensed by the UAE healthcare regulator (Dubai) through the Sheryan system. Applicants need a recognised medical degree, relevant postgraduate training, and must pass the UAE healthcare regulator licensing examination. Licenses are issued as either Full-Time License (FTL) for permanent practitioners or Registration (REG) for those under supervision or on temporary assignments.`,
     },
     {
       question: `Which facilities employ the most ${spec.name.toLowerCase()} professionals in Dubai?`,
@@ -291,9 +291,9 @@ export default function SpecialtyPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This directory is for informational purposes only. Verify professional
-          credentials directly with DHA before making healthcare decisions.
+          credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

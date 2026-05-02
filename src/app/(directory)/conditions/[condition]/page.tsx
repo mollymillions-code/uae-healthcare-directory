@@ -157,7 +157,7 @@ export default async function ConditionDetailPage({ params }: Props) {
         aeoAnswer={
           <>
             {conditionName} is managed in the UAE by licensed physicians and specialists, with prescribing
-            overseen by DHA, DOH, and MOHAP. {meds.length} medications are commonly prescribed for
+            overseen by the UAE healthcare regulator. {meds.length} medications are commonly prescribed for
             {" "}{conditionName.toLowerCase()} in UAE pharmacies
             {rxCount > 0 && otcCount > 0 ? ` — ${rxCount} require a prescription and ${otcCount} are available over the counter` : ""}.
             {topSpecialties.length > 0 && ` Patients are typically seen by ${topSpecialties.map(toTitle).slice(0, 3).join(", ")} specialists.`}

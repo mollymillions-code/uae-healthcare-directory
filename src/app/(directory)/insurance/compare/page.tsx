@@ -37,11 +37,11 @@ export default function ComparePage() {
     },
     {
       question: "What should I look for when comparing UAE health insurance plans?",
-      answer: "When comparing UAE health insurance plans, focus on: (1) Annual premium vs. annual coverage limit, (2) Outpatient co-pay percentage — 0% vs. 20% makes a significant difference over a year, (3) Dental and optical sub-limits if you need these, (4) Maternity waiting period — ranges from 0 to 12 months, (5) Pre-existing condition waiting period, (6) Network size — how many hospitals and clinics accept the plan in your city, and (7) Whether the plan is DHA, HAAD, or MOHAP compliant for your emirate.",
+      answer: "When comparing UAE health insurance plans, focus on: (1) Annual premium vs. annual coverage limit, (2) Outpatient co-pay percentage — 0% vs. 20% makes a significant difference over a year, (3) Dental and optical sub-limits if you need these, (4) Maternity waiting period — ranges from 0 to 12 months, (5) Pre-existing condition waiting period, (6) Network size — how many hospitals and clinics accept the plan in your city, and (7) Whether the plan is the UAE healthcare regulator, HAAD, or the UAE healthcare regulator compliant for your emirate.",
     },
     {
       question: "What is the difference between basic and enhanced health insurance in the UAE?",
-      answer: "Basic plans (AED 2,000–6,000/year) meet mandatory DHA/HAAD requirements with inpatient, outpatient, and emergency coverage but typically exclude dental, optical, and mental health. Enhanced plans (AED 5,000–16,000/year) add dental, optical, maternity, mental health, and lower co-pay percentages. Premium plans (AED 14,000–45,000/year) offer zero co-pay, private rooms, international coverage, and comprehensive dental/optical limits.",
+      answer: "Basic plans (AED 2,000–6,000/year) meet mandatory the UAE healthcare regulator/HAAD requirements with inpatient, outpatient, and emergency coverage but typically exclude dental, optical, and mental health. Enhanced plans (AED 5,000–16,000/year) add dental, optical, maternity, mental health, and lower co-pay percentages. Premium plans (AED 14,000–45,000/year) offer zero co-pay, private rooms, international coverage, and comprehensive dental/optical limits.",
     },
     {
       question: "Can I compare plans from different insurers?",

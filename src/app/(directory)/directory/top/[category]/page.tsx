@@ -101,7 +101,7 @@ export default async function TopCategoryUAEPage({ params }: Props) {
     {
       question: `Are these ${catLower} in the UAE licensed?`,
       answer:
-        "Yes. All providers listed in the UAE Open Healthcare Directory are sourced from official government registers. Depending on the emirate, healthcare is regulated by the Dubai Health Authority (DHA), the Department of Health (DOH), or the Ministry of Health and Prevention (MOHAP). All listed facilities hold valid health authority licenses.",
+        "Yes. All providers listed in the UAE Open Healthcare Directory are sourced from official government registers. Healthcare is regulated by the UAE healthcare regulator across all emirates, with separate jurisdictions for Dubai, Abu Dhabi, and the Northern Emirates. All listed facilities hold valid UAE healthcare licenses.",
     },
   ];
 
@@ -137,7 +137,7 @@ export default async function TopCategoryUAEPage({ params }: Props) {
               {" "}The top-ranked provider is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star rating based on {topRated.googleReviewCount.toLocaleString()} verified patient reviews.
             </>
           )}{" "}
-          All listings are sourced from official DHA, DOH, and MOHAP licensed facility registers.
+          All listings are sourced from official UAE healthcare licensing data.
         </>
       }
       total={top10.length}

@@ -7,7 +7,7 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const metadata: Metadata = {
   title: "Healthcare Guide | UAE Open Healthcare Directory",
   description:
-    "Understand the UAE healthcare system. Guides on DHA, DOH, MOHAP, health insurance, choosing a doctor, free zones, and emergency services.",
+    "Understand the UAE healthcare system. Guides on the UAE healthcare regulator, health insurance, choosing a doctor, free zones, and emergency services.",
   alternates: {
     canonical: "https://www.zavis.ai/directory/guide",
   },
@@ -96,7 +96,7 @@ export default function GuideHubPage() {
       aeoAnswer={
         <>
           A comprehensive guide to navigating healthcare in the United Arab Emirates. Learn how the
-          regulatory system works (DHA, DOH, MOHAP), understand your insurance options, find the right
+          UAE healthcare regulator system works, understand your insurance options, find the right
           doctor, and know what to do in an emergency. Each article is written for UAE residents and
           visitors looking for clear, authoritative information.
         </>

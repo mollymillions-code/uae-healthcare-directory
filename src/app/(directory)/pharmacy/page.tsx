@@ -38,7 +38,7 @@ const pharmacyFaqs = [
   {
     question: "Are generic medications safe to substitute for brand names in the UAE?",
     answer:
-      "Generally yes. MOHAP and DHA require every registered generic to prove bioequivalence to the brand — same active ingredient, same strength, same route. Pharmacists are allowed to substitute unless the doctor writes \"brand necessary\" on the prescription. Generics typically cost 30–70% less than the brand.",
+      "Generally yes. The UAE healthcare regulator and the UAE healthcare regulator require every registered generic to prove bioequivalence to the brand — same active ingredient, same strength, same route. Pharmacists are allowed to substitute unless the doctor writes \"brand necessary\" on the prescription. Generics typically cost 30–70% less than the brand.",
   },
   {
     question: "Where can I find a 24-hour pharmacy in the UAE?",

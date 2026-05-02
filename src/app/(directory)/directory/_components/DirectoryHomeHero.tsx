@@ -46,7 +46,7 @@ export function DirectoryHomeHero({ totalProviders }: Props) {
             <Sparkles className="h-3 w-3" /> New
           </span>
           <span className="font-sans text-z-body-sm text-ink-soft">
-            Verified · DHA · DOH · MOHAP
+            UAE-licensed · Verified
           </span>
         </motion.div>
 

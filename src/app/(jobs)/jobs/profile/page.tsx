@@ -7,7 +7,8 @@ import { candidateProfiles, candidateUsers } from "@/lib/db/schema";
 import { authOptions } from "@/lib/auth/nextauth";
 import { getDiscipline, ROLE_LABELS, type Role } from "@/lib/jobs/disciplines";
 import { cityName } from "@/lib/jobs/format";
-import { Briefcase, MapPin, ShieldCheck, Bell } from "lucide-react";
+import { Briefcase, MapPin, Bell, Pencil } from "lucide-react";
+import { CvUpload } from "@/components/jobs/CvUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -44,32 +45,20 @@ export default async function CandidateProfilePage() {
   return (
     <div className="mx-auto max-w-[920px] px-4 py-10 sm:px-6 lg:px-8">
       <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-[#006828]">
-        Candidate dashboard
+        Your candidate profile
       </p>
       <h1 className="mt-2 font-['Bricolage_Grotesque',sans-serif] text-[32px] font-medium tracking-tight text-[#1c1c1c] sm:text-[40px]">
         Welcome, {user?.name || (user?.email ?? "").split("@")[0]}.
       </h1>
+      <p className="mt-2 max-w-2xl font-['Geist',sans-serif] text-[14px] text-black/55">
+        Your profile sits in the Zavis verified-candidate pool. Hiring clinics in our network search by discipline, city, licence status and experience — keep your profile current so the right opportunities surface.
+      </p>
 
-      <nav className="mt-6 flex flex-wrap gap-2">
-        <Link href="/jobs/profile" className="rounded-full bg-[#006828] px-4 py-1.5 font-['Geist',sans-serif] text-[13px] font-medium text-white">
-          Profile
-        </Link>
-        <Link href="/jobs/applications" className="rounded-full border border-black/[0.08] bg-white px-4 py-1.5 font-['Geist',sans-serif] text-[13px] font-medium text-[#1c1c1c] hover:border-[#006828]/40">
-          Applications
-        </Link>
-        <Link href="/jobs/saved" className="rounded-full border border-black/[0.08] bg-white px-4 py-1.5 font-['Geist',sans-serif] text-[13px] font-medium text-[#1c1c1c] hover:border-[#006828]/40">
-          Saved
-        </Link>
-        <Link href="/jobs" className="rounded-full border border-black/[0.08] bg-white px-4 py-1.5 font-['Geist',sans-serif] text-[13px] font-medium text-[#1c1c1c] hover:border-[#006828]/40">
-          Browse jobs
-        </Link>
-      </nav>
-
-      <section className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <section className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] text-[20px] font-medium tracking-tight text-[#1c1c1c]">
-              Your profile
+              Profile details
             </h2>
             <span className="rounded-full bg-[#006828]/[0.08] px-3 py-1 font-['Geist_Mono',monospace] text-[11px] font-medium text-[#006828]">
               {profile?.profileCompleteness ?? 0}% complete
@@ -85,7 +74,7 @@ export default async function CandidateProfilePage() {
             <div>
               <dt className="font-['Geist_Mono',monospace] text-[10px] uppercase tracking-[0.16em] text-black/40">Licence</dt>
               <dd className="mt-1 font-['Geist',sans-serif] text-[#1c1c1c]">
-                {profile?.licenseStatus ? profile.licenseStatus.toUpperCase().replace(/_/g, " ") : "—"}
+                {profile?.licenseStatus ? formatLicenseStatus(profile.licenseStatus) : "—"}
               </dd>
             </div>
             <div>
@@ -121,9 +110,6 @@ export default async function CandidateProfilePage() {
               </dd>
             </div>
           </dl>
-          <p className="mt-6 font-['Geist',sans-serif] text-[12px] text-black/45">
-            Editing the rest of your profile (CV upload, photo, bio) will be available shortly. The version you completed at signup is already used for matching and applications.
-          </p>
         </div>
 
         <div className="space-y-4">
@@ -168,28 +154,91 @@ export default async function CandidateProfilePage() {
         </div>
       </section>
 
+      <section className="mt-8">
+        <CvUpload
+          initialCvUrl={profile?.cvUrl ?? null}
+          initialUploadedAt={profile?.cvUploadedAt ?? null}
+        />
+      </section>
+
       <section className="mt-10">
         <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-black/45">
           Quick actions
         </p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <Link href="/jobs" className="group rounded-2xl border border-black/[0.06] bg-white p-5 transition-all hover:border-[#006828]/40">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/jobs"
+            className="group rounded-2xl border border-black/[0.06] bg-white p-5 transition-all hover:border-[#006828]/40"
+          >
             <Briefcase className="h-5 w-5 text-[#006828]" strokeWidth={2} />
-            <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-[16px] font-medium tracking-tight text-[#1c1c1c]">Browse jobs</p>
-            <p className="mt-1 font-['Geist',sans-serif] text-[13px] text-black/55">Latest UAE healthcare openings.</p>
+            <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-[16px] font-medium tracking-tight text-[#1c1c1c]">
+              Browse careers
+            </p>
+            <p className="mt-1 font-['Geist',sans-serif] text-[13px] text-black/55">
+              See discipline-specific career landing pages.
+            </p>
           </Link>
-          <Link href="/jobs/applications" className="group rounded-2xl border border-black/[0.06] bg-white p-5 transition-all hover:border-[#006828]/40">
-            <ShieldCheck className="h-5 w-5 text-[#006828]" strokeWidth={2} />
-            <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-[16px] font-medium tracking-tight text-[#1c1c1c]">My applications</p>
-            <p className="mt-1 font-['Geist',sans-serif] text-[13px] text-black/55">Track every application you&apos;ve sent.</p>
-          </Link>
-          <Link href="/jobs/saved" className="group rounded-2xl border border-black/[0.06] bg-white p-5 transition-all hover:border-[#006828]/40">
-            <MapPin className="h-5 w-5 text-[#006828]" strokeWidth={2} />
-            <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-[16px] font-medium tracking-tight text-[#1c1c1c]">Saved jobs</p>
-            <p className="mt-1 font-['Geist',sans-serif] text-[13px] text-black/55">Roles you bookmarked to revisit.</p>
+          <Link
+            href="/jobs/signup"
+            className="group rounded-2xl border border-black/[0.06] bg-white p-5 transition-all hover:border-[#006828]/40"
+          >
+            <Pencil className="h-5 w-5 text-[#006828]" strokeWidth={2} />
+            <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-[16px] font-medium tracking-tight text-[#1c1c1c]">
+              Update preferences
+            </p>
+            <p className="mt-1 font-['Geist',sans-serif] text-[13px] text-black/55">
+              Re-run the wizard to refresh role, city, salary and licence preferences. Inline edit ships in Phase 2.
+            </p>
           </Link>
         </div>
       </section>
+
+      <section className="mt-12 rounded-2xl border border-black/[0.06] bg-white p-6">
+        <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-black/45">
+          What happens next
+        </p>
+        <ol className="mt-3 space-y-3 font-['Geist',sans-serif] text-[14px] text-black/65">
+          <li className="flex items-start gap-3">
+            <span className="mt-0.5 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#006828]/[0.08] text-[11px] font-semibold text-[#006828]">
+              1
+            </span>
+            <span>
+              <strong className="text-[#1c1c1c]">Zavis matches.</strong> Hiring clinics tell us what they&apos;re looking for; we surface candidates whose profile matches discipline, city, licence and experience.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#006828]" strokeWidth={2.25} />
+            <span>
+              <strong className="text-[#1c1c1c]">Clinic reaches out via Zavis.</strong> If a clinic wants to talk, you&apos;ll get a notification by email (and WhatsApp if you&apos;ve opted in). Your contact details are never shared without your consent.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <Briefcase className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#006828]" strokeWidth={2.25} />
+            <span>
+              <strong className="text-[#1c1c1c]">Interview, offer, hire.</strong> Once you&apos;ve agreed to talk, the rest of the process — interview scheduling, offer negotiation, contract — happens directly between you and the clinic. Off-platform.
+            </span>
+          </li>
+        </ol>
+      </section>
     </div>
   );
+}
+
+function formatLicenseStatus(status: string): string {
+  switch (status) {
+    case "dha":
+      return "Licensed in Dubai";
+    case "doh":
+      return "Licensed in Abu Dhabi";
+    case "mohap":
+      return "Licensed in Northern Emirates";
+    case "dataflow_pending":
+      return "Dataflow / Prometric in process";
+    case "outside_uae":
+      return "Licensed outside the UAE";
+    case "none":
+      return "No clinical licence";
+    default:
+      return status;
+  }
 }

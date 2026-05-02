@@ -34,12 +34,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = await safe(getProviderCountByCity(city.slug), 0, "metaCount");
-  const regShort = city.slug === "dubai" ? "DHA" : (city.slug === "abu-dhabi" || city.slug === "al-ain") ? "DOH" : "MOHAP";
+  const regShort =
+    city.slug === "dubai"
+      ? "UAE-licensed (Dubai)"
+      : city.slug === "abu-dhabi" || city.slug === "al-ain"
+      ? "UAE-licensed (Abu Dhabi)"
+      : "UAE-licensed";
   const year = new Date().getFullYear();
   return {
     title: truncateTitle(`${count}+ Healthcare Providers in ${city.name} — Compare [${year}]`),
     description: truncateDescription(
-      `Find & compare ${count}+ ${regShort}-licensed hospitals, clinics, dentists & specialists in ${city.name}. Ratings, reviews, insurance, hours & directions. Free directory.`
+      `Find & compare ${count}+ ${regShort} hospitals, clinics, dentists & specialists in ${city.name}. Ratings, reviews, insurance, hours & directions. Free directory.`
     ),
     alternates: {
       canonical: `${getBaseUrl()}/directory/${city.slug}`,
@@ -62,14 +67,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function getRegulatorName(city: string): string {
-  if (city === "Dubai") return "the Dubai Health Authority (DHA)";
-  if (city === "Abu Dhabi" || city === "Al Ain") return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+  if (city === "Dubai") return "the UAE healthcare regulator (Dubai)";
+  if (city === "Abu Dhabi" || city === "Al Ain") return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 function getRegulatorShort(slug: string): string {
-  if (slug === "dubai") return "DHA";
-  if (slug === "abu-dhabi" || slug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (slug === "dubai") return "UAE-licensed (Dubai)";
+  if (slug === "abu-dhabi" || slug === "al-ain") return "UAE-licensed (Abu Dhabi)";
+  return "UAE-licensed";
 }
 function getEditorialBlurb(cityName: string, total: number, regulator: string): string {
   if (cityName === "Dubai")
@@ -171,7 +176,7 @@ export default async function CityPage({ params }: Props) {
             <div className="lg:col-span-8">
               <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
-                {regulatorShort} Verified
+                {regulatorShort}
               </p>
               <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
                 Healthcare in {city.name}.
@@ -214,11 +219,11 @@ export default async function CityPage({ params }: Props) {
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
               According to the UAE Open Healthcare Directory, {city.name} has{" "}
               <span className="font-semibold text-ink">{total}+</span> registered healthcare providers listed across {categories.length} medical specialties and {areas.length} neighborhoods.
-              {city.name === "Dubai" && " Healthcare in Dubai is regulated by the Dubai Health Authority (DHA)."}
-              {city.name === "Abu Dhabi" && " Healthcare in Abu Dhabi is regulated by the Department of Health (DOH)."}
-              {city.name === "Al Ain" && " Healthcare in Al Ain falls under the Department of Health Abu Dhabi (DOH)."}
+              {city.name === "Dubai" && " Healthcare in Dubai is regulated by the UAE healthcare regulator (Dubai)."}
+              {city.name === "Abu Dhabi" && " Healthcare in Abu Dhabi is regulated by the UAE healthcare regulator (Abu Dhabi)."}
+              {city.name === "Al Ain" && " Healthcare in Al Ain falls under the UAE healthcare regulator (Abu Dhabi)."}
               {!["Dubai", "Abu Dhabi", "Al Ain"].includes(city.name) &&
-                ` Healthcare in ${city.name} is regulated by the Ministry of Health and Prevention (MOHAP).`}
+                ` Healthcare in ${city.name} is regulated by the UAE healthcare regulator.`}
               {" "}All listings include verified contact details, Google ratings, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
             </p>
           </div>

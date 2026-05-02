@@ -34,7 +34,7 @@ export function generateMetadata({ params }: Props): Metadata {
     return {
       title: "Healthcare Professionals by Area & Specialty",
       description:
-        "Browse DHA-licensed healthcare professionals by area and specialty in Dubai.",
+        "Browse UAE-licensed (Dubai) healthcare professionals by area and specialty in Dubai.",
     };
   }
   const professionals = getProfessionalsByAreaAndSpecialty(
@@ -45,7 +45,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const base = getBaseUrl();
   return {
     title: `Best ${spec.name} in ${areaInfo.name}, Dubai — ${count.toLocaleString()} Licensed Professionals`,
-    description: `Find ${count.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals in ${areaInfo.name}, Dubai. Full staff list with license types and facility details, sourced from the official Sheryan Medical Registry.`,
+    description: `Find ${count.toLocaleString()} UAE-licensed (Dubai) ${spec.name.toLowerCase()} professionals in ${areaInfo.name}, Dubai. Full staff list with license types and facility details, sourced from the official Sheryan Medical Registry.`,
     alternates: {
       canonical: `${base}/professionals/area/${areaInfo.slug}/${spec.slug}`,
     },
@@ -125,7 +125,7 @@ export default function AreaSpecialtyPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           name: `${spec.name} in ${areaInfo.name}, Dubai`,
-          description: `${professionals.length.toLocaleString()} DHA-licensed ${spec.name.toLowerCase()} professionals in ${areaInfo.name}, Dubai.`,
+          description: `${professionals.length.toLocaleString()} UAE-licensed (Dubai) ${spec.name.toLowerCase()} professionals in ${areaInfo.name}, Dubai.`,
           url: `${base}/professionals/area/${areaInfo.slug}/${spec.slug}`,
           about: {
             "@type": "MedicalSpecialty",
@@ -167,7 +167,7 @@ export default function AreaSpecialtyPage({ params }: Props) {
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            There are {professionals.length.toLocaleString()} DHA-licensed{" "}
+            There are {professionals.length.toLocaleString()} UAE-licensed (Dubai){" "}
             {spec.name.toLowerCase()} professionals practicing in{" "}
             {areaInfo.name}, Dubai
             {ftlCount > 0 && regCount > 0
@@ -350,9 +350,9 @@ export default function AreaSpecialtyPage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical
           Professional Registry. This directory is for informational purposes
-          only. Verify professional credentials directly with DHA before making
+          only. Verify professional credentials directly with the UAE healthcare regulator before making
           healthcare decisions.
         </p>
       </div>

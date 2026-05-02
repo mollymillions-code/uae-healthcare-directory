@@ -43,19 +43,19 @@ export async function generateStaticParams() {
 }
 
 function getRegulatorName(s: string): string {
-  if (s === "dubai") return "the Dubai Health Authority (DHA)";
-  if (s === "abu-dhabi" || s === "al-ain") return "the Department of Health (DOH)";
-  return "the Ministry of Health and Prevention (MOHAP)";
+  if (s === "dubai") return "the UAE healthcare regulator (Dubai)";
+  if (s === "abu-dhabi" || s === "al-ain") return "the UAE healthcare regulator (Abu Dhabi)";
+  return "the UAE healthcare regulator";
 }
 function getRegulatorShort(s: string): string {
-  if (s === "dubai") return "DHA";
-  if (s === "abu-dhabi" || s === "al-ain") return "DOH";
-  return "MOHAP";
+  if (s === "dubai") return "UAE-licensed (Dubai)";
+  if (s === "abu-dhabi" || s === "al-ain") return "UAE-licensed (Abu Dhabi)";
+  return "UAE-licensed";
 }
 function getGovOperator(s: string): string {
-  if (s === "dubai") return "Dubai Health (formerly DHA)";
-  if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under the DOH";
-  return "the Ministry of Health and Prevention (MOHAP)";
+  if (s === "dubai") return "Dubai Health";
+  if (s === "abu-dhabi" || s === "al-ain") return "SEHA (Abu Dhabi Health Services Company) under emirate health oversight";
+  return "the UAE healthcare regulator";
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -80,7 +80,6 @@ export default async function GovernmentPage({ params }: Props) {
   if (govProviders.length === 0) notFound();
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
-  const regulatorShort = getRegulatorShort(city.slug);
   const govOperator = getGovOperator(city.slug);
   const count = govProviders.length;
   const categories = getCategories();
@@ -101,8 +100,8 @@ export default async function GovernmentPage({ params }: Props) {
     { question: `How many government healthcare facilities are there in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, there are ${count} government and public healthcare facilities in ${city.name}, UAE. These include government hospitals, primary healthcare centers, and specialized public health facilities operated by ${govOperator}. Data sourced from official government registers, last verified March 2026.` },
     { question: `Are government hospitals in ${city.name} free?`, answer: `Government healthcare in the UAE is subsidized but not entirely free. UAE nationals receive free or heavily subsidized treatment. Expatriates with valid health insurance pay reduced co-payments. Uninsured patients pay out-of-pocket at government-set rates, typically 30-50% lower than private hospital fees.` },
     { question: `What services do government hospitals in ${city.name} offer?`, answer: `Government hospitals in ${city.name} offer comprehensive services including emergency care (24/7), inpatient and outpatient care, surgical services, maternity and obstetrics, pediatrics, radiology and imaging, laboratory diagnostics, pharmacy services, and specialist consultations.` },
-    { question: `How do I get an appointment at a government hospital in ${city.name}?`, answer: `Appointments at government hospitals in ${city.name} can be booked through ${city.slug === "dubai" ? "the DHA app or by calling the hospital directly" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "the SEHA app or by calling the hospital directly" : "the MOHAP app or by calling the facility directly"}. Emergency departments accept walk-ins 24/7.` },
-    { question: `What insurance is accepted at government facilities in ${city.name}?`, answer: `Government facilities in ${city.name} typically accept ${city.slug === "dubai" ? "DHA Essential Benefits Plan, Daman, and most major insurance plans" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "Thiqa (for UAE nationals), Daman, and most DOH-recognized insurance plans" : "MOHAP-recognized insurance plans, Daman, and major providers"}.` },
+    { question: `How do I get an appointment at a government hospital in ${city.name}?`, answer: `Appointments at government hospitals in ${city.name} can be booked through ${city.slug === "dubai" ? "the official Dubai Health app or by calling the hospital directly" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "the SEHA app or by calling the hospital directly" : "the UAE healthcare regulator app or by calling the facility directly"}. Emergency departments accept walk-ins 24/7.` },
+    { question: `What insurance is accepted at government facilities in ${city.name}?`, answer: `Government facilities in ${city.name} typically accept ${city.slug === "dubai" ? "the Essential Benefits Plan, Daman, and most major insurance plans" : city.slug === "abu-dhabi" || city.slug === "al-ain" ? "Thiqa (for UAE nationals), Daman, and most regulator-recognized insurance plans" : "regulator-recognized insurance plans, Daman, and major providers"}.` },
     { question: `What are the wait times at government hospitals in ${city.name}?`, answer: `Emergency departments provide immediate triage for critical cases. Non-critical emergencies: 30-120 minutes. Outpatient specialist appointments: 1-4 weeks. Primary healthcare centers: 15-45 minutes for walk-ins.` },
   ];
 
@@ -139,7 +138,7 @@ export default async function GovernmentPage({ params }: Props) {
               {" "}The highest-rated government facility is <strong>{topRated.name}</strong>{Number(topRated.googleRating) > 0 ? ` with a ${topRated.googleRating}-star Google rating` : ""}.
             </>
           )}{" "}
-          All listings are sourced from official {regulatorShort} registers, last verified March 2026.
+          All listings are sourced from official UAE healthcare licensing data, last verified March 2026.
         </>
       }
       total={count}

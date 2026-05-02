@@ -37,9 +37,9 @@ function getCityName(slug: string): string {
 }
 
 function getCityRegulator(slug: string): string {
-  if (slug === "dubai") return "DHA";
-  if (slug === "abu-dhabi" || slug === "al-ain") return "DOH";
-  return "MOHAP";
+  if (slug === "dubai") return "the UAE healthcare regulator";
+  if (slug === "abu-dhabi" || slug === "al-ain") return "the UAE healthcare regulator";
+  return "the UAE healthcare regulator";
 }
 
 export function generateMetadata({ params }: { params: { test: string; city: string } }): Metadata {
@@ -93,7 +93,7 @@ export default function TestCityPage({ params }: { params: { test: string; city:
     },
     {
       question: `Can I get a ${test.shortName} test at home in ${city.name}?`,
-      answer: `Yes, several labs in ${city.name} offer home sample collection for ${test.name}. ${cityLabs.filter((l) => l.homeCollection).map((l) => l.name).join(", ")} all provide home phlebotomy services with DHA/DOH/MOHAP-certified nurses. Results are typically delivered digitally within ${test.turnaroundHours} hours.`,
+      answer: `Yes, several labs in ${city.name} offer home sample collection for ${test.name}. ${cityLabs.filter((l) => l.homeCollection).map((l) => l.name).join(", ")} all provide home phlebotomy services with the UAE healthcare regulator-certified nurses. Results are typically delivered digitally within ${test.turnaroundHours} hours.`,
     },
     {
       question: `Do I need to fast before a ${test.shortName} test in ${city.name}?`,

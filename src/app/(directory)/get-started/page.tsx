@@ -61,7 +61,7 @@ export default function GetStartedPage() {
               I&apos;m a patient
             </h2>
             <p className="mt-2 font-['Geist',sans-serif] text-[14px] leading-relaxed text-black/55">
-              Save clinics, set your insurance once and see direct-billing-eligible providers first. The Zavis directory covers 17,000+ DHA, DOH and MOHAP-licensed UAE healthcare facilities.
+              Save clinics, set your insurance once and see direct-billing-eligible providers first. The Zavis directory covers 17,000+ licensed UAE healthcare facilities.
             </p>
             <ul className="mt-5 space-y-2 font-['Geist',sans-serif] text-[13px] text-black/65">
               <li>• Save unlimited clinics &amp; doctors</li>

@@ -30,57 +30,57 @@ const GUIDES: GuideDefinition[] = [
   {
     slug: "specialist-vs-consultant",
     title: "Specialist vs Consultant in Dubai: What\u2019s the Difference?",
-    subtitle: "Understanding the DHA\u2019s two senior clinical grades and what they mean for your care",
-    description: "Learn the difference between a Specialist and Consultant in Dubai's healthcare system. Understand DHA licensing grades, experience requirements, and how to choose the right doctor for your needs.",
+    subtitle: "Understanding the UAE healthcare regulator\u2019s two senior clinical grades and what they mean for your care",
+    description: "Learn the difference between a Specialist and Consultant in Dubai's healthcare system. Understand the UAE healthcare regulator licensing grades, experience requirements, and how to choose the right doctor for your needs.",
     publishedDate: "2026-04-03",
     faqs: [
-      { question: "What is the difference between a Specialist and a Consultant in Dubai?", answer: `In Dubai's DHA system, a Specialist is a physician who has completed specialty training and holds a recognized qualification. A Consultant is the senior grade, requiring 8+ years of post-specialty experience and the ability to supervise specialists and lead departments. Of Dubai's ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, the majority are specialists, with consultants making up a smaller but highly experienced senior tier.` },
+      { question: "What is the difference between a Specialist and a Consultant in Dubai?", answer: `In Dubai's the UAE healthcare regulator system, a Specialist is a physician who has completed specialty training and holds a recognized qualification. A Consultant is the senior grade, requiring 8+ years of post-specialty experience and the ability to supervise specialists and lead departments. Of Dubai's ${PROFESSIONAL_STATS.physicians.toLocaleString()} physicians, the majority are specialists, with consultants making up a smaller but highly experienced senior tier.` },
       { question: "Does a Consultant cost more than a Specialist in Dubai?", answer: "Generally yes. Consultant appointments typically cost 20-50% more than specialist consultations at the same facility. However, pricing varies by facility, insurance coverage, and the complexity of your condition. Many insurance plans cover both grades without additional out-of-pocket costs." },
       { question: "Can a Specialist perform surgery in Dubai?", answer: "Yes, specialists in surgical disciplines (e.g., orthopedic surgery, general surgery, plastic surgery) are fully qualified to perform surgeries independently. The specialist grade confirms they have completed the required surgical training. Consultants may handle more complex or high-risk procedures." },
-      { question: "How do I verify if a doctor is a Specialist or Consultant?", answer: "You can verify any healthcare professional's grade through the DHA Sheryan portal (sheryan.dha.gov.ae). Search by name or license number to see their exact registration grade, specialty, and facility affiliation. The Zavis Professional Directory also displays this information for all 99,520 DHA-licensed professionals." },
+      { question: "How do I verify if a doctor is a Specialist or Consultant?", answer: "You can verify any healthcare professional's grade through the DHA Sheryan portal (sheryan.dha.gov.ae). Search by name or license number to see their exact registration grade, specialty, and facility affiliation. The Zavis Professional Directory also displays this information for all 99,520 UAE-licensed (Dubai) professionals." },
       { question: "Should I always choose a Consultant over a Specialist?", answer: "Not necessarily. For routine specialty care, a specialist is fully qualified and often more accessible. Consultants are recommended for complex cases, second opinions, cases requiring multidisciplinary coordination, or when you want the most experienced physician available. Both grades are independently licensed to practice." },
     ],
   },
   {
     slug: "dha-licensing",
-    title: "How DHA Medical Licensing Works in Dubai",
-    subtitle: "A complete guide to the Dubai Health Authority\u2019s professional licensing framework",
-    description: "Understand how medical licensing works in Dubai under the Dubai Health Authority. Learn about license types, eligibility requirements, the application process, and how DHA regulates healthcare professionals.",
+    title: "How the UAE healthcare regulator Medical Licensing Works in Dubai",
+    subtitle: "A complete guide to the UAE healthcare regulator (Dubai)\u2019s professional licensing framework",
+    description: "Understand how medical licensing works in Dubai under the UAE healthcare regulator (Dubai). Learn about license types, eligibility requirements, the application process, and how the UAE healthcare regulator regulates healthcare professionals.",
     publishedDate: "2026-04-03",
     faqs: [
-      { question: "What is DHA licensing?", answer: `DHA (Dubai Health Authority) licensing is the mandatory credentialing process for all healthcare professionals practicing in Dubai. Every physician, dentist, nurse, pharmacist, and allied health worker must hold a valid DHA license. Currently, ${PROFESSIONAL_STATS.total.toLocaleString()} professionals are licensed across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities.` },
-      { question: "How long does it take to get a DHA license?", answer: "The DHA licensing process typically takes 4-8 weeks for straightforward applications. This includes document verification, dataflow primary source verification (PSV), and the DHA professional exam if required. Complex cases or applications requiring additional verification may take longer." },
-      { question: "What is the difference between DHA, DOH, and MOHAP licenses?", answer: "DHA licenses are for Dubai, DOH (Department of Health) licenses are for Abu Dhabi, and MOHAP (Ministry of Health and Prevention) licenses cover the other five emirates. Each authority has its own licensing process, though there are mutual recognition agreements for certain qualifications." },
-      { question: "Can a doctor with a DHA license practice in Abu Dhabi?", answer: "Not directly. A DHA license is valid only within Dubai's jurisdiction. To practice in Abu Dhabi, a separate DOH license is required. However, the UAE has been working on licensing portability, and some reciprocal arrangements exist for visiting consultants." },
-      { question: "How do I check if a doctor is DHA-licensed?", answer: "Visit the DHA Sheryan portal (sheryan.dha.gov.ae) and search by name or license number. The Zavis Professional Directory also provides searchable access to all DHA-licensed professionals with their specialty, grade, and facility details." },
+      { question: "What is the UAE healthcare regulator licensing?", answer: `The UAE healthcare regulator (the UAE healthcare regulator (Dubai)) licensing is the mandatory credentialing process for all healthcare professionals practicing in Dubai. Every physician, dentist, nurse, pharmacist, and allied health worker must hold a valid regulator license. Currently, ${PROFESSIONAL_STATS.total.toLocaleString()} professionals are licensed across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities.` },
+      { question: "How long does it take to get a regulator license?", answer: "The UAE healthcare regulator licensing process typically takes 4-8 weeks for straightforward applications. This includes document verification, dataflow primary source verification (PSV), and the UAE healthcare regulator professional exam if required. Complex cases or applications requiring additional verification may take longer." },
+      { question: "What is the difference between the UAE healthcare regulator licenses?", answer: "regulator licenses are for Dubai, the UAE healthcare regulator (Department of Health) licenses are for Abu Dhabi, and the UAE healthcare regulator (the UAE healthcare regulator) licenses cover the other five emirates. Each authority has its own licensing process, though there are mutual recognition agreements for certain qualifications." },
+      { question: "Can a doctor with a regulator license practice in Abu Dhabi?", answer: "Not directly. A regulator license is valid only within Dubai's jurisdiction. To practice in Abu Dhabi, a separate regulator license is required. However, the UAE has been working on licensing portability, and some reciprocal arrangements exist for visiting consultants." },
+      { question: "How do I check if a doctor is UAE-licensed (Dubai)?", answer: "Visit the DHA Sheryan portal (sheryan.dha.gov.ae) and search by name or license number. The Zavis Professional Directory also provides searchable access to all UAE-licensed (Dubai) professionals with their specialty, grade, and facility details." },
     ],
   },
   {
     slug: "ftl-vs-reg",
     title: "FTL vs REG License: What\u2019s the Difference?",
     subtitle: "Understanding full-time and registered license types in Dubai\u2019s healthcare system",
-    description: "Learn the difference between FTL (Full-Time License) and REG (Registered) license types in Dubai's DHA system. Understand what each means for healthcare professionals and patients.",
+    description: "Learn the difference between FTL (Full-Time License) and REG (Registered) license types in Dubai's the UAE healthcare regulator system. Understand what each means for healthcare professionals and patients.",
     publishedDate: "2026-04-03",
     faqs: [
-      { question: "What does FTL mean in DHA licensing?", answer: "FTL stands for Full-Time License. It is issued to healthcare professionals who are employed full-time at a specific facility in Dubai. FTL holders work exclusively at their designated facility and are the backbone of Dubai's healthcare workforce." },
-      { question: "What does REG mean in DHA licensing?", answer: "REG stands for Registered license. It covers professionals who may work part-time, on a visiting basis, or across multiple facilities. REG license holders are often senior consultants who split time between facilities or international practitioners who visit Dubai periodically." },
-      { question: "Is an FTL doctor better than a REG doctor?", answer: "No. The license type (FTL vs REG) indicates the employment arrangement, not clinical competence. A REG-licensed consultant may be a highly sought-after specialist who works across multiple hospitals. Both FTL and REG holders must meet the same DHA credentialing standards." },
+      { question: "What does FTL mean in the UAE healthcare regulator licensing?", answer: "FTL stands for Full-Time License. It is issued to healthcare professionals who are employed full-time at a specific facility in Dubai. FTL holders work exclusively at their designated facility and are the backbone of Dubai's healthcare workforce." },
+      { question: "What does REG mean in the UAE healthcare regulator licensing?", answer: "REG stands for Registered license. It covers professionals who may work part-time, on a visiting basis, or across multiple facilities. REG license holders are often senior consultants who split time between facilities or international practitioners who visit Dubai periodically." },
+      { question: "Is an FTL doctor better than a REG doctor?", answer: "No. The license type (FTL vs REG) indicates the employment arrangement, not clinical competence. A REG-licensed consultant may be a highly sought-after specialist who works across multiple hospitals. Both FTL and REG holders must meet the same the UAE healthcare regulator credentialing standards." },
       { question: "Can a REG-licensed doctor perform surgery?", answer: "Yes, if they hold the appropriate specialty qualification and their facility privileges include surgical procedures. The FTL/REG distinction relates to employment terms, not scope of practice. A surgeon with a REG license has the same clinical authority as one with an FTL license." },
-      { question: "How many FTL vs REG professionals are in Dubai?", answer: `The Zavis Professional Directory tracks ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities. The split between FTL and REG varies by specialty, but full-time licenses are more common overall, reflecting the large resident healthcare workforce in Dubai.` },
+      { question: "How many FTL vs REG professionals are in Dubai?", answer: `The Zavis Professional Directory tracks ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities. The split between FTL and REG varies by specialty, but full-time licenses are more common overall, reflecting the large resident healthcare workforce in Dubai.` },
     ],
   },
   {
     slug: "how-to-verify-doctor",
     title: "How to Verify a Doctor\u2019s License in Dubai",
-    subtitle: "Step-by-step guide to checking DHA credentials before your appointment",
+    subtitle: "Step-by-step guide to checking the UAE healthcare regulator credentials before your appointment",
     description: "Learn how to verify a doctor's license in Dubai using the DHA Sheryan portal. Step-by-step guide to checking credentials, specialty, and facility affiliation for any healthcare professional.",
     publishedDate: "2026-04-03",
     faqs: [
       { question: "How do I verify a doctor's license in Dubai?", answer: "Visit the DHA Sheryan portal at sheryan.dha.gov.ae, click 'Search Healthcare Professional', and enter the doctor's name or license number. The system will show their license status, specialty, grade (Specialist/Consultant), license type (FTL/REG), and facility. You can also use the Zavis Professional Directory for a searchable interface." },
       { question: "Is the DHA Sheryan portal free to use?", answer: "Yes, the DHA Sheryan portal is completely free and open to the public. Anyone can search for and verify healthcare professionals without creating an account. The portal covers all licensed professionals in Dubai." },
-      { question: "What should I check when verifying a doctor?", answer: "Verify: (1) License status is active, (2) Specialty matches what they claim, (3) Grade matches (Specialist vs Consultant), (4) They are affiliated with the facility where you plan to visit them, and (5) The license hasn't expired. If any of these don't match, contact the facility or DHA directly." },
-      { question: "Can I verify doctors from Abu Dhabi or other emirates?", answer: "DHA Sheryan only covers Dubai. For Abu Dhabi, use the DOH portal (doh.gov.ae). For other emirates, check the MOHAP portal (mohap.gov.ae). Each health authority maintains its own registry of licensed professionals." },
-      { question: "How often is the DHA registry updated?", answer: `The DHA Sheryan registry is updated in real-time as licenses are issued, renewed, or revoked. The Zavis Professional Directory, which mirrors ${PROFESSIONAL_STATS.total.toLocaleString()} records from the DHA registry, is updated periodically to reflect the latest data.` },
+      { question: "What should I check when verifying a doctor?", answer: "Verify: (1) License status is active, (2) Specialty matches what they claim, (3) Grade matches (Specialist vs Consultant), (4) They are affiliated with the facility where you plan to visit them, and (5) The license hasn't expired. If any of these don't match, contact the facility or the UAE healthcare regulator directly." },
+      { question: "Can I verify doctors from Abu Dhabi or other emirates?", answer: "DHA Sheryan only covers Dubai. For Abu Dhabi, use the UAE healthcare regulator portal (doh.gov.ae). For other emirates, check the UAE healthcare regulator portal (mohap.gov.ae). Each health authority maintains its own registry of licensed professionals." },
+      { question: "How often is the UAE healthcare regulator registry updated?", answer: `The DHA Sheryan registry is updated in real-time as licenses are issued, renewed, or revoked. The Zavis Professional Directory, which mirrors ${PROFESSIONAL_STATS.total.toLocaleString()} records from the UAE healthcare regulator registry, is updated periodically to reflect the latest data.` },
     ],
   },
   {
@@ -108,7 +108,7 @@ const GUIDES: GuideDefinition[] = [
       { question: "What is the largest healthcare facility in Dubai?", answer: `By staff count, the largest healthcare facilities in Dubai are ${PROFESSIONAL_STATS.topFacilities.slice(0, 3).map((f) => `${f.name} (${f.staff.toLocaleString()} staff)`).join(", ")}. These government and private hospitals employ thousands of professionals across all specialties.` },
       { question: "What are the most common medical specialties in Dubai?", answer: `The most common physician specialty in Dubai is General Practitioner with ${PHYSICIAN_SPECIALTIES[0].count.toLocaleString()} professionals, followed by Obstetrics & Gynecology (${PHYSICIAN_SPECIALTIES[1].count.toLocaleString()}), Pediatrics (${PHYSICIAN_SPECIALTIES[2].count.toLocaleString()}), and Family Medicine (${PHYSICIAN_SPECIALTIES[3].count.toLocaleString()}). Among dentists, General Dentistry leads with ${DENTIST_SPECIALTIES[0].count.toLocaleString()} practitioners.` },
       { question: "How many hospitals are in Dubai?", answer: `Dubai has ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} licensed healthcare facilities of all types, including hospitals, clinics, medical centers, dental practices, pharmacies, and diagnostic labs. The largest hospitals have over 1,000 staff members.` },
-      { question: "Is Dubai's healthcare workforce growing?", answer: "Yes. Dubai's healthcare workforce has grown significantly over the past decade, driven by population growth, medical tourism, and government investment in healthcare infrastructure. The Dubai Health Authority continues to license new facilities and professionals each year." },
+      { question: "Is Dubai's healthcare workforce growing?", answer: "Yes. Dubai's healthcare workforce has grown significantly over the past decade, driven by population growth, medical tourism, and government investment in healthcare infrastructure. The UAE healthcare regulator (Dubai) continues to license new facilities and professionals each year." },
     ],
   },
   {
@@ -118,7 +118,7 @@ const GUIDES: GuideDefinition[] = [
     description: `Dubai offers ${PHYSICIAN_SPECIALTIES.length} physician specialties and ${DENTIST_SPECIALTIES.length} dental specialties. Explore each specialty, what conditions they treat, and how many licensed professionals practice in Dubai.`,
     publishedDate: "2026-04-03",
     faqs: [
-      { question: "How many medical specialties are available in Dubai?", answer: `Dubai has ${PHYSICIAN_SPECIALTIES.length} recognized physician specialties and ${DENTIST_SPECIALTIES.length} dental specialties licensed by the DHA. This covers everything from general practice and family medicine to highly specialized fields like interventional cardiology, neurosurgery, and reproductive medicine.` },
+      { question: "How many medical specialties are available in Dubai?", answer: `Dubai has ${PHYSICIAN_SPECIALTIES.length} recognized physician specialties and ${DENTIST_SPECIALTIES.length} dental specialties licensed by the UAE healthcare regulator. This covers everything from general practice and family medicine to highly specialized fields like interventional cardiology, neurosurgery, and reproductive medicine.` },
       { question: "What is the difference between a GP and a specialist?", answer: `A General Practitioner (GP) provides primary care and treats a wide range of conditions. A specialist has completed additional years of training in a specific area of medicine. Dubai has ${PHYSICIAN_SPECIALTIES[0].count.toLocaleString()} GPs and thousands more specialists across ${PHYSICIAN_SPECIALTIES.length - 1} other disciplines.` },
       { question: "Which specialty should I see for back pain?", answer: "For back pain, start with your GP or an Orthopedic Surgeon. Depending on the cause, you may be referred to a Neurosurgeon (for disc or nerve issues), a Physical Medicine & Rehabilitation specialist (for conservative management), or a Rheumatologist (for inflammatory conditions). Pain management clinics also treat chronic back pain." },
       { question: "What is the rarest medical specialty in Dubai?", answer: `Among physician specialties, the less common specialties include Reproductive Medicine & IVF (${PHYSICIAN_SPECIALTIES.find((s) => s.slug === "reproductive-medicine")?.count || 53} professionals), Physical Medicine & Rehabilitation (${PHYSICIAN_SPECIALTIES.find((s) => s.slug === "physical-rehabilitation")?.count || 53}), and Pediatric Surgery (${PHYSICIAN_SPECIALTIES.find((s) => s.slug === "pediatric-surgery")?.count || 61}). These niche specialties have fewer practitioners but serve critical roles.` },
@@ -132,11 +132,11 @@ const GUIDES: GuideDefinition[] = [
     description: "Dubai's healthcare workforce is one of the most internationally diverse in the world. Learn about where Dubai's doctors come from, how international qualifications are recognized, and what this means for patients.",
     publishedDate: "2026-04-03",
     faqs: [
-      { question: "Are international doctors qualified to practice in Dubai?", answer: "Yes. All international doctors practicing in Dubai must pass the DHA licensing process, which includes primary source verification of their qualifications, professional exams (in some cases), and clinical assessment. Only doctors who meet DHA's standards receive a license, regardless of their country of training." },
+      { question: "Are international doctors qualified to practice in Dubai?", answer: "Yes. All international doctors practicing in Dubai must pass the UAE healthcare regulator licensing process, which includes primary source verification of their qualifications, professional exams (in some cases), and clinical assessment. Only doctors who meet the UAE healthcare regulator's standards receive a license, regardless of their country of training." },
       { question: "What countries do most doctors in Dubai come from?", answer: "Dubai's medical workforce is drawn from over 100 countries. The largest groups include physicians trained in India, Pakistan, the Philippines, Egypt, the UK, Ireland, Syria, Jordan, and other Arab countries. Many have also completed further training in the US, UK, Canada, or Australia." },
-      { question: "Do international doctors in Dubai speak English?", answer: "Yes, English is the primary language of medical practice in Dubai. All DHA-licensed professionals must demonstrate English proficiency. Many also speak Arabic, Hindi, Urdu, Tagalog, or other languages, reflecting the diverse patient population." },
-      { question: "How does DHA verify international medical qualifications?", answer: "DHA uses DataFlow Group for Primary Source Verification (PSV), which independently verifies every qualification, training certificate, and professional reference directly with the issuing institution. This process typically takes 2-4 weeks and is one of the most rigorous verification systems in the world." },
-      { question: "Can I find a doctor who trained in my home country?", answer: `While the Zavis Professional Directory lists all ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed professionals with their facility and specialty, specific training backgrounds are listed on the DHA Sheryan portal. Many expat communities also maintain informal directories and recommendations for doctors from specific countries.` },
+      { question: "Do international doctors in Dubai speak English?", answer: "Yes, English is the primary language of medical practice in Dubai. All UAE-licensed (Dubai) professionals must demonstrate English proficiency. Many also speak Arabic, Hindi, Urdu, Tagalog, or other languages, reflecting the diverse patient population." },
+      { question: "How does the UAE healthcare regulator verify international medical qualifications?", answer: "The UAE healthcare regulator uses DataFlow Group for Primary Source Verification (PSV), which independently verifies every qualification, training certificate, and professional reference directly with the issuing institution. This process typically takes 2-4 weeks and is one of the most rigorous verification systems in the world." },
+      { question: "Can I find a doctor who trained in my home country?", answer: `While the Zavis Professional Directory lists all ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) professionals with their facility and specialty, specific training backgrounds are listed on the DHA Sheryan portal. Many expat communities also maintain informal directories and recommendations for doctors from specific countries.` },
     ],
   },
 ];
@@ -227,7 +227,7 @@ function SpecialistVsConsultantContent() {
     <>
       <Section title="The Two Senior Clinical Grades in Dubai">
         <p>
-          Dubai&apos;s healthcare system, regulated by the Dubai Health Authority (DHA), uses a
+          Dubai&apos;s healthcare system, regulated by the UAE healthcare regulator (Dubai), uses a
           structured grading system for physicians and dentists. The two most commonly
           encountered senior grades are <strong>Specialist</strong> and{" "}
           <strong>Consultant</strong>. Understanding the difference helps patients make
@@ -262,14 +262,14 @@ function SpecialistVsConsultantContent() {
             <li>Medical degree (MBBS, MD, or equivalent)</li>
             <li>Completed specialty training program (typically 4-6 years)</li>
             <li>Recognized postgraduate qualification (board certification, MRCP, FRCS, etc.)</li>
-            <li>DHA licensing exam (if required for their qualification pathway)</li>
+            <li>The UAE healthcare regulator licensing exam (if required for their qualification pathway)</li>
           </ul>
         </div>
       </Section>
 
       <Section title="What Is a Consultant?">
         <p>
-          A <strong>Consultant</strong> is the most senior clinical grade in the DHA system. It
+          A <strong>Consultant</strong> is the most senior clinical grade in the UAE healthcare regulator system. It
           requires a minimum of 8 years of clinical experience after obtaining the specialist
           qualification, plus demonstrated expertise and leadership in the field.
         </p>
@@ -287,7 +287,7 @@ function SpecialistVsConsultantContent() {
             <li>Minimum 8 years post-specialty clinical experience</li>
             <li>Demonstrated leadership and supervisory capability</li>
             <li>Often involved in clinical research or education</li>
-            <li>DHA review of full career portfolio</li>
+            <li>The UAE healthcare regulator review of full career portfolio</li>
           </ul>
         </div>
       </Section>
@@ -327,25 +327,25 @@ function SpecialistVsConsultantContent() {
   );
 }
 
-// ─── Guide 2: DHA Licensing ─────────────────────────────────────────────────
+// ─── Guide 2: the UAE healthcare regulator Licensing ─────────────────────────────────────────────────
 
 function DhaLicensingContent() {
   return (
     <>
-      <Section title="Overview of DHA Licensing">
+      <Section title="Overview of the UAE healthcare regulator Licensing">
         <p>
-          The Dubai Health Authority (DHA) is the regulatory body responsible for licensing
+          The UAE healthcare regulator (Dubai) is the regulatory body responsible for licensing
           all healthcare professionals and facilities in the Emirate of Dubai. Every physician,
-          dentist, nurse, pharmacist, and allied health worker must obtain a valid DHA license
+          dentist, nurse, pharmacist, and allied health worker must obtain a valid regulator license
           before practicing. As of {PROFESSIONAL_STATS.scraped},{" "}
-          {PROFESSIONAL_STATS.total.toLocaleString()} professionals hold active DHA licenses
+          {PROFESSIONAL_STATS.total.toLocaleString()} professionals hold active regulator licenses
           across {PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()} facilities.
         </p>
       </Section>
 
-      <Section title="Who Needs a DHA License?">
+      <Section title="Who Needs a Regulator License?">
         <p>
-          Every healthcare professional working in Dubai needs a DHA license. This includes:
+          Every healthcare professional working in Dubai needs a regulator license. This includes:
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           {PROFESSIONAL_CATEGORIES.map((cat) => (
@@ -366,15 +366,15 @@ function DhaLicensingContent() {
 
       <Section title="The Licensing Process">
         <p>
-          The DHA licensing process involves several stages, each designed to verify that
+          The UAE healthcare regulator licensing process involves several stages, each designed to verify that
           practitioners meet international standards of competence:
         </p>
         <div className="space-y-3 mt-3">
           {[
-            { step: "1", title: "Eligibility Check", desc: "Review qualification requirements for your profession and grade. DHA maintains detailed eligibility matrices for each category." },
+            { step: "1", title: "Eligibility Check", desc: "Review qualification requirements for your profession and grade. The UAE healthcare regulator maintains detailed eligibility matrices for each category." },
             { step: "2", title: "Primary Source Verification (PSV)", desc: "All qualifications are independently verified through DataFlow Group directly with issuing institutions. This takes 2-4 weeks." },
-            { step: "3", title: "Professional Exam", desc: "Some applicants must pass the DHA professional exam (Prometric/Pearson VUE). Exemptions apply for certain qualifications and experience levels." },
-            { step: "4", title: "License Issuance", desc: "Once verified, DHA issues the license with the appropriate grade (GP, Specialist, or Consultant) and license type (FTL or REG)." },
+            { step: "3", title: "Professional Exam", desc: "Some applicants must pass the UAE healthcare regulator professional exam (Prometric/Pearson VUE). Exemptions apply for certain qualifications and experience levels." },
+            { step: "4", title: "License Issuance", desc: "Once verified, the UAE healthcare regulator issues the license with the appropriate grade (GP, Specialist, or Consultant) and license type (FTL or REG)." },
           ].map((item) => (
             <div key={item.step} className="flex gap-3">
               <span className="font-['Geist_Mono',monospace] text-sm font-bold text-[#006828] shrink-0">
@@ -391,7 +391,7 @@ function DhaLicensingContent() {
 
       <Section title="License Types: FTL and REG">
         <p>
-          DHA issues two types of licenses: <strong>FTL (Full-Time License)</strong> for
+          the UAE healthcare regulator issues two types of licenses: <strong>FTL (Full-Time License)</strong> for
           professionals employed full-time at a single facility, and{" "}
           <strong>REG (Registered)</strong> for those working part-time, visiting, or across
           multiple facilities. Both require the same credentialing standards.
@@ -403,10 +403,10 @@ function DhaLicensingContent() {
         </p>
       </Section>
 
-      <Section title="Regulatory Scope: DHA vs DOH vs MOHAP">
+      <Section title="Regulatory Scope: the UAE healthcare regulator vs the UAE healthcare regulator vs the UAE healthcare regulator">
         <p>
-          Each emirate in the UAE has its own health regulator. DHA covers Dubai,
-          DOH covers Abu Dhabi, and MOHAP covers Sharjah, Ajman, Ras Al Khaimah,
+          Each emirate in the UAE has its own health regulator. The UAE healthcare regulator covers Dubai,
+          the UAE healthcare regulator covers Abu Dhabi, and the UAE healthcare regulator covers Sharjah, Ajman, Ras Al Khaimah,
           Umm Al Quwain, and Fujairah. Licenses are not automatically transferable
           between authorities, though there is ongoing work on UAE-wide portability.
         </p>
@@ -513,7 +513,7 @@ function HowToVerifyContent() {
           With {PROFESSIONAL_STATS.total.toLocaleString()} healthcare professionals
           practicing across {PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()}{" "}
           facilities in Dubai, verifying a doctor&apos;s credentials is both easy and
-          important. The DHA maintains a public registry that anyone can access for free.
+          important. The UAE healthcare regulator maintains a public registry that anyone can access for free.
         </p>
         <p>
           Verification protects you from unlicensed practitioners, confirms the doctor&apos;s
@@ -551,7 +551,7 @@ function HowToVerifyContent() {
             Zavis Professional Directory
           </Link>{" "}
           provides an alternative interface to browse all{" "}
-          {PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed professionals. You can
+          {PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) professionals. You can
           filter by specialty, category, facility, and area. Each listing shows the
           professional&apos;s name, grade, license type, and facility.
         </p>
@@ -564,11 +564,11 @@ function HowToVerifyContent() {
           <li>Their license status shows as inactive, expired, or suspended</li>
           <li>Their listed specialty doesn&apos;t match what they claim to practice</li>
           <li>They are not affiliated with the facility where you found them</li>
-          <li>They refuse to provide their DHA license number when asked</li>
+          <li>They refuse to provide their regulator license number when asked</li>
         </ul>
         <p className="mt-3">
-          If you encounter any of these issues, report them to the DHA complaints line
-          or visit the DHA website for the formal complaint process.
+          If you encounter any of these issues, report them to the UAE healthcare regulator complaints line
+          or visit the UAE healthcare regulator website for the formal complaint process.
         </p>
       </Section>
 
@@ -578,7 +578,7 @@ function HowToVerifyContent() {
         </p>
         <ul className="list-disc list-inside text-sm text-black/60 space-y-1 mt-2">
           <li><strong>Abu Dhabi:</strong> Department of Health (doh.gov.ae)</li>
-          <li><strong>Sharjah, Ajman, RAK, UAQ, Fujairah:</strong> MOHAP (mohap.gov.ae)</li>
+          <li><strong>Sharjah, Ajman, RAK, UAQ, Fujairah:</strong> the UAE healthcare regulator (mohap.gov.ae)</li>
         </ul>
       </Section>
     </>
@@ -836,7 +836,7 @@ function MedicalSpecialtiesContent() {
       <Section title="Understanding Medical Specialties in Dubai">
         <p>
           Dubai&apos;s healthcare system recognizes {PHYSICIAN_SPECIALTIES.length} physician
-          specialties and {DENTIST_SPECIALTIES.length} dental specialties through the DHA
+          specialties and {DENTIST_SPECIALTIES.length} dental specialties through the UAE healthcare regulator
           licensing framework. Each specialty represents a distinct area of medicine with
           its own training pathway, qualification requirements, and scope of practice.
         </p>
@@ -974,7 +974,7 @@ function InternationalDoctorsContent() {
           the world. With {PROFESSIONAL_STATS.total.toLocaleString()} licensed professionals
           drawn from over 100 countries, the emirate has assembled a medical community
           that reflects its cosmopolitan population. This diversity is a deliberate result
-          of Dubai&apos;s open immigration policies and the DHA&apos;s recognition of
+          of Dubai&apos;s open immigration policies and the UAE healthcare regulator&apos;s recognition of
           qualifications from major medical systems worldwide.
         </p>
       </Section>
@@ -996,12 +996,12 @@ function InternationalDoctorsContent() {
 
       <Section title="How International Qualifications Are Verified">
         <p>
-          The DHA uses a rigorous credentialing process for all international qualifications:
+          The UAE healthcare regulator uses a rigorous credentialing process for all international qualifications:
         </p>
         <div className="space-y-3 mt-3">
           {[
             { title: "Primary Source Verification (PSV)", desc: "Every degree, diploma, and training certificate is independently verified through DataFlow Group directly with the issuing institution. This prevents fraudulent qualifications from entering the system." },
-            { title: "DHA Professional Exam", desc: "Depending on the qualification pathway and years of experience, some applicants must pass a DHA-administered professional exam (Prometric). Certain high-level qualifications (e.g., US/UK/Canadian board certifications) may be exempt." },
+            { title: "The UAE healthcare regulator Professional Exam", desc: "Depending on the qualification pathway and years of experience, some applicants must pass a UAE healthcare regulator-administered professional exam (Prometric). Certain high-level qualifications (e.g., US/UK/Canadian board certifications) may be exempt." },
             { title: "Clinical Assessment", desc: "For some grades and specialties, a clinical assessment or interview may be required to evaluate hands-on competence in addition to paper qualifications." },
           ].map((item) => (
             <div key={item.title} className="bg-[#f8f8f6] p-4">
@@ -1014,7 +1014,7 @@ function InternationalDoctorsContent() {
 
       <Section title="Language Diversity">
         <p>
-          English is the primary language of medical practice in Dubai, and all DHA-licensed
+          English is the primary language of medical practice in Dubai, and all UAE-licensed (Dubai)
           professionals must demonstrate English proficiency. However, Dubai&apos;s diverse
           workforce means patients can often find specialists who speak their native language.
         </p>
@@ -1219,9 +1219,9 @@ export default function GuidePage({ params }: Props) {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. This guide is for informational purposes only and does not constitute
-          medical advice. Verify professional credentials directly with DHA before making
+          medical advice. Verify professional credentials directly with the UAE healthcare regulator before making
           healthcare decisions.
         </p>
       </div>

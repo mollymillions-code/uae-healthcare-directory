@@ -13,12 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "How to Refill Prescriptions in the UAE — Complete Guide",
     description:
-      "Everything you need to know about refilling prescriptions in the UAE. DHA, DOH, and MOHAP rules, chronic medication refills, prescription transfers, and controlled substance regulations.",
+      "Everything you need to know about refilling prescriptions in the UAE. The UAE healthcare regulator rules, chronic medication refills, prescription transfers, and controlled substance regulations.",
     alternates: { canonical: `${base}/pharmacy/prescription-refill` },
     openGraph: {
       title: "How to Refill Prescriptions in the UAE — Complete Guide",
       description:
-        "DHA, DOH, and MOHAP rules for prescription refills in the UAE — including chronic medication programs, transfers, and controlled substances.",
+        "The UAE healthcare regulator rules for prescription refills in the UAE — including chronic medication programs, transfers, and controlled substances.",
       url: `${base}/pharmacy/prescription-refill`,
       type: "article",
       locale: "en_AE",
@@ -31,12 +31,12 @@ const refillFaqs = [
   {
     question: "How long is a UAE prescription valid for?",
     answer:
-      "Standard prescriptions are usually valid for 3 months from the date of issue, though this varies by medication and emirate. Chronic disease prescriptions in DHA and DOH programs often remain valid for up to 90 days per refill cycle. Controlled substances cannot be refilled — a new prescription is required each time.",
+      "Standard prescriptions are usually valid for 3 months from the date of issue, though this varies by medication and emirate. Chronic disease prescriptions in the UAE healthcare regulator and the UAE healthcare regulator programs often remain valid for up to 90 days per refill cycle. Controlled substances cannot be refilled — a new prescription is required each time.",
   },
   {
     question: "Can I refill a prescription at a different pharmacy?",
     answer:
-      "Within the same emirate, usually yes. E-prescriptions tied to your Emirates ID are visible to any licensed pharmacy on the same network (DHA in Dubai, Malaffi in Abu Dhabi). For paper prescriptions, you can take the original document to any pharmacy — they will mark it as dispensed to prevent duplicates.",
+      "Within the same emirate, usually yes. E-prescriptions tied to your Emirates ID are visible to any licensed pharmacy on the same network (the UAE healthcare regulator in Dubai, Malaffi in Abu Dhabi). For paper prescriptions, you can take the original document to any pharmacy — they will mark it as dispensed to prevent duplicates.",
   },
   {
     question: "What happens if my prescription expires before I finish refilling it?",
@@ -46,7 +46,7 @@ const refillFaqs = [
   {
     question: "Can I bring my controlled medication into the UAE from abroad?",
     answer:
-      "Yes, with documentation. Carry a valid prescription from your home country and, for quantities above the standard limit, a permit from MOHAP. Check MOHAP's current list of restricted substances and travel with the medication in its original labeled packaging to avoid customs issues.",
+      "Yes, with documentation. Carry a valid prescription from your home country and, for quantities above the standard limit, a permit from the UAE healthcare regulator. Check the UAE healthcare regulator's current list of restricted substances and travel with the medication in its original labeled packaging to avoid customs issues.",
   },
 ];
 
@@ -89,14 +89,14 @@ export default function PrescriptionRefillPage() {
             How to Refill Prescriptions in the UAE
           </h1>
           <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
-            DHA, DOH, and MOHAP rules for prescription refills in the UAE &mdash; including chronic
+            the UAE healthcare regulator rules for prescription refills in the UAE &mdash; including chronic
             medication programs, transfers, and controlled substances.
           </p>
 
           <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
-              In the UAE, prescriptions are regulated at the emirate level by DHA (Dubai), DOH (Abu Dhabi),
-              and MOHAP (all other emirates). Most prescriptions are valid for a limited dispensing window
+              In the UAE, prescriptions are regulated at the emirate level by the UAE healthcare regulator (Dubai), the UAE healthcare regulator (Abu Dhabi),
+              and the UAE healthcare regulator (all other emirates). Most prescriptions are valid for a limited dispensing window
               &mdash; typically 3 months from the date of issue, though this varies by medication type. Chronic
               disease patients in Dubai and Abu Dhabi can access dedicated refill programs. Controlled
               substances require the original prescription each time and cannot be refilled without a new
@@ -116,7 +116,7 @@ export default function PrescriptionRefillPage() {
             <div className="space-y-5">
               <p>
                 The UAE uses a unified electronic health record infrastructure through platforms like
-                Malaffi (Abu Dhabi) and the Dubai Health Authority&apos;s shared health record system.
+                Malaffi (Abu Dhabi) and the UAE healthcare regulator (Dubai)&apos;s shared health record system.
                 Prescriptions issued at licensed facilities are electronically recorded and can be
                 verified by pharmacies in the same emirate network.
               </p>
@@ -136,7 +136,7 @@ export default function PrescriptionRefillPage() {
 
           <section>
             <h2 className="font-display font-semibold text-ink text-z-h2 tracking-[-0.018em] mt-12 mb-4">
-              DHA, DOH, and MOHAP rules on refills
+              the UAE healthcare regulator rules on refills
             </h2>
             <div className="space-y-5">
               <p>
@@ -146,19 +146,19 @@ export default function PrescriptionRefillPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   {
-                    authority: "DHA — Dubai",
+                    authority: "The UAE healthcare regulator — Dubai",
                     detail:
-                      "Standard prescriptions are dispensed in full as written. Chronic disease prescriptions (hypertension, diabetes, thyroid) can be refilled for up to 3 months without a return visit when enrolled in the DHA chronic disease management program. Pharmacists can validate e-prescriptions directly in the DHA system.",
+                      "Standard prescriptions are dispensed in full as written. Chronic disease prescriptions (hypertension, diabetes, thyroid) can be refilled for up to 3 months without a return visit when enrolled in the UAE healthcare regulator chronic disease management program. Pharmacists can validate e-prescriptions directly in the UAE healthcare regulator system.",
                   },
                   {
-                    authority: "DOH — Abu Dhabi",
+                    authority: "The UAE healthcare regulator — Abu Dhabi",
                     detail:
                       "Abu Dhabi follows a similar framework through SEHA and private network facilities. Chronic prescriptions are typically valid for 90 days. The Malaffi platform enables cross-facility prescription visibility. Patients enrolled in the Thiqa or Daman programs may have chronic refills managed through their insurer portal.",
                   },
                   {
-                    authority: "MOHAP — All Other Emirates",
+                    authority: "The UAE healthcare regulator — All Other Emirates",
                     detail:
-                      "Sharjah, Ajman, Umm Al Quwain, Ras Al Khaimah, and Fujairah fall under MOHAP jurisdiction. Prescriptions are generally valid for one-time dispensing unless explicitly marked as repeatable. Chronic disease patients should ask their physician to write a repeatable prescription with refill intervals.",
+                      "Sharjah, Ajman, Umm Al Quwain, Ras Al Khaimah, and Fujairah fall under the UAE healthcare regulator jurisdiction. Prescriptions are generally valid for one-time dispensing unless explicitly marked as repeatable. Chronic disease patients should ask their physician to write a repeatable prescription with refill intervals.",
                   },
                 ].map((item) => (
                   <div
@@ -195,7 +195,7 @@ export default function PrescriptionRefillPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  <strong className="font-semibold">DHA Chronic Disease Management Program</strong> &mdash; enrolled patients receive
+                  <strong className="font-semibold">The UAE healthcare regulator Chronic Disease Management Program</strong> &mdash; enrolled patients receive
                   quarterly prescriptions and can collect refills at participating pharmacies without
                   a GP visit each time.
                 </li>
@@ -232,7 +232,7 @@ export default function PrescriptionRefillPage() {
               <p>
                 Within the UAE e-prescription system, a prescription is tied to the patient&apos;s Emirates
                 ID and can generally be filled at any licensed pharmacy that can access the same health record
-                network &mdash; DHA pharmacies within Dubai, DOH/Malaffi pharmacies within Abu Dhabi. Cross-emirate
+                network &mdash; the UAE healthcare regulator pharmacies within Dubai, the UAE healthcare regulator/Malaffi pharmacies within Abu Dhabi. Cross-emirate
                 transfers of e-prescriptions are not yet seamless but are improving.
               </p>
               <p>
@@ -279,7 +279,7 @@ export default function PrescriptionRefillPage() {
                 <li>
                   <strong className="font-semibold">Importing controlled substances</strong> &mdash; travelers arriving in the UAE with
                   controlled substances must carry a valid prescription and, for quantities above the
-                  limit, a permit from MOHAP. Check the MOHAP website or your airline before traveling.
+                  limit, a permit from the UAE healthcare regulator. Check the UAE healthcare regulator website or your airline before traveling.
                 </li>
               </ul>
               <p>
@@ -359,7 +359,7 @@ export default function PrescriptionRefillPage() {
             constitute medical, legal, or pharmaceutical advice. Prescription regulations in the UAE are
             subject to change. Always consult your prescribing physician and a licensed UAE pharmacist for
             advice specific to your situation. Controlled substance rules carry legal consequences &mdash; refer to
-            official MOHAP, DHA, and DOH guidance for current requirements. Last updated April 2026.
+            official the UAE healthcare regulator, the UAE healthcare regulator, and the UAE healthcare regulator guidance for current requirements. Last updated April 2026.
           </p>
         </div>
       </section>

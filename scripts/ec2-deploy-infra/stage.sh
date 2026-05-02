@@ -18,8 +18,8 @@ STAGED_FILE="$STATE_DIR/staged-slot"
 DEPLOY_LOG="/home/ubuntu/logs/stage.log"
 BUILD_LOG="/tmp/zavis-stage-build.log"
 TUNNEL_PM2="zavis-stage-tunnel"
-MEMORY_FLOOR_MB=2048
-SWAP_USED_CEILING_MB=3000
+MEMORY_FLOOR_MB="${ZAVIS_STAGE_MEMORY_FLOOR_MB:-2048}"
+SWAP_USED_CEILING_MB="${ZAVIS_STAGE_SWAP_CEILING_MB:-3000}"
 
 DEPLOY_REF="${DEPLOY_REF:-live}"
 VERIFIED_OVERRIDES="${ZAVIS_VERIFIED_PROVIDER_IDS:-dha_01117,dha_03002,bella-rose-medical-center-l-l-c-dubai,kids-neuro-clinic-and-rehab-center-fz-llc-dubai}"

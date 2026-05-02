@@ -17,14 +17,14 @@ export function generateMetadata(): Metadata {
   const base = getBaseUrl();
   return {
     title:
-      "Dubai Healthcare Professional Directory — 99,520 DHA-Licensed Professionals",
+      "Dubai Healthcare Professional Directory — 99,520 UAE-Licensed (Dubai) Professionals",
     description:
-      "Search 99,520 DHA-licensed healthcare professionals in Dubai. Physicians, dentists, nurses, and allied health workers sourced from the official Sheryan Medical Registry. Find any licensed doctor, specialist, or healthcare worker by name, specialty, or facility.",
+      "Search 99,520 UAE-licensed (Dubai) healthcare professionals in Dubai. Physicians, dentists, nurses, and allied health workers sourced from the official Sheryan Medical Registry. Find any licensed doctor, specialist, or healthcare worker by name, specialty, or facility.",
     alternates: { canonical: `${base}/professionals` },
     openGraph: {
-      title: "Dubai Healthcare Professional Directory — 99,520 DHA-Licensed Professionals",
+      title: "Dubai Healthcare Professional Directory — 99,520 UAE-Licensed (Dubai) Professionals",
       description:
-        "The largest publicly searchable directory of DHA-licensed healthcare professionals in Dubai. 24,186 physicians, 7,713 dentists, 34,733 nurses, and 32,888 allied health professionals.",
+        "The largest publicly searchable directory of UAE-licensed (Dubai) healthcare professionals in Dubai. 24,186 physicians, 7,713 dentists, 34,733 nurses, and 32,888 allied health professionals.",
       url: `${base}/professionals`,
       type: "website",
       siteName: "UAE Open Healthcare Directory",
@@ -52,7 +52,7 @@ export default function ProfessionalsPage() {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: "Dubai Healthcare Professional Directory",
-          description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals in Dubai.`,
+          description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} UAE-licensed (Dubai) healthcare professionals in Dubai.`,
           url: `${base}/professionals`,
           mainEntity: {
             "@type": "ItemList",
@@ -84,11 +84,11 @@ export default function ProfessionalsPage() {
           Dubai Healthcare Professional Directory
         </h1>
         <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          {PROFESSIONAL_STATS.total.toLocaleString()} DHA-Licensed Professionals
+          {PROFESSIONAL_STATS.total.toLocaleString()} UAE-Licensed (Dubai) Professionals
         </p>
         <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
           <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-            This is the largest publicly searchable directory of DHA-licensed healthcare
+            This is the largest publicly searchable directory of UAE-licensed (Dubai) healthcare
             professionals in Dubai, sourced from the official Sheryan Medical Registry.
             It covers {PROFESSIONAL_STATS.physicians.toLocaleString()} physicians,{" "}
             {PROFESSIONAL_STATS.dentists.toLocaleString()} dentists,{" "}
@@ -212,9 +212,9 @@ export default function ProfessionalsPage() {
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-8">
         <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
           As of {PROFESSIONAL_STATS.scraped}, there are{" "}
-          <strong>{PROFESSIONAL_STATS.total.toLocaleString()}</strong> DHA-licensed healthcare
+          <strong>{PROFESSIONAL_STATS.total.toLocaleString()}</strong> UAE-licensed (Dubai) healthcare
           professionals practicing in Dubai, according to the official Sheryan Medical Registry
-          maintained by the Dubai Health Authority. This includes{" "}
+          maintained by the UAE healthcare regulator (Dubai). This includes{" "}
           {PROFESSIONAL_STATS.physicians.toLocaleString()} physicians and doctors,{" "}
           {PROFESSIONAL_STATS.dentists.toLocaleString()} dentists,{" "}
           {PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives, and{" "}
@@ -265,7 +265,7 @@ export default function ProfessionalsPage() {
             Find a Doctor
           </p>
           <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
-            Search DHA-licensed physicians by name, specialty, or facility
+            Search UAE-licensed (Dubai) physicians by name, specialty, or facility
           </p>
         </Link>
         <Link
@@ -284,10 +284,10 @@ export default function ProfessionalsPage() {
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical Professional
+          <strong>Source:</strong> the UAE healthcare regulator (Dubai) Sheryan Medical Professional
           Registry. Data scraped {PROFESSIONAL_STATS.scraped}. This directory is for
           informational purposes only and does not constitute medical advice. Verify
-          professional credentials directly with DHA before making healthcare decisions.
+          professional credentials directly with the UAE healthcare regulator before making healthcare decisions.
         </p>
       </div>
     </div>

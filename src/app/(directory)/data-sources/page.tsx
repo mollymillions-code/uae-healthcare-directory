@@ -12,7 +12,7 @@ import { getBaseUrl } from "@/lib/helpers";
 
 const TITLE = "Data Sources — UAE Open Healthcare Directory";
 const DESCRIPTION =
-  "Every primary data source feeding the UAE Open Healthcare Directory and Zavis Healthcare Industry Insights — DHA Sheryan, DOH, MOHAP, Dubai Pulse, Abu Dhabi Open Data, OSM, Google Places — with URLs, last-pull dates and licence terms.";
+  "Every primary data source feeding the UAE Open Healthcare Directory and Zavis Healthcare Industry Insights — official UAE healthcare licensing data, Dubai Pulse, Abu Dhabi Open Data, OSM, Google Places — with URLs, last-pull dates and licence terms.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -47,7 +47,7 @@ interface SourceRow {
 const SOURCES: SourceRow[] = [
   {
     name: "DHA Sheryan — Licensed Facilities",
-    authority: "Dubai Health Authority",
+    authority: "The UAE healthcare regulator (Dubai)",
     url: "https://www.dha.gov.ae/en/sheryan",
     scope:
       "Every licensed healthcare facility in Dubai (hospital, clinic, dental, pharmacy, lab, imaging, allied health).",
@@ -57,7 +57,7 @@ const SOURCES: SourceRow[] = [
   },
   {
     name: "DHA Sheryan — Professionals",
-    authority: "Dubai Health Authority",
+    authority: "The UAE healthcare regulator (Dubai)",
     url: "https://www.dha.gov.ae/en/sheryan",
     scope:
       "Every licensed medical professional practising in Dubai (physicians, dentists, nurses, allied health, pharmacists).",
@@ -67,15 +67,15 @@ const SOURCES: SourceRow[] = [
   },
   {
     name: "DOH Tamm — Licensed Healthcare Providers",
-    authority: "Department of Health Abu Dhabi",
+    authority: "The UAE healthcare regulator (Abu Dhabi)",
     url: "https://www.doh.gov.ae/en",
     scope: "Every licensed healthcare facility in the Emirate of Abu Dhabi.",
     lastPull: "Q1 2026",
     license: "Public register; attribution required.",
   },
   {
-    name: "MOHAP Licensee Register",
-    authority: "Ministry of Health and Prevention",
+    name: "Regulator Licensee Register",
+    authority: "The UAE healthcare regulator",
     url: "https://mohap.gov.ae/en",
     scope:
       "Licensed healthcare facilities in the Northern Emirates (Sharjah, Ajman, Umm Al Quwain, Ras Al Khaimah, Fujairah).",
@@ -211,11 +211,9 @@ export default function DataSourcesPage() {
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
               We do not buy facility lists from third-party data brokers, and
               we do not generate facilities from unverified web scraping.
-              Every provider row on Zavis traces back to one of the
-              government registers listed below — DHA Sheryan for Dubai, DOH
-              for Abu Dhabi, MOHAP for the Northern Emirates — with
-              neighbourhood polygons sourced from Dubai Pulse, Abu Dhabi Open
-              Data and OpenStreetMap.
+              Every provider row on Zavis traces back to official UAE
+              healthcare licensing data, with neighbourhood polygons sourced
+              from Dubai Pulse, Abu Dhabi Open Data and OpenStreetMap.
             </p>
           </div>
         </div>
