@@ -5,12 +5,36 @@ import { candidateUsers, candidateProfiles } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { hashPassword, isStrongEnoughPassword } from "@/lib/auth/password";
 import { normalizeEmail } from "@/lib/auth/tokens";
-import { getDiscipline } from "@/lib/jobs/disciplines";
+import { getDiscipline, ROLE_ORDER } from "@/lib/jobs/disciplines";
+import { UAE_CITIES } from "@/lib/jobs/format";
 
 const PDPL_TERMS_VERSION = "2026-05-02";
 
+const ALLOWED_ROLES = new Set<string>(ROLE_ORDER);
+const ALLOWED_LICENSE_STATUSES = new Set([
+  "dha",
+  "doh",
+  "mohap",
+  "dataflow_pending",
+  "outside_uae",
+  "none",
+]);
+const ALLOWED_VISA_STATUSES = new Set(["citizen", "residence", "needs_sponsorship"]);
+const ALLOWED_EMPLOYMENT_TYPES = new Set(["full_time", "part_time", "locum", "visiting"]);
+const ALLOWED_VISIBILITY = new Set(["public", "limited", "private"]);
+const UAE_CITY_SLUGS = new Set<string>(UAE_CITIES.map((c) => c.slug));
+
+const SALARY_MAX = 1_000_000; // AED/month — anything above is malformed input
+const EXPERIENCE_MAX = 80; // years
+const WHATSAPP_REGEX = /^[+]?[\d\s\-()]{6,20}$/;
+
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function clampInt(n: unknown, lo: number, hi: number): number | null {
+  if (typeof n !== "number" || !Number.isFinite(n)) return null;
+  return Math.min(hi, Math.max(lo, Math.floor(n)));
 }
 
 export async function POST(request: NextRequest) {
@@ -20,33 +44,39 @@ export async function POST(request: NextRequest) {
     const password = String(body.password ?? "");
     const name = String(body.name ?? "").trim() || null;
 
-    // Profile fields
+    // Profile fields — every enum-valued field is allowlisted server-side so
+    // bad input returns a clean 400 instead of a Postgres CHECK-violation 500.
     const role = String(body.role ?? "").trim();
     const disciplineSlug = String(body.disciplineSlug ?? "").trim() || null;
     const specialtySlug = String(body.specialtySlug ?? "").trim() || null;
-    const experienceYears = Number.isFinite(body.experienceYears) ? Math.max(0, Math.floor(body.experienceYears)) : null;
-    const licenseStatus = String(body.licenseStatus ?? "").trim() || null;
-    const currentCitySlug = String(body.currentCitySlug ?? "").trim() || null;
-    const preferredCitySlugs = Array.isArray(body.preferredCitySlugs)
-      ? body.preferredCitySlugs.map((s: unknown) => String(s)).filter(Boolean).slice(0, 8)
-      : [];
+    const experienceYears = clampInt(body.experienceYears, 0, EXPERIENCE_MAX);
+    const licenseStatusRaw = String(body.licenseStatus ?? "").trim();
+    const licenseStatus = licenseStatusRaw || null;
+    const currentCitySlugRaw = String(body.currentCitySlug ?? "").trim();
+    const currentCitySlug = currentCitySlugRaw || null;
+    const preferredCitySlugs = (Array.isArray(body.preferredCitySlugs)
+      ? body.preferredCitySlugs.map((s: unknown) => String(s)).filter(Boolean)
+      : ([] as string[])
+    )
+      .filter((s: string) => UAE_CITY_SLUGS.has(s))
+      .slice(0, 8);
     const willingToRelocate = Boolean(body.willingToRelocate);
-    const visaStatus = String(body.visaStatus ?? "").trim() || null;
-    const salaryExpectationMinAed = Number.isFinite(body.salaryExpectationMinAed)
-      ? Math.max(0, Math.floor(body.salaryExpectationMinAed))
-      : null;
-    const salaryExpectationMaxAed = Number.isFinite(body.salaryExpectationMaxAed)
-      ? Math.max(0, Math.floor(body.salaryExpectationMaxAed))
-      : null;
-    const employmentTypePref = Array.isArray(body.employmentTypePref)
-      ? body.employmentTypePref.map((s: unknown) => String(s)).filter(Boolean).slice(0, 4)
-      : [];
-    const visibility = ["public", "limited", "private"].includes(String(body.visibility))
-      ? String(body.visibility)
-      : "limited";
+    const visaStatusRaw = String(body.visaStatus ?? "").trim();
+    const visaStatus = visaStatusRaw || null;
+    const salaryExpectationMinAed = clampInt(body.salaryExpectationMinAed, 0, SALARY_MAX);
+    const salaryExpectationMaxAed = clampInt(body.salaryExpectationMaxAed, 0, SALARY_MAX);
+    const employmentTypePref = (Array.isArray(body.employmentTypePref)
+      ? body.employmentTypePref.map((s: unknown) => String(s)).filter(Boolean)
+      : ([] as string[])
+    )
+      .filter((s: string) => ALLOWED_EMPLOYMENT_TYPES.has(s))
+      .slice(0, 4);
+    const visibilityRaw = String(body.visibility ?? "").trim();
+    const visibility = ALLOWED_VISIBILITY.has(visibilityRaw) ? visibilityRaw : "limited";
     const notifyEmail = body.notifyEmail !== false;
     const notifyWhatsapp = Boolean(body.notifyWhatsapp);
-    const whatsappNumber = String(body.whatsappNumber ?? "").trim() || null;
+    const whatsappNumberRaw = String(body.whatsappNumber ?? "").trim();
+    const whatsappNumber = whatsappNumberRaw || null;
     const marketingOptIn = Boolean(body.marketingOptIn);
 
     // Consent — PDPL clickwrap
@@ -60,7 +90,7 @@ export async function POST(request: NextRequest) {
     if (!isStrongEnoughPassword(password)) {
       return NextResponse.json({ error: "Use at least 8 characters for your password." }, { status: 400 });
     }
-    if (!role) {
+    if (!role || !ALLOWED_ROLES.has(role)) {
       return NextResponse.json({ error: "Pick the role family that best describes you." }, { status: 400 });
     }
     if (!consentTerms || !consentDataProcessing) {
@@ -70,9 +100,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate discipline against taxonomy if provided
+    // Allowlist validation for enum-valued fields with CHECK constraints in SQL
     if (disciplineSlug && !getDiscipline(disciplineSlug)) {
       return NextResponse.json({ error: "Unknown discipline." }, { status: 400 });
+    }
+    if (licenseStatus && !ALLOWED_LICENSE_STATUSES.has(licenseStatus)) {
+      return NextResponse.json({ error: "Invalid licence status." }, { status: 400 });
+    }
+    if (visaStatus && !ALLOWED_VISA_STATUSES.has(visaStatus)) {
+      return NextResponse.json({ error: "Invalid visa status." }, { status: 400 });
+    }
+    if (currentCitySlug && !UAE_CITY_SLUGS.has(currentCitySlug)) {
+      return NextResponse.json({ error: "Invalid city." }, { status: 400 });
+    }
+    if (whatsappNumber && !WHATSAPP_REGEX.test(whatsappNumber)) {
+      return NextResponse.json({ error: "Invalid WhatsApp number." }, { status: 400 });
+    }
+    if (
+      salaryExpectationMinAed != null &&
+      salaryExpectationMaxAed != null &&
+      salaryExpectationMinAed > salaryExpectationMaxAed
+    ) {
+      return NextResponse.json(
+        { error: "Salary minimum cannot be higher than maximum." },
+        { status: 400 }
+      );
     }
 
     const existing = (

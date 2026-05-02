@@ -5,7 +5,6 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { CITIES } from "@/lib/constants/cities";
 import {
   ROLE_LABELS,
   ROLE_ORDER,
@@ -13,13 +12,13 @@ import {
 } from "@/lib/jobs/disciplines";
 import { listJobs, getJobsHubAggregates } from "@/lib/jobs/queries";
 import { JobCard } from "@/components/jobs/JobCard";
-import { rolesUrl } from "@/lib/jobs/format";
+import { rolesUrl, UAE_CITIES } from "@/lib/jobs/format";
 
 export const revalidate = 3600;
 
-const TITLE = "Healthcare Jobs in UAE — Free Job Board for Doctors, Nurses, Lab Techs & More | Zavis";
+const TITLE = "Healthcare Jobs in UAE — Free Job Board | Zavis";
 const DESCRIPTION =
-  "Open Healthcare Jobs by Zavis: a free, no-fees jobs platform for healthcare workers in the UAE. Doctors, nurses, lab technicians, radiographers, pharmacists, dental staff, clinic managers, billers and more. DHA, DOH and MOHAP licence-aware.";
+  "Free UAE healthcare-jobs platform. Doctors, nurses, lab techs, radiographers, pharmacists, dental, billers, clinic managers — DHA, DOH, MOHAP aware.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -131,7 +130,7 @@ export default async function JobsHubPage() {
             Browse by city
           </h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {CITIES.map((city) => (
+            {UAE_CITIES.map((city) => (
               <Link
                 key={city.slug}
                 href={`/jobs/${city.slug}`}

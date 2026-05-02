@@ -7,7 +7,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { CITIES } from "@/lib/constants/cities";
+import { UAE_CITIES } from "@/lib/jobs/format";
 import { db } from "@/lib/db";
 import { providers, candidateProfiles } from "@/lib/db/schema";
 import {
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!parsed) return {};
   const job = await getJobById(parsed.id);
   if (!job) return {};
-  const city = CITIES.find((c) => c.slug === job.citySlug);
+  const city = UAE_CITIES.find((c) => c.slug === job.citySlug);
   const title = `${job.title} — ${cityName(job.citySlug)} | Zavis Jobs`;
   const description = job.descriptionMd.slice(0, 155);
   return {
@@ -129,7 +129,7 @@ export default async function JobDetailPage({ params }: Props) {
     await listJobs({ disciplineSlug: job.disciplineSlug ?? undefined, limit: 5 })
   ).filter((j) => j.id !== job.id).slice(0, 4);
 
-  const cityRow = CITIES.find((c) => c.slug === job.citySlug);
+  const cityRow = UAE_CITIES.find((c) => c.slug === job.citySlug);
 
   return (
     <>

@@ -1,6 +1,14 @@
 import { CITIES } from "@/lib/constants/cities";
 import { getDiscipline } from "@/lib/jobs/disciplines";
 
+/**
+ * UAE-only city list for the jobs platform. The base CITIES constant also
+ * includes Qatar / Saudi / Bahrain / Kuwait entries from the GCC expansion;
+ * jobs is UAE-only at launch, so every iterator over cities goes through
+ * this filter to avoid generating orphan static routes for non-UAE cities.
+ */
+export const UAE_CITIES = CITIES.filter((c) => c.country === "ae");
+
 const CITY_NAME_BY_SLUG: Record<string, string> = Object.fromEntries(
   CITIES.map((c) => [c.slug, c.name])
 );

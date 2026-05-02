@@ -5,17 +5,17 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { CITIES } from "@/lib/constants/cities";
 import { DISCIPLINES, getDiscipline } from "@/lib/jobs/disciplines";
 import { listJobs } from "@/lib/jobs/queries";
 import { jobsListSchema } from "@/lib/jobs/jobposting-schema";
 import { JobCard } from "@/components/jobs/JobCard";
+import { UAE_CITIES } from "@/lib/jobs/format";
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return DISCIPLINES.flatMap((d) =>
-    CITIES.map((c) => ({ slug: d.slug, city: c.slug }))
+    UAE_CITIES.map((c) => ({ slug: d.slug, city: c.slug }))
   );
 }
 
@@ -25,10 +25,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const d = getDiscipline(params.slug);
-  const city = CITIES.find((c) => c.slug === params.city);
+  const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!d || !city) return {};
-  const title = `${d.name} Jobs in ${city.name} — Free Healthcare Job Board | Zavis`;
-  const description = `${d.plural} jobs in ${city.name}, UAE. ${d.blurb} Free for candidates, free for clinics. ${d.licenseAuthority ? "DHA, DOH and MOHAP licence-aware listings." : ""}`;
+  const title = `${d.name} Jobs in ${city.name} | Zavis`;
+  const description = `${d.plural} jobs in ${city.name}, UAE. ${d.blurb} Free for candidates and clinics. ${d.licenseAuthority ? "DHA, DOH, MOHAP aware." : ""}`.slice(0, 155);
   return {
     title,
     description,
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DisciplineCityPage({ params }: Props) {
   const d = getDiscipline(params.slug);
-  const city = CITIES.find((c) => c.slug === params.city);
+  const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!d || !city) notFound();
   const base = getBaseUrl();
 
@@ -50,7 +50,7 @@ export default async function DisciplineCityPage({ params }: Props) {
   });
 
   const otherCities = await Promise.all(
-    CITIES.filter((c) => c.slug !== city.slug).map(async (c) => {
+    UAE_CITIES.filter((c) => c.slug !== city.slug).map(async (c) => {
       const list = await listJobs({ disciplineSlug: d.slug, citySlug: c.slug, limit: 1 });
       return { city: c, hasJobs: list.length > 0 };
     })

@@ -362,7 +362,7 @@ export const JOBS_GUIDES: JobsGuide[] = [
         n: 1,
         title: "Community pharmacy",
         body: [
-          "Big chains — Life Pharmacy, Aster Pharmacy, Boots, Bin Sina, Health Hub, Marina Pharmacy, BinSina, BinKamil. Patient counselling, OTC management, prescription dispensing, insurance-claim handling at the counter.",
+          "Big chains — Life Pharmacy, Aster Pharmacy, Boots, Bin Sina, Health Hub, Marina Pharmacy, BinKamil. Patient counselling, OTC management, prescription dispensing, insurance-claim handling at the counter.",
           "2026 salary: AED 8,000–14,000 / month for mid-experience pharmacists across DHA / DOH / MOHAP. The chains pay roughly the same; differentiation is mostly in benefits and shift patterns.",
         ],
       },

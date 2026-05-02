@@ -5,7 +5,6 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { CITIES } from "@/lib/constants/cities";
 import {
   DISCIPLINES,
   ROLE_LABELS,
@@ -15,11 +14,12 @@ import {
 import { listJobs, countJobs } from "@/lib/jobs/queries";
 import { jobsListSchema } from "@/lib/jobs/jobposting-schema";
 import { JobCard } from "@/components/jobs/JobCard";
+import { UAE_CITIES } from "@/lib/jobs/format";
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  return CITIES.map((c) => ({ city: c.slug }));
+  return UAE_CITIES.map((c) => ({ city: c.slug }));
 }
 
 interface Props {
@@ -27,10 +27,10 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const city = CITIES.find((c) => c.slug === params.city);
+  const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!city) return {};
-  const title = `Healthcare Jobs in ${city.name} — Free Job Board for Doctors, Nurses, Lab Techs | Zavis`;
-  const description = `Open healthcare jobs in ${city.name}, UAE. Doctors, nurses, allied health, dental, pharmacy, imaging, billing, clinic operations. ${city.emirate === "Dubai" ? "DHA" : city.emirate === "Abu Dhabi" ? "DOH" : "MOHAP"}-licence aware. Free for candidates.`;
+  const title = `Healthcare Jobs in ${city.name} | Zavis`;
+  const description = `Healthcare jobs in ${city.name}, UAE — doctors, nurses, allied health, dental, pharmacy, imaging, ops. ${city.emirate === "Dubai" ? "DHA" : city.emirate === "Abu Dhabi" ? "DOH" : "MOHAP"}-aware.`.slice(0, 155);
   return {
     title,
     description,
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityHubPage({ params }: Props) {
-  const city = CITIES.find((c) => c.slug === params.city);
+  const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!city) notFound();
   const base = getBaseUrl();
 

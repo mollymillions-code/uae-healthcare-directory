@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ArrowRight, ArrowLeft, Check, Loader2 } from "lucide-react";
-import { CITIES } from "@/lib/constants/cities";
+import { UAE_CITIES } from "@/lib/jobs/format";
 import { ROLE_LABELS, ROLE_ORDER, disciplinesByRole, type Role } from "@/lib/jobs/disciplines";
 
 const TOTAL_STEPS = 7;
@@ -408,7 +408,7 @@ function Step3Location({
           Where are you based now?
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {CITIES.map((c) => (
+          {UAE_CITIES.map((c) => (
             <button
               key={c.slug}
               type="button"
@@ -441,7 +441,7 @@ function Step3Location({
           Where would you consider working?
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {CITIES.map((c) => (
+          {UAE_CITIES.map((c) => (
             <button
               key={c.slug}
               type="button"

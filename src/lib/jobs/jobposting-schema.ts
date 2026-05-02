@@ -17,6 +17,17 @@ const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
   visiting: "CONTRACTOR",
 };
 
+const CITY_DISPLAY_NAME: Record<string, string> = {
+  dubai: "Dubai",
+  "abu-dhabi": "Abu Dhabi",
+  sharjah: "Sharjah",
+  ajman: "Ajman",
+  "ras-al-khaimah": "Ras Al Khaimah",
+  fujairah: "Fujairah",
+  "umm-al-quwain": "Umm Al Quwain",
+  "al-ain": "Al Ain",
+};
+
 const CITY_TO_EMIRATE: Record<string, string> = {
   dubai: "Dubai",
   "abu-dhabi": "Abu Dhabi",
@@ -27,6 +38,14 @@ const CITY_TO_EMIRATE: Record<string, string> = {
   "umm-al-quwain": "Umm Al Quwain",
   "al-ain": "Abu Dhabi",
 };
+
+/**
+ * Default validity window for JobPosting JSON-LD when the job has no explicit
+ * deadline or closing date. Google for Jobs requires `validThrough`; without
+ * it the listing is dropped from the index. 90 days matches typical UAE
+ * clinic-hire windows.
+ */
+const DEFAULT_VALID_DAYS = 90;
 
 /**
  * Build a Schema.org JobPosting object for a job. Used for Google for Jobs.
@@ -43,9 +62,24 @@ export function jobPostingSchema(
   const url = `${base}/jobs/${job.citySlug}/${job.specialtySlug}/${job.id}-${job.slug}`;
   const employerName = clinic?.name || job.externalClinicName || "UAE healthcare provider";
   const employerUrl = clinic?.websiteUrl || job.externalClinicUrl || undefined;
-  const emirate = CITY_TO_EMIRATE[job.citySlug] || "Dubai";
+  const jobCityDisplay = CITY_DISPLAY_NAME[job.citySlug] || job.citySlug;
+  const jobEmirate = CITY_TO_EMIRATE[job.citySlug] || "Dubai";
+  const clinicCityDisplay = clinic?.citySlug
+    ? CITY_DISPLAY_NAME[clinic.citySlug] || clinic.citySlug
+    : jobCityDisplay;
+  const clinicEmirate = clinic?.citySlug
+    ? CITY_TO_EMIRATE[clinic.citySlug] || jobEmirate
+    : jobEmirate;
 
-  const validThrough = job.applicationDeadline ?? job.closingAt;
+  const postedAt = job.postedAt ?? new Date();
+  const validThrough =
+    job.applicationDeadline ??
+    job.closingAt ??
+    new Date(postedAt.getTime() + DEFAULT_VALID_DAYS * 86400 * 1000);
+
+  // directApply is true only when the candidate completes the application on
+  // Zavis. If the listing redirects to the employer's own site, set false.
+  const isInternalApply = !job.externalClinicUrl;
 
   const datum: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -57,7 +91,8 @@ export function jobPostingSchema(
       name: "Open Healthcare Jobs by Zavis",
       value: job.id,
     },
-    datePosted: (job.postedAt ?? new Date()).toISOString(),
+    datePosted: postedAt.toISOString(),
+    validThrough: validThrough.toISOString(),
     employmentType: EMPLOYMENT_TYPE_MAP[job.employmentType ?? ""] || "FULL_TIME",
     hiringOrganization: {
       "@type": "Organization",
@@ -68,10 +103,8 @@ export function jobPostingSchema(
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        addressLocality: clinic?.citySlug
-          ? CITY_TO_EMIRATE[clinic.citySlug] || "Dubai"
-          : emirate,
-        addressRegion: emirate,
+        addressLocality: clinicCityDisplay,
+        addressRegion: clinicEmirate,
         addressCountry: "AE",
         ...(clinic?.addressLine ? { streetAddress: clinic.addressLine } : {}),
       },
@@ -81,12 +114,8 @@ export function jobPostingSchema(
       "@type": "Country",
       name: "United Arab Emirates",
     },
-    directApply: true,
+    directApply: isInternalApply,
   };
-
-  if (validThrough) {
-    datum.validThrough = validThrough.toISOString();
-  }
 
   if (job.salaryDisclosed && job.salaryMinAed) {
     datum.baseSalary = {

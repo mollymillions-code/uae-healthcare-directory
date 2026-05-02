@@ -25,10 +25,14 @@ export async function POST(
   const jobId = params.id;
 
   const job = (
-    await db.select({ id: jobs.id }).from(jobs).where(eq(jobs.id, jobId)).limit(1)
+    await db
+      .select({ id: jobs.id, status: jobs.status })
+      .from(jobs)
+      .where(eq(jobs.id, jobId))
+      .limit(1)
   )[0];
-  if (!job) {
-    return NextResponse.json({ error: "Job not found." }, { status: 404 });
+  if (!job || job.status !== "published") {
+    return NextResponse.json({ error: "Job not available." }, { status: 404 });
   }
 
   const existing = (

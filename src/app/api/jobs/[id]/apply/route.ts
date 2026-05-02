@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { db } from "@/lib/db";
 import {
@@ -43,37 +43,38 @@ export async function POST(
       .limit(1)
   )[0];
 
-  // Idempotent — unique(job_id, candidate_user_id)
-  const existing = (
+  // Idempotent — DB unique(job_id, candidate_user_id) is the source of truth.
+  // We try the insert and let the unique-violation be the dedup signal so we
+  // don't double-count the counter on a race between two concurrent applies.
+  try {
+    const inserted = await db
+      .insert(jobApplications)
+      .values({
+        id: createId("app"),
+        jobId,
+        candidateUserId,
+        candidateProfileId: profile?.id ?? null,
+        coverNoteMd,
+        cvUrlAtApply: profile?.cvUrl ?? null,
+        status: "submitted",
+      })
+      .onConflictDoNothing({
+        target: [jobApplications.jobId, jobApplications.candidateUserId],
+      })
+      .returning({ id: jobApplications.id });
+
+    if (inserted.length === 0) {
+      return NextResponse.json({ ok: true, alreadyApplied: true });
+    }
+
     await db
-      .select({ id: jobApplications.id })
-      .from(jobApplications)
-      .where(
-        and(
-          eq(jobApplications.jobId, jobId),
-          eq(jobApplications.candidateUserId, candidateUserId)
-        )
-      )
-      .limit(1)
-  )[0];
-  if (existing) {
-    return NextResponse.json({ ok: true, alreadyApplied: true });
+      .update(jobs)
+      .set({ applicationCount: sql`${jobs.applicationCount} + 1` })
+      .where(eq(jobs.id, jobId));
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[jobs] apply failed:", err);
+    return NextResponse.json({ error: "Could not submit application." }, { status: 500 });
   }
-
-  await db.insert(jobApplications).values({
-    id: createId("app"),
-    jobId,
-    candidateUserId,
-    candidateProfileId: profile?.id ?? null,
-    coverNoteMd,
-    cvUrlAtApply: profile?.cvUrl ?? null,
-    status: "submitted",
-  });
-
-  await db
-    .update(jobs)
-    .set({ applicationCount: sql`${jobs.applicationCount} + 1` })
-    .where(eq(jobs.id, jobId));
-
-  return NextResponse.json({ ok: true });
 }

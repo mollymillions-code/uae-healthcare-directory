@@ -5,11 +5,11 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqPageSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
-import { CITIES } from "@/lib/constants/cities";
 import { DISCIPLINES, getDiscipline } from "@/lib/jobs/disciplines";
 import { listJobs, countJobs } from "@/lib/jobs/queries";
 import { jobsListSchema } from "@/lib/jobs/jobposting-schema";
 import { JobCard } from "@/components/jobs/JobCard";
+import { UAE_CITIES } from "@/lib/jobs/format";
 
 export const revalidate = 3600;
 
@@ -24,8 +24,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const d = getDiscipline(params.slug);
   if (!d) return {};
-  const title = `${d.name} Jobs in UAE — Free Healthcare Job Board | Zavis`;
-  const description = `${d.plural} jobs across UAE. ${d.blurb} ${d.licenseAuthority ? "DHA, DOH and MOHAP licence-aware listings." : ""} Free for candidates, free for clinics.`;
+  const title = `${d.name} Jobs in UAE | Zavis`;
+  const description = `${d.plural} jobs across UAE. ${d.blurb} ${d.licenseAuthority ? "DHA, DOH, MOHAP licence-aware." : ""} Free for candidates and clinics.`.slice(0, 155);
   return {
     title,
     description,
@@ -46,7 +46,7 @@ export default async function DisciplineHubPage({ params }: Props) {
 
   // City breakdown — only show cities with at least one open role
   const cityCounts = await Promise.all(
-    CITIES.map(async (city) => ({
+    UAE_CITIES.map(async (city) => ({
       city,
       count: await countJobs({ disciplineSlug: d.slug, citySlug: city.slug }),
     }))
