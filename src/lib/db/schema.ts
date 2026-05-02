@@ -1313,3 +1313,242 @@ export const providerSlugHistory = pgTable(
     providerIdx: index("idx_provider_slug_history_provider").on(table.providerId),
   })
 );
+
+// ===========================================================================
+// Open Healthcare Jobs by Zavis — schema for the third user-type marketplace.
+// ===========================================================================
+
+export const candidateUsers = pgTable(
+  "candidate_users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    name: text("name"),
+    passwordHash: text("password_hash"),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    marketingOptIn: boolean("marketing_opt_in").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("uq_candidate_users_email").on(table.email),
+    createdAtIdx: index("idx_candidate_users_created_at").on(table.createdAt),
+  })
+);
+
+export const candidateProfiles = pgTable(
+  "candidate_profiles",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    role: text("role").notNull(), // role family — see DISCIPLINES taxonomy
+    disciplineSlug: text("discipline_slug"),
+    specialtySlug: text("specialty_slug"),
+    subspecialtySlug: text("subspecialty_slug"),
+    experienceYears: integer("experience_years"),
+    currentEmployerOptional: text("current_employer_optional"),
+    licenseStatus: text("license_status"), // 'dha'|'doh'|'mohap'|'dataflow_pending'|'outside_uae'|'none'
+    licenseNumberOptional: text("license_number_optional"),
+    preferredCitySlugs: text("preferred_city_slugs").array(),
+    currentCitySlug: text("current_city_slug"),
+    willingToRelocate: boolean("willing_to_relocate").default(false),
+    visaStatus: text("visa_status"), // 'citizen'|'residence'|'needs_sponsorship'
+    salaryExpectationMinAed: integer("salary_expectation_min_aed"),
+    salaryExpectationMaxAed: integer("salary_expectation_max_aed"),
+    employmentTypePref: text("employment_type_pref").array(),
+    bioMd: text("bio_md"),
+    cvUrl: text("cv_url"),
+    cvUploadedAt: timestamp("cv_uploaded_at", { withTimezone: true }),
+    photoUrl: text("photo_url"),
+    languages: text("languages").array(),
+    availability: text("availability").default("open"),
+    visibility: text("visibility").notNull().default("limited"),
+    profileCompleteness: integer("profile_completeness").notNull().default(0),
+    notifyEmail: boolean("notify_email").notNull().default(true),
+    notifyWhatsapp: boolean("notify_whatsapp").notNull().default(false),
+    whatsappNumber: text("whatsapp_number"),
+    consentTermsAt: timestamp("consent_terms_at", { withTimezone: true }).notNull(),
+    consentTermsVersion: text("consent_terms_version").notNull(),
+    consentDataProcessingAt: timestamp("consent_data_processing_at", { withTimezone: true }).notNull(),
+    consentRecruiterVisibilityAt: timestamp("consent_recruiter_visibility_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    specialtyCityIdx: index("idx_candidate_profiles_specialty_city").on(table.specialtySlug, table.currentCitySlug),
+    disciplineCityIdx: index("idx_candidate_profiles_discipline_city").on(table.disciplineSlug, table.currentCitySlug),
+    visibilityIdx: index("idx_candidate_profiles_visibility").on(table.visibility, table.availability),
+  })
+);
+
+export const jobs = pgTable(
+  "jobs",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    titleAr: text("title_ar"),
+    clinicId: text("clinic_id"),
+    externalClinicName: text("external_clinic_name"),
+    externalClinicUrl: text("external_clinic_url"),
+    citySlug: text("city_slug").notNull(),
+    role: text("role"), // role family — see DISCIPLINES taxonomy
+    disciplineSlug: text("discipline_slug"),
+    specialtySlug: text("specialty_slug").notNull(),
+    subspecialtySlug: text("subspecialty_slug"),
+    seniority: text("seniority"),
+    employmentType: text("employment_type"),
+    descriptionMd: text("description_md").notNull(),
+    requirementsMd: text("requirements_md"),
+    benefitsMd: text("benefits_md"),
+    licenseRequired: text("license_required"),
+    dataflowRequired: boolean("dataflow_required"),
+    visaSponsorship: boolean("visa_sponsorship"),
+    salaryMinAed: integer("salary_min_aed"),
+    salaryMaxAed: integer("salary_max_aed"),
+    salaryDisclosed: boolean("salary_disclosed").default(false),
+    applicationDeadline: timestamp("application_deadline", { withTimezone: true }),
+    postedAt: timestamp("posted_at", { withTimezone: true }).notNull().defaultNow(),
+    closingAt: timestamp("closing_at", { withTimezone: true }),
+    status: text("status").notNull().default("draft"),
+    source: text("source").notNull().default("zavis_curated"),
+    postedByClinicUserId: text("posted_by_clinic_user_id"),
+    viewCount: integer("view_count").notNull().default(0),
+    applicationCount: integer("application_count").notNull().default(0),
+    savedCount: integer("saved_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    statusPostedIdx: index("idx_jobs_status_posted").on(table.status, table.postedAt),
+    cityCatIdx: index("idx_jobs_city_specialty").on(table.citySlug, table.specialtySlug, table.status),
+    cityDisciplineIdx: index("idx_jobs_city_discipline").on(table.citySlug, table.disciplineSlug, table.status),
+    disciplineIdx: index("idx_jobs_discipline").on(table.disciplineSlug, table.status),
+    clinicIdx: index("idx_jobs_clinic").on(table.clinicId),
+  })
+);
+
+export const jobApplications = pgTable(
+  "job_applications",
+  {
+    id: text("id").primaryKey(),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    candidateProfileId: text("candidate_profile_id").references(() => candidateProfiles.id),
+    coverNoteMd: text("cover_note_md"),
+    cvUrlAtApply: text("cv_url_at_apply"),
+    status: text("status").notNull().default("submitted"),
+    statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),
+    statusUpdatedByClinicUserId: text("status_updated_by_clinic_user_id"),
+    candidateVisibleStatus: text("candidate_visible_status"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    jobCandidateUnique: uniqueIndex("uq_job_applications_job_candidate").on(table.jobId, table.candidateUserId),
+    candidateIdx: index("idx_job_applications_candidate").on(table.candidateUserId, table.createdAt),
+    jobIdx: index("idx_job_applications_job").on(table.jobId, table.status),
+  })
+);
+
+export const profileInterestEvents = pgTable(
+  "profile_interest_events",
+  {
+    id: text("id").primaryKey(),
+    candidateProfileId: text("candidate_profile_id")
+      .notNull()
+      .references(() => candidateProfiles.id, { onDelete: "cascade" }),
+    recruiterClinicId: text("recruiter_clinic_id"),
+    recruiterClinicUserId: text("recruiter_clinic_user_id"),
+    source: text("source").notNull(),
+    jobId: text("job_id").references(() => jobs.id),
+    messageMd: text("message_md"),
+    notifiedCandidateAt: timestamp("notified_candidate_at", { withTimezone: true }),
+    candidateRespondedAt: timestamp("candidate_responded_at", { withTimezone: true }),
+    candidateResponse: text("candidate_response"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    candidateIdx: index("idx_profile_interest_candidate").on(table.candidateProfileId, table.createdAt),
+  })
+);
+
+export const candidateSavedJobs = pgTable(
+  "candidate_saved_jobs",
+  {
+    id: text("id").primaryKey(),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    source: text("source"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userJobUnique: uniqueIndex("uq_candidate_saved_jobs_user_job").on(table.candidateUserId, table.jobId),
+  })
+);
+
+export const jobAlertSubscriptions = pgTable(
+  "job_alert_subscriptions",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    candidateUserId: text("candidate_user_id").references(() => candidateUsers.id),
+    citySlugs: text("city_slugs").array(),
+    specialtySlugs: text("specialty_slugs").array(),
+    seniority: text("seniority").array(),
+    frequency: text("frequency").notNull().default("weekly"),
+    consentPdplAt: timestamp("consent_pdpl_at", { withTimezone: true }).notNull().defaultNow(),
+    unsubscribeToken: text("unsubscribe_token").notNull().unique(),
+    unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  }
+);
+
+export const candidateNotifications = pgTable(
+  "candidate_notifications",
+  {
+    id: text("id").primaryKey(),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    channel: text("channel").notNull(),
+    type: text("type").notNull(),
+    payload: jsonb("payload"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index("idx_candidate_notifications_user").on(table.candidateUserId, table.createdAt),
+  })
+);
+
+export const jobCandidateInterests = pgTable(
+  "job_candidate_interests",
+  {
+    id: text("id").primaryKey(),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    candidateProfileId: text("candidate_profile_id")
+      .notNull()
+      .references(() => candidateProfiles.id, { onDelete: "cascade" }),
+    source: text("source"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    jobCandidateUnique: uniqueIndex("uq_job_candidate_interests_job_candidate").on(table.jobId, table.candidateProfileId),
+  })
+);

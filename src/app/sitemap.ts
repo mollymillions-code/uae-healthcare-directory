@@ -38,6 +38,8 @@ import { PROFESSIONAL_CATEGORIES, ALL_SPECIALTIES, PHYSICIAN_SPECIALTIES, DENTIS
 import { getAllFacilitySlugs, getFacilitySpecialtyCombos, getAreaStats, getAreaSpecialtyCombos, getSpecialtiesWithBothLevels, getAllFacilities } from "@/lib/professionals";
 import { getTopAreas, getTopFacilities, getProfessionalsByAreaAndCategory } from "@/lib/workforce";
 import { GUIDES } from "@/lib/guides/data";
+import { DISCIPLINES as JOBS_DISCIPLINES } from "@/lib/jobs/disciplines";
+import { JOBS_GUIDES } from "@/lib/jobs/guides-data";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works", "health-insurance-uae", "what-is-dha",
@@ -908,6 +910,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   entries.push({ url: `${baseUrl}/tools`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.8 });
   for (const slug of TOOL_SLUGS) {
     entries.push({ url: `${baseUrl}/tools/${slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.75 });
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Open Healthcare Jobs by Zavis — programmatic SEO surface.
+  //   /jobs                              — hub
+  //   /jobs/[city]                       — 7 city hubs
+  //   /jobs/discipline/[slug]            — ~50 discipline hubs
+  //   /jobs/discipline/[slug]/[city]     — ~350 discipline×city pages
+  //   /jobs/[city]/[specialty]/[id-slug] — individual jobs (handled separately
+  //                                        by /jobs/sitemap once volume grows)
+  //   /jobs/login, /jobs/signup, /get-started — entry points
+  // ──────────────────────────────────────────────────────────────────────
+  entries.push({ url: `${baseUrl}/jobs`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.9 });
+  entries.push({ url: `${baseUrl}/jobs/login`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.4 });
+  entries.push({ url: `${baseUrl}/jobs/signup`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
+  entries.push({ url: `${baseUrl}/get-started`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
+  for (const city of cities) {
+    entries.push({ url: `${baseUrl}/jobs/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.85 });
+  }
+  // Disciplines (~50)
+  for (const d of JOBS_DISCIPLINES) {
+    entries.push({ url: `${baseUrl}/jobs/discipline/${d.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.85 });
+    for (const city of cities) {
+      entries.push({ url: `${baseUrl}/jobs/discipline/${d.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.75 });
+    }
+  }
+  // Editorial guides
+  entries.push({ url: `${baseUrl}/jobs/guides`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
+  for (const guide of JOBS_GUIDES) {
+    entries.push({ url: `${baseUrl}/jobs/guides/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   }
 
   // Pricing hub — procedures, comparisons, lists, guides, journeys
