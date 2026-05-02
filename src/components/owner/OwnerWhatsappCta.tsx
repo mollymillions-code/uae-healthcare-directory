@@ -65,7 +65,20 @@ interface OwnerWhatsappCtaProps {
   citySlug?: string | null;
   categorySlug?: string | null;
   className?: string;
-  variant?: "primary" | "secondary" | "link";
+  /**
+   * - `primary`   — green pill, white text. For light/cream backgrounds. Default.
+   * - `secondary` — white pill, ink border + ink text. For light backgrounds with a softer call.
+   * - `invert`    — white pill, brand-green text. For dark/coloured section backgrounds (e.g. dark hero, green section).
+   * - `link`      — text-only, brand-green underlined.
+   *
+   * `invert` was added 2026-05-02 because callers were trying to express
+   * the white-on-dark-section style by passing `className="bg-white text-[#006828]"`,
+   * which collided with the primary variant's `bg-[#006828] text-white` in the
+   * rendered className string. Tailwind doesn't dedupe colliding utilities, so
+   * one of them won unpredictably and the CTA label rendered green-on-green
+   * (invisible). Use `variant="invert"` instead of overriding colours via className.
+   */
+  variant?: "primary" | "secondary" | "invert" | "link";
   compact?: boolean;
 }
 
@@ -115,6 +128,8 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       ? "text-[#006828] underline-offset-2 hover:underline"
       : props.variant === "secondary"
       ? "border border-black/[0.10] bg-white text-[#1c1c1c] hover:border-[#006828]/25 hover:text-[#006828]"
+      : props.variant === "invert"
+      ? "bg-white text-[#006828] hover:bg-white/90"
       : "bg-[#006828] text-white hover:bg-[#004d1c]";
   const sizeClass =
     props.variant === "link"

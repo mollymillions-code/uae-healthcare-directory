@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { SearchPill, type SearchPillState, type SearchSegment } from "@/components/directory-v2/header/SearchPill";
-import { SearchPillModal } from "@/components/directory-v2/header/SearchPillModal";
+import { SearchControls } from "@/app/(directory)/search/_components/SearchControls";
 import { fadeUp, staggerContainer } from "@/components/directory-v2/shared/motion";
 
 interface Props {
@@ -22,33 +19,14 @@ const QUICK_CHIPS = [
 
 /**
  * Hero for /directory home — warm gradient backdrop, big editorial headline,
- * expanded SearchPill as the hero protagonist, quick-search chips below.
+ * the unified `SearchControls` component (same one used on /search) as the
+ * hero protagonist, quick-search chips below as supplementary affordance.
+ *
+ * Submitting any field on `SearchControls` navigates to /search with the
+ * applied params, so the home hero is now a true entry point into the
+ * search flow rather than a separate UI archetype.
  */
 export function DirectoryHomeHero({ totalProviders }: Props) {
-  const router = useRouter();
-  const [state, setState] = useState<SearchPillState>({
-    specialty: "",
-    city: "",
-    date: "",
-    insurance: "",
-  });
-  const [modalOpen, setModalOpen] = useState(false);
-  const [segment, setSegment] = useState<SearchSegment | null>(null);
-
-  const openModal = useCallback((seg: SearchSegment) => {
-    setSegment(seg);
-    setModalOpen(true);
-  }, []);
-
-  const submit = useCallback(() => {
-    const params = new URLSearchParams();
-    if (state.specialty) params.set("category", state.specialty);
-    if (state.city) params.set("city", state.city);
-    if (state.date) params.set("when", state.date);
-    if (state.insurance) params.set("insurance", state.insurance);
-    router.push(`/search?${params.toString()}`);
-  }, [router, state]);
-
   return (
     <section className="relative overflow-hidden bg-surface-cream">
       {/* Ambient gradient blobs */}
@@ -91,16 +69,25 @@ export function DirectoryHomeHero({ totalProviders }: Props) {
           across 8 cities and 26 specialties — sourced from official government registers. Free. Open. No paywall.
         </motion.p>
 
-        <motion.div variants={fadeUp} className="mt-8 flex justify-center">
-          <SearchPill
-            variant="expanded"
-            state={state}
-            onSegmentClick={(seg) => openModal(seg)}
-            onSubmit={() => openModal("specialty")}
+        {/* Unified search — same component as /search so the experience is
+            consistent. Submitting navigates to /search with applied params. */}
+        <motion.div variants={fadeUp} className="mt-10 text-left">
+          <SearchControls
+            initialQuery=""
+            initialCity=""
+            initialSpecialty=""
+            initialCondition=""
+            initialInsurance=""
+            initialLanguage=""
+            initialEntityType="both"
+            initialEmergency={false}
+            totalResults={totalProviders}
           />
         </motion.div>
 
-        <motion.div variants={fadeUp} className="mt-6 flex flex-wrap items-center justify-center gap-2">
+        {/* Popular quick-links — supplementary one-click destinations to
+            common combos that take more steps via the filter chips. */}
+        <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="font-sans text-z-caption text-ink-muted mr-1">Popular:</span>
           {QUICK_CHIPS.map((q) => (
             <Link
@@ -113,15 +100,6 @@ export function DirectoryHomeHero({ totalProviders }: Props) {
           ))}
         </motion.div>
       </motion.div>
-
-      <SearchPillModal
-        open={modalOpen}
-        state={state}
-        onChange={setState}
-        onClose={() => setModalOpen(false)}
-        onSubmit={submit}
-        initialSegment={segment}
-      />
     </section>
   );
 }

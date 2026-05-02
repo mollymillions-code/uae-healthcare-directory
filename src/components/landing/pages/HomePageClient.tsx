@@ -390,7 +390,8 @@ export function HomePageClient() {
                     action="get_listed"
                     surface="landing_list_clinic_section"
                     label="List your clinic via WhatsApp"
-                    className="bg-white text-[#006828] hover:bg-white/90 px-6 py-3.5 text-base"
+                    variant="invert"
+                    className="px-6 py-3.5 text-base"
                   />
                   <Link
                     href="/claim"

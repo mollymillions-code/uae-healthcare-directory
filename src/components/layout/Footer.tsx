@@ -89,7 +89,12 @@ export function Footer() {
                   surface="directory_footer_owner_cta"
                   label="Get listed or edit"
                   variant="link"
-                  className="text-white/60 hover:text-white"
+                  /* `!text-white/60` uses Tailwind's important modifier to
+                     override the link variant's `text-[#006828]` color so
+                     the link is white-on-dark on the footer. Without `!`,
+                     the variant class won the cascade and the link
+                     rendered green-on-dark. */
+                  className="!text-white/60 hover:!text-white text-sm"
                 />
               </li>
               <li><Link href="/verified-reviews" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Verified Reviews</Link></li>

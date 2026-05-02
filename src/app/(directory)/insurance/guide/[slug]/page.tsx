@@ -171,6 +171,357 @@ const GUIDES: InsuranceGuide[] = [
       },
     ],
   },
+  // ─── Phase 3 listicles (added 2026-05-02) ─────────────────────────────
+  {
+    slug: "walk-in-clinic-insurance",
+    title: "Walk-In Clinic Insurance in the UAE — Direct Billing, Co-pays, Networks (2026)",
+    metaDescription:
+      "Which UAE health insurance plans cover walk-in consultations with direct billing? Co-pay structure, in-network walk-in chains, and what to expect at reception in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Does my UAE health insurance cover walk-in clinic visits?",
+        answer:
+          "Yes — every DHA, DOH and MOHAP-compliant policy covers walk-in (no-appointment) outpatient consultations at any in-network facility. The exception is policies with a referral-only structure (rare on UAE schemes), where you must first see a primary-care GP before specialist visits.",
+      },
+      {
+        question: "How much will I pay at a walk-in clinic with insurance?",
+        answer:
+          "On most employer-funded plans you'll pay a 10–20% outpatient co-pay capped at AED 50–100 per visit, plus the cost of any prescribed medication. Premium tiers (Cigna Close Care, Bupa Lifeline, Allianz Premier Plus) often waive the co-pay in-network entirely.",
+      },
+      {
+        question: "Which walk-in chains accept the most insurance plans?",
+        answer:
+          "Aster Clinic, NMC Royal Clinic, Mediclinic, Medeor 24x7, HealthPlus, and Burjeel Day Surgery accept direct billing from virtually every major UAE carrier (Daman, AXA, Cigna, MetLife, Allianz, Bupa, Aetna, Orient, Sukoon). Independent solo-practice clinics often have narrower direct-billing arrangements.",
+      },
+      {
+        question: "Can I walk in without my physical insurance card?",
+        answer:
+          "Yes. UAE insurers issue digital cards via member apps (Cigna Wellbeing, Bupa Global, MyAXA, MetLife member portal, NEXtCARE app), and clinic receptions accept the digital card screenshot or a photo of the policy number plus Emirates ID.",
+      },
+      {
+        question: "Are walk-in clinic visits subject to the maternity waiting period?",
+        answer:
+          "Routine walk-in visits aren't restricted by the maternity waiting period — but if you walk in for pregnancy-related care (antenatal consult, ultrasound, obstetric exam) before the 10-month maternity waiting period is satisfied, those specific services aren't covered. General GP visits during pregnancy for unrelated issues (a cold, blood pressure check) remain covered.",
+      },
+    ],
+  },
+  {
+    slug: "direct-billing-insurance-uae",
+    title: "Direct Billing Health Insurance in the UAE — How It Works, Networks, and What Goes Wrong (2026)",
+    metaDescription:
+      "Direct billing means no out-of-pocket payment at the clinic. Here's how UAE direct billing actually works, the carriers with the deepest networks, and the 5 most common reasons it fails at reception.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "What is direct billing in UAE health insurance?",
+        answer:
+          "Direct billing means the clinic invoices your insurer directly for the visit cost, and you only pay the co-pay portion at reception. No cash up front, no claim forms to file, no waiting weeks for reimbursement.",
+      },
+      {
+        question: "Which UAE insurer has the largest direct-billing network?",
+        answer:
+          "MetLife (via NEXtCARE) and Daman each have 1,800+ direct-billing facilities — the broadest UAE networks. AXA Gulf and Sukoon (formerly Oman Insurance) follow at 1,500+. Cigna and Bupa Global have curated premium networks (~600–900 facilities) focused on JCI-accredited hospitals.",
+      },
+      {
+        question: "Why does direct billing sometimes fail at the clinic?",
+        answer:
+          "The five most common failures are: (1) the policy isn't active yet (typically a 2–3 day delay between purchase and TPA system update); (2) the requested service is excluded from the policy (e.g. dental on a non-dental plan); (3) pre-authorisation wasn't obtained for an MRI or specialist procedure; (4) the clinic isn't actually in-network for your specific tier; (5) policy benefits exhausted for the year.",
+      },
+      {
+        question: "What's the difference between direct billing and reimbursement?",
+        answer:
+          "Direct billing settles the bill between clinic and insurer at the time of service. Reimbursement means you pay the clinic in full, then submit receipts and the claim form to your insurer afterwards — they reimburse you within 7–21 working days. Direct billing is preferred for cost-flow reasons; reimbursement is used when you visit an out-of-network provider.",
+      },
+      {
+        question: "Can I use direct billing at any pharmacy?",
+        answer:
+          "Most major UAE pharmacy chains (Aster, Life, BinSina, Boots, Medicom) have direct-billing arrangements with all major insurers. Smaller independent pharmacies may not. Always show your insurance card at the counter before the prescription is filled to confirm coverage.",
+      },
+    ],
+  },
+  {
+    slug: "same-day-claims-insurance",
+    title: "Same-Day Claims Insurance in the UAE — Carriers That Actually Settle Fast (2026)",
+    metaDescription:
+      "Which UAE insurers settle reimbursement claims within 24 hours? Real settlement timelines by carrier, the documents that speed up claims, and how to escalate when claims stall.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Which UAE insurer pays reimbursement claims fastest?",
+        answer:
+          "Cigna Close Care averages 7 working days for reimbursement claims (the fastest in the segment), followed by Bupa Global at 7–10 days, AXA Gulf at 10–14 days, MetLife at 10–15 days, and Allianz Care at 15–21 days. \"Same day\" is uncommon; 24–72 hours is realistic only for digital-only claims with all documents pre-submitted.",
+      },
+      {
+        question: "What documents do I need for a same-day claim?",
+        answer:
+          "(1) Original itemised invoice, (2) prescription if pharmacy reimbursement, (3) doctor's report/medical letter, (4) lab results if applicable, (5) a completed claim form signed by the treating doctor, (6) a clear photo of your insurance card and Emirates ID. Missing any one of these typically adds 5–10 working days as the insurer requests follow-up.",
+      },
+      {
+        question: "Can I submit claims through an app?",
+        answer:
+          "Yes. All major UAE insurers offer mobile app submission: Cigna Wellbeing, Bupa Global, MyAXA, MetLife member portal, NEXtCARE (used by MetLife and several local carriers), and Allianz MyHealth. App submissions are faster than email — they auto-validate documents and tag the claim into the priority queue.",
+      },
+      {
+        question: "What can I do if my claim is taking too long?",
+        answer:
+          "If a claim has been pending more than 21 days, escalate via three channels in this order: (1) the carrier's member-services hotline, (2) the broker who placed the policy (if applicable — they have insurer-side leverage), (3) the UAE Insurance Authority complaint portal at iaeqa.gov.ae for regulatory escalation. Most stalled claims clear within 48 hours of broker escalation.",
+      },
+      {
+        question: "Are there any insurers that offer real same-day claim settlement?",
+        answer:
+          "For very small reimbursement amounts (under AED 500) on app-submitted claims with all documents complete, Cigna and Bupa Global occasionally settle within 24 hours — but this isn't a published SLA. The fastest published commitment is Cigna's 7-working-day standard.",
+      },
+    ],
+  },
+  {
+    slug: "dental-insurance-uae-2026",
+    title: "Dental Insurance in the UAE — What's Covered, Sub-limits, and the Best Plans for 2026",
+    metaDescription:
+      "Dental coverage isn't standard on UAE basic insurance plans. This guide compares dental sub-limits across major UAE carriers, what's covered (and what isn't), and the best plans for routine + cosmetic dental in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Is dental included on UAE basic health insurance?",
+        answer:
+          "No. Dental is excluded from the DHA Essential Benefits Plan (EBP) and from Daman Basic in Abu Dhabi. Dental coverage is only included on enhanced and premium plans, typically with a sub-limit between AED 2,000 and AED 10,000 per year.",
+      },
+      {
+        question: "What dental sub-limit do major UAE carriers offer?",
+        answer:
+          "Typical sub-limits: AXA Enhanced AED 2,000–5,000, MetLife Gold AED 2,000–4,000, Allianz Care Premier AED 3,000–6,000, Cigna Close Care AED 3,000–5,000, Bupa Lifeline AED 5,000–10,000 (highest in the market), Aetna Pioneer/Summit AED 3,000–8,000.",
+      },
+      {
+        question: "Are cosmetic dental treatments covered?",
+        answer:
+          "No — UAE dental insurance covers medically necessary treatment only: consultations, X-rays, cleanings, fillings, extractions, root canals, and emergency dental work. Cosmetic procedures (whitening, veneers, cosmetic orthodontics, smile design) are excluded from all major UAE plans.",
+      },
+      {
+        question: "What about orthodontic treatment for children?",
+        answer:
+          "Orthodontic treatment for children is covered on a few enhanced UAE plans (AXA Premier, Bupa Lifeline Comprehensive, Cigna Global Gold+) usually with a separate orthodontic sub-limit of AED 5,000–10,000 per child and a 12-month qualifying period. Adult orthodontics is rarely covered.",
+      },
+      {
+        question: "Can I add dental to a basic plan?",
+        answer:
+          "Yes — most carriers offer a standalone dental rider that you can add to a base medical plan. Standalone dental riders typically cost AED 800–2,000 per year for a single adult and provide AED 3,000–5,000 in annual benefits. Standalone dental insurance plans are also available from Daman, Sukoon, and several brokers.",
+      },
+    ],
+  },
+  {
+    slug: "chronic-disease-coverage-uae",
+    title: "Chronic Disease Coverage in UAE Health Insurance — Diabetes, Hypertension, Heart Disease (2026)",
+    metaDescription:
+      "How UAE health insurance covers chronic conditions like diabetes, hypertension, and heart disease. Disease management programs, sub-limits, exclusions, and the best plans for chronic-care patients in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Is diabetes covered by UAE health insurance?",
+        answer:
+          "Yes. All DHA and DOH compliant plans cover diabetes diagnosis, management consultations, prescription medication (metformin, insulin), and routine HbA1c testing. Many enhanced plans include diabetes nurse education and continuous glucose monitor (CGM) supplies.",
+      },
+      {
+        question: "What is a chronic disease management programme?",
+        answer:
+          "A structured insurer-funded support track for ongoing conditions — typically diabetes, hypertension, heart disease, asthma. It covers regular specialist consults, medication, lab monitoring, and lifestyle counselling, often without the per-visit co-pay applied to other consultations. Cigna, Bupa, Allianz Care and Aetna include this on most variants.",
+      },
+      {
+        question: "Are pre-existing chronic conditions covered?",
+        answer:
+          "On individual plans: pre-existing conditions are typically covered after a 12-month waiting period (sometimes shorter on premium tiers). On group employer plans: most insurers waive the pre-existing waiting period entirely — coverage from day one of employment.",
+      },
+      {
+        question: "How much do chronic medications cost on UAE insurance?",
+        answer:
+          "Generic chronic medications (metformin, lisinopril, atorvastatin, levothyroxine) cost AED 30–100 per month at full price; with insurance most plans cover 80–100% of the cost subject to your outpatient co-pay. Branded specialty drugs (insulin pumps, biologics, oncology) require pre-authorisation and may have separate sub-limits.",
+      },
+      {
+        question: "Which UAE carriers are best for chronic-disease patients?",
+        answer:
+          "Bupa Global Lifeline Comprehensive, Cigna Close Care, and Allianz Care Premier Plus include the most comprehensive chronic-disease management — no separate sub-limits, full medication cover, and dedicated nurse case-managers. AXA and MetLife cover chronic conditions adequately but with more sub-limits and tighter pre-authorisation requirements.",
+      },
+    ],
+  },
+  {
+    slug: "outpatient-vs-inpatient-uae",
+    title: "Outpatient vs Inpatient Health Insurance in the UAE — What's the Difference and What's Covered (2026)",
+    metaDescription:
+      "UAE health insurance terminology decoded: outpatient vs inpatient cover, day-care procedures, observation status, and how each affects your co-pay and benefit limits.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "What's the difference between outpatient and inpatient in UAE insurance?",
+        answer:
+          "Inpatient = admitted to a hospital bed (overnight or longer). Outpatient = treated and discharged the same day (consultations, lab tests, minor procedures). Day-case = surgery requiring no overnight stay (cataract, endoscopy). Each is treated separately under your policy with different co-pays and sub-limits.",
+      },
+      {
+        question: "Why is inpatient co-pay usually 0% but outpatient has a co-pay?",
+        answer:
+          "Inpatient costs are higher and more predictable, so insurers underwrite them at 0% co-pay. Outpatient is high-frequency and lower-cost per visit, so insurers apply a 10–20% co-pay to discourage unnecessary visits. The outpatient co-pay is typically capped at AED 500–1,500 annually, after which all further outpatient is fully covered.",
+      },
+      {
+        question: "Are surgeries always inpatient?",
+        answer:
+          "No. Many minor surgeries (cataract, endoscopy, colonoscopy, hernia repair, lump removal) are day-case — no overnight stay required. Day-case surgery is treated as inpatient for benefit purposes (0% co-pay, draws on inpatient sub-limit) but doesn't require an overnight admission.",
+      },
+      {
+        question: "Does outpatient cover lab tests and X-rays?",
+        answer:
+          "Yes. Standard outpatient cover includes consultations, pharmacy, blood tests, urine tests, basic radiology (X-ray, ultrasound, ECG), and minor procedures. Advanced imaging (MRI, CT, PET) typically requires pre-authorisation but is still covered under outpatient cover.",
+      },
+      {
+        question: "What is observation status?",
+        answer:
+          "An ambiguous status used by hospitals when a patient is held for monitoring without formal admission — usually 4–24 hours. Insurance treats observation as outpatient unless it converts to formal inpatient admission. Be careful: you can be billed at outpatient rates for what feels like a hospital stay.",
+      },
+    ],
+  },
+  {
+    slug: "expat-vs-resident-insurance",
+    title: "Expat vs Resident Health Insurance in the UAE — Why It Matters for Coverage (2026)",
+    metaDescription:
+      "What changes between expat-targeted and UAE-resident insurance? Network depth, international cover, family additions, and which carriers are best for each profile in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Is there a real difference between expat and resident UAE insurance?",
+        answer:
+          "Yes. \"Expat insurance\" usually means international plans (Cigna Global, Bupa Global, Allianz Care, Aetna International) with cover that follows you across countries. \"Resident insurance\" means UAE-only plans (Daman, AXA, MetLife, Sukoon, Orient) that cover you within the UAE network. Both are valid for visa compliance.",
+      },
+      {
+        question: "Do I need international insurance as an expat in the UAE?",
+        answer:
+          "Not for visa compliance — any DHA or DOH compliant plan satisfies the requirement. International cover matters if you travel frequently, plan to deliver a baby outside the UAE, or want continuity if you relocate to another country. For an expat staying full-time in the UAE, a strong domestic plan often delivers better value.",
+      },
+      {
+        question: "Which is better value: international or domestic UAE plans?",
+        answer:
+          "For UAE-only use cases, domestic plans deliver 30–50% better value: lower premiums, deeper UAE networks, faster claims (the TPAs are local). International plans command a premium for global cover most users don't fully utilise. The break-even is around 4+ international trips per year requiring medical care.",
+      },
+      {
+        question: "Can I add my family to either type?",
+        answer:
+          "Yes. Both expat-international and UAE-resident plans support spouse and dependent additions. Premium varies — expat-international family additions are typically 60–80% of the principal's premium; UAE-resident family additions are 40–60%. Newborn additions usually require notification within 30 days of birth.",
+      },
+      {
+        question: "What happens to my insurance if I leave the UAE permanently?",
+        answer:
+          "Domestic UAE plans terminate when your visa is cancelled (or at the next renewal). International expat plans (Cigna Global, Bupa Global, Allianz Care) can continue with no break in cover — you just notify the insurer of the move and they update the address/billing region. Pre-existing conditions accumulated during UAE residency remain covered without re-underwriting on the same policy.",
+      },
+    ],
+  },
+  {
+    slug: "top-up-insurance-uae",
+    title: "Top-Up Health Insurance in the UAE — When You Need It and How It Works (2026)",
+    metaDescription:
+      "Top-up plans extend the annual benefit limit on your existing employer cover. Here's when top-up is worth buying, how it stacks with employer-paid base cover, and the best providers in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "What is top-up health insurance?",
+        answer:
+          "Top-up is a supplemental policy that activates after your primary insurance benefit limit is exhausted. If your employer plan caps annual benefits at AED 1M and a major illness costs AED 1.5M, top-up covers the AED 500K excess. Premiums are low because top-up only triggers above a threshold.",
+      },
+      {
+        question: "When is top-up insurance worth buying?",
+        answer:
+          "Three scenarios: (1) you're on a base plan with a cap below AED 2M and have family history of high-cost conditions (cancer, heart disease); (2) you're a freelancer with a basic compliance plan but want backup cover for serious illness; (3) you have a chronic condition that may exceed the base plan's annual limit. For most UAE residents on a strong employer plan (AED 1M+), top-up isn't necessary.",
+      },
+      {
+        question: "How much does top-up insurance cost in the UAE?",
+        answer:
+          "AED 600–2,500 per year for a single adult, depending on the threshold (AED 1M, AED 2M, AED 5M) and the additional cover amount (AED 500K, AED 1M, AED 5M). Family top-up plans cost AED 2,000–6,000 per year. Significantly cheaper than upgrading the base plan, because top-up only triggers above a threshold most members never reach.",
+      },
+      {
+        question: "Which UAE carriers offer top-up insurance?",
+        answer:
+          "Most major carriers offer top-up as a separate product: AXA Gulf, Sukoon (formerly Oman Insurance), Orient Insurance, MetLife, and several brokers (Yallacompare, Insurancemarket.ae). Independent broker products often deliver better pricing than direct-from-insurer top-ups.",
+      },
+      {
+        question: "Does top-up insurance use the same network as my base plan?",
+        answer:
+          "Usually yes — top-up policies typically piggyback on whichever in-network claim triggers the policy. So if your base AXA plan covers a hospital and you exhaust the limit, the AXA top-up continues at the same in-network hospital. Top-ups from carriers different from your base may have a slightly different network — confirm before purchase.",
+      },
+    ],
+  },
+  {
+    slug: "mandatory-health-insurance-emirates",
+    title: "Mandatory Health Insurance in the UAE — Who Must Have It, Who Pays, and What Happens If You Don't (2026)",
+    metaDescription:
+      "UAE mandatory health insurance rules by emirate: Dubai DHA, Abu Dhabi DOH, Northern Emirates MOHAP. Who's required to have cover, who pays, and the consequences of non-compliance in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "Is health insurance mandatory in the UAE?",
+        answer:
+          "Yes — mandatory in Dubai (since 2014, DHA-regulated), Abu Dhabi (since 2006, DOH-regulated), and progressively across the Northern Emirates under MOHAP. Every UAE visa holder must have a compliant policy. Without it, visa renewal, Emirates ID issuance, and trade-licence renewal are blocked.",
+      },
+      {
+        question: "Who pays for mandatory health insurance?",
+        answer:
+          "For employees, the employer pays. For self-sponsored residents (freelancers, sole-proprietors, dependent spouses on family visas), the principal pays. For UAE nationals in Abu Dhabi, the government provides Thiqa free of charge.",
+      },
+      {
+        question: "What's the minimum compliant cover in Dubai?",
+        answer:
+          "The DHA Essential Benefits Plan (EBP): AED 150,000 annual cap, covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics, and prescribed medications. Excludes dental, optical, maternity (or has reduced maternity), and elective procedures. Premium: ~AED 600–800/year for a single adult.",
+      },
+      {
+        question: "What's the minimum compliant cover in Abu Dhabi?",
+        answer:
+          "Daman Basic (the DOH-mandated floor plan): AED 250,000 annual cap, covers inpatient, emergency, outpatient consultations, and basic medications. Network is restricted to public-sector and selected private clinics. Premium: ~AED 600–750/year for a single adult.",
+      },
+      {
+        question: "What if I don't have insurance?",
+        answer:
+          "Visa renewal will be denied until you produce a valid policy. Fines for being out-of-cover apply (typically AED 500/month in Dubai, varies in Abu Dhabi). Hospitals can refuse non-emergency treatment if you can't pay up-front. In emergencies you'll receive treatment but face the full unsubsidised hospital bill — easily AED 50,000+ for a basic admission.",
+      },
+    ],
+  },
+  {
+    slug: "insurance-claim-process-uae",
+    title: "UAE Health Insurance Claim Process — Step-by-Step Guide for 2026",
+    metaDescription:
+      "How to file a UAE health insurance claim end-to-end: direct billing at the clinic, post-visit reimbursement, required documents, common rejections, and how to escalate disputes in 2026.",
+    datePublished: "2026-05-02",
+    dateModified: "2026-05-02",
+    faqs: [
+      {
+        question: "How do I file a UAE health insurance claim?",
+        answer:
+          "Two paths: (1) Direct billing — the in-network clinic invoices the insurer directly, you pay only the co-pay portion. (2) Reimbursement — for out-of-network visits, you pay in full at the clinic, then submit the receipts and claim form to the insurer for reimbursement within 7–21 working days.",
+      },
+      {
+        question: "What documents do I need to submit a reimbursement claim?",
+        answer:
+          "(1) Original itemised invoice from the clinic, (2) prescription if pharmacy reimbursement, (3) doctor's report or medical letter explaining the diagnosis and treatment, (4) lab results if applicable, (5) completed and signed claim form (downloadable from your insurer's app), (6) clear photo of insurance card and Emirates ID. Original receipts are required — insurers don't accept photocopies.",
+      },
+      {
+        question: "What are the most common reasons claims get rejected?",
+        answer:
+          "(1) Service excluded from policy (most common — dental on a non-dental plan, cosmetic procedures, fertility treatments, etc.). (2) Pre-authorisation not obtained where required (MRI, CT, elective inpatient). (3) Pre-existing condition within waiting period. (4) Incomplete documentation. (5) Out-of-network provider on a network-only policy. (6) Late submission past the claim window (most insurers require submission within 60–90 days of treatment).",
+      },
+      {
+        question: "How long does a UAE health insurance claim take to process?",
+        answer:
+          "Direct billing: instant (settled at the clinic). Reimbursement: 7–21 working days for most insurers. Cigna averages 7 days, Bupa Global 7–10, AXA 10–14, MetLife 10–15, Allianz Care 15–21. Complex claims requiring medical review can take 21–45 days.",
+      },
+      {
+        question: "What can I do if my claim is denied?",
+        answer:
+          "(1) Read the denial letter carefully — it states the policy clause used. (2) Submit additional supporting documents (medical letter clarifying necessity, peer-reviewed treatment guidelines) within 30 days. (3) If still denied, escalate via the carrier's grievance process (every UAE insurer has one). (4) If unresolved, file a complaint with the UAE Insurance Authority at iaeqa.gov.ae. Most disputes are resolved at step 2 or 3 within 4–6 weeks.",
+      },
+    ],
+  },
 ];
 
 /* ─── Static params ─── */
@@ -504,6 +855,541 @@ function SwitchingGuide() {
   );
 }
 
+/* ─── Phase 3 listicle content components (added 2026-05-02) ─── */
+
+const H2 = "font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight";
+
+function WalkInClinicGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>What &ldquo;walk-in&rdquo; means in UAE primary care</h2>
+      <p>
+        Most UAE outpatient care is walk-in. You don&apos;t need a referral, you don&apos;t need an appointment in advance, and you don&apos;t need pre-authorisation for a routine consultation. Show up at any in-network facility during operating hours, present your insurance card and Emirates ID at reception, and wait for the next available physician. Total time to consultation is typically 15–45 minutes at major chains like Aster Clinic and NMC Royal Clinic; 5–15 minutes at lower-volume independent practices.
+      </p>
+      <p>
+        Walk-in cover is built into every DHA, DOH and MOHAP-compliant plan, including the most basic compliance-floor products like Daman Basic and the DHA Essential Benefits Plan. The single exception is policies with a strict primary-care-first structure (which UAE plans almost never use) — those require you to see a GP first before specialist consultations are reimbursed.
+      </p>
+
+      <h2 className={H2}>What you&apos;ll pay at reception</h2>
+      <p>
+        On a typical employer-funded plan you&apos;ll pay a 10–20% co-pay portion at reception, capped at AED 50–100 per visit. The clinic invoices the insurer for the rest via direct billing — no claim forms, no waiting for reimbursement. Premium tiers (Cigna Close Care, Bupa Lifeline Comprehensive, Allianz Care Premier Plus, Aetna Summit) often waive the in-network co-pay entirely; in those cases you&apos;ll pay nothing at reception unless you fill a non-formulary prescription.
+      </p>
+      <p>
+        For prescription medication, expect a separate co-pay at the pharmacy — usually 10–20% of the medication price. Most major UAE pharmacy chains (<Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link>-network Aster, Life, BinSina, Boots, Medicom) accept direct billing from every major carrier.
+      </p>
+
+      <h2 className={H2}>Walk-in chains with the deepest direct-billing networks</h2>
+      <p>
+        Six chains operate citywide walk-in networks that accept direct billing from virtually every major UAE carrier (Daman, AXA, Cigna, MetLife, Allianz, Bupa, Aetna, Orient, Sukoon): Aster Clinic, NMC Royal Clinic, Mediclinic Direct, Medeor 24x7, HealthPlus, and Burjeel Day Surgery. These chains have negotiated multilateral agreements with the major TPAs (NEXtCARE, Mednet, NAS, GlobeMed) so the direct-billing handshake at reception works regardless of which carrier issued your card.
+      </p>
+      <p>
+        Independent solo-practice clinics often have narrower direct-billing arrangements — they may accept 3–5 major carriers but not the long tail. If you&apos;re unsure, call ahead and ask reception: &ldquo;Do you accept direct billing for [your insurer name]?&rdquo; The answer is binary and unambiguous.
+      </p>
+
+      <h2 className={H2}>Digital insurance card &amp; what to bring</h2>
+      <p>
+        UAE insurers issue digital cards via member apps (Cigna Wellbeing, Bupa Global, MyAXA, MetLife Member Portal, NEXtCARE, Allianz MyHealth). The digital card on your phone screen is accepted at every reception. Carry your Emirates ID — receptions cross-reference the card photo against the policy database.
+      </p>
+      <p>
+        For first-time visits at a particular clinic, the receptionist may need 5–10 minutes to register you in their system. Subsequent visits are faster — your record is cached.
+      </p>
+
+      <h2 className={H2}>Walk-in vs urgent care vs emergency room</h2>
+      <p>
+        Walk-in clinics handle routine non-urgent issues: colds, allergies, stomach bugs, minor injuries, prescription refills, vaccinations, blood tests. Urgent-care centres (24x7 facilities like Medeor 24x7, NMC Royal Day Care, Aster 24x7) handle conditions that need same-day attention but aren&apos;t life-threatening: fevers, sprains, cuts requiring stitches, severe allergic reactions. Emergency rooms at major hospitals handle life-threatening conditions: chest pain, severe trauma, breathing difficulty, suspected stroke.
+      </p>
+      <p>
+        Insurance treats all three the same way for cover purposes — outpatient consultation rates apply. The difference is wait time and severity-handling. Use <Link href="/directory/dubai" className="text-[#006828] hover:underline">the directory</Link> to find the nearest facility for your need.
+      </p>
+    </div>
+  );
+}
+
+function DirectBillingGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>How direct billing actually works in the UAE</h2>
+      <p>
+        Direct billing is the financial arrangement that lets you visit a clinic, receive treatment, and walk out without paying the full bill in cash. The clinic invoices your insurer directly via a third-party administrator (TPA) — companies like NEXtCARE, Mednet, NAS, or GlobeMed handle the messaging layer between clinic billing systems and insurer claims systems.
+      </p>
+      <p>
+        At reception, the clinic swipes your insurance card (digital or physical). The TPA system returns an instant authorisation: how much of the visit is covered, what your co-pay is, and what services are excluded. You pay only the co-pay portion. The clinic then submits the full invoice to the TPA within 24–48 hours, and the TPA reimburses the clinic on a 30-day or 60-day cycle. From your perspective: just the co-pay, instant.
+      </p>
+
+      <h2 className={H2}>Carriers with the largest direct-billing networks</h2>
+      <p>
+        UAE network depth in 2026:
+      </p>
+      <ul>
+        <li><strong>MetLife (via NEXtCARE)</strong>: 1,800+ direct-billing facilities — broadest network in the segment.</li>
+        <li><strong><Link href="/insurance/daman" className="text-[#006828] hover:underline">Daman</Link></strong>: 1,800+ facilities, especially deep in Abu Dhabi.</li>
+        <li><strong><Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA Gulf</Link></strong>: 1,500+ facilities.</li>
+        <li><strong>Sukoon (formerly Oman Insurance)</strong>: 1,500+, deepest in Dubai.</li>
+        <li><strong><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna Close Care</Link></strong>: ~900 curated premium facilities.</li>
+        <li><strong><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa Global</Link></strong>: ~600 premium-tier facilities.</li>
+      </ul>
+      <p>
+        Network size matters less than network <em>fit</em>. A 600-facility curated premium network covers every hospital you&apos;d realistically choose. A 1,800-facility broad network includes many low-volume clinics you&apos;d never visit.
+      </p>
+
+      <h2 className={H2}>The five most common direct-billing failures</h2>
+      <p>
+        When direct billing fails at reception, it&apos;s almost always one of five things:
+      </p>
+      <ol>
+        <li><strong>Policy not yet active in the TPA system</strong>: typically a 2–3 day delay between policy purchase and TPA system update. Workaround: pay cash, get an itemised receipt, submit reimbursement claim.</li>
+        <li><strong>Service excluded from your policy</strong>: dental treatment on a non-dental plan, cosmetic procedures, fertility treatment on a basic plan. Reception will refuse direct billing because the line-item is listed as excluded.</li>
+        <li><strong>Pre-authorisation not obtained</strong>: required for MRI, CT, PET scans, advanced imaging, elective surgery, specialist drugs. Without the pre-auth code, reception can&apos;t direct-bill.</li>
+        <li><strong>Provider not actually in-network for your specific tier</strong>: some hospitals are in the network for premium tiers but not basic tiers. The TPA system rejects basic-tier cards at premium-tier facilities.</li>
+        <li><strong>Annual benefit limit exhausted</strong>: rare but possible if you&apos;ve had heavy claims that year. Reception sees &ldquo;limit exhausted&rdquo; and can&apos;t direct-bill further.</li>
+      </ol>
+
+      <h2 className={H2}>How to escalate if direct billing fails wrongly</h2>
+      <p>
+        Sometimes direct billing fails for a reason that&apos;s incorrect — the TPA system has stale data, or a clinic-side billing code mismatch confuses the auth check. Before paying cash:
+      </p>
+      <ol>
+        <li>Ask reception to call the TPA hotline (every TPA has a member-services line printed on the back of your card).</li>
+        <li>Call your insurer&apos;s member-services line yourself — they often resolve in 5–10 minutes by re-authorising in real time.</li>
+        <li>If unresolved, pay cash, get the itemised receipt, and submit reimbursement immediately. Most reimbursement claims for failed direct billing are settled in 7–14 days.</li>
+      </ol>
+
+      <h2 className={H2}>Direct billing vs reimbursement — when each makes sense</h2>
+      <p>
+        Direct billing is preferred for cost-flow reasons (you don&apos;t have to front the cash) and for high-cost procedures (a hospital stay can be AED 50,000–500,000). Reimbursement makes sense when you&apos;re visiting an out-of-network provider deliberately (a specific specialist not on your network), travelling outside the UAE on a domestic plan, or when direct billing fails and you need treatment immediately. Always keep itemised receipts and complete claim forms within 60–90 days of treatment — most insurers reject claims submitted past their window.
+      </p>
+    </div>
+  );
+}
+
+function SameDayClaimsGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>Why &ldquo;same-day&rdquo; is mostly a myth</h2>
+      <p>
+        Reimbursement claims in the UAE are advertised by insurers as &ldquo;fast&rdquo; or &ldquo;efficient&rdquo; — but actual same-day settlement is rare. The published SLAs across major UAE carriers are 7–21 working days, not 24 hours. The phrase &ldquo;same-day claim&rdquo; usually refers to direct billing at the point of service, not post-visit reimbursement.
+      </p>
+      <p>
+        That said, some claims do settle within 24–72 hours. The factors that compress timelines: a small claim amount (under AED 500), digital app submission with all documents complete, no pre-authorisation requirements, and the claim falling clearly within standard cover.
+      </p>
+
+      <h2 className={H2}>Real settlement timelines by carrier (2026)</h2>
+      <ul>
+        <li><strong><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna Close Care</Link></strong>: 7 working days average; fastest in the segment.</li>
+        <li><strong><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa Global</Link></strong>: 7–10 working days.</li>
+        <li><strong><Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA Gulf</Link></strong>: 10–14 working days.</li>
+        <li><strong><Link href="/insurance/metlife" className="text-[#006828] hover:underline">MetLife</Link></strong>: 10–15 working days.</li>
+        <li><strong><Link href="/insurance/allianz" className="text-[#006828] hover:underline">Allianz Care</Link></strong>: 15–21 working days.</li>
+        <li><strong><Link href="/insurance/aetna" className="text-[#006828] hover:underline">Aetna International</Link></strong>: 10–14 working days.</li>
+      </ul>
+      <p>
+        Complex claims (those requiring medical-board review, peer review, or pre-existing condition assessment) take 21–45 days regardless of insurer.
+      </p>
+
+      <h2 className={H2}>The seven documents that speed up your claim</h2>
+      <ol>
+        <li><strong>Original itemised invoice</strong> from the clinic — must be original, not a photocopy.</li>
+        <li><strong>Prescription</strong> if claiming pharmacy costs — original from the prescribing doctor.</li>
+        <li><strong>Doctor&apos;s report or medical letter</strong> explaining diagnosis, treatment, and necessity.</li>
+        <li><strong>Lab/imaging results</strong> if applicable — confirms the medical necessity of related charges.</li>
+        <li><strong>Completed and signed claim form</strong> — download from your insurer&apos;s app, sign, and have the treating doctor sign.</li>
+        <li><strong>Clear photo of insurance card and Emirates ID</strong>.</li>
+        <li><strong>Bank account details</strong> for direct-deposit reimbursement (much faster than cheque).</li>
+      </ol>
+      <p>
+        Missing any one of these typically adds 5–10 working days to settlement as the insurer requests follow-up. Submit all seven on day one — even if some look unnecessary — to avoid back-and-forth.
+      </p>
+
+      <h2 className={H2}>App submission vs email submission</h2>
+      <p>
+        App submissions are faster than email by 3–5 working days. The reason: apps auto-validate documents (correct file types, photo clarity, required fields) and tag the claim into the priority digital queue. Email submissions go through manual triage and human keying, adding latency.
+      </p>
+      <p>
+        Major UAE insurer apps: Cigna Wellbeing, Bupa Global, MyAXA, MetLife Member Portal, NEXtCARE (used by MetLife and several local carriers), Allianz MyHealth, Aetna International. Download before you submit — having the app ready cuts hours off the process.
+      </p>
+
+      <h2 className={H2}>How to escalate when claims stall</h2>
+      <p>
+        If a claim has been pending more than 21 working days with no movement, escalate in this order:
+      </p>
+      <ol>
+        <li><strong>Carrier&apos;s member-services hotline</strong>: ask for the claim status and the specific reason for delay. Note the case-handler name.</li>
+        <li><strong>The broker who placed the policy</strong> (if applicable): brokers have insurer-side leverage that members don&apos;t. Most stalled claims clear within 48 hours of broker escalation.</li>
+        <li><strong>UAE Insurance Authority complaint portal</strong> at iaeqa.gov.ae for regulatory escalation. The IA takes complaints seriously and most regulated insurers will resolve within 5 working days of an IA notice.</li>
+      </ol>
+    </div>
+  );
+}
+
+function DentalInsuranceGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>Dental is not in the UAE basic plan</h2>
+      <p>
+        UAE&apos;s mandatory minimum cover (DHA Essential Benefits Plan in Dubai, Daman Basic in Abu Dhabi) excludes routine dental treatment. If you have only a compliance-floor plan, you&apos;ll pay full out-of-pocket cost for cleanings, fillings, root canals, and extractions. Emergency dental treatment is sometimes covered under the broader emergency benefit, but not always — read your policy wording carefully.
+      </p>
+      <p>
+        Dental cover is included on enhanced and premium tiers, with a sub-limit between AED 2,000 and AED 10,000 per year. The sub-limit is separate from the policy&apos;s overall annual benefit limit — once you exhaust dental, you can&apos;t draw on the medical benefit pool for dental treatment.
+      </p>
+
+      <h2 className={H2}>Dental sub-limits across major UAE carriers (2026)</h2>
+      <ul>
+        <li><strong><Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA Enhanced</Link></strong>: AED 2,000–5,000 per year.</li>
+        <li><strong><Link href="/insurance/metlife" className="text-[#006828] hover:underline">MetLife Gold</Link></strong>: AED 2,000–4,000 per year.</li>
+        <li><strong><Link href="/insurance/allianz" className="text-[#006828] hover:underline">Allianz Care Premier</Link></strong>: AED 3,000–6,000 per year.</li>
+        <li><strong><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna Close Care</Link></strong>: AED 3,000–5,000 per year.</li>
+        <li><strong><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa Lifeline Comprehensive</Link></strong>: AED 5,000–10,000 per year (highest in market).</li>
+        <li><strong><Link href="/insurance/aetna" className="text-[#006828] hover:underline">Aetna Pioneer/Summit</Link></strong>: AED 3,000–8,000 per year.</li>
+      </ul>
+
+      <h2 className={H2}>What dental insurance covers (and what it doesn&apos;t)</h2>
+      <p>
+        Covered: consultations, X-rays, scaling/cleaning twice per year, fillings, simple extractions, root canal treatment, periodontal cleaning, and emergency dental work. Covered subject to medical necessity: complex extractions (wisdom teeth), crowns, bridges, dentures.
+      </p>
+      <p>
+        Excluded across virtually all UAE plans: cosmetic whitening, veneers (unless medically necessary post-trauma), cosmetic orthodontics, smile-design work, dental implants (rarely covered, never on basic plans), and any procedure marketed as &ldquo;aesthetic&rdquo; rather than &ldquo;therapeutic&rdquo;.
+      </p>
+
+      <h2 className={H2}>Children&apos;s orthodontic cover</h2>
+      <p>
+        Most UAE plans don&apos;t cover orthodontics, but a few enhanced tiers do — usually with a separate orthodontic sub-limit and a 12-month qualifying period. Cover usually applies only to children under 16 with a documented medical or developmental indication (not aesthetic preference). Expected sub-limit on plans that cover ortho: AED 5,000–10,000 per child per course.
+      </p>
+      <p>
+        If your child needs braces and ortho isn&apos;t in your current cover, factor AED 12,000–25,000 cash cost over 18–24 months of treatment at major UAE orthodontic chains.
+      </p>
+
+      <h2 className={H2}>Adding dental to a basic plan: standalone riders</h2>
+      <p>
+        Most carriers offer a standalone dental rider you can add to a base medical plan. Pricing: AED 800–2,000 per year for a single adult, providing AED 3,000–5,000 in annual benefits. Family riders cost AED 2,500–5,000.
+      </p>
+      <p>
+        Standalone dental insurance is also sold as a separate product by Daman, Sukoon, Orient Insurance, and several brokers. If you&apos;re a heavy dental user (multiple cleanings, occasional fillings, family plan with kids) the standalone often delivers better value than upgrading the base medical plan.
+      </p>
+    </div>
+  );
+}
+
+function ChronicDiseaseGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>Chronic conditions are well-covered on UAE insurance</h2>
+      <p>
+        Diabetes, hypertension, heart disease, asthma, hypothyroidism, chronic kidney disease, and similar long-term conditions are explicitly included in DHA and DOH compliance benchmarks. Every compliant UAE plan covers diagnosis, ongoing specialist consultations, prescription medication, and routine lab monitoring. The differences across plans show up in the depth of disease-management programs, the breadth of formulary coverage, and how aggressively pre-existing waiting periods are applied.
+      </p>
+
+      <h2 className={H2}>Disease management programs — the underrated benefit</h2>
+      <p>
+        Cigna Close Care, Bupa Global Lifeline, Allianz Care Premier Plus, and Aetna Pioneer/Summit all include formal chronic-disease management programs. These wrap together: scheduled specialist consultations, medication adherence support, lab-monitoring at fixed intervals, lifestyle counselling (often delivered by a dedicated nurse case-manager), and educational content. Co-pay is typically waived on services delivered through the program.
+      </p>
+      <p>
+        AXA, MetLife, Daman, and Sukoon cover chronic conditions but don&apos;t structure them into a named program — your benefit is the standard outpatient cover applied to whichever specialists you choose to see. Functional outcome is similar; experiential difference is significant.
+      </p>
+
+      <h2 className={H2}>Pre-existing conditions and waiting periods</h2>
+      <p>
+        On individual policies (purchased directly, not through an employer), pre-existing conditions are typically covered after a 12-month waiting period. Some premium plans reduce this to 6–9 months. During the waiting period, all chronic-condition treatment is paid out-of-pocket.
+      </p>
+      <p>
+        On group employer plans, the pre-existing waiting period is almost always waived from day one. This is a real advantage of joining a corporate scheme over self-purchasing — coverage starts immediately for any condition you bring in. When you change employers, your new group plan typically also waives pre-existing if you joined within 30 days of leaving the old one.
+      </p>
+
+      <h2 className={H2}>Medication coverage: generic vs branded</h2>
+      <p>
+        Generic chronic medications (metformin for diabetes, lisinopril for hypertension, atorvastatin for cholesterol, levothyroxine for hypothyroidism) cost AED 30–100 per month at retail. Insurance covers 80–100% subject to your outpatient co-pay and any formulary rules. Branded specialty drugs (insulin pumps, biologics for autoimmune conditions, oncology agents, novel cardiovascular drugs) require pre-authorisation and may have separate sub-limits or be covered only on premium tiers.
+      </p>
+      <p>
+        If you&apos;re managing a complex condition with multiple branded medications, check the formulary list before purchasing the policy. Cigna Global, Bupa Global, and Aetna Summit have the broadest formularies; basic and mid-tier plans (AXA Standard, MetLife Silver, Daman Basic) often require generic substitution.
+      </p>
+
+      <h2 className={H2}>Best UAE plans for chronic-disease patients</h2>
+      <p>
+        Three carriers are recognised as best-in-class for chronic-disease management:
+      </p>
+      <ul>
+        <li><strong><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa Global Lifeline Comprehensive</Link></strong>: deepest disease-management program, full medication cover, dedicated nurse case-managers.</li>
+        <li><strong><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna Close Care</Link></strong>: structured DM program, broad formulary, fastest claim experience.</li>
+        <li><strong><Link href="/insurance/allianz" className="text-[#006828] hover:underline">Allianz Care Premier Plus</Link></strong>: comprehensive DM, geographic flexibility for relocating expats.</li>
+      </ul>
+      <p>
+        For UAE-only domestic cover, AXA Enhanced and Daman&apos;s higher-tier plans cover chronic conditions adequately at significantly lower premiums than the international tier.
+      </p>
+    </div>
+  );
+}
+
+function OutpatientInpatientGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>The basic distinction</h2>
+      <p>
+        UAE health insurance separates &ldquo;outpatient&rdquo; and &ldquo;inpatient&rdquo; cover into distinct benefit pools, with different co-pays, sub-limits, and pre-authorisation requirements. Understanding which category a service falls into determines what you&apos;ll pay.
+      </p>
+      <p>
+        <strong>Outpatient</strong> = treated and discharged the same day. Includes consultations, blood tests, X-rays, ECG, basic ultrasound, prescription medications, minor procedures (skin tag removal, simple cyst drainage). <strong>Inpatient</strong> = admitted to a hospital bed (overnight or longer). Includes hospitalisation for treatment, surgery requiring overnight recovery, ICU admission, and labour/delivery. <strong>Day-case</strong> = surgery requiring no overnight stay (cataract, endoscopy, colonoscopy, hernia repair). Treated as inpatient for benefit purposes.
+      </p>
+
+      <h2 className={H2}>Why outpatient has co-pay and inpatient doesn&apos;t</h2>
+      <p>
+        Inpatient costs are higher per encounter (AED 5,000–500,000+) but more predictable and infrequent. Insurers underwrite at 0% co-pay because the insurer has tight control over inpatient utilisation through pre-authorisation requirements.
+      </p>
+      <p>
+        Outpatient is high-frequency and lower-cost per visit (AED 100–800). Insurers apply a 10–20% co-pay to discourage trivial visits. The co-pay is typically capped at AED 500–1,500 annually — once you hit the cap, all further outpatient is fully covered.
+      </p>
+
+      <h2 className={H2}>Outpatient sub-limits and what they really cover</h2>
+      <p>
+        Standard outpatient cover includes consultations (specialist and GP), basic imaging (X-ray, ultrasound, ECG), routine blood and urine tests, prescription medication, vaccinations, and minor procedures. Most plans cover 100% subject to the co-pay and the overall annual benefit limit.
+      </p>
+      <p>
+        Advanced outpatient services — MRI, CT, PET, advanced cardiac imaging, oncology infusions, dialysis, IVF — typically require pre-authorisation and may have separate sub-limits. Pre-auth means the doctor&apos;s office submits a treatment request to the insurer, who responds within 24–72 hours with an approval code that the clinic uses for direct billing.
+      </p>
+
+      <h2 className={H2}>Day-case surgery: outpatient or inpatient?</h2>
+      <p>
+        Day-case surgery is treated as inpatient for benefit purposes — 0% co-pay, draws on the inpatient sub-limit. Examples: cataract surgery, endoscopy, colonoscopy, simple hernia repair, lump excision, cosmetic-removal procedures. You&apos;re in and out the same day, but the surgery is invoiced under the inpatient benefit.
+      </p>
+      <p>
+        Why this matters: if your plan has a small inpatient sub-limit (AED 100,000) and you have a major day-case (cataract = AED 8,000–15,000), the day-case eats into the same pool that would cover an emergency hospitalisation later in the year.
+      </p>
+
+      <h2 className={H2}>Observation status — the awkward category</h2>
+      <p>
+        &ldquo;Observation&rdquo; is hospital-speak for holding a patient for monitoring without formal admission, typically 4–24 hours. Insurance usually treats observation as outpatient — meaning the co-pay applies. If observation extends beyond 24 hours and converts to formal inpatient admission, the billing flips to inpatient (0% co-pay) but the original observation hours may stay on outpatient invoicing.
+      </p>
+      <p>
+        Be careful: you can be billed at outpatient rates for what feels like a hospital stay. Ask the admission desk whether you&apos;re &ldquo;admitted as inpatient&rdquo; or &ldquo;held for observation&rdquo; — the words matter for your bill.
+      </p>
+    </div>
+  );
+}
+
+function ExpatResidentGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>What &ldquo;expat insurance&rdquo; actually means in the UAE</h2>
+      <p>
+        In UAE healthcare-insurance vernacular, &ldquo;expat insurance&rdquo; usually refers to international plans (Cigna Global, Bupa Global, Allianz Care, Aetna International) where cover follows you across countries. &ldquo;Resident insurance&rdquo; usually means UAE-only plans (Daman, AXA Gulf, MetLife, Sukoon, Orient Insurance) that cover you within the UAE network only.
+      </p>
+      <p>
+        Both categories are valid for UAE visa compliance. The distinction is functional: where you can use the policy, what you pay for it, and how it handles your future location changes.
+      </p>
+
+      <h2 className={H2}>Network depth: where each shines</h2>
+      <p>
+        UAE-resident plans have the deepest UAE networks (1,500–1,800+ direct-billing facilities for AXA, MetLife, Sukoon, Daman). They&apos;re built for the assumption that you treat in the UAE only. International plans have narrower UAE networks (600–900 facilities for Cigna, Bupa, Aetna) — curated to premium hospital tiers — but supplement with global cover.
+      </p>
+      <p>
+        For a Dubai-based knowledge worker who treats only in the UAE, a domestic plan delivers more network depth at lower cost. For a frequently-travelling executive who might need treatment in London, Singapore, or NYC during the policy year, an international plan is worth the premium.
+      </p>
+
+      <h2 className={H2}>Cost comparison</h2>
+      <p>
+        Sample 2026 premium for a single adult age 35, comprehensive UAE cover:
+      </p>
+      <ul>
+        <li>Domestic plan (AXA Enhanced): AED 7,000–12,000/year.</li>
+        <li>Domestic plan (MetLife Gold): AED 6,500–11,000/year.</li>
+        <li>International plan (Cigna Close Care): AED 12,000–20,000/year.</li>
+        <li>International plan (Allianz Care Premier): AED 14,000–22,000/year.</li>
+        <li>International plan (Bupa Lifeline Standard): AED 18,000–28,000/year.</li>
+      </ul>
+      <p>
+        For UAE-only use cases, domestic plans deliver 30–50% better value: lower premiums, deeper UAE networks, faster claims (the TPAs are local). The break-even moves toward international cover at roughly 4+ international trips per year requiring medical care, or imminent relocation plans.
+      </p>
+
+      <h2 className={H2}>Family additions: how each handles them</h2>
+      <p>
+        Both expat-international and UAE-resident plans support spouse and dependent additions. Premium pricing differs:
+      </p>
+      <ul>
+        <li>Expat-international family additions: 60–80% of the principal&apos;s premium per dependent.</li>
+        <li>UAE-resident family additions: 40–60% per dependent.</li>
+      </ul>
+      <p>
+        Newborn additions usually require notification within 30 days of birth. Some premium plans (Bupa Lifeline, Cigna Global) auto-cover newborns for 60–90 days before requiring formal addition.
+      </p>
+
+      <h2 className={H2}>What happens when you leave the UAE</h2>
+      <p>
+        Domestic UAE plans terminate when your visa is cancelled (or at the next renewal). There&apos;s no continuation option — you&apos;ll need to purchase fresh cover in your destination country.
+      </p>
+      <p>
+        International expat plans (Cigna Global, Bupa Global, Allianz Care) can continue with no break in cover. You notify the insurer of the move; they update the address/billing region; pre-existing conditions accumulated during UAE residency remain covered without re-underwriting on the same policy. This is the structural advantage of an international plan: continuity. For families with chronic conditions or recent medical history, this matters.
+      </p>
+    </div>
+  );
+}
+
+function TopUpGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>What top-up actually does</h2>
+      <p>
+        Top-up health insurance is a supplemental policy that activates after your primary insurance benefit limit is exhausted. If your employer plan caps annual benefits at AED 1M and a major illness (cancer, organ transplant, prolonged ICU) costs AED 1.5M, top-up covers the AED 500K excess. Premiums are low because the top-up only triggers above a threshold most members never reach.
+      </p>
+
+      <h2 className={H2}>When top-up is worth buying</h2>
+      <p>
+        Three common scenarios where top-up makes sense:
+      </p>
+      <ol>
+        <li><strong>Base plan with low cap (under AED 2M)</strong> + family history of high-cost conditions: cancer, heart disease, organ transplant. The math: if your base caps at AED 1M and a year of cancer treatment can cost AED 800K–2M, you&apos;re one diagnosis away from out-of-pocket exposure.</li>
+        <li><strong>Freelancer or self-sponsored</strong> with a basic compliance plan: DHA EBP and Daman Basic cap at AED 150K–250K. Anything serious wipes that out fast. AED 800/year on a top-up adds AED 5M of cover.</li>
+        <li><strong>Chronic condition holder</strong>: certain conditions (multiple sclerosis, advanced cancer, end-stage renal disease) routinely consume AED 500K+ in annual treatment. Top-up keeps you out of the gap when the base plan exhausts.</li>
+      </ol>
+      <p>
+        For most UAE residents on a strong employer plan (AED 1M+ cap, broad network), top-up isn&apos;t necessary. The base policy will cover almost any realistic illness profile.
+      </p>
+
+      <h2 className={H2}>Cost vs benefit: the math</h2>
+      <p>
+        Top-up premiums for a single adult in 2026:
+      </p>
+      <ul>
+        <li>AED 500K threshold + AED 1M additional cover: AED 600–1,200/year.</li>
+        <li>AED 1M threshold + AED 5M additional cover: AED 1,000–2,000/year.</li>
+        <li>AED 2M threshold + AED 10M additional cover: AED 1,500–2,500/year.</li>
+      </ul>
+      <p>
+        Family top-up plans cost AED 2,000–6,000/year. Significantly cheaper than upgrading the base plan to a higher tier — because top-up only triggers above a threshold most members never reach, the actuarial cost is low.
+      </p>
+
+      <h2 className={H2}>Carriers offering top-up in the UAE</h2>
+      <p>
+        Most major UAE carriers offer top-up as a standalone product:
+      </p>
+      <ul>
+        <li><strong>AXA Gulf</strong>: Top-up Plus, available with AED 1M, 2M, 5M additional cover.</li>
+        <li><strong>Sukoon (Oman Insurance)</strong>: Top-up at three threshold levels.</li>
+        <li><strong>Orient Insurance</strong>: Top-up policy with AED 5M+ additional cover.</li>
+        <li><strong>MetLife</strong>: Top-up rider on existing plans.</li>
+        <li><strong>Insurance brokers</strong> (Yallacompare, Insurancemarket.ae, Souqalmal): often deliver better top-up pricing than direct-from-insurer purchases by aggregating across carriers.</li>
+      </ul>
+
+      <h2 className={H2}>How top-up uses the network</h2>
+      <p>
+        Top-up policies typically piggyback on whichever in-network claim triggers the policy. So if your base AXA plan covers a hospital and you exhaust the limit, the AXA top-up continues at the same in-network hospital. Top-ups from a different carrier than your base may have a slightly different network — confirm this before purchase. The pre-authorisation rules for the base plan typically continue to apply for top-up coverage as well.
+      </p>
+    </div>
+  );
+}
+
+function MandatoryInsuranceGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>Mandatory cover by emirate</h2>
+      <p>
+        Health insurance is mandatory for every UAE visa holder. The specific requirements vary slightly by emirate, but the underlying principle is the same: no insurance, no visa renewal, no Emirates ID issuance, no trade-licence renewal.
+      </p>
+      <ul>
+        <li><strong>Dubai</strong>: mandatory since 2014, regulated by DHA. Any DHA-compliant policy meets the requirement. The minimum standard is the DHA Essential Benefits Plan (EBP).</li>
+        <li><strong>Abu Dhabi</strong>: mandatory since 2006, regulated by DOH (formerly HAAD). Daman administers the basic scheme on behalf of DOH. UAE nationals automatically receive Thiqa free of charge.</li>
+        <li><strong>Sharjah, Ajman, RAK, Fujairah, Umm Al Quwain</strong>: progressively adopting under MOHAP. Sharjah enforces strictly; the smaller emirates have ramping enforcement timelines.</li>
+      </ul>
+
+      <h2 className={H2}>Who pays?</h2>
+      <p>
+        For employees, the employer pays. UAE labour law makes employer-provided health insurance one of the mandatory employment benefits — it&apos;s not optional, not negotiable on the employee side, and not deductible from salary.
+      </p>
+      <p>
+        For self-sponsored residents (freelancers, sole-proprietors, dependents on family visas), the principal pays. Family visa holders typically pay for their own and dependents&apos; cover. UAE nationals in Abu Dhabi receive Thiqa from the DOH at no cost.
+      </p>
+
+      <h2 className={H2}>Minimum compliant cover by jurisdiction</h2>
+      <p>
+        <strong>Dubai DHA Essential Benefits Plan (EBP)</strong>: AED 150,000 annual cap. Covers inpatient, emergency, outpatient consultations, basic outpatient diagnostics (X-ray, basic blood tests), and prescribed medications. Excludes dental, optical, maternity (or has limited maternity), elective procedures, and cosmetic treatments. Premium: ~AED 600–800/year for a single adult age 18–60.
+      </p>
+      <p>
+        <strong>Abu Dhabi Daman Basic</strong>: AED 250,000 annual cap. Covers inpatient, emergency, outpatient consultations, basic medications. Network restricted to public-sector facilities (SEHA hospitals, government health centres) plus selected private clinics. Premium: ~AED 600–750/year for a single adult.
+      </p>
+      <p>
+        <strong>Northern Emirates MOHAP</strong>: requirements vary by emirate. Sharjah enforces a minimum standard similar to DHA EBP; Ajman, RAK, Fujairah, UAQ are still rolling out.
+      </p>
+
+      <h2 className={H2}>What happens if you don&apos;t have insurance?</h2>
+      <p>
+        Three concrete consequences:
+      </p>
+      <ol>
+        <li><strong>Visa renewal denied</strong>: until you produce a valid policy. Emirates ID issuance and trade-licence renewal also blocked.</li>
+        <li><strong>Fines</strong>: typically AED 500/month in Dubai. Varies in other emirates; Abu Dhabi has historically levied AED 300–500/month equivalents through visa-renewal penalties.</li>
+        <li><strong>Treatment refused or expensive</strong>: hospitals can refuse non-emergency treatment if you can&apos;t pay up-front. In emergencies you&apos;ll receive treatment but face the full unsubsidised hospital bill — easily AED 50,000+ for a basic admission, AED 200,000+ for a complex case.</li>
+      </ol>
+
+      <h2 className={H2}>Practical compliance tips</h2>
+      <p>
+        Set a renewal calendar reminder 60 days before your policy expires — gives time to compare alternatives and switch carriers if needed. Keep digital copies of your policy, insurance card, and receipts in cloud storage so you can produce them on demand at hospital reception or visa offices. If you change jobs, confirm the new employer&apos;s health insurance start date matches or precedes the previous policy&apos;s end date — gaps in cover can disqualify you for compliance and trigger pre-existing waiting periods.
+      </p>
+    </div>
+  );
+}
+
+function ClaimProcessGuide() {
+  return (
+    <div className="prose-journal">
+      <h2 className={H2}>The two claim paths</h2>
+      <p>
+        UAE health insurance claims happen through two paths: direct billing (clinic-to-insurer at point of service) and reimbursement (you pay the clinic, then claim the cost back from the insurer). Direct billing is the default for in-network visits. Reimbursement is for out-of-network visits, international care on a UAE-only plan, or when direct billing fails at reception for any reason.
+      </p>
+
+      <h2 className={H2}>Direct billing step-by-step</h2>
+      <ol>
+        <li><strong>At reception</strong>: present your insurance card (digital or physical) and Emirates ID.</li>
+        <li><strong>Reception swipes the card</strong> or enters the policy number into the TPA system. The TPA returns instant authorisation: covered amount, your co-pay, any exclusions.</li>
+        <li><strong>You pay the co-pay</strong> portion at reception (typically 10–20% of the service cost, capped at AED 50–100 per visit on most plans).</li>
+        <li><strong>The clinic delivers treatment</strong> normally.</li>
+        <li><strong>Behind the scenes</strong>: clinic submits the full invoice to the TPA within 24–48 hours; TPA reimburses the clinic on a 30–60 day cycle. From your perspective, the transaction ended at step 3.</li>
+      </ol>
+
+      <h2 className={H2}>Reimbursement step-by-step</h2>
+      <ol>
+        <li><strong>Pay the clinic in full</strong> at the time of service. Get an itemised invoice (not a summary receipt).</li>
+        <li><strong>Get a doctor&apos;s report</strong> describing the diagnosis, treatment delivered, and clinical necessity.</li>
+        <li><strong>Download the claim form</strong> from your insurer&apos;s app or website. Fill in your details and have the treating doctor sign the medical-section.</li>
+        <li><strong>Submit via the insurer&apos;s app</strong> (faster than email) with: itemised invoice, prescription if applicable, doctor&apos;s report, lab/imaging results, signed claim form, photos of insurance card and Emirates ID, bank account details for direct deposit.</li>
+        <li><strong>Wait 7–21 working days</strong> for settlement. Cigna averages 7 days; most others 10–21.</li>
+      </ol>
+
+      <h2 className={H2}>The most common claim rejections</h2>
+      <ol>
+        <li><strong>Service excluded from policy</strong>: e.g. dental on non-dental plan, fertility treatment on basic plan, cosmetic procedures on any plan. Read your policy schedule.</li>
+        <li><strong>Pre-authorisation not obtained</strong>: required for MRI, CT, PET, advanced imaging, elective inpatient procedures, specialty drugs.</li>
+        <li><strong>Pre-existing condition within waiting period</strong>: typically 12 months on individual policies. Group plans usually waive this.</li>
+        <li><strong>Incomplete documentation</strong>: missing doctor&apos;s report, missing prescription, illegible invoice, unsigned claim form.</li>
+        <li><strong>Out-of-network provider</strong> on a network-only policy: the visit is excluded entirely, not just at a higher co-pay.</li>
+        <li><strong>Late submission</strong>: most insurers require submission within 60–90 days of treatment date.</li>
+      </ol>
+
+      <h2 className={H2}>How to dispute a denied claim</h2>
+      <p>
+        If your claim is denied:
+      </p>
+      <ol>
+        <li><strong>Read the denial letter</strong> carefully. It cites the specific policy clause used to deny.</li>
+        <li><strong>Submit additional supporting documents</strong> within 30 days: a medical letter from the doctor explaining clinical necessity, peer-reviewed treatment guidelines, evidence the service falls within cover. Most disputes are won at this step.</li>
+        <li><strong>Escalate via the carrier&apos;s grievance process</strong>: every UAE insurer has a formal grievance channel, usually a specific email or portal accessed through member services.</li>
+        <li><strong>File with the UAE Insurance Authority</strong> at iaeqa.gov.ae if grievance fails. Most disputes are resolved at step 2 or 3 within 4–6 weeks.</li>
+      </ol>
+      <p>
+        Keep all correspondence, dates, case numbers, and document submission timestamps. Insurance Authority complaints are evaluated against the documented record.
+      </p>
+
+      <h2 className={H2}>Claim timelines by carrier (2026 averages)</h2>
+      <p>
+        Working-day averages from claim submission to reimbursement:
+      </p>
+      <ul>
+        <li><Link href="/insurance/cigna" className="text-[#006828] hover:underline">Cigna Close Care</Link>: 7 days.</li>
+        <li><Link href="/insurance/bupa" className="text-[#006828] hover:underline">Bupa Global</Link>: 7–10 days.</li>
+        <li><Link href="/insurance/aetna" className="text-[#006828] hover:underline">Aetna International</Link>: 10–14 days.</li>
+        <li><Link href="/insurance/axa" className="text-[#006828] hover:underline">AXA Gulf</Link>: 10–14 days.</li>
+        <li><Link href="/insurance/metlife" className="text-[#006828] hover:underline">MetLife</Link>: 10–15 days.</li>
+        <li><Link href="/insurance/allianz" className="text-[#006828] hover:underline">Allianz Care</Link>: 15–21 days.</li>
+      </ul>
+    </div>
+  );
+}
+
 /* ─── Map slug to content component ─── */
 
 const GUIDE_CONTENT: Record<string, () => JSX.Element> = {
@@ -512,6 +1398,17 @@ const GUIDE_CONTENT: Record<string, () => JSX.Element> = {
   "how-to-claim-health-insurance": ClaimsGuide,
   "domestic-worker-insurance": DomesticWorkerGuide,
   "switching-health-insurance": SwitchingGuide,
+  // Phase 3 listicles (added 2026-05-02)
+  "walk-in-clinic-insurance": WalkInClinicGuide,
+  "direct-billing-insurance-uae": DirectBillingGuide,
+  "same-day-claims-insurance": SameDayClaimsGuide,
+  "dental-insurance-uae-2026": DentalInsuranceGuide,
+  "chronic-disease-coverage-uae": ChronicDiseaseGuide,
+  "outpatient-vs-inpatient-uae": OutpatientInpatientGuide,
+  "expat-vs-resident-insurance": ExpatResidentGuide,
+  "top-up-insurance-uae": TopUpGuide,
+  "mandatory-health-insurance-emirates": MandatoryInsuranceGuide,
+  "insurance-claim-process-uae": ClaimProcessGuide,
 };
 
 /* ─── Page ─── */

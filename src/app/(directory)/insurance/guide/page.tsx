@@ -39,6 +39,67 @@ const GUIDES = [
     description:
       "When you can switch, how pre-existing conditions transfer, continuous coverage rules, and the difference between employer-sponsored and self-purchased plans.",
   },
+  // ─── Phase 3 listicles (added 2026-05-02) ─────────────────────────────
+  {
+    slug: "walk-in-clinic-insurance",
+    title: "Walk-In Clinic Insurance in the UAE — Direct Billing, Co-pays, Networks (2026)",
+    description:
+      "Which UAE health insurance plans cover walk-in consultations with direct billing, expected co-pays at reception, and the chains that accept the broadest set of carriers.",
+  },
+  {
+    slug: "direct-billing-insurance-uae",
+    title: "Direct Billing Health Insurance in the UAE — How It Works (2026)",
+    description:
+      "How direct billing works between clinics, TPAs, and insurers; the carriers with the deepest networks; and the five most common reasons direct billing fails at reception.",
+  },
+  {
+    slug: "same-day-claims-insurance",
+    title: "Same-Day Claims Insurance in the UAE — Carriers That Settle Fast",
+    description:
+      "Real reimbursement-claim settlement timelines by carrier, the documents that speed up claims, and how to escalate stalled claims.",
+  },
+  {
+    slug: "dental-insurance-uae-2026",
+    title: "Dental Insurance in the UAE — Sub-limits, What's Covered, and the Best Plans",
+    description:
+      "Dental sub-limits across major UAE carriers, what's covered versus excluded, orthodontic coverage rules, and standalone dental riders.",
+  },
+  {
+    slug: "chronic-disease-coverage-uae",
+    title: "Chronic Disease Coverage in UAE Health Insurance",
+    description:
+      "How UAE plans cover diabetes, hypertension, and heart disease — chronic-disease management programmes, sub-limits, exclusions, and the best carriers for chronic-care patients.",
+  },
+  {
+    slug: "outpatient-vs-inpatient-uae",
+    title: "Outpatient vs Inpatient Health Insurance in the UAE",
+    description:
+      "UAE health-insurance terminology decoded — the difference between outpatient, inpatient, day-case, and observation status, and how each affects co-pay and benefit limits.",
+  },
+  {
+    slug: "expat-vs-resident-insurance",
+    title: "Expat vs Resident Health Insurance in the UAE — Why It Matters",
+    description:
+      "What changes between international expat plans and UAE-resident plans — network depth, international cover, family additions, and the right choice for each profile.",
+  },
+  {
+    slug: "top-up-insurance-uae",
+    title: "Top-Up Health Insurance in the UAE — When You Need It",
+    description:
+      "When top-up insurance is worth buying, how it stacks with employer-paid base cover, typical pricing, and the providers offering it in 2026.",
+  },
+  {
+    slug: "mandatory-health-insurance-emirates",
+    title: "Mandatory Health Insurance in the UAE — Rules by Emirate",
+    description:
+      "DHA, DOH, and MOHAP mandatory cover rules by emirate, who pays, the minimum compliant cover, and the consequences of non-compliance.",
+  },
+  {
+    slug: "insurance-claim-process-uae",
+    title: "UAE Health Insurance Claim Process — Step by Step",
+    description:
+      "End-to-end claim process — direct billing at the clinic, post-visit reimbursement, required documents, common rejections, and how to dispute denials.",
+  },
 ];
 
 export function generateMetadata(): Metadata {
@@ -80,12 +141,12 @@ export default function InsuranceGuideIndexPage() {
         Health Insurance Guides — UAE
       </h1>
       <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-        {GUIDES.length} in-depth guides · Last updated March 2026
+        {GUIDES.length} in-depth guides · Last updated May 2026
       </p>
 
       <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
         <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-          These guides cover the most common questions about health insurance in the United Arab Emirates — from choosing a plan as a freelancer or self-sponsored resident, to understanding maternity coverage waiting periods, filing claims, insuring domestic workers, and switching providers mid-year. Each guide is written for UAE residents and references DHA, DOH, and MOHAP regulations.
+          These guides cover the most common questions about health insurance in the United Arab Emirates — from choosing a plan as a freelancer or self-sponsored resident, to understanding maternity coverage, filing and disputing claims, walk-in versus inpatient cover, dental and chronic-disease sub-limits, and the differences between expat-international and UAE-domestic plans. Each guide is written for UAE residents and references DHA, DOH, and MOHAP regulations.
         </p>
       </div>
 
