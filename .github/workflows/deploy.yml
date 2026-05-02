@@ -24,6 +24,10 @@ jobs:
       - name: Run ESLint
         run: npm run lint
       - name: Type check
+        env:
+          # tsc on this codebase needs ~3GB heap (~30k routes, large schema).
+          # Default 2GB heap OOMs at ~98s into the type-check.
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npx tsc --noEmit --pretty
 
   deploy:
