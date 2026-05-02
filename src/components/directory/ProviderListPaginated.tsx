@@ -61,6 +61,7 @@ export function ProviderListPaginated({
             // 2022-era projection that stripped all of these.
             <ProviderCard
               key={p.id}
+              providerId={p.id}
               name={p.name}
               slug={p.slug}
               citySlug={p.citySlug}

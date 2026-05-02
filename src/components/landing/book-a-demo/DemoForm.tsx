@@ -13,10 +13,8 @@ import "react-phone-input-2/lib/style.css"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 
 export function DemoForm() {
-  const router = useRouter()
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [team, setTeam] = useState("")
   const [phone, setPhone] = useState("")
@@ -40,11 +38,22 @@ export function DemoForm() {
       setSubmitting(true)
       data.set("team", team)
       data.set("phone", phone)
-      fetch("https://script.google.com/macros/s/AKfycbwTfcI2SmFOoWp__yhOfSDVHSOuIpf9mI-uAdweKXw-OehXVRaqpYK43O-WbiV_qP6w/exec", {
+      fetch("/api/notify-demo", {
         method: "POST",
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          company: data.get("company"),
+          website: data.get("website") || null,
+          team,
+          phone,
+        }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error("Submission failed")
+          return res.json()
+        })
         .then(() => {
           // Fire GA4 event via GTM data layer BEFORE redirect
           // (Next.js App Router soft navigation doesn't trigger GTM historyChange reliably)
@@ -56,7 +65,11 @@ export function DemoForm() {
               company_name: data.get('company'),
             });
           }
-          router.push("/demo-requested")
+          toast.success("Demo request received. We will reach out within 24 hours.")
+          form.reset()
+          setTeam("")
+          setPhone("")
+          setSubmitting(false)
         })
         .catch(() => {
           toast.error("Submission failed. Please try again.")

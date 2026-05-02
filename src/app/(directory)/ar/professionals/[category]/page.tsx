@@ -1,11 +1,12 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getProfessionalsByCategory } from "@/lib/professionals";
 import {
   PROFESSIONAL_CATEGORIES,
+  ALL_SPECIALTIES,
   getSpecialtiesByCategory,
   getCategoryBySlug,
 } from "@/lib/constants/professionals";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return PROFESSIONAL_CATEGORIES.map((cat) => ({
     category: cat.slug,
   }));
@@ -59,7 +61,17 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function ArabicCategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
-  if (!cat) notFound();
+  if (!cat) {
+    // Direct .find() — see EN counterpart for context on why we don't use
+    // the Map-based getSpecialtyBySlug helper here.
+    const specialty = ALL_SPECIALTIES.find((s) => s.slug === params.category);
+    if (specialty) {
+      permanentRedirect(
+        `/ar/professionals/${specialty.category}/${specialty.slug}`,
+      );
+    }
+    notFound();
+  }
 
   const base = getBaseUrl();
   const specialties = getSpecialtiesByCategory(cat.slug);
@@ -86,7 +98,7 @@ export default function ArabicCategoryPage({ params }: Props) {
     <div
       dir="rtl"
       lang="ar"
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <JsonLd
         data={{

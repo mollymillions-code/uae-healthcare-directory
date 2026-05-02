@@ -30,6 +30,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   const cities = getCities();
   const categories = getCategories();
   const params: { city: string; category: string }[] = [];
@@ -119,7 +120,7 @@ export default async function ArabicBestCategoryInCityPage({ params }: Props) {
     .slice(0, 8);
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: ar.home, url: `${base}/ar` },
         { name: ar.bestProviders, url: `${base}/ar/best` },

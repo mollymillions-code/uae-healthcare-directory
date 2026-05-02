@@ -133,7 +133,7 @@ export default function ArabicHomeCollectionPage() {
   };
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
       <JsonLd data={speakableSchema([".answer-block", "h1"])} />
       <JsonLd data={faqPageSchema(faqs)} />

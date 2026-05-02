@@ -224,6 +224,7 @@ function getCityPricingContext(citySlug: string, cityName: string): string {
 // ─── Generate Static Params ───────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllCityPairs().map(({ cityA, cityB }) => ({
     cities: canonicalSlug(cityA, cityB),
   }));

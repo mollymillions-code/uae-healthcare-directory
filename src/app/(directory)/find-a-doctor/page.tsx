@@ -1,7 +1,8 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
+import { getBaseUrl } from "@/lib/helpers";
 import { getAggregateStats, getAllFacilities } from "@/lib/professionals";
 import {
   PROFESSIONAL_CATEGORIES,
@@ -9,8 +10,10 @@ import {
   PROFESSIONAL_STATS,
   getSpecialtiesByCategory,
 } from "@/lib/constants/professionals";
-import { faqPageSchema, breadcrumbSchema } from "@/lib/seo";
-import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
+import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemplate";
+import type { HubItem } from "@/components/directory-v2/templates/HubPageTemplate";
+import { Stethoscope, Smile, Heart, Activity } from "lucide-react";
 
 export const revalidate = 43200;
 
@@ -64,12 +67,49 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function FindADoctorPage() {
-  const base = getBaseUrl();
-  const stats = getAggregateStats();
-  const topFacilities = getAllFacilities(100).slice(0, 15);
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  physicians: <Stethoscope className="h-5 w-5" />,
+  dentists: <Smile className="h-5 w-5" />,
+  nurses: <Heart className="h-5 w-5" />,
+  "allied-health": <Activity className="h-5 w-5" />,
+};
 
-  // Top specialties grouped by category
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  physicians:
+    "General practitioners, specialists, and consultants across all medical disciplines including cardiology, orthopedics, neurology, and more.",
+  dentists:
+    "General dentists, orthodontists, endodontists, prosthodontists, and oral surgeons licensed to practice in Dubai.",
+  nurses:
+    "Registered nurses, assistant nurses, practical nurses, and midwives working across hospitals and clinics in Dubai.",
+  "allied-health":
+    "Pharmacists, physiotherapists, lab technologists, optometrists, psychologists, dieticians, and other allied health specialists.",
+};
+
+export default async function FindADoctorPage() {
+  const base = getBaseUrl();
+  const stats = await safe(
+    Promise.resolve(getAggregateStats()),
+    {
+      totalProfessionals: PROFESSIONAL_STATS.total,
+      totalSpecialties: ALL_SPECIALTIES.length,
+      totalFacilities: PROFESSIONAL_STATS.uniqueFacilities,
+    } as ReturnType<typeof getAggregateStats>,
+    "findADoctor:aggregateStats",
+  );
+  const topFacilities = await safe(
+    Promise.resolve(getAllFacilities(100).slice(0, 15)),
+    [] as ReturnType<typeof getAllFacilities>,
+    "findADoctor:topFacilities",
+  );
+
+  const categoryItems: HubItem[] = PROFESSIONAL_CATEGORIES.map((cat) => ({
+    href: `/professionals/${cat.slug}`,
+    label: cat.name,
+    subLabel: CATEGORY_DESCRIPTIONS[cat.slug] ?? cat.description,
+    count: cat.count,
+    icon: CATEGORY_ICONS[cat.slug],
+  }));
+
   const topSpecialtiesByCategory = PROFESSIONAL_CATEGORIES.map((cat) => {
     const specs = getSpecialtiesByCategory(cat.slug)
       .sort((a, b) => b.count - a.count)
@@ -77,70 +117,88 @@ export default function FindADoctorPage() {
     return { category: cat, specialties: specs };
   });
 
-  const categoryDescriptions: Record<string, string> = {
-    physicians:
-      "General practitioners, specialists, and consultants across all medical disciplines including cardiology, orthopedics, neurology, and more.",
-    dentists:
-      "General dentists, orthodontists, endodontists, prosthodontists, and oral surgeons licensed to practice in Dubai.",
-    nurses:
-      "Registered nurses, assistant nurses, practical nurses, and midwives working across hospitals and clinics in Dubai.",
-    "allied-health":
-      "Pharmacists, physiotherapists, lab technologists, optometrists, psychologists, dieticians, and other allied health specialists.",
-  };
+  const specialtySections = topSpecialtiesByCategory
+    .filter(({ specialties }) => specialties.length > 0)
+    .map(({ category, specialties }) => ({
+      title: `Popular ${category.name.toLowerCase()}`,
+      eyebrow: category.name,
+      items: specialties.map((s) => ({
+        href: `/professionals/${s.category}/${s.slug}`,
+        label: s.name,
+        count: s.count,
+      })) as HubItem[],
+      layout: "chips" as const,
+    }));
+
+  const facilityItems: HubItem[] = topFacilities.map((fac, i) => ({
+    href: `/professionals/facility/${fac.slug}`,
+    label: `${i + 1}. ${fac.name}`,
+    count: fac.totalStaff,
+  }));
+
+  const sections = [
+    {
+      title: "Browse by category",
+      eyebrow: "Four core categories",
+      items: categoryItems,
+      layout: "grid" as const,
+      gridCols: "2" as const,
+    },
+    ...specialtySections,
+    ...(facilityItems.length > 0
+      ? [
+          {
+            title: "Top hospitals and facilities by staff",
+            eyebrow: "Where Dubai's doctors practice",
+            items: facilityItems,
+            layout: "list" as const,
+          },
+        ]
+      : []),
+    {
+      title: "Explore the full directory",
+      eyebrow: "Keep browsing",
+      items: [
+        {
+          href: "/professionals",
+          label: "All healthcare professionals",
+          subLabel: `${stats.totalProfessionals.toLocaleString()} across ${stats.totalSpecialties} specialties`,
+        },
+        {
+          href: "/directory",
+          label: "Facility-first directory",
+          subLabel: "Browse clinics, hospitals, and pharmacies",
+        },
+        {
+          href: "/specialties",
+          label: "All medical specialties",
+          subLabel: "Pick a specialty, then a doctor",
+        },
+      ] satisfies HubItem[],
+      layout: "grid" as const,
+      gridCols: "3" as const,
+    },
+  ];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: "Find a Doctor in Dubai",
-          description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals in Dubai.`,
-          url: `${base}/find-a-doctor`,
-          mainEntity: {
-            "@type": "ItemList",
-            numberOfItems: PROFESSIONAL_STATS.total,
-            itemListElement: PROFESSIONAL_CATEGORIES.map((cat, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              item: {
-                "@type": "MedicalWebPage",
-                name: cat.name,
-                url: `${base}/professionals/${cat.slug}`,
-              },
-            })),
-          },
-        }}
-      />
-      <JsonLd data={faqPageSchema(FAQS)} />
-      <JsonLd
-        data={breadcrumbSchema([
-          { name: "UAE", url: `${base}/` },
-          { name: "Directory", url: `${base}/directory` },
-          { name: "Find a Doctor" },
-        ])}
-      />
-
-      <Breadcrumb
-        items={[
+    <>
+      <HubPageTemplate
+        breadcrumbs={[
           { label: "UAE", href: "/" },
           { label: "Directory", href: "/directory" },
           { label: "Find a Doctor" },
         ]}
-      />
-
-      {/* Hero */}
-      <div className="mb-10">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          Find a Doctor in Dubai
-        </h1>
-        <p className="font-['Geist_Mono',monospace] text-xs text-[#006828] font-medium tracking-wider uppercase mb-4">
-          Search {PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-Licensed
-          Healthcare Professionals across{" "}
-          {PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()}+ Facilities
-        </p>
-        <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-6">
-          <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+        eyebrow="DHA Sheryan register"
+        title="Find a Doctor in Dubai"
+        subtitle={`Search ${PROFESSIONAL_STATS.total.toLocaleString()}+ DHA-licensed healthcare professionals across ${PROFESSIONAL_STATS.uniqueFacilities.toLocaleString()}+ facilities in Dubai.`}
+        stats={[
+          { n: PROFESSIONAL_STATS.total.toLocaleString(), l: "Licensed professionals" },
+          { n: PROFESSIONAL_STATS.uniqueFacilities.toLocaleString(), l: "Healthcare facilities" },
+          { n: ALL_SPECIALTIES.length.toString(), l: "Specialties tracked" },
+          { n: "4", l: "Professional categories" },
+        ]}
+        aeoAnswer={
+          <>
             Browse the largest publicly searchable directory of DHA-licensed
             healthcare professionals in Dubai, sourced from the official Sheryan
             Medical Registry. This directory includes{" "}
@@ -148,189 +206,74 @@ export default function FindADoctorPage() {
             {PROFESSIONAL_STATS.dentists.toLocaleString()} dentists,{" "}
             {PROFESSIONAL_STATS.nurses.toLocaleString()} nurses and midwives,
             and {PROFESSIONAL_STATS.alliedHealth.toLocaleString()} allied health
-            professionals. Search by category, specialty, or facility to find the
-            right healthcare professional.
+            professionals. Search by category, specialty, or facility to find
+            the right healthcare professional.
+          </>
+        }
+        schemas={
+          <>
+            <JsonLd
+              data={{
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                name: "Find a Doctor in Dubai",
+                description: `Search ${PROFESSIONAL_STATS.total.toLocaleString()} DHA-licensed healthcare professionals in Dubai.`,
+                url: `${base}/find-a-doctor`,
+                mainEntity: {
+                  "@type": "ItemList",
+                  numberOfItems: PROFESSIONAL_STATS.total,
+                  itemListElement: PROFESSIONAL_CATEGORIES.map((cat, i) => ({
+                    "@type": "ListItem",
+                    position: i + 1,
+                    item: {
+                      "@type": "MedicalWebPage",
+                      name: cat.name,
+                      url: `${base}/professionals/${cat.slug}`,
+                    },
+                  })),
+                },
+              }}
+            />
+            <JsonLd data={speakableSchema([".answer-block"])} />
+            <JsonLd data={faqPageSchema(FAQS)} />
+            <JsonLd
+              data={breadcrumbSchema([
+                { name: "UAE", url: `${base}/` },
+                { name: "Directory", url: `${base}/directory` },
+                { name: "Find a Doctor" },
+              ])}
+            />
+          </>
+        }
+        sections={sections}
+        faqs={FAQS}
+      />
+
+      {/* FAQ */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
+        <header className="mb-6">
+          <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+            Questions
+          </p>
+          <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            About finding a doctor in Dubai.
+          </h2>
+        </header>
+        <div className="max-w-3xl">
+          <FaqSection faqs={FAQS} />
+        </div>
+
+        <div className="mt-12 rounded-z-md bg-white border border-ink-line p-6 max-w-3xl">
+          <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+            <strong className="text-ink-soft">Source.</strong> Dubai Health
+            Authority (DHA) Sheryan Medical Professional Registry. Data scraped{" "}
+            {PROFESSIONAL_STATS.scraped}. This directory is for informational
+            purposes only and does not constitute medical advice. Verify
+            professional credentials directly with DHA before making healthcare
+            decisions.
           </p>
         </div>
-
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {[
-            {
-              value: PROFESSIONAL_STATS.total.toLocaleString(),
-              label: "Licensed professionals",
-            },
-            {
-              value: PROFESSIONAL_STATS.uniqueFacilities.toLocaleString(),
-              label: "Healthcare facilities",
-            },
-            {
-              value: ALL_SPECIALTIES.length.toString(),
-              label: "Specialties tracked",
-            },
-            { value: "4", label: "Professional categories" },
-          ].map(({ value, label }) => (
-            <div key={label} className="bg-[#f8f8f6] p-4 text-center">
-              <p className="text-2xl font-bold text-[#006828]">{value}</p>
-              <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                {label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Category Cards */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-          Browse by Category
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-        {PROFESSIONAL_CATEGORIES.map((cat) => (
-          <Link
-            key={cat.slug}
-            href={`/professionals/${cat.slug}`}
-            className="border border-black/[0.06] p-6 hover:border-[#006828]/15 transition-colors group"
-          >
-            <p className="font-['Geist_Mono',monospace] text-[10px] text-black/30 tracking-wider uppercase mb-2">
-              {cat.icon}
-            </p>
-            <h3 className="font-['Bricolage_Grotesque',sans-serif] text-lg font-semibold text-[#1c1c1c] tracking-tight mb-1 group-hover:text-[#006828] transition-colors">
-              {cat.name}
-            </h3>
-            <p className="text-sm font-bold text-[#006828] mb-3">
-              {cat.count.toLocaleString()} professionals
-            </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 leading-relaxed">
-              {categoryDescriptions[cat.slug] || cat.description}
-            </p>
-          </Link>
-        ))}
-      </div>
-
-      {/* Popular Specialties by Category */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-          Popular Specialties
-        </h2>
-      </div>
-      <div className="mb-12">
-        {topSpecialtiesByCategory.map(({ category, specialties }) => (
-          <div key={category.slug} className="mb-8">
-            <h3 className="font-['Bricolage_Grotesque',sans-serif] text-base font-semibold text-[#1c1c1c] tracking-tight mb-3">
-              {category.name}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              {specialties.map((spec) => (
-                <Link
-                  key={spec.slug}
-                  href={`/professionals/${spec.category}/${spec.slug}`}
-                  className="border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
-                >
-                  <h4 className="text-sm font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-1 group-hover:text-[#006828] transition-colors">
-                    {spec.name}
-                  </h4>
-                  <p className="text-[11px] text-black/40">
-                    {spec.count.toLocaleString()} professionals
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Top Hospitals */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-          Top Hospitals and Facilities by Staff
-        </h2>
-      </div>
-      <div className="mb-12">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-black/[0.06]">
-              <th className="text-left font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2 pr-4">
-                Facility
-              </th>
-              <th className="text-right font-['Geist',sans-serif] text-xs text-black/40 font-medium py-2">
-                Staff
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {topFacilities.map((fac, i) => (
-              <tr key={fac.slug} className="border-b border-black/[0.06]">
-                <td className="py-3 pr-4">
-                  <Link
-                    href={`/professionals/facility/${fac.slug}`}
-                    className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                  >
-                    {i + 1}. {fac.name}
-                  </Link>
-                </td>
-                <td className="py-3 text-right">
-                  <span className="text-sm font-bold text-[#006828]">
-                    {fac.totalStaff.toLocaleString()}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* FAQ Section */}
-      <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-        <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
-          Frequently Asked Questions
-        </h2>
-      </div>
-      <div className="mb-12">
-        {FAQS.map((faq) => (
-          <div
-            key={faq.question}
-            className="border-b border-black/[0.06] py-6"
-          >
-            <h3 className="font-['Bricolage_Grotesque',sans-serif] text-base font-semibold text-[#1c1c1c] tracking-tight mb-3">
-              {faq.question}
-            </h3>
-            <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
-              {faq.answer}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* CTA to full directory */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] py-5 px-6 mb-8">
-        <p className="font-['Bricolage_Grotesque',sans-serif] text-base font-semibold text-[#1c1c1c] tracking-tight mb-2">
-          Explore the Full Professional Directory
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed mb-3">
-          Browse {stats.totalProfessionals.toLocaleString()} healthcare
-          professionals across {stats.totalSpecialties} specialties and{" "}
-          {stats.totalFacilities.toLocaleString()} facilities.
-        </p>
-        <Link
-          href="/professionals"
-          className="font-['Geist',sans-serif] text-sm text-[#006828] font-medium hover:underline"
-        >
-          Go to Professional Directory &rarr;
-        </Link>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Source:</strong> Dubai Health Authority (DHA) Sheryan Medical
-          Professional Registry. Data scraped {PROFESSIONAL_STATS.scraped}. This
-          directory is for informational purposes only and does not constitute
-          medical advice. Verify professional credentials directly with DHA
-          before making healthcare decisions.
-        </p>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

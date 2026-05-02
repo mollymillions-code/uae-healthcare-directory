@@ -23,10 +23,12 @@
     "auto:start": "node scripts/automation/install-plists.mjs --load",
     "auto:stop": "node scripts/automation/uninstall-plists.mjs",
     "auto:status": "node scripts/automation/status.mjs",
+    "cache:directory": "node scripts/revalidate-directory-cache.mjs",
     "auto:run-weekly": "node scripts/automation/orchestrator.mjs --mode weekly",
     "auto:run-daily": "node scripts/automation/orchestrator.mjs --mode daily --slot morning",
     "auto:run-review": "node scripts/automation/orchestrator.mjs --mode review",
-    "auto:health": "node scripts/automation/orchestrator.mjs --mode health"
+    "auto:health": "node scripts/automation/orchestrator.mjs --mode health",
+    "media:audit": "node scripts/audit-directory-media.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1012.0",
@@ -37,6 +39,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.1",
+    "framer-motion": "^12.38.0",
     "googleapis": "^164.1.0",
     "gsap": "^3.14.2",
     "isomorphic-dompurify": "^3.7.1",
@@ -44,6 +47,7 @@
     "lucide-react": "^0.577.0",
     "nanoid": "^3.3.11",
     "next": "14.2.35",
+    "next-auth": "^4.24.14",
     "next-themes": "^0.2.1",
     "pdf-parse": "^2.4.5",
     "pg": "^8.20.0",
@@ -74,5 +78,8 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "html-encoding-sniffer": "4.0.0"
   }
 }

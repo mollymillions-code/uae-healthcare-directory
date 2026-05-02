@@ -1,0 +1,62 @@
+name: Stage Preview
+
+on:
+  push:
+    branches:
+      - "codex/stage-*"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch or ref to stage"
+        required: false
+        default: ""
+
+concurrency:
+  group: stage-preview
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    name: Build Inactive Slot and Open Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: github.repository == 'zavis-support/zavis-landing'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select ref
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.ref }}" ]; then
+            echo "value=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync stage infra
+        run: |
+          scp -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o StrictHostKeyChecking=no \
+            scripts/ec2-deploy-infra/stage.sh \
+            scripts/ec2-deploy-infra/promote-staged.sh \
+            scripts/ec2-deploy-infra/ecosystem.config.cjs \
+            ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/zavis-deploy/
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 ubuntu@${{ secrets.EC2_HOST }} \
+            'chmod +x /home/ubuntu/zavis-deploy/stage.sh /home/ubuntu/zavis-deploy/promote-staged.sh && md5sum /home/ubuntu/zavis-deploy/stage.sh /home/ubuntu/zavis-deploy/promote-staged.sh /home/ubuntu/zavis-deploy/ecosystem.config.cjs'
+
+      - name: Stage inactive slot
+        run: |
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=70 ubuntu@${{ secrets.EC2_HOST }} \
+            "DEPLOY_REF='${{ steps.ref.outputs.value }}' /home/ubuntu/zavis-deploy/stage.sh"
+
+      - name: Print staging URL
+        if: always()
+        run: |
+          ssh -i ~/.ssh/ec2.pem -o ConnectTimeout=30 ubuntu@${{ secrets.EC2_HOST }} \
+            "grep -E 'STAGING_URL=|STAGE READY|FATAL' /home/ubuntu/logs/stage.log | tail -20"

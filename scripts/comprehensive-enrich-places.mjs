@@ -5,13 +5,14 @@
  *
  * What this does per provider:
  *   1. GET places.googleapis.com/v1/places/{id} with X-Goog-FieldMask: * (all fields)
- *   2. Parallel-download every photo (up to 10) as JPEG bytes at maxWidthPx=1600
- *   3. Upload each photo to R2 at providers/{id}/photo-{N}.jpg (idempotent via HEAD)
- *   4. Store raw full response + extracted fields + R2 gallery URLs in DB in a single UPDATE
+ *   2. Parallel-download every photo (up to 10) at maxWidthPx=1600
+ *   3. Normalize + compress each photo to WebP at upload time
+ *   4. Upload each photo to R2 at providers/{id}/photo-{N}.webp (idempotent via HEAD)
+ *   5. Store raw full response + extracted fields + R2 gallery URLs in DB in a single UPDATE
  *
- * Cloudflare serves R2 via its CDN and supports URL-based image transforms:
- *   /cdn-cgi/image/width=600,quality=80,format=auto/providers/{id}/photo-0.jpg
- * So we upload once at 1600px and serve any size on-demand.
+ * Next image optimization is disabled in production, so this script must
+ * write browser-ready assets. Do not upload raw Google bytes to provider
+ * listings; those are often too heavy for cards/detail mosaics.
  *
  * GOOGLE TOS NOTE:
  *   Google Places TOS §3.2.4(b) prohibits permanent caching of Places content (photos, reviews).
@@ -38,6 +39,7 @@
 import pg from "pg";
 import fs from "fs";
 import { S3Client, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import sharp from "sharp";
 
 const { Pool } = pg;
 
@@ -57,6 +59,8 @@ const CONCURRENCY = parseInt(getArg("concurrency", "8"), 10);
 const PHOTO_WIDTH_PX = 1600; // single canonical size; Cloudflare transforms handle resizing
 const MAX_PHOTOS = 10;
 const MAX_REVIEWS = 5;
+const OUTPUT_IMAGE_WIDTH_PX = 1200;
+const OUTPUT_WEBP_QUALITY = 80;
 
 // API pricing (as of 2026-04, Places API New) — for cost tracking only
 const COST_PLACE_DETAILS_USD = 0.025; // Enterprise tier (fieldmask *)
@@ -180,6 +184,31 @@ async function uploadToR2(key, buffer, contentType) {
   return `${R2_PUBLIC_URL}/${key}`;
 }
 
+async function optimizeProviderPhoto(buffer) {
+  const image = sharp(buffer, { failOn: "none" }).rotate();
+  const optimized = await image
+    .resize({
+      width: OUTPUT_IMAGE_WIDTH_PX,
+      height: OUTPUT_IMAGE_WIDTH_PX,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: OUTPUT_WEBP_QUALITY,
+      effort: 4,
+    })
+    .toBuffer();
+
+  const metadata = await sharp(optimized).metadata();
+  return {
+    buffer: optimized,
+    contentType: "image/webp",
+    widthPx: metadata.width || 0,
+    heightPx: metadata.height || 0,
+    bytes: optimized.length,
+  };
+}
+
 // ─── Google Places (New API) ──────────────────────────────────────────────
 async function fetchPlaceDetails(placeId) {
   return retryWithBackoff(
@@ -246,21 +275,28 @@ async function processOne(row, stats) {
     const photoDescriptors = (place.photos || []).slice(0, MAX_PHOTOS);
     const photoResults = await Promise.all(
       photoDescriptors.map(async (photo, i) => {
-        const key = `providers/${id}/photo-${i}.jpg`;
+        const key = `providers/${id}/photo-${i}.webp`;
         try {
           let r2Url;
+          let optimizedMeta = null;
           if (await r2KeyExists(key)) {
             r2Url = `${R2_PUBLIC_URL}/${key}`;
             stats.photosSkipped++;
           } else {
-            const { buffer, contentType } = await downloadPhoto(photo.name);
-            r2Url = await uploadToR2(key, buffer, contentType);
+            const { buffer } = await downloadPhoto(photo.name);
+            optimizedMeta = await optimizeProviderPhoto(buffer);
+            r2Url = await uploadToR2(
+              key,
+              optimizedMeta.buffer,
+              optimizedMeta.contentType,
+            );
             stats.photosDownloaded++;
           }
           return {
             url: r2Url,
-            widthPx: photo.widthPx || 0,
-            heightPx: photo.heightPx || 0,
+            widthPx: optimizedMeta?.widthPx || photo.widthPx || 0,
+            heightPx: optimizedMeta?.heightPx || photo.heightPx || 0,
+            ...(optimizedMeta ? { bytes: optimizedMeta.bytes, format: "webp" } : {}),
             attributions: (photo.authorAttributions || []).map((a) => ({
               displayName: a.displayName || "",
               uri: a.uri || "",

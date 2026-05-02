@@ -289,6 +289,126 @@ export function PrivacyPolicyPageClient() {
             </p>
           </div>
 
+          {/* Mobile app */}
+          <div>
+            <h2
+              className="text-2xl font-semibold text-[#1c1c1c] mb-4"
+              style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+            >
+              Mobile app - voice calls, messaging, and notifications
+            </h2>
+            <p className="mb-4">
+              The Zavis mobile app for Android and iOS is the agent-side companion to the
+              Zavis CRM. This section describes what the mobile app collects in addition to
+              anything our website or web dashboard collects.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Account information</h3>
+            <p className="mb-4">
+              When you sign in, the app stores your email address, name, profile photo, and
+              a session token for your Zavis CRM account. This information identifies you to
+              your organization&apos;s CRM instance and is required for the app to function.
+              We do not sell or share it with third parties.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Microphone and voice/SIP calls</h3>
+            <p className="mb-4">
+              With your permission, the app captures audio from your device microphone during
+              a voice call you have started or accepted. This audio is transmitted in real time
+              to your organization&apos;s SIP/VoIP gateway over an encrypted connection. The
+              audio is not stored on your device, and the app itself does not retain a copy of
+              the call audio.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Call analysis on the Zavis platform</h3>
+            <p className="mb-4">
+              Calls handled through the Zavis CRM may be transcribed, summarised, and analysed,
+              for example sentiment analysis and call-quality summaries, on the Zavis server
+              side. These analyses are produced from the audio your organization receives through
+              its SIP gateway and are surfaced back into the agent app&apos;s call-detail screen.
+              Whether your organization retains call recordings, transcripts, or analysis output,
+              and for how long, is governed by your organization&apos;s policies and the Zavis CRM
+              platform&apos;s main privacy terms; please consult your administrator.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Messaging across third-party platforms</h3>
+            <p className="mb-4">
+              Through your organization&apos;s CRM configuration, the app may let you send and
+              receive messages on third-party platforms including WhatsApp, Telegram, Facebook
+              Messenger, Instagram, TikTok, SMS, and email. Message content typed in the app is
+              sent to your organization&apos;s CRM, which relays it to the relevant platform&apos;s API.
+              Inbound messages from those platforms are surfaced in the app for you to read and
+              reply to. The app is not affiliated with, endorsed by, or operated by Meta,
+              Telegram, ByteDance, or any other platform owner. These are integrations provided
+              by the Zavis CRM platform.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Camera and photo library</h3>
+            <p className="mb-4">
+              With your permission, the app uses the camera and photo library to attach images
+              and files to a conversation. Attachments you send are uploaded to your
+              organization&apos;s CRM and delivered to the customer through the corresponding
+              channel. We do not access photos other than the ones you explicitly choose to attach.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Push notifications</h3>
+            <p className="mb-4">
+              With your permission, the app registers a device push token, Apple Push
+              Notification service or Firebase Cloud Messaging, so we can deliver new-message
+              and incoming-call notifications. The push token, your device platform, and an
+              installation identifier are stored on the Zavis CRM server. When you sign out of
+              the app, the device record is removed.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Phone state on Android</h3>
+            <p className="mb-4">
+              On Android, the app reads the device&apos;s call state to pause VoIP audio when a
+              regular phone call interrupts the session, and to match the active SIM to your
+              provisioned outbound calling line on multi-SIM devices. The app does not access
+              your call log, contacts, location, or any other phone-state information.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Data we do not collect</h3>
+            <p className="mb-4">
+              The app does not collect your device location, your contacts, your calendar, your
+              call log, your media library beyond items you explicitly choose to attach, or any
+              data from third-party apps installed on your device. The app does not contain a
+              third-party crash-reporting or analytics SDK; diagnostics stay on your device.
+            </p>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Third parties we share data with</h3>
+            <ul className="list-disc pl-6 space-y-1 mb-4">
+              <li>
+                Apple Push Notification service and Google Firebase Cloud Messaging receive the
+                push payload required to deliver a notification.
+              </li>
+              <li>
+                Your organization&apos;s chosen messaging-platform integrations, such as WhatsApp
+                Business, Telegram, Meta, TikTok, and Twilio, receive message content you send
+                through those channels, in line with each platform&apos;s developer terms.
+              </li>
+            </ul>
+
+            <h3 className="text-lg font-semibold text-[#1c1c1c] mb-2">Encryption and your rights</h3>
+            <p className="mb-4">
+              All app-to-server traffic uses TLS, including HTTPS for API calls and WSS for SIP
+              signaling. Audio carried over the SIP gateway is encrypted in transit between the
+              app and your organization&apos;s gateway. You can sign out of the app at any time,
+              which removes the device record and stops further notifications to that device. To
+              request deletion of your account or stored data, contact your organization&apos;s Zavis
+              administrator, or write to{" "}
+              <a href="mailto:support@zavis.ai" className="text-[#006828] underline">
+                support@zavis.ai
+              </a>
+              .
+            </p>
+
+            <p>
+              When we add features that change what the mobile app collects, we will update this
+              section before the new version of the app is published.
+            </p>
+          </div>
+
           {/* 8. International Transfers */}
           <div>
             <h2

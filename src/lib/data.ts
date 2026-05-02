@@ -11,11 +11,52 @@ import { CATEGORIES, SUBCATEGORIES } from "./constants/categories";
 import { INSURANCE_PROVIDERS, InsuranceProvider } from "./constants/insurance";
 import { LANGUAGES, LanguageInfo } from "./constants/languages";
 import { CONDITIONS, Condition } from "./constants/conditions";
+import {
+  canonicalizeCategorySlug,
+  canonicalizeProviderFilterScope,
+  canonicalizeSubcategorySlug,
+  categorySlugVariants,
+  getProviderCountry,
+  getProviderStableKey,
+  isProviderFilterScopeValid,
+  isProviderPubliclyListable,
+  isProviderSuspect,
+  prepareProvidersForPublic,
+  sanitizeProviderForPublic,
+} from "./data-quality";
+import type { ProviderFilterScope } from "./data-quality";
+import {
+  REMOVED_PROVIDER_SLUGS,
+  isRemovedProviderRecord,
+  isRemovedProviderSlug,
+} from "./provider-removals";
+
+export {
+  getProviderCountry,
+  getProviderStableKey,
+  isRemovedProviderRecord,
+  isProviderPubliclyListable,
+  isProviderSuspect,
+};
 
 // ─── DB imports (only used when DATABASE_URL is set) ─────────────────────────
 
 let HAS_DB = !!process.env.DATABASE_URL;
 let _dbVerified = false;
+
+const verifiedProviderOverrides = new Set(
+  (process.env.ZAVIS_VERIFIED_PROVIDER_IDS || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+function hasVerifiedProviderOverride(row: Record<string, unknown>): boolean {
+  if (verifiedProviderOverrides.size === 0) return false;
+  const id = typeof row.id === "string" ? row.id.toLowerCase() : "";
+  const slug = typeof row.slug === "string" ? row.slug.toLowerCase() : "";
+  return verifiedProviderOverrides.has(id) || verifiedProviderOverrides.has(slug);
+}
 
 /**
  * Check if DB actually has providers. If not (empty table, connection error),
@@ -46,13 +87,15 @@ let _db: typeof import("@/lib/db")["db"] | null = null;
 let _providersTable: typeof import("@/lib/db/schema")["providers"] | null = null;
 let _areasTable: typeof import("@/lib/db/schema")["areas"] | null = null;
 let _citiesTable: typeof import("@/lib/db/schema")["cities"] | null = null;
+let _providerSlugHistoryTable: typeof import("@/lib/db/schema")["providerSlugHistory"] | null = null;
 let _eq: typeof import("drizzle-orm")["eq"] | null = null;
 let _and: typeof import("drizzle-orm")["and"] | null = null;
-let _desc: typeof import("drizzle-orm")["desc"] | null = null;
 let _countFn: typeof import("drizzle-orm")["count"] | null = null;
+let _desc: typeof import("drizzle-orm")["desc"] | null = null;
 let _gt: typeof import("drizzle-orm")["gt"] | null = null;
 let _ilike: typeof import("drizzle-orm")["ilike"] | null = null;
 let _or: typeof import("drizzle-orm")["or"] | null = null;
+let _notInArray: typeof import("drizzle-orm")["notInArray"] | null = null;
 let _sql: typeof import("drizzle-orm")["sql"] | null = null;
 
 let _dbModulesLoaded = false;
@@ -68,15 +111,100 @@ async function ensureDbModules() {
   _providersTable = schemaMod.providers;
   _areasTable = schemaMod.areas;
   _citiesTable = schemaMod.cities;
+  _providerSlugHistoryTable = schemaMod.providerSlugHistory;
   _eq = ormMod.eq;
   _and = ormMod.and;
-  _desc = ormMod.desc;
   _countFn = ormMod.count;
+  _desc = ormMod.desc;
   _gt = ormMod.gt;
   _ilike = ormMod.ilike;
   _or = ormMod.or;
+  _notInArray = ormMod.notInArray;
   _sql = ormMod.sql;
   _dbModulesLoaded = true;
+}
+
+type ProvidersTable = typeof import("@/lib/db/schema")["providers"];
+
+function providerListColumns(t: ProvidersTable) {
+  return {
+    id: t.id,
+    name: t.name,
+    slug: t.slug,
+    nameAr: t.nameAr,
+    categoryId: t.categoryId,
+    categorySlug: t.categorySlug,
+    subcategoryId: t.subcategoryId,
+    subcategorySlug: t.subcategorySlug,
+    facilityType: t.facilityType,
+    country: t.country,
+    cityId: t.cityId,
+    citySlug: t.citySlug,
+    areaId: t.areaId,
+    areaSlug: t.areaSlug,
+    address: t.address,
+    addressAr: t.addressAr,
+    latitude: t.latitude,
+    longitude: t.longitude,
+    googlePlaceId: t.googlePlaceId,
+    phone: t.phone,
+    email: t.email,
+    website: t.website,
+    description: t.description,
+    descriptionAr: t.descriptionAr,
+    shortDescription: t.shortDescription,
+    reviewSummary: t.reviewSummary,
+    reviewSummaryAr: t.reviewSummaryAr,
+    services: t.services,
+    languages: t.languages,
+    insurance: t.insurance,
+    operatingHours: t.operatingHours,
+    amenities: t.amenities,
+    yearEstablished: t.yearEstablished,
+    licenseNumber: t.licenseNumber,
+    googleRating: t.googleRating,
+    googleReviewCount: t.googleReviewCount,
+    logoUrl: t.logoUrl,
+    coverImageUrl: t.coverImageUrl,
+    photos: t.photos,
+    editorialSummary: t.editorialSummary,
+    editorialSummaryLang: t.editorialSummaryLang,
+    accessibilityOptions: t.accessibilityOptions,
+    googleTypes: t.googleTypes,
+    plusCodeGlobal: t.plusCodeGlobal,
+    plusCodeCompound: t.plusCodeCompound,
+    googleMapsUri: t.googleMapsUri,
+    priceLevel: t.priceLevel,
+    currentOpeningHours: t.currentOpeningHours,
+    googleFetchedAt: t.googleFetchedAt,
+    isClaimed: t.isClaimed,
+    isVerified: t.isVerified,
+    updatedAt: t.updatedAt,
+  };
+}
+
+function categoryWhereCondition(t: ProvidersTable, categorySlug: string) {
+  const variants = categorySlugVariants(categorySlug);
+  return variants.length === 1
+    ? _eq!(t.categorySlug, variants[0])
+    : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)));
+}
+
+function jsonbTextArrayContainsAny(
+  column: unknown,
+  terms: string[],
+  mode: "contains" | "equals" = "contains"
+) {
+  const clauses = terms
+    .map((term) => term.trim().toLowerCase())
+    .filter(Boolean)
+    .map((term) =>
+      mode === "contains"
+        ? _sql!`lower(elem) LIKE ${`%${term}%`}`
+        : _sql!`lower(elem) = ${term}`
+    );
+  if (clauses.length === 0) return undefined;
+  return _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${column}) elem WHERE ${_sql!.join(clauses, _sql!` OR `)})`;
 }
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -128,6 +256,7 @@ export interface LocalProvider {
   name: string;
   nameAr?: string;
   slug: string;
+  country?: string;
   citySlug: string;
   areaSlug?: string;
   categorySlug: string;
@@ -211,6 +340,7 @@ export interface LocalProvider {
     wheelchairAccessibleSeating?: boolean;
   };
   googleTypes?: string[];
+  googlePlaceId?: string;
   plusCodeGlobal?: string;
   plusCodeCompound?: string;
   googleMapsUri?: string;
@@ -230,6 +360,16 @@ export interface LocalProvider {
   }>;
   googleFetchedAt?: string;
   businessStatus?: string;
+}
+
+function preparePublicProviders(
+  providers: LocalProvider[],
+  scope?: ProviderFilterScope
+): LocalProvider[] {
+  return prepareProvidersForPublic(
+    providers.filter((provider) => !isRemovedProviderRecord(provider)),
+    scope
+  );
 }
 
 // ─── Query Cache (5-min TTL, bounded LRU, max 500 entries) ─────────────────────
@@ -276,10 +416,11 @@ function rowToProvider(row: any): LocalProvider {
     name: row.name,
     nameAr: row.nameAr ?? row.name_ar ?? undefined,
     slug: row.slug,
+    country: row.country ?? undefined,
     citySlug: row.citySlug ?? row.city_slug ?? "",
     areaSlug: row.areaSlug ?? row.area_slug ?? undefined,
-    categorySlug: row.categorySlug ?? row.category_slug ?? "",
-    subcategorySlug: row.subcategorySlug ?? row.subcategory_slug ?? undefined,
+    categorySlug: canonicalizeCategorySlug(row.categorySlug ?? row.category_slug ?? ""),
+    subcategorySlug: canonicalizeSubcategorySlug(row.subcategorySlug ?? row.subcategory_slug),
     address: row.address ?? "",
     addressAr: row.addressAr ?? row.address_ar ?? undefined,
     phone: row.phone ?? undefined,
@@ -294,7 +435,7 @@ function rowToProvider(row: any): LocalProvider {
     latitude: String(row.latitude ?? "0"),
     longitude: String(row.longitude ?? "0"),
     isClaimed: Boolean(row.isClaimed ?? row.is_claimed ?? false),
-    isVerified: Boolean(row.isVerified ?? row.is_verified ?? false),
+    isVerified: Boolean(row.isVerified ?? row.is_verified ?? false) || hasVerifiedProviderOverride(row),
     services: row.services ?? [],
     languages: row.languages ?? [],
     insurance: row.insurance ?? [],
@@ -321,6 +462,7 @@ function rowToProvider(row: any): LocalProvider {
     accessibilityOptions:
       row.accessibilityOptions ?? row.accessibility_options ?? undefined,
     googleTypes: row.googleTypes ?? row.google_types ?? undefined,
+    googlePlaceId: row.googlePlaceId ?? row.google_place_id ?? undefined,
     plusCodeGlobal: row.plusCodeGlobal ?? row.plus_code_global ?? undefined,
     plusCodeCompound:
       row.plusCodeCompound ?? row.plus_code_compound ?? undefined,
@@ -364,13 +506,19 @@ function loadFallback(): void {
     const jsonPath = path.join(process.cwd(), "src/lib/providers-scraped.json");
     const raw = fs.readFileSync(jsonPath, "utf-8");
     const scraped = JSON.parse(raw) as Record<string, unknown>[];
-    FALLBACK_ALL_PROVIDERS = scraped.map((p: Record<string, unknown>) => ({
-      ...(p as unknown as LocalProvider),
-      googleRating: (p.googleRating as string) || "0",
-      googleReviewCount: (p.googleReviewCount as number) || 0,
-      latitude: (p.latitude as string) || "0",
-      longitude: (p.longitude as string) || "0",
-    }));
+    FALLBACK_ALL_PROVIDERS = preparePublicProviders(
+      scraped.map((p: Record<string, unknown>) => ({
+        ...(p as unknown as LocalProvider),
+        isVerified: Boolean(p.isVerified) || hasVerifiedProviderOverride(p),
+        country: (p.country as string | undefined) || getProviderCountry(p as unknown as LocalProvider),
+        categorySlug: canonicalizeCategorySlug((p.categorySlug as string | undefined) ?? (p.category_slug as string | undefined)),
+        subcategorySlug: canonicalizeSubcategorySlug((p.subcategorySlug as string | undefined) ?? (p.subcategory_slug as string | undefined)),
+        googleRating: (p.googleRating as string) || "0",
+        googleReviewCount: (p.googleReviewCount as number) || 0,
+        latitude: (p.latitude as string) || "0",
+        longitude: (p.longitude as string) || "0",
+      }))
+    );
   } catch {
     FALLBACK_ALL_PROVIDERS = [];
   }
@@ -918,19 +1066,77 @@ async function dbSelectProviders(filters?: {
   categorySlug?: string;
   areaSlug?: string;
   subcategorySlug?: string;
+  country?: string;
 }): Promise<LocalProvider[]> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  if (!isProviderFilterScopeValid(scope)) return [];
+
   await ensureDbModules();
   const t = _providersTable!;
   const conditions = [];
 
-  if (filters?.citySlug) conditions.push(_eq!(t.citySlug, filters.citySlug));
-  if (filters?.categorySlug) conditions.push(_eq!(t.categorySlug, filters.categorySlug));
-  if (filters?.areaSlug) conditions.push(_eq!(t.areaSlug, filters.areaSlug));
-  if (filters?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, filters.subcategorySlug));
+  if (scope?.country) {
+    conditions.push(_eq!(t.country, scope.country));
+  } else if (!scope?.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  if (scope?.citySlug) conditions.push(_eq!(t.citySlug, scope.citySlug));
+  if (scope?.categorySlug) {
+    const variants = categorySlugVariants(scope.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (scope?.areaSlug) conditions.push(_eq!(t.areaSlug, scope.areaSlug));
+  if (scope?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, scope.subcategorySlug));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
-  const rows = await _db!.select().from(t).where(where);
-  return rows.map(rowToProvider);
+  const rows = await _db!.select(providerListColumns(t)).from(t).where(where);
+  return preparePublicProviders(rows.map(rowToProvider), scope);
+}
+
+async function dbCountProviders(filters?: {
+  citySlug?: string;
+  categorySlug?: string;
+  areaSlug?: string;
+  subcategorySlug?: string;
+  country?: string;
+}): Promise<number> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  if (!isProviderFilterScopeValid(scope)) return 0;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (scope?.country) {
+    conditions.push(_eq!(t.country, scope.country));
+  } else if (!scope?.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  if (scope?.citySlug) conditions.push(_eq!(t.citySlug, scope.citySlug));
+  if (scope?.categorySlug) {
+    const variants = categorySlugVariants(scope.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (scope?.areaSlug) conditions.push(_eq!(t.areaSlug, scope.areaSlug));
+  if (scope?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, scope.subcategorySlug));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
+  const rows = await _db!.select({ count: _countFn!() }).from(t).where(where);
+  return Number(rows[0]?.count ?? 0);
 }
 
 export async function getProviders(filters?: {
@@ -944,6 +1150,14 @@ export async function getProviders(filters?: {
   sort?: "rating" | "name" | "relevance";
   country?: string;
 }): Promise<{ providers: LocalProvider[]; total: number; page: number; totalPages: number }> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  const normalizedFilters = { ...filters, ...scope };
+
+  if (!isProviderFilterScopeValid(scope)) {
+    const page = filters?.page || 1;
+    return { providers: [], total: 0, page, totalPages: 0 };
+  }
+
   // ─── Verify DB has data (first call only) ──────────────────────────────────
   await verifyDbHasData();
 
@@ -952,23 +1166,25 @@ export async function getProviders(filters?: {
     loadFallback();
     let filtered: LocalProvider[];
 
-    if (filters?.citySlug && filters?.categorySlug && filters?.areaSlug) {
-      filtered = fallbackByCityCategoryArea!.get(`${filters.citySlug}:${filters.categorySlug}:${filters.areaSlug}`) || [];
-    } else if (filters?.citySlug && filters?.categorySlug) {
-      filtered = fallbackByCityCategory!.get(`${filters.citySlug}:${filters.categorySlug}`) || [];
-    } else if (filters?.citySlug && filters?.areaSlug) {
-      filtered = fallbackByCityArea!.get(`${filters.citySlug}:${filters.areaSlug}`) || [];
-    } else if (filters?.citySlug) {
-      filtered = fallbackByCity!.get(filters.citySlug) || [];
+    if (normalizedFilters?.citySlug && normalizedFilters?.categorySlug && normalizedFilters?.areaSlug) {
+      filtered = fallbackByCityCategoryArea!.get(`${normalizedFilters.citySlug}:${normalizedFilters.categorySlug}:${normalizedFilters.areaSlug}`) || [];
+    } else if (normalizedFilters?.citySlug && normalizedFilters?.categorySlug) {
+      filtered = fallbackByCityCategory!.get(`${normalizedFilters.citySlug}:${normalizedFilters.categorySlug}`) || [];
+    } else if (normalizedFilters?.citySlug && normalizedFilters?.areaSlug) {
+      filtered = fallbackByCityArea!.get(`${normalizedFilters.citySlug}:${normalizedFilters.areaSlug}`) || [];
+    } else if (normalizedFilters?.citySlug) {
+      filtered = fallbackByCity!.get(normalizedFilters.citySlug) || [];
     } else {
       filtered = FALLBACK_ALL_PROVIDERS!;
     }
 
-    if (filters?.subcategorySlug) {
-      filtered = filtered.filter((p) => p.subcategorySlug === filters.subcategorySlug);
+    if (normalizedFilters?.subcategorySlug) {
+      filtered = filtered.filter((p) => p.subcategorySlug === normalizedFilters.subcategorySlug);
     }
-    if (filters?.query) {
-      const q = filters.query.toLowerCase();
+    filtered = preparePublicProviders(filtered, scope);
+
+    if (normalizedFilters?.query) {
+      const q = normalizedFilters.query.toLowerCase();
       filtered = filtered.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
@@ -976,14 +1192,14 @@ export async function getProviders(filters?: {
           p.address.toLowerCase().includes(q)
       );
     }
-    if (filters?.sort === "rating") {
+    if (normalizedFilters?.sort === "rating") {
       filtered = [...filtered].sort((a, b) => Number(b.googleRating) - Number(a.googleRating));
-    } else if (filters?.sort === "name") {
+    } else if (normalizedFilters?.sort === "name") {
       filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    const page = filters?.page || 1;
-    const limit = filters?.limit || 20;
+    const page = normalizedFilters?.page || 1;
+    const limit = normalizedFilters?.limit || 20;
     const total = filtered.length;
     const totalPages = Math.ceil(total / limit);
     const start = (page - 1) * limit;
@@ -1001,17 +1217,24 @@ export async function getProviders(filters?: {
   // providers from leaking into UAE directory pages once GCC data is seeded.
   // When citySlug is set, it already scopes to a specific country's city, so
   // no default country filter is needed.
-  if (filters?.country) {
-    conditions.push(_eq!(t.country, filters.country));
-  } else if (!filters?.citySlug) {
+  if (normalizedFilters?.country) {
+    conditions.push(_eq!(t.country, normalizedFilters.country));
+  } else if (!normalizedFilters?.citySlug) {
     conditions.push(_eq!(t.country, "ae"));
   }
-  if (filters?.citySlug) conditions.push(_eq!(t.citySlug, filters.citySlug));
-  if (filters?.categorySlug) conditions.push(_eq!(t.categorySlug, filters.categorySlug));
-  if (filters?.areaSlug) conditions.push(_eq!(t.areaSlug, filters.areaSlug));
-  if (filters?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, filters.subcategorySlug));
-  if (filters?.query) {
-    const q = `%${filters.query}%`;
+  if (normalizedFilters?.citySlug) conditions.push(_eq!(t.citySlug, normalizedFilters.citySlug));
+  if (normalizedFilters?.categorySlug) {
+    const variants = categorySlugVariants(normalizedFilters.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (normalizedFilters?.areaSlug) conditions.push(_eq!(t.areaSlug, normalizedFilters.areaSlug));
+  if (normalizedFilters?.subcategorySlug) conditions.push(_eq!(t.subcategorySlug, normalizedFilters.subcategorySlug));
+  if (normalizedFilters?.query) {
+    const q = `%${normalizedFilters.query}%`;
     conditions.push(
       _or!(
         _ilike!(t.name, q),
@@ -1020,55 +1243,265 @@ export async function getProviders(filters?: {
       )
     );
   }
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
   const where = conditions.length > 0 ? _and!(...conditions) : undefined;
 
-  // Count
-  const countResult = await _db!.select({ value: _countFn!() }).from(t).where(where);
-  const total = Number(countResult[0]?.value ?? 0);
-
-  const page = filters?.page || 1;
-  const limit = filters?.limit || 20;
-  const totalPages = Math.ceil(total / limit);
+  const page = normalizedFilters?.page || 1;
+  const limit = normalizedFilters?.limit || 20;
   const offset = (page - 1) * limit;
 
-  // Build ordered query
-  let orderBy;
-  if (filters?.sort === "rating") {
-    orderBy = _desc!(t.googleRating);
-  } else if (filters?.sort === "name") {
-    orderBy = t.name; // ASC
-  } else {
-    orderBy = undefined;
+  const candidateLimit = limit >= 1000 ? limit : Math.max(limit * 2, limit);
+
+  const rowsPromise =
+    normalizedFilters?.sort === "rating"
+      ? _db!
+          .select(providerListColumns(t))
+          .from(t)
+          .where(where)
+          .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount), t.name)
+          .limit(candidateLimit)
+          .offset(offset)
+      : normalizedFilters?.sort === "name"
+        ? _db!
+            .select(providerListColumns(t))
+            .from(t)
+            .where(where)
+            .orderBy(t.name)
+            .limit(candidateLimit)
+            .offset(offset)
+        : _db!
+            .select(providerListColumns(t))
+            .from(t)
+            .where(where)
+            .limit(candidateLimit)
+            .offset(offset);
+
+  const [rows, countRows] = await Promise.all([
+    rowsPromise,
+    _db!.select({ count: _countFn!() }).from(t).where(where),
+  ]);
+  let providers = preparePublicProviders(rows.map(rowToProvider), scope);
+  if (normalizedFilters?.sort === "rating") {
+    providers = [...providers].sort((a, b) => {
+      const rd = Number(b.googleRating) - Number(a.googleRating);
+      if (rd !== 0) return rd;
+      return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+    });
+  } else if (normalizedFilters?.sort === "name") {
+    providers = [...providers].sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  const rows = orderBy
-    ? await _db!.select().from(t).where(where).orderBy(orderBy).limit(limit).offset(offset)
-    : await _db!.select().from(t).where(where).limit(limit).offset(offset);
+  const total = Number(countRows[0]?.count ?? providers.length);
+  const totalPages = Math.ceil(total / limit);
 
   return {
-    providers: rows.map(rowToProvider),
+    providers: providers.slice(0, limit),
     total,
     page,
     totalPages,
   };
 }
 
-export async function getProviderBySlug(slug: string): Promise<LocalProvider | undefined> {
-  if (!HAS_DB) {
-    loadFallback();
-    return fallbackBySlug!.get(slug);
+export async function searchProvidersByName(filters: {
+  query: string;
+  citySlug?: string;
+  categorySlug?: string;
+  areaSlug?: string;
+  page?: number;
+  limit?: number;
+  country?: string;
+}): Promise<{ providers: LocalProvider[]; total: number; page: number; totalPages: number }> {
+  const scope = canonicalizeProviderFilterScope(filters);
+  const normalizedFilters = { ...filters, ...scope };
+  const page = normalizedFilters.page || 1;
+  const limit = normalizedFilters.limit || 20;
+  const rawQuery = String(normalizedFilters.query || "").trim();
+
+  if (!rawQuery || !isProviderFilterScopeValid(scope)) {
+    return { providers: [], total: 0, page, totalPages: 0 };
   }
 
-  const cacheKey = `slug:${slug}`;
+  await verifyDbHasData();
+
+  if (!HAS_DB) {
+    loadFallback();
+    let filtered = FALLBACK_ALL_PROVIDERS!;
+    if (normalizedFilters.citySlug) {
+      filtered = fallbackByCity!.get(normalizedFilters.citySlug) || [];
+    }
+    if (normalizedFilters.categorySlug) {
+      const variants = categorySlugVariants(normalizedFilters.categorySlug);
+      filtered = filtered.filter((provider) => variants.includes(provider.categorySlug));
+    }
+    if (normalizedFilters.areaSlug) {
+      filtered = filtered.filter((provider) => provider.areaSlug === normalizedFilters.areaSlug);
+    }
+    const q = rawQuery.toLowerCase();
+    filtered = preparePublicProviders(filtered, scope).filter((provider) =>
+      provider.name.toLowerCase().includes(q)
+    );
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    return { providers: filtered.slice(start, start + limit), total, page, totalPages };
+  }
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [];
+
+  if (normalizedFilters.country) {
+    conditions.push(_eq!(t.country, normalizedFilters.country));
+  } else if (!normalizedFilters.citySlug) {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  if (normalizedFilters.citySlug) conditions.push(_eq!(t.citySlug, normalizedFilters.citySlug));
+  if (normalizedFilters.categorySlug) {
+    const variants = categorySlugVariants(normalizedFilters.categorySlug);
+    conditions.push(
+      variants.length === 1
+        ? _eq!(t.categorySlug, variants[0])
+        : _or!(...variants.map((slug) => _eq!(t.categorySlug, slug)))
+    );
+  }
+  if (normalizedFilters.areaSlug) conditions.push(_eq!(t.areaSlug, normalizedFilters.areaSlug));
+  conditions.push(_ilike!(t.name, `%${rawQuery}%`));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const where = _and!(...conditions);
+  const offset = (page - 1) * limit;
+  const [rows, countRows] = await Promise.all([
+    _db!
+      .select(providerListColumns(t))
+      .from(t)
+      .where(where)
+      .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount))
+      .limit(Math.max(limit * 2, limit))
+      .offset(offset),
+    _db!.select({ count: _countFn!() }).from(t).where(where),
+  ]);
+
+  const providers = preparePublicProviders(rows.map(rowToProvider), scope).slice(0, limit);
+  const total = Number(countRows[0]?.count ?? providers.length);
+  return {
+    providers,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+/**
+ * Look up an archived slug in `provider_slug_history`. Returns the provider id
+ * if found. Used by getProviderBySlug to 301 historical URLs to canonical.
+ */
+async function lookupHistoricalSlug(slug: string): Promise<string | undefined> {
+  if (!HAS_DB) return undefined;
+  await ensureDbModules();
+  try {
+    const rows = await _db!
+      .select({ providerId: _providerSlugHistoryTable!.providerId })
+      .from(_providerSlugHistoryTable!)
+      .where(_eq!(_providerSlugHistoryTable!.oldSlug, slug))
+      .limit(1);
+    return rows[0]?.providerId;
+  } catch {
+    // Table may not exist yet on a slot whose migration hasn't applied.
+    // Treat as miss rather than crash — the page will fall through to 404.
+    return undefined;
+  }
+}
+
+export async function getProviderBySlug(slug: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
+  if (isRemovedProviderSlug(slug)) return undefined;
+  const scope = canonicalizeProviderFilterScope(expectedScope);
+  if (!isProviderFilterScopeValid(scope)) return undefined;
+
+  await verifyDbHasData();
+
+  if (!HAS_DB) {
+    loadFallback();
+    const provider = fallbackBySlug!.get(slug);
+    if (provider) return preparePublicProviders([provider], scope)[0];
+    return findProviderBySlugAlias(slug, FALLBACK_ALL_PROVIDERS ?? [], scope);
+  }
+
+  const cacheKey = `slug:${slug}:${scope ? JSON.stringify(scope) : ""}`;
   const cached = getCached<LocalProvider>(cacheKey);
   if (cached) return cached;
 
   await ensureDbModules();
   const t = _providersTable!;
   const rows = await _db!.select().from(t).where(_eq!(t.slug, slug)).limit(1);
-  if (rows.length === 0) return undefined;
-  const provider = rowToProvider(rows[0]);
+  let provider =
+    rows.length > 0 && !isRemovedProviderRecord(rows[0])
+      ? sanitizeProviderForPublic(rowToProvider(rows[0]))
+      : undefined;
+
+  // Fallback 1: explicit slug history (predictable, indexed lookup).
+  if (!provider) {
+    const historicalId = await lookupHistoricalSlug(slug);
+    if (historicalId) {
+      const historyRows = await _db!.select().from(t).where(_eq!(t.id, historicalId)).limit(1);
+      if (historyRows.length > 0 && !isRemovedProviderRecord(historyRows[0])) {
+        provider = sanitizeProviderForPublic(rowToProvider(historyRows[0]));
+      }
+    }
+  }
+
+  // Fallback 2: name/license-derived alias match (deterministic, predates this
+  // change — kept as a safety net for legacy URLs not yet in slug history).
+  if (!provider) {
+    const candidates = await dbSelectProviders({
+      country: scope?.country,
+      citySlug: scope?.citySlug,
+      areaSlug: scope?.areaSlug,
+    });
+    provider = findProviderBySlugAlias(slug, candidates, scope);
+  }
+  if (!provider || !isProviderPubliclyListable(provider)) return undefined;
+  if (preparePublicProviders([provider], scope).length === 0) return undefined;
+  setCache(cacheKey, provider);
+  return provider;
+}
+
+export async function getProviderByIdOrSlug(identifier: string, expectedScope?: ProviderFilterScope): Promise<LocalProvider | undefined> {
+  const key = identifier.trim();
+  if (!key || isRemovedProviderSlug(key)) return undefined;
+
+  const bySlug = await getProviderBySlug(key, expectedScope);
+  if (bySlug) return bySlug;
+
+  const scope = canonicalizeProviderFilterScope(expectedScope);
+  if (!isProviderFilterScopeValid(scope)) return undefined;
+
+  await verifyDbHasData();
+
+  if (!HAS_DB) {
+    loadFallback();
+    const provider = (FALLBACK_ALL_PROVIDERS ?? []).find((p) => p.id === key);
+    return provider ? preparePublicProviders([provider], scope)[0] : undefined;
+  }
+
+  const cacheKey = `id-or-slug:${key}:${scope ? JSON.stringify(scope) : ""}`;
+  const cached = getCached<LocalProvider>(cacheKey);
+  if (cached) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const rows = await _db!.select().from(t).where(_eq!(t.id, key)).limit(1);
+  const provider =
+    rows.length > 0 && !isRemovedProviderRecord(rows[0])
+      ? sanitizeProviderForPublic(rowToProvider(rows[0]))
+      : undefined;
+
+  if (!provider || !isProviderPubliclyListable(provider)) return undefined;
+  if (preparePublicProviders([provider], scope).length === 0) return undefined;
   setCache(cacheKey, provider);
   return provider;
 }
@@ -1083,55 +1516,45 @@ export async function getProviderCountByCity(citySlug: string): Promise<number> 
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
-  const result = await _db!.select({ value: _countFn!() }).from(t).where(_eq!(t.citySlug, citySlug));
-  const count = Number(result[0]?.value ?? 0);
+  const count = await dbCountProviders({ citySlug });
   setCache(cacheKey, count);
   return count;
 }
 
 export async function getProviderCountByCategoryAndCity(categorySlug: string, citySlug: string): Promise<number> {
+  const canonicalCategorySlug = canonicalizeCategorySlug(categorySlug);
   if (!HAS_DB) {
     loadFallback();
-    return (fallbackByCityCategory!.get(`${citySlug}:${categorySlug}`) || []).length;
+    return (fallbackByCityCategory!.get(`${citySlug}:${canonicalCategorySlug}`) || []).length;
   }
 
-  const cacheKey = `count:cat-city:${categorySlug}:${citySlug}`;
+  const cacheKey = `count:cat-city:${canonicalCategorySlug}:${citySlug}`;
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
-  const result = await _db!
-    .select({ value: _countFn!() })
-    .from(t)
-    .where(_and!(_eq!(t.categorySlug, categorySlug), _eq!(t.citySlug, citySlug)));
-  const count = Number(result[0]?.value ?? 0);
+  const count = await dbCountProviders({ categorySlug: canonicalCategorySlug, citySlug });
   setCache(cacheKey, count);
   return count;
 }
 
 export async function getProviderCountByCategory(categorySlug: string): Promise<number> {
+  const canonicalCategorySlug = canonicalizeCategorySlug(categorySlug);
   if (!HAS_DB) {
     loadFallback();
     let count = 0;
     fallbackByCityCategory!.forEach((arr, key) => {
-      if (key.split(":")[1] === categorySlug) {
+      if (key.split(":")[1] === canonicalCategorySlug) {
         count += arr.length;
       }
     });
     return count;
   }
 
-  const cacheKey = `count:cat:${categorySlug}`;
+  const cacheKey = `count:cat:${canonicalCategorySlug}`;
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
-  const result = await _db!.select({ value: _countFn!() }).from(t).where(_eq!(t.categorySlug, categorySlug));
-  const count = Number(result[0]?.value ?? 0);
+  const count = await dbCountProviders({ categorySlug: canonicalCategorySlug, country: "ae" });
   setCache(cacheKey, count);
   return count;
 }
@@ -1146,13 +1569,7 @@ export async function getProviderCountByAreaAndCity(areaSlug: string, citySlug: 
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
-  const result = await _db!
-    .select({ value: _countFn!() })
-    .from(t)
-    .where(_and!(_eq!(t.areaSlug, areaSlug), _eq!(t.citySlug, citySlug)));
-  const count = Number(result[0]?.value ?? 0);
+  const count = await dbCountProviders({ areaSlug, citySlug });
   setCache(cacheKey, count);
   return count;
 }
@@ -1160,7 +1577,9 @@ export async function getProviderCountByAreaAndCity(areaSlug: string, citySlug: 
 export async function getTopRatedProviders(citySlug?: string, limit = 5): Promise<LocalProvider[]> {
   if (!HAS_DB) {
     loadFallback();
-    const source = citySlug ? (fallbackByCity!.get(citySlug) || []) : FALLBACK_ALL_PROVIDERS!;
+    const source = citySlug
+      ? (fallbackByCity!.get(citySlug) || [])
+      : FALLBACK_ALL_PROVIDERS!.filter((p) => getProviderCountry(p) === "ae");
     return [...source]
       .filter((p) => Number(p.googleRating) > 0)
       .sort((a, b) => {
@@ -1177,19 +1596,117 @@ export async function getTopRatedProviders(citySlug?: string, limit = 5): Promis
 
   await ensureDbModules();
   const t = _providersTable!;
-  const conditions = [_gt!(t.googleRating, "0")];
-  if (citySlug) conditions.push(_eq!(t.citySlug, citySlug));
+  const conditions = [];
+  if (citySlug) {
+    conditions.push(_eq!(t.citySlug, citySlug));
+  } else {
+    conditions.push(_eq!(t.country, "ae"));
+  }
+  conditions.push(_gt!(t.googleRating, "0"));
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
   const rows = await _db!
     .select()
     .from(t)
     .where(_and!(...conditions))
     .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount))
-    .limit(limit);
+    .limit(Math.max(limit * 4, limit));
 
-  const result = rows.map(rowToProvider);
+  const result = preparePublicProviders(
+    rows.map(rowToProvider),
+    citySlug ? { citySlug } : { country: "ae" }
+  )
+    .filter((p) => Number(p.googleRating) > 0)
+    .sort((a, b) => {
+      const ratingDiff = Number(b.googleRating) - Number(a.googleRating);
+      if (ratingDiff !== 0) return ratingDiff;
+      return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+    })
+    .slice(0, limit);
   setCache(cacheKey, result);
   return result;
+}
+
+function normalizeSlugLookup(value: unknown): string {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/l[\W_]*l[\W_]*c/g, "llc")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^|-)(llc|ltd|co|company|branch|br)(?=-|$)/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function withoutCitySuffix(value: string, citySlug?: string): string {
+  if (citySlug && value.endsWith(`-${citySlug}`)) {
+    return value.slice(0, -citySlug.length - 1);
+  }
+  for (const city of CITIES) {
+    if (value.endsWith(`-${city.slug}`)) {
+      return value.slice(0, -city.slug.length - 1);
+    }
+  }
+  return value;
+}
+
+function providerSlugAliases(provider: LocalProvider): Set<string> {
+  const aliases = new Set<string>();
+  const push = (value: unknown) => {
+    const normalized = normalizeSlugLookup(value);
+    if (!normalized) return;
+    aliases.add(normalized);
+    aliases.add(withoutCitySuffix(normalized, provider.citySlug));
+  };
+
+  push(provider.slug);
+  push(provider.name);
+  push(`${provider.name}-${provider.citySlug}`);
+  if (provider.licenseNumber) push(`${provider.licenseNumber}-${provider.citySlug}`);
+  return aliases;
+}
+
+function findProviderBySlugAlias(
+  slug: string,
+  providers: LocalProvider[],
+  expectedScope?: ProviderFilterScope
+): LocalProvider | undefined {
+  const requested = normalizeSlugLookup(slug);
+  const requestedStem = withoutCitySuffix(requested, expectedScope?.citySlug);
+  return preparePublicProviders(providers, expectedScope).find((provider) => {
+    const aliases = providerSlugAliases(provider);
+    return aliases.has(requested) || aliases.has(requestedStem);
+  });
+}
+
+/**
+ * Archive an old provider slug into provider_slug_history. Idempotent — same
+ * (old_slug, provider_id) won't error on rerun. Call this whenever a provider's
+ * canonical slug changes (rename, admin edit, marketing-friendly short URL).
+ */
+export async function archiveProviderSlug(opts: {
+  oldSlug: string;
+  providerId: string;
+  citySlug?: string;
+  reason?: string;
+}): Promise<void> {
+  if (!HAS_DB) return;
+  await ensureDbModules();
+  try {
+    await _db!
+      .insert(_providerSlugHistoryTable!)
+      .values({
+        oldSlug: opts.oldSlug,
+        providerId: opts.providerId,
+        citySlug: opts.citySlug,
+        reason: opts.reason,
+      })
+      .onConflictDoNothing();
+  } catch (err) {
+    console.error("[archiveProviderSlug] failed:", err);
+  }
 }
 
 /** Get all provider slugs for a city (for generateStaticParams — avoids loading full objects) */
@@ -1206,12 +1723,18 @@ export async function getProviderSlugsByCity(citySlug: string): Promise<{ catego
 
   await ensureDbModules();
   const t = _providersTable!;
+  const conditions = [_eq!(t.citySlug, citySlug)];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
   const rows = await _db!
     .select({ categorySlug: t.categorySlug, slug: t.slug })
     .from(t)
-    .where(_eq!(t.citySlug, citySlug));
-
-  const result = rows.map((r) => ({ categorySlug: r.categorySlug, slug: r.slug }));
+    .where(_and!(...conditions));
+  const result = rows.map((p) => ({
+    categorySlug: canonicalizeCategorySlug(p.categorySlug),
+    slug: p.slug,
+  }));
   setCache(cacheKey, result);
   return result;
 }
@@ -1236,23 +1759,22 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
   const cached = getCached<LocalProvider[]>(cacheKey);
   if (cached) return cached;
 
-  // Use SQL-level JSONB filtering to avoid loading all providers into JS
   await ensureDbModules();
   const t = _providersTable!;
-  const conditions = [];
+  const conditions = [
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
+    jsonbTextArrayContainsAny(t.insurance, matchTerms, "contains"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
-  if (citySlug) conditions.push(_eq!(t.citySlug, citySlug));
-
-  // Build ILIKE conditions for each match term against JSONB array elements
-  const likePatterns = matchTerms.map((term) => `%${term}%`);
-  const orClauses = likePatterns.map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`).join(" OR ");
-  conditions.push(
-    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`
-  );
-
-  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
-  const rows = await _db!.select().from(t).where(where);
-  const result = rows.map(rowToProvider);
+  const rows = await _db!
+    .select(providerListColumns(t))
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])))
+    .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount));
+  const result = preparePublicProviders(rows.map(rowToProvider), citySlug ? { citySlug } : { country: "ae" });
   setCache(cacheKey, result);
   return result;
 }
@@ -1273,21 +1795,80 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
   const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
   if (!insurer) { setCache(cacheKey, 0); return 0; }
 
   const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const conditions = [
+    _eq!(t.citySlug, citySlug),
+    jsonbTextArrayContainsAny(t.insurance, matchTerms, "contains"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])));
+  const count = Number(result[0]?.count ?? 0);
+  setCache(cacheKey, count);
+  return count;
+}
+
+export async function getProviderCountByInsuranceCategory(
+  insurerSlug: string,
+  citySlug: string,
+  categorySlug: string
+): Promise<number> {
+  if (!HAS_DB) {
+    loadFallback();
+    const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+    if (!insurer) return 0;
+    const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
+    const source = fallbackByCity!.get(citySlug) || [];
+    return source.filter(
+      (p) =>
+        p.categorySlug === categorySlug &&
+        p.insurance.some((ins) =>
+          matchTerms.some((term) => ins.toLowerCase().includes(term))
+        )
+    ).length;
+  }
+
+  const cacheKey = `count:ins-cat:${insurerSlug}:${citySlug}:${categorySlug}`;
+  const cached = getCached<number>(cacheKey);
+  if (cached !== undefined) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
+  if (!insurer) {
+    setCache(cacheKey, 0);
+    return 0;
+  }
+
+  const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
   const likePatterns = matchTerms.map((term) => `%${term}%`);
-  const orClauses = likePatterns.map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`).join(" OR ");
+  const orClauses = likePatterns
+    .map((pat) => `lower(elem) LIKE '${pat.replace(/'/g, "''")}'`)
+    .join(" OR ");
 
   const conditions = [
     _eq!(t.citySlug, citySlug),
+    categoryWhereCondition(t, categorySlug),
     _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`,
   ];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
 
-  const result = await _db!.select({ count: _countFn!() }).from(t).where(_and!(...conditions));
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...conditions));
   const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;
@@ -1309,22 +1890,21 @@ export async function getProvidersByLanguage(languageSlug: string, citySlug?: st
     );
   }
 
-  // Use SQL-level JSONB filtering to avoid loading all providers into JS
   await ensureDbModules();
   const t = _providersTable!;
-  const conditions = [];
-
-  if (citySlug) conditions.push(_eq!(t.citySlug, citySlug));
-
-  // Case-insensitive exact match against JSONB array elements
-  const escapedName = matchName.replace(/'/g, "''");
-  conditions.push(
-    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.languages}) elem WHERE lower(elem) = '${_sql!.raw(escapedName)}')`
-  );
-
-  const where = conditions.length > 0 ? _and!(...conditions) : undefined;
-  const rows = await _db!.select().from(t).where(where);
-  return rows.map(rowToProvider);
+  const conditions = [
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
+    jsonbTextArrayContainsAny(t.languages, [matchName], "equals"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const rows = await _db!
+    .select(providerListColumns(t))
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])))
+    .orderBy(_desc!(t.googleRating), _desc!(t.googleReviewCount));
+  return preparePublicProviders(rows.map(rowToProvider), citySlug ? { citySlug } : { country: "ae" });
 }
 
 export async function getProviderCountByLanguage(languageSlug: string, citySlug: string): Promise<number> {
@@ -1343,18 +1923,24 @@ export async function getProviderCountByLanguage(languageSlug: string, citySlug:
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
-  await ensureDbModules();
-  const t = _providersTable!;
   const language = LANGUAGES.find((l) => l.slug === languageSlug);
   if (!language) { setCache(cacheKey, 0); return 0; }
 
-  const escapedName = language.name.toLowerCase().replace(/'/g, "''");
+  const matchName = language.name.toLowerCase();
+
+  await ensureDbModules();
+  const t = _providersTable!;
   const conditions = [
     _eq!(t.citySlug, citySlug),
-    _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.languages}) elem WHERE lower(elem) = '${_sql!.raw(escapedName)}')`,
-  ];
-
-  const result = await _db!.select({ count: _countFn!() }).from(t).where(_and!(...conditions));
+    jsonbTextArrayContainsAny(t.languages, [matchName], "equals"),
+  ].filter(Boolean);
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+  const result = await _db!
+    .select({ count: _countFn!() })
+    .from(t)
+    .where(_and!(...(conditions as NonNullable<(typeof conditions)[number]>[])));
   const count = Number(result[0]?.count ?? 0);
   setCache(cacheKey, count);
   return count;

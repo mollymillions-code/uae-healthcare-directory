@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isRemovedProviderPath } from "@/lib/provider-removals";
 
 const MAX_FACILITY_ROUTE_SEGMENT_LENGTH = 200;
 const FACILITY_ROUTE_PREFIXES = [
@@ -31,6 +32,7 @@ function hasInvalidFacilityRouteSegment(pathname: string): boolean {
  * 2. Dashboard auth protection
  * 3. Research pipeline API key enforcement
  * 4. Professional facility route hardening
+ * 5. 410 for explicitly removed providers
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
@@ -40,6 +42,15 @@ export function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+
+  if (isRemovedProviderPath(pathname)) {
+    return new NextResponse(null, {
+      status: 410,
+      headers: {
+        "X-Robots-Tag": "noindex, noarchive",
+      },
+    });
+  }
 
   if (hasInvalidFacilityRouteSegment(pathname)) {
     return new NextResponse(null, { status: 404 });
@@ -75,7 +86,7 @@ export function middleware(request: NextRequest) {
     const dashboardKey = process.env.DASHBOARD_KEY || '';
 
     if (authCookie?.value !== dashboardKey) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/dashboard-auth', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -103,7 +114,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Propagate the resolved pathname as a request header so server-rendered
+  // layouts can branch on it (e.g. set `<html lang="ar" dir="rtl">` for
+  // /ar/* routes without a client-side flicker). Read in
+  // `src/app/layout.tsx` via `headers().get('x-pathname')`.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

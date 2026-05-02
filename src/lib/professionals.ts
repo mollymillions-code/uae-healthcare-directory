@@ -768,6 +768,52 @@ export async function getProfessionalsIndexBySpecialty(
   }
 }
 
+/** List professionals for a given specialty and primary city. */
+export async function getProfessionalsIndexBySpecialtyAndCity(
+  specialtySlug: string,
+  citySlug: string,
+  opts: { limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb() || !specialtySlug || !citySlug) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, count } = _ormMod!;
+    const where = and(
+      eq(professionalsIndex.specialtySlug, specialtySlug),
+      eq(professionalsIndex.primaryCitySlug, citySlug),
+      eq(professionalsIndex.status, "active")
+    );
+    const [countRows, rows] = await Promise.all([
+      db
+        .select({ total: count() })
+        .from(professionalsIndex)
+        .where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    return {
+      total: Number(countRows[0]?.total ?? 0),
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexBySpecialtyAndCity failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
 /** List professionals at a given facility (soft slug ref). */
 export async function getProfessionalsIndexByFacility(
   facilitySlug: string,
@@ -837,6 +883,144 @@ export async function getProfessionalsIndexByCity(
   } catch (err) {
     console.error(
       `[professionals] getProfessionalsIndexByCity failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
+/** List all active professionals with pagination. Used for doctor-only search tabs. */
+export async function getProfessionalsIndex(
+  opts: { limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb()) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { asc, eq, count } = _ormMod!;
+    const where = eq(professionalsIndex.status, "active");
+    const [countRows, rows] = await Promise.all([
+      db.select({ total: count() }).from(professionalsIndex).where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    return {
+      total: Number(countRows[0]?.total ?? 0),
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndex failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
+/** List professionals matching any of the given specialty slugs. */
+export async function getProfessionalsIndexBySpecialties(
+  specialtySlugs: string[],
+  opts: { citySlug?: string | null; limit?: number; offset?: number } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  if (!hasDb()) return { total: 0, professionals: [] };
+  const slugs = Array.from(new Set(specialtySlugs.filter(Boolean)));
+  if (slugs.length === 0) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, eq, count, inArray } = _ormMod!;
+    const where = and(
+      inArray(professionalsIndex.specialtySlug, slugs),
+      eq(professionalsIndex.status, "active"),
+      opts.citySlug ? eq(professionalsIndex.primaryCitySlug, opts.citySlug) : undefined
+    );
+    const [countRows, rows] = await Promise.all([
+      db.select({ total: count() }).from(professionalsIndex).where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    return {
+      total: Number(countRows[0]?.total ?? 0),
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] getProfessionalsIndexBySpecialties failed: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+    return { total: 0, professionals: [] };
+  }
+}
+
+/** Search active professionals by name/title/specialty with optional filters. */
+export async function searchProfessionalsIndex(
+  query: string,
+  opts: {
+    citySlug?: string | null;
+    specialtySlugs?: string[];
+    limit?: number;
+    offset?: number;
+  } = {}
+): Promise<{ total: number; professionals: ProfessionalIndexRecord[] }> {
+  const needle = query.trim();
+  if (!hasDb() || !needle) return { total: 0, professionals: [] };
+  const limit = Math.max(1, Math.min(opts.limit ?? 50, 200));
+  const offset = Math.max(0, opts.offset ?? 0);
+  const specialtySlugs = Array.from(new Set((opts.specialtySlugs ?? []).filter(Boolean)));
+  try {
+    await loadDbModules();
+    const { db } = _dbMod!;
+    const { professionalsIndex } = _schemaMod!;
+    const { and, asc, count, eq, ilike, inArray, or } = _ormMod!;
+    const like = `%${needle}%`;
+    const where = and(
+      eq(professionalsIndex.status, "active"),
+      or(
+        ilike(professionalsIndex.name, like),
+        ilike(professionalsIndex.displayTitle, like),
+        ilike(professionalsIndex.specialty, like)
+      ),
+      opts.citySlug ? eq(professionalsIndex.primaryCitySlug, opts.citySlug) : undefined,
+      specialtySlugs.length > 0
+        ? inArray(professionalsIndex.specialtySlug, specialtySlugs)
+        : undefined
+    );
+    const [countRows, rows] = await Promise.all([
+      db.select({ total: count() }).from(professionalsIndex).where(where),
+      db
+        .select()
+        .from(professionalsIndex)
+        .where(where)
+        .orderBy(asc(professionalsIndex.name))
+        .limit(limit)
+        .offset(offset),
+    ]);
+    return {
+      total: Number(countRows[0]?.total ?? 0),
+      professionals: rows.map(rowToProfessionalIndexRecord),
+    };
+  } catch (err) {
+    console.error(
+      `[professionals] searchProfessionalsIndex failed: ${
         err instanceof Error ? err.message : String(err)
       }`
     );

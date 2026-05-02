@@ -283,14 +283,14 @@ Proceed autonomously without asking for approval.`;
       execSync(`git commit -m "Publish report: ${topicResult.topic}"`, { cwd: PROJECT_ROOT, stdio: 'pipe' });
       execSync('git push', { cwd: PROJECT_ROOT, stdio: 'pipe' });
 
-      // Trigger Vercel deployment
+      // Trigger live deployment
       execSync(
         'git commit --allow-empty --author="Vidyasagar Chamle <vidyasagar.chamle@gmail.com>" -m "Trigger Deployment"',
         { cwd: PROJECT_ROOT, stdio: 'pipe' }
       );
       execSync('git push', { cwd: PROJECT_ROOT, stdio: 'pipe' });
 
-      return { summary: 'Deployed to Vercel' };
+      return { summary: 'Pushed deployment trigger' };
     } catch (e) {
       // Non-fatal — report is published locally, deploy can be retried
       console.warn('Deploy warning:', e.message);

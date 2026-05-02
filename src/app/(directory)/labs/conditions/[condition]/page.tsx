@@ -741,6 +741,7 @@ const LAB_CONDITIONS: Record<string, LabCondition> = {
 // ─── Static Params ──────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return Object.keys(LAB_CONDITIONS).map((condition) => ({ condition }));
 }
 

@@ -16,6 +16,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllListCityParams();
 }
 
@@ -101,7 +102,7 @@ export default async function ArPricingListPage({ params }: Props) {
 
   return (
     <div
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
       dir="rtl"
       lang="ar"
     >

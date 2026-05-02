@@ -22,6 +22,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllFacilities(20)
     .slice(0, 100)
     .map((f) => ({ slug: f.slug }));
@@ -94,7 +95,7 @@ export default function ArabicEmployerProfilePage({ params }: Props) {
     <div
       dir="rtl"
       lang="ar"
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <JsonLd
         data={{

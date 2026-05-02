@@ -52,6 +52,7 @@ interface Props {
 // ─── generateStaticParams ───────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().map((c) => ({ city: c.slug }));
 }
 

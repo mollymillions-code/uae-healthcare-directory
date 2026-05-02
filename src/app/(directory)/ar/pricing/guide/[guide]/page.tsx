@@ -69,6 +69,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return PRICING_GUIDES.map((g) => ({ guide: g.slug }));
 }
 
@@ -146,7 +147,7 @@ export default async function ArGuidePage({ params }: PageProps) {
 
   return (
     <div
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
       dir="rtl"
       lang="ar"
     >

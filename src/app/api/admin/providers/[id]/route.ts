@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { providers, adminChanges } from "@/lib/db/schema";
+import { providers, adminChanges, providerSlugHistory } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { validateAdminAuth } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-// Allowlisted fields that can be edited through the admin panel
+// Allowlisted fields that can be edited through the admin panel.
+// `slug` is editable but triggers auto-archive of the old slug into
+// provider_slug_history so the old URL keeps 301-ing to the new one.
 const EDITABLE_FIELDS = new Set([
-  "name", "phone", "phoneSecondary", "email", "website", "address",
+  "name", "slug", "phone", "phoneSecondary", "email", "website", "address",
   "description", "shortDescription", "insurance", "services", "languages",
   "operatingHours", "googleRating", "googleReviewCount",
   "isClaimed", "isVerified", "status",
@@ -68,6 +70,20 @@ export async function PATCH(
     // Apply updates
     updates.updated_at = new Date();
     await db.update(providers).set(updates).where(eq(providers.id, params.id));
+
+    // If the slug changed, archive the old slug so old URLs 301 to the new one.
+    const slugChange = changeLogs.find((c) => c.field === "slug");
+    if (slugChange && typeof slugChange.oldVal === "string" && slugChange.oldVal) {
+      await db
+        .insert(providerSlugHistory)
+        .values({
+          oldSlug: slugChange.oldVal,
+          providerId: params.id,
+          citySlug: (current[0] as Record<string, unknown>).city_slug as string | undefined,
+          reason: reason || "admin slug rename",
+        })
+        .onConflictDoNothing();
+    }
 
     // Log changes
     for (const log of changeLogs) {

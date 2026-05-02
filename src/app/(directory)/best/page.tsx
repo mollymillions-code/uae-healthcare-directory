@@ -11,6 +11,7 @@ import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 // ─── generateMetadata ───────────────────────────────────────────────────────────
 

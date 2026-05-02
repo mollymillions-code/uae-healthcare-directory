@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { CITIES } from "@/lib/constants/cities";
 import { COUNTRIES } from "@/lib/constants/countries";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 
 function useFooterCountry(pathname: string) {
   return useMemo(() => {
@@ -82,11 +83,24 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/find-a-doctor" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Find a Doctor</Link></li>
               <li><Link href="/directory/dubai/top/hospitals" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Top Rated</Link></li>
-              <li><Link href="/claim" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Claim Listing</Link></li>
+              <li><Link href="/tools" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Free Tools for Clinics</Link></li>
+              <li>
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="directory_footer_owner_cta"
+                  label="Get listed or edit"
+                  variant="link"
+                  /* `!text-white/60` uses Tailwind's important modifier to
+                     override the link variant's `text-[#006828]` color so
+                     the link is white-on-dark on the footer. Without `!`,
+                     the variant class won the cascade and the link
+                     rendered green-on-dark. */
+                  className="!text-white/60 hover:!text-white text-sm"
+                />
+              </li>
               <li><Link href="/verified-reviews" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Verified Reviews</Link></li>
               <li><Link href="/about" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">About</Link></li>
               <li><Link href="/accessibility" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Accessibility</Link></li>
-              <li><Link href="/api/search" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">API</Link></li>
               <li><Link href="/privacy-policy" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-sm text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-dark rounded-sm transition-colors">Terms of Service</Link></li>
             </ul>

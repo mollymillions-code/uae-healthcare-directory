@@ -1,337 +1,187 @@
-"use client";
-
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { CheckCircle, Upload, Loader2, AlertCircle } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ChevronRight,
+  ShieldCheck,
+  MessageCircle,
+  Sparkles,
+} from "lucide-react";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
+import { getProviderByIdOrSlug } from "@/lib/data";
 
 interface ClaimFormPageProps {
   params: { listingId: string };
 }
 
-export default function ClaimFormPage({ params }: ClaimFormPageProps) {
-  const router = useRouter();
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState("");
-  const [formData, setFormData] = useState({
-    contactName: "",
-    contactEmail: "",
-    contactPhone: "",
-    jobTitle: "",
-    proofType: "license",
-    notes: "",
-    phone: "",
-    website: "",
-    description: "",
-    operatingHours: "",
-  });
+export async function generateMetadata({
+  params,
+}: ClaimFormPageProps): Promise<Metadata> {
+  const provider = await getProviderByIdOrSlug(params.listingId);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setSubmitting(true);
-
-    try {
-      const body = new FormData();
-      body.append("providerId", params.listingId);
-      body.append("contactName", formData.contactName);
-      body.append("contactEmail", formData.contactEmail);
-      body.append("contactPhone", formData.contactPhone);
-      if (formData.jobTitle) body.append("jobTitle", formData.jobTitle);
-      body.append("proofType", formData.proofType);
-      if (formData.notes) body.append("notes", formData.notes);
-
-      const requestedChanges: Record<string, string> = {};
-      if (formData.phone) requestedChanges.phone = formData.phone;
-      if (formData.website) requestedChanges.website = formData.website;
-      if (formData.description) requestedChanges.description = formData.description;
-      if (formData.operatingHours) requestedChanges.operatingHours = formData.operatingHours;
-      if (Object.keys(requestedChanges).length > 0) {
-        body.append("requestedChanges", JSON.stringify(requestedChanges));
-      }
-
-      const file = fileInputRef.current?.files?.[0];
-      if (file) {
-        if (file.size > 10 * 1024 * 1024) {
-          setError("File too large. Maximum size is 10MB.");
-          setSubmitting(false);
-          return;
-        }
-        body.append("proofDocument", file);
-      }
-
-      const res = await fetch("/api/claims", {
-        method: "POST",
-        body,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Submission failed");
-      }
-
-      setSubmitted(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
+  if (!provider) {
+    return {
+      title: "Listing not found | Claim Provider Listing",
+      robots: { index: false, follow: false },
+    };
   }
 
-  if (submitted) {
+  return {
+    title: `Claim ${provider.name} | Zavis Directory`,
+    description: `Open WhatsApp to claim and manage the Zavis listing for ${provider.name}.`,
+    robots: { index: false, follow: false },
+  };
+}
+
+export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
+  const provider = await getProviderByIdOrSlug(params.listingId);
+
+  if (!provider) {
+    notFound();
+  }
+
+  if (!provider.id || !provider.slug) {
     return (
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-lg mx-auto text-center">
-          <div className="h-16 w-16 bg-[#006828]/[0.04] flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-8 w-8 text-[#006828]" />
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-2xl rounded-z-lg bg-white border border-red-200 p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h1 className="font-display font-semibold text-ink text-z-h2">
+                This listing cannot be claimed yet.
+              </h1>
+              <p className="font-sans text-z-body-sm text-ink-soft mt-2 leading-relaxed">
+                The provider record is missing a claimable identifier. Return to the
+                claim hub and reach out via WhatsApp — our team will help.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href="/claim"
+                  className="inline-flex items-center gap-2 rounded-z-pill bg-white border border-ink text-ink hover:bg-surface-cream px-4 py-2.5 font-sans font-medium text-z-body-sm transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to claim
+                </Link>
+                <OwnerWhatsappCta
+                  action="get_listed"
+                  surface="claim_listing_missing_id"
+                  label="Reach out via WhatsApp"
+                />
+              </div>
+            </div>
           </div>
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[22px] sm:text-[26px] text-[#1c1c1c] tracking-tight mb-4">
-            Claim Request Submitted
-          </h1>
-          <p className="text-black/40 mb-6">
-            Thank you for your claim request. Our team will review your submission
-            and get back to you within 2-3 business days.
-          </p>
-          <button
-            onClick={() => router.push("/")}
-            className="btn-accent"
-          >
-            Return to Directory
-          </button>
         </div>
-      </div>
+      </section>
     );
   }
 
+  const action = provider.isClaimed ? "edit" : "claim";
+  const headline = provider.isClaimed ? "Edit your listing." : "Claim your listing.";
+  const lead = provider.isClaimed
+    ? `${provider.name} is already verified on Zavis. Use WhatsApp to request edits — hours, insurance, services, photos, or contact details.`
+    : `${provider.name} is on Zavis. Confirm your role at the clinic, share your DHA/DOH/MOHAP licence on WhatsApp, and our team takes it from there.`;
+
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Breadcrumb
-        items={[
-          { label: "Claim Listing", href: "/claim" },
-          { label: "Submit Claim" },
-        ]}
-      />
+    <>
+      <section className="relative overflow-hidden bg-surface-cream">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-40 -right-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(closest-side,rgba(0,200,83,0.16),transparent_70%)]" />
+        </div>
 
-      <div className="max-w-2xl mx-auto">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          Claim This Listing
-        </h1>
-        <p className="text-black/40 mb-8">
-          Fill in your details and provide proof of ownership to claim this listing.
-        </p>
+        <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-12">
+          <nav
+            className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/" className="hover:text-ink transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href="/claim" className="hover:text-ink transition-colors">
+              Claim
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-ink font-medium truncate">{provider.name}</span>
+          </nav>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7">
+              <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                For {provider.name}
+              </p>
+              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[48px] leading-[1.04] tracking-[-0.024em]">
+                {headline}
+              </h1>
+              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 leading-relaxed">
+                {lead}
+              </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Contact Information */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-4">Your Contact Information</h2>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="contactName" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Full Name *
-                </label>
-                <input
-                  id="contactName"
-                  type="text"
-                  required
-                  className="input-tc"
-                  value={formData.contactName}
-                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                  disabled={submitting}
+              <div className="mt-7 flex flex-wrap gap-3">
+                <OwnerWhatsappCta
+                  action={action}
+                  surface="claim_listing_detail_hero"
+                  providerId={provider.id}
+                  providerName={provider.name}
+                  providerSlug={provider.slug}
+                  citySlug={provider.citySlug}
+                  categorySlug={provider.categorySlug}
+                  label={provider.isClaimed ? "Edit via WhatsApp" : "Claim via WhatsApp"}
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="contactEmail" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                    Email *
-                  </label>
-                  <input
-                    id="contactEmail"
-                    type="email"
-                    required
-                    className="input-tc"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                    disabled={submitting}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="contactPhone" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                    Phone *
-                  </label>
-                  <input
-                    id="contactPhone"
-                    type="tel"
-                    required
-                    className="input-tc"
-                    value={formData.contactPhone}
-                    onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                    disabled={submitting}
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="jobTitle" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Job Title
-                </label>
-                <input
-                  id="jobTitle"
-                  type="text"
-                  className="input-tc"
-                  placeholder="e.g., Clinic Manager, Owner, Administrator"
-                  value={formData.jobTitle}
-                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
+              <p className="mt-3 font-sans text-z-caption text-ink-muted leading-relaxed">
+                You will be asked to confirm you are authorised before WhatsApp opens.
+              </p>
             </div>
-          </div>
 
-          {/* Proof of Ownership */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-4">Proof of Ownership</h2>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="proofType" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Proof Type *
-                </label>
-                <select
-                  id="proofType"
-                  className="input-tc"
-                  value={formData.proofType}
-                  onChange={(e) => setFormData({ ...formData, proofType: e.target.value })}
-                  disabled={submitting}
-                >
-                  <option value="license">DHA/DOH/MOH License</option>
-                  <option value="business_card">Business Card</option>
-                  <option value="letter">Official Letterhead</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div
-                className="border-2 border-dashed border-black/[0.06] p-8 text-center cursor-pointer hover:border-[#006828]/30 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-8 w-8 text-black/40 mx-auto mb-3" />
-                {fileName ? (
-                  <p className="font-['Geist',sans-serif] text-sm text-[#006828] font-medium mb-1">
-                    {fileName}
-                  </p>
-                ) : (
-                  <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-1">
-                    Click to upload your proof document
+            <aside className="lg:col-span-5 space-y-3">
+              <div className="rounded-z-md bg-white border border-ink-line p-5">
+                <p className="font-sans text-z-micro text-ink-muted uppercase tracking-[0.06em] mb-1">
+                  Listing
+                </p>
+                <p className="font-display font-semibold text-ink text-z-h3 leading-tight">
+                  {provider.name}
+                </p>
+                {provider.address && (
+                  <p className="font-sans text-z-body-sm text-ink-soft mt-2 leading-relaxed">
+                    {provider.address}
                   </p>
                 )}
-                <p className="font-['Geist',sans-serif] text-xs text-black/40">
-                  PDF, JPG, or PNG up to 10MB
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    setFileName(file?.name || "");
-                  }}
-                  disabled={submitting}
-                />
+                {provider.licenseNumber && (
+                  <p className="font-sans text-z-caption text-ink-muted mt-2">
+                    Licence: {provider.licenseNumber}
+                  </p>
+                )}
+                {provider.isClaimed && (
+                  <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-z-caption text-accent-dark">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Already verified on Zavis
+                  </p>
+                )}
               </div>
-            </div>
-          </div>
 
-          {/* Requested Changes */}
-          <div className="border border-black/[0.06] rounded-2xl p-6">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight mb-2">Requested Changes</h2>
-            <p className="font-['Geist',sans-serif] text-sm text-black/40 mb-4">
-              Optionally specify what information you&apos;d like to update.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="reqPhone" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Phone Number
-                </label>
-                <input
-                  id="reqPhone"
-                  type="tel"
-                  className="input-tc"
-                  placeholder="e.g., +971-4-XXX-XXXX"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  disabled={submitting}
-                />
+              <div className="rounded-z-md bg-white border border-ink-line p-5">
+                <div className="flex items-start gap-3">
+                  <div className="h-9 w-9 rounded-full bg-accent-deep flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-4 w-4 text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="font-display font-semibold text-ink text-z-body-sm">
+                      One conversation, end to end
+                    </p>
+                    <p className="font-sans text-z-caption text-ink-muted mt-1 leading-relaxed">
+                      We collect your role and clinic details before WhatsApp opens, so
+                      the chat starts with everything we need.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label htmlFor="reqWebsite" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Website
-                </label>
-                <input
-                  id="reqWebsite"
-                  type="url"
-                  className="input-tc"
-                  placeholder="https://..."
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="reqDescription" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Updated Description
-                </label>
-                <textarea
-                  id="reqDescription"
-                  className="input-tc"
-                  rows={3}
-                  placeholder="Describe your facility..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                  Additional Notes
-                </label>
-                <textarea
-                  id="notes"
-                  className="input-tc"
-                  rows={3}
-                  placeholder="Any other changes or information..."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  disabled={submitting}
-                />
-              </div>
-            </div>
+            </aside>
           </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn-accent w-full py-3 text-base flex items-center justify-center gap-2 disabled:opacity-60"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              "Submit Claim Request"
-            )}
-          </button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </section>
+    </>
   );
 }

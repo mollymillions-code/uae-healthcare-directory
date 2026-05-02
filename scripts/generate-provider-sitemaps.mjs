@@ -70,6 +70,74 @@ const LOG_FILE = "/home/ubuntu/logs/sitemap-generation.log";
 const BASE_URL = "https://www.zavis.ai";
 const SHARD_CEILING = 10_000; // per spec §9.2
 const GENERATION_STARTED_AT = new Date();
+// Keep in sync with src/lib/provider-removals.json. The sitemap generator is
+// deployed as a standalone ops script, so it cannot rely on Next's TS imports.
+const REMOVED_PROVIDER_ENTRIES = [
+  {
+    slug: "ghasaq-medical-center-sharjah",
+    aliases: [
+      "ghassaq-medical-center-sharjah",
+      "ghsaq-medical-center-sharjah",
+      "ghasaq-medical-centre-sharjah",
+      "ghassaq-medical-centre-sharjah",
+    ],
+    names: [
+      "Ghasaq Medical Center",
+      "Ghassaq Medical Center",
+      "Ghsaq Medical Center",
+      "Ghasaq Medical Centre",
+      "Ghassaq Medical Centre",
+    ],
+    citySlug: "sharjah",
+    categorySlug: "clinics",
+  },
+];
+
+function normalizeSlug(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/\bcentre\b/g, "center")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeName(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/\bcentre\b/g, "center")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const REMOVED_PROVIDER_SLUGS = new Set(
+  REMOVED_PROVIDER_ENTRIES.flatMap((entry) => [
+    entry.slug,
+    ...(entry.aliases ?? []),
+  ]).map(normalizeSlug),
+);
+
+function isRemovedProviderRow(row) {
+  if (REMOVED_PROVIDER_SLUGS.has(normalizeSlug(row.slug))) return true;
+
+  const city = normalizeSlug(row.city_slug);
+  const category = normalizeSlug(row.category_slug);
+  const name = normalizeName(row.name);
+  return REMOVED_PROVIDER_ENTRIES.some((entry) => {
+    if (entry.citySlug && normalizeSlug(entry.citySlug) !== city) return false;
+    if (
+      entry.categorySlug &&
+      category &&
+      normalizeSlug(entry.categorySlug) !== category
+    ) {
+      return false;
+    }
+    return (entry.names ?? []).map(normalizeName).includes(name);
+  });
+}
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
 
@@ -271,6 +339,7 @@ async function main() {
     const result = await pool.query(
       `SELECT
          slug,
+         name,
          city_slug,
          category_slug,
          updated_at,
@@ -299,9 +368,15 @@ async function main() {
 
   log(`fetched ${rows.length} candidate providers from DB`);
 
+  const publicRows = rows.filter((row) => !isRemovedProviderRow(row));
+  const skippedRemoved = rows.length - publicRows.length;
+  if (skippedRemoved > 0) {
+    log(`after provider opt-out gate: ${publicRows.length} kept, ${skippedRemoved} removed`);
+  }
+
   // Apply thin-content gate.
-  const enriched = rows.filter(isEnrichedForSitemap);
-  const skippedThin = rows.length - enriched.length;
+  const enriched = publicRows.filter(isEnrichedForSitemap);
+  const skippedThin = publicRows.length - enriched.length;
   log(`after thin-content gate: ${enriched.length} enriched, ${skippedThin} skipped`);
 
   if (enriched.length === 0) {

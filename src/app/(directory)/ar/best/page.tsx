@@ -10,6 +10,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { ar, getArabicCityName, getArabicCategoryName } from "@/lib/i18n";
 
 export const revalidate = 43200;
+export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
   const base = getBaseUrl();
@@ -71,7 +72,7 @@ export default async function ArabicBestIndexPage() {
   const totalProviders = cityData.reduce((sum, c) => sum + c.count, 0);
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: ar.home, url: `${base}/ar` },
         { name: ar.bestProviders },

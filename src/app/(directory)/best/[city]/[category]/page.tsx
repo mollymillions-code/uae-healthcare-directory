@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -13,6 +12,8 @@ import {
   breadcrumbSchema, faqPageSchema, itemListSchema, speakableSchema,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
+import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
 
 export const revalidate = 43200;
 
@@ -92,7 +93,6 @@ function getCategoryIntro(
     },
   };
 
-  // Default for categories without specific intros
   const defaultIntro = {
     headline: `Finding the best ${catLower} in ${cityName} — backed by real patient data, not advertising`,
     body: `${cityName} has ${totalCount} ${catLower} providers, but quality and patient satisfaction vary significantly. We analyzed ${ratedCount} practices with verified Google reviews to create this evidence-based ranking. Rather than relying on self-reported claims, our selection criteria use real patient satisfaction scores, review volume (which reflects consistency of care over time), breadth of insurance acceptance, and operational track record. All providers are licensed by the ${regulatorName} and verified against official registers.`,
@@ -101,7 +101,6 @@ function getCategoryIntro(
   return intros[categorySlug] || defaultIntro;
 }
 
-/** Sort providers by Google rating (desc), then by review count (desc) as tiebreaker */
 function rankProviders(providers: LocalProvider[]): LocalProvider[] {
   return [...providers]
     .filter((p) => Number(p.googleRating) > 0)
@@ -112,7 +111,6 @@ function rankProviders(providers: LocalProvider[]): LocalProvider[] {
     });
 }
 
-/** Compute average rating */
 function avgRating(providers: LocalProvider[]): string {
   const rated = providers.filter((p) => Number(p.googleRating) > 0);
   if (rated.length === 0) return "N/A";
@@ -120,7 +118,6 @@ function avgRating(providers: LocalProvider[]): string {
   return (sum / rated.length).toFixed(1);
 }
 
-/** Get top N most-common insurance names across providers */
 function topInsurers(providers: LocalProvider[], n: number): string[] {
   const counts = new Map<string, number>();
   for (const p of providers) {
@@ -134,7 +131,6 @@ function topInsurers(providers: LocalProvider[], n: number): string[] {
     .map(([name]) => name);
 }
 
-/** Get top N most-common area slugs */
 function topAreas(providers: LocalProvider[], n: number): { slug: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const p of providers) {
@@ -164,17 +160,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const count = await getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const count = await safe(
+    getProviderCountByCategoryAndCity(category.slug, city.slug),
+    0,
+    "best-count-meta",
+  );
   const base = getBaseUrl();
   const url = `${base}/best/${city.slug}/${category.slug}`;
 
-  // Get top provider for meta description
-  const { providers } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: category.slug,
-    sort: "rating",
-    limit: 1,
-  });
+  const { providers } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      sort: "rating",
+      limit: 1,
+    }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "best-top-meta",
+  );
   const topProvider = providers.find((p) => Number(p.googleRating) > 0);
 
   const currentYear = new Date().getFullYear();
@@ -215,14 +218,21 @@ export default async function BestCategoryInCityPage({ params }: Props) {
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const regulatorShort = getRegulatorShort(city.slug);
-  const totalCount = await getProviderCountByCategoryAndCity(category.slug, city.slug);
+  const totalCount = await safe(
+    getProviderCountByCategoryAndCity(category.slug, city.slug),
+    0,
+    "best-totalCount",
+  );
 
-  // Get ALL providers for this combo (no limit), then rank
-  const { providers: allProviders } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: category.slug,
-    limit: 99999,
-  });
+  const { providers: allProviders } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      limit: 99999,
+    }),
+    { providers: [], total: 0, page: 1, totalPages: 1 } as Awaited<ReturnType<typeof getProviders>>,
+    "best-providers",
+  );
   const ranked = rankProviders(allProviders);
 
   if (ranked.length === 0) notFound();
@@ -234,7 +244,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
     (a, b) => (b.googleReviewCount || 0) - (a.googleReviewCount || 0)
   )[0];
 
-  // Stats
   const average = avgRating(allProviders);
   const commonInsurers = topInsurers(allProviders, 5);
   const topNeighborhoods = topAreas(allProviders, 5);
@@ -244,7 +253,7 @@ export default async function BestCategoryInCityPage({ params }: Props) {
     .filter((c) => c.slug !== city.slug)
     .map(async (c) => ({
       ...c,
-      count: await getProviderCountByCategoryAndCity(category.slug, c.slug),
+      count: await safe(getProviderCountByCategoryAndCity(category.slug, c.slug), 0, `best-oc:${c.slug}`),
     })));
   const otherCities = otherCitiesRaw
     .filter((c) => c.count > 0)
@@ -255,18 +264,16 @@ export default async function BestCategoryInCityPage({ params }: Props) {
     .filter((c) => c.slug !== category.slug)
     .map(async (c) => ({
       ...c,
-      count: await getProviderCountByCategoryAndCity(c.slug, city.slug),
+      count: await safe(getProviderCountByCategoryAndCity(c.slug, city.slug), 0, `best-ocat:${c.slug}`),
     })));
   const otherCategories = otherCategoriesRaw
     .filter((c) => c.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);
 
-  // ─── FAQs ─────────────────────────────────────────────────────────────────────
   const catLower = category.name.toLowerCase();
   const catSingular = catLower.replace(/s$/, "");
 
-  // Compute extra stats for long-tail FAQs
   const topLanguages = (() => {
     const counts = new Map<string, number>();
     for (const p of allProviders) {
@@ -289,7 +296,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
   const providersWithPhone = allProviders.filter((p) => p.phone).length;
 
   const faqs = [
-    // ─── Core FAQs ───────────────────────────────────────────────────────
     {
       question: `What is the best ${catSingular} in ${city.name}?`,
       answer: `According to the UAE Open Healthcare Directory, the highest-rated ${catSingular} in ${city.name} is ${topProvider.name} with a ${topProvider.googleRating}-star Google rating based on ${topProvider.googleReviewCount?.toLocaleString()} patient reviews. All rankings are based on verified Google ratings and review volume. Data sourced from official ${regulatorShort} registers, last verified March 2026.`,
@@ -318,9 +324,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       question: `How are these ${catLower} in ${city.name} ranked?`,
       answer: `Providers are ranked by Google rating (highest first), with review count used as a tiebreaker for providers with the same rating. Only providers with a Google rating above 0 are included. All provider data is sourced from official ${regulatorShort} registers and cross-referenced with the UAE Open Healthcare Directory. Rankings are updated regularly; last verified March 2026.`,
     },
-
-    // ─── Long-tail conversational queries for AI Overviews ───────────────
-
     {
       question: `How much does a visit to a ${catSingular} in ${city.name} cost without insurance?`,
       answer: `The cost of visiting a ${catSingular} in ${city.name} without insurance varies depending on the provider and type of service. A general consultation typically ranges from AED 150–500 at a private practice, while specialized procedures or diagnostics cost more. Government-regulated facilities may offer lower rates. ${commonInsurers.length > 0 ? `To reduce out-of-pocket costs, check if the provider accepts your insurance — the most commonly accepted plans among ${catLower} in ${city.name} include ${commonInsurers.slice(0, 3).join(", ")}.` : ""} Always confirm pricing directly with the facility before your visit, as rates can change.`,
@@ -363,8 +366,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
       : []),
   ];
 
-  // ─── JSON-LD schemas ──────────────────────────────────────────────────────────
-
   const breadcrumbs = breadcrumbSchema([
     { name: "UAE", url: base },
     { name: "Best", url: `${base}/best` },
@@ -379,12 +380,6 @@ export default async function BestCategoryInCityPage({ params }: Props) {
     base,
   );
 
-  const faqSchema = faqPageSchema(faqs);
-
-  const speakable = speakableSchema([".answer-block"]);
-
-  // ─── Editorial intro ──────────────────────────────────────────────────────────
-
   const intro = getCategoryIntro(
     category.slug,
     category.name,
@@ -395,451 +390,259 @@ export default async function BestCategoryInCityPage({ params }: Props) {
     regulator,
   );
 
-  // Comparison table providers (top 10)
-  const comparisonProviders = ranked.slice(0, 10);
-
-  // Compute years of practice for comparison
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* JSON-LD */}
-      <JsonLd data={breadcrumbs} />
-      <JsonLd data={itemList} />
-      <JsonLd data={faqSchema} />
-      <JsonLd data={speakable} />
-
-      {/* Breadcrumb */}
-      <Breadcrumb items={[
+    <ListingsTemplate
+      breadcrumbs={[
         { label: "UAE", href: "/" },
         { label: "Best", href: "/best" },
         { label: city.name, href: `/best/${city.slug}` },
         { label: category.name },
-      ]} />
-
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
-          Best {category.name} in {city.name}
-        </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
-          Top {Math.min(ranked.length, 10)} highest-rated out of {totalCount} providers
-          {" "}&middot; Ranked by patient ratings, years of practice &amp; insurance coverage &middot; {regulator}
-          {" "}&middot; Updated March 2026
-        </p>
-      </div>
-
-      {/* ─── Unique Editorial Intro ──────────────────────────────────────────────── */}
-      <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8" data-answer-block="true">
-        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] sm:text-[18px] text-[#1c1c1c] tracking-tight mb-3">
-          {intro.headline}
-        </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">{intro.body}</p>
-      </div>
-
-      {/* Quick nav links */}
-      <div className="flex flex-wrap gap-2 mb-8 text-xs">
-        <Link
-          href={`/directory/${city.slug}/${category.slug}`}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          All {catLower} in {city.name}
-        </Link>
-        <Link
-          href={`/best/${city.slug}`}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          All categories in {city.name}
-        </Link>
-        <Link
-          href="/best"
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
-        >
-          All cities
-        </Link>
-      </div>
-
-      {/* ─── Selection Criteria ──────────────────────────────────────────────────── */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">How We Rank: Selection Criteria</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <div className="border border-black/[0.06] rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">1</span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Patient Ratings</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-              Google rating is the primary ranking signal. Only providers with a rating above 0 are included. Review count serves as a tiebreaker — more reviews means broader patient consensus.
-            </p>
-          </div>
-          <div className="border border-black/[0.06] rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">2</span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Years of Practice</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-              Established facilities with years of operation signal institutional stability and clinical experience. We surface year of establishment where available so you can assess practice maturity.
-            </p>
-          </div>
-          <div className="border border-black/[0.06] rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">3</span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">Insurance Coverage</h3>
-            </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
-              Wider insurance acceptance signals accessibility and compliance with major payer networks. We show the number of accepted insurance plans alongside each provider&apos;s profile.
-            </p>
-          </div>
-        </div>
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          All provider data is sourced from official <strong>{regulator}</strong> licensed facilities registers and cross-referenced with the UAE Open Healthcare Directory. Rankings are updated regularly. These rankings do not constitute a medical recommendation.
-        </p>
-      </section>
-
-      {/* ─── Comparison Table ────────────────────────────────────────────────────── */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(comparisonProviders.length, 10)} {category.name} — Side-by-Side Comparison</h2>
-        </div>
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="w-full min-w-[700px] border-collapse">
-            <thead>
-              <tr className="bg-[#f8f8f6]">
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">#</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">Provider</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Rating</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Reviews</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Est.</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Insurance</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">Verified</th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">Area</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonProviders.map((p, idx) => {
-                const yearsOfPractice = p.yearEstablished
-                  ? currentYear - p.yearEstablished
-                  : null;
-                return (
-                  <tr
-                    key={p.id}
-                    className={`${idx % 2 === 0 ? "bg-white" : "bg-[#fafaf9]"} hover:bg-[#006828]/[0.02] transition-colors`}
-                  >
-                    <td className="px-3 py-3 border-b border-black/[0.04]">
-                      <span className="font-bold text-[#006828] text-sm">#{idx + 1}</span>
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04]">
-                      <Link
-                        href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                      >
-                        {p.name}
-                      </Link>
-                      {p.phone && (
-                        <p className="font-['Geist',sans-serif] text-[10px] text-black/30 mt-0.5">{p.phone}</p>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="inline-block bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded">
-                        {p.googleRating} ★
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
-                        {p.googleReviewCount > 0 ? p.googleReviewCount.toLocaleString() : "—"}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60">
-                        {yearsOfPractice !== null ? (
-                          <span title={`Established ${p.yearEstablished}`}>
-                            {yearsOfPractice}+ yrs
-                          </span>
-                        ) : "—"}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
-                        {p.insurance.length > 0 ? `${p.insurance.length} plans` : "—"}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      {p.isVerified ? (
-                        <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">Yes</span>
-                      ) : (
-                        <span className="text-xs text-black/30">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 border-b border-black/[0.04]">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/50">
-                        {p.areaSlug ? titleCase(p.areaSlug.replace(/-/g, " ")) : "—"}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {ranked.length > 10 && (
-          <div className="mt-4 text-center">
-            <Link
-              href={`/directory/${city.slug}/${category.slug}`}
-              className="text-xs text-[#006828] font-bold hover:underline"
-            >
-              View all {totalCount} {catLower} in {city.name} &rarr;
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* ─── Detailed Ranked Provider List ───────────────────────────────────────── */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Top {Math.min(ranked.length, 15)} {category.name} — Detailed Profiles</h2>
-        </div>
-        <div className="space-y-0">
-          {top15.map((p, idx) => (
-            <div
-              key={p.id}
-              className="flex items-start gap-3 py-4 border-b border-black/[0.06] last:border-b-0"
-            >
-              {/* Rank */}
-              <span className="text-lg font-bold text-[#006828] w-8 flex-shrink-0 text-center mt-0.5">
-                #{idx + 1}
-              </span>
-
-              {/* Provider info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Link
-                    href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                    className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
-                  >
-                    {p.name}
-                  </Link>
-                  {p.isVerified && (
-                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">Verified</span>
-                  )}
-                </div>
-                <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1.5">{p.address}</p>
-
-                {/* Year + Insurance summary line */}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
-                  {p.yearEstablished && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
-                      Est. {p.yearEstablished} ({currentYear - p.yearEstablished}+ years)
-                    </span>
-                  )}
-                  {p.insurance.length > 0 && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
-                      {p.insurance.length} insurance plan{p.insurance.length !== 1 ? "s" : ""} accepted
-                    </span>
-                  )}
-                  {p.languages.length > 0 && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
-                      {p.languages.length} language{p.languages.length !== 1 ? "s" : ""}
-                    </span>
-                  )}
-                </div>
-
-                {/* Insurance badges */}
-                {p.insurance.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-1.5">
-                    {p.insurance.slice(0, 4).map((ins) => (
-                      <span
-                        key={ins}
-                        className="text-[10px] border border-black/[0.06] px-1.5 py-0.5 text-black/40"
-                      >
-                        {ins}
-                      </span>
-                    ))}
-                    {p.insurance.length > 4 && (
-                      <span className="text-[10px] text-black/40">
-                        +{p.insurance.length - 4} more
-                      </span>
-                    )}
+      ]}
+      eyebrow={`Best of · ${city.name}`}
+      title={`Best ${category.name} in ${city.name}.`}
+      subtitle={
+        <>
+          Top {Math.min(ranked.length, 10)} highest-rated out of {totalCount} providers. Ranked by patient
+          ratings, years of practice &amp; insurance coverage · {regulator} · Updated March 2026.
+        </>
+      }
+      aeoAnswer={
+        <>
+          <p className="font-semibold text-ink">{intro.headline}.</p>
+          <p className="mt-3">{intro.body}</p>
+        </>
+      }
+      total={totalCount}
+      providers={top15.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        citySlug: p.citySlug,
+        categorySlug: p.categorySlug,
+        categoryName: category.name,
+        address: p.address,
+        googleRating: p.googleRating,
+        googleReviewCount: p.googleReviewCount,
+        isClaimed: p.isClaimed,
+        isVerified: p.isVerified,
+        photos: p.photos ?? null,
+        coverImageUrl: p.coverImageUrl ?? null,
+      }))}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbs} />
+          <JsonLd data={itemList} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+        </>
+      }
+      belowGrid={
+        <>
+          {/* Selection criteria */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              How we rank: selection criteria
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { n: 1, t: "Patient ratings", d: "Google rating is the primary ranking signal. Only providers with a rating above 0 are included. Review count serves as a tiebreaker — more reviews means broader patient consensus." },
+                { n: 2, t: "Years of practice", d: "Established facilities with years of operation signal institutional stability and clinical experience. We surface year of establishment where available so you can assess practice maturity." },
+                { n: 3, t: "Insurance coverage", d: "Wider insurance acceptance signals accessibility and compliance with major payer networks. We show the number of accepted insurance plans alongside each provider's profile." },
+              ].map((item) => (
+                <div key={item.n} className="bg-white border border-ink-line rounded-z-md p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center text-accent-deep font-semibold text-sm">{item.n}</span>
+                    <h3 className="font-display font-semibold text-ink text-z-body-sm">{item.t}</h3>
                   </div>
-                )}
-
-                {/* View profile link */}
-                <Link
-                  href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
-                  className="text-xs text-[#006828] font-bold hover:underline"
-                >
-                  View full profile &rarr;
-                </Link>
-              </div>
-
-              {/* Rating + Reviews */}
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="bg-green-600 text-white text-xs font-bold px-2 py-1">
-                  {p.googleRating} ★
-                </span>
-                {p.googleReviewCount > 0 && (
-                  <span className="text-[11px] text-black/40">
-                    {p.googleReviewCount.toLocaleString()} reviews
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {ranked.length > 15 && (
-          <div className="mt-4 text-center">
-            <Link
-              href={`/directory/${city.slug}/${category.slug}`}
-              className="text-xs text-[#006828] font-bold hover:underline"
-            >
-              View all {totalCount} {catLower} in {city.name} &rarr;
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* Category Stats */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">{category.name} in {city.name} — Quick Stats</h2>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{totalCount}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Total Providers</p>
-          </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{average}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Avg. Rating</p>
-          </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{ranked.length}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Rated Providers</p>
-          </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{commonInsurers.length > 0 ? commonInsurers.length + "+" : "—"}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">Insurers Accepted</p>
-          </div>
-        </div>
-
-        {/* Most common insurers */}
-        {commonInsurers.length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Most Commonly Accepted Insurance</p>
-            <div className="flex flex-wrap gap-2">
-              {commonInsurers.map((ins) => (
-                <span
-                  key={ins}
-                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
-                >
-                  {ins}
-                </span>
+                  <p className="font-sans text-z-caption text-ink-soft leading-relaxed">{item.d}</p>
+                </div>
               ))}
             </div>
+            <p className="font-sans text-z-caption text-ink-muted leading-relaxed mt-3">
+              All provider data is sourced from official <strong>{regulator}</strong> licensed facilities registers and cross-referenced with the UAE Open Healthcare Directory. These rankings do not constitute a medical recommendation.
+            </p>
           </div>
-        )}
 
-        {/* Top neighborhoods */}
-        {topNeighborhoods.length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">Top Neighborhoods</p>
-            <div className="flex flex-wrap gap-2">
-              {topNeighborhoods.map((area) => (
-                <span
-                  key={area.slug}
-                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
-                >
-                  {titleCase(area.slug.replace(/-/g, " "))} ({area.count})
-                </span>
-              ))}
+          {/* Comparison Table */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Top {Math.min(ranked.length, 10)} {category.name} — side-by-side
+            </h2>
+            <div className="overflow-x-auto bg-white rounded-z-md border border-ink-line">
+              <table className="w-full min-w-[700px] border-collapse text-sm">
+                <thead>
+                  <tr className="bg-surface-cream">
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-left px-3 py-3 border-b border-ink-line">#</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-left px-3 py-3 border-b border-ink-line">Provider</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-center px-3 py-3 border-b border-ink-line">Rating</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-center px-3 py-3 border-b border-ink-line">Reviews</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-center px-3 py-3 border-b border-ink-line">Est.</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-center px-3 py-3 border-b border-ink-line">Insurance</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-center px-3 py-3 border-b border-ink-line">Verified</th>
+                    <th className="font-sans text-z-micro font-semibold text-ink-muted uppercase tracking-wider text-left px-3 py-3 border-b border-ink-line">Area</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ranked.slice(0, 10).map((p, idx) => {
+                    const yearsOfPractice = p.yearEstablished
+                      ? currentYear - p.yearEstablished
+                      : null;
+                    return (
+                      <tr
+                        key={p.id}
+                        className={`${idx % 2 === 0 ? "bg-white" : "bg-surface-cream"} hover:bg-accent-muted/50 transition-colors`}
+                      >
+                        <td className="px-3 py-3 border-b border-ink-line">
+                          <span className="font-semibold text-accent-dark text-sm">#{idx + 1}</span>
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line">
+                          <Link
+                            href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`}
+                            className="font-sans font-semibold text-z-body-sm text-ink hover:underline decoration-1 underline-offset-2"
+                          >
+                            {p.name}
+                          </Link>
+                          {p.phone && (
+                            <p className="font-sans text-z-micro text-ink-muted mt-0.5">{p.phone}</p>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line text-center">
+                          <span className="inline-block bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                            {p.googleRating} ★
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line text-center">
+                          <span className="font-sans text-z-caption text-ink-soft font-medium">
+                            {p.googleReviewCount > 0 ? p.googleReviewCount.toLocaleString() : "—"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line text-center">
+                          <span className="font-sans text-z-caption text-ink-soft">
+                            {yearsOfPractice !== null ? `${yearsOfPractice}+ yrs` : "—"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line text-center">
+                          <span className="font-sans text-z-caption text-ink-soft font-medium">
+                            {p.insurance.length > 0 ? `${p.insurance.length} plans` : "—"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line text-center">
+                          {p.isVerified ? (
+                            <span className="inline-block bg-accent-muted text-accent-deep text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">Yes</span>
+                          ) : (
+                            <span className="text-xs text-ink-muted">—</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 border-b border-ink-line">
+                          <span className="font-sans text-z-caption text-ink-muted">
+                            {p.areaSlug ? titleCase(p.areaSlug.replace(/-/g, " ")) : "—"}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </section>
 
-      {/* FAQs */}
-      <FaqSection
-        faqs={faqs}
-        title={`Best ${category.name} in ${city.name} — FAQ`}
-      />
-
-      {/* Cross-links: same category in other cities */}
-      {otherCities.length > 0 && (
-        <section className="mb-10 mt-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Best {category.name} in Other Cities</h2>
+          {/* Quick stats */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              {category.name} in {city.name} — quick stats
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+                <p className="font-display font-semibold text-accent-dark text-display-md">{totalCount}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">Total Providers</p>
+              </div>
+              <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+                <p className="font-display font-semibold text-accent-dark text-display-md">{average}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">Avg. Rating</p>
+              </div>
+              <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+                <p className="font-display font-semibold text-accent-dark text-display-md">{ranked.length}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">Rated Providers</p>
+              </div>
+              <div className="bg-white border border-ink-line rounded-z-md p-5 text-center">
+                <p className="font-display font-semibold text-accent-dark text-display-md">{commonInsurers.length > 0 ? commonInsurers.length + "+" : "—"}</p>
+                <p className="font-sans text-z-caption text-ink-muted mt-1">Insurers Accepted</p>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {otherCities.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/best/${c.slug}/${category.slug}`}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
-              >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                  {c.name}
-                </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
-                  {c.count} {c.count === 1 ? "provider" : "providers"}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
 
-      {/* Cross-links: other categories in same city */}
-      {otherCategories.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">Other Top-Rated Categories in {city.name}</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {otherCategories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/best/${city.slug}/${c.slug}`}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
-              >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                  {c.name}
-                </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
-                  {c.count} {c.count === 1 ? "provider" : "providers"}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+          {/* Cross-links: same category in other cities */}
+          {otherCities.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Best {category.name} in other cities
+              </h2>
+              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {otherCities.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/best/${c.slug}/${category.slug}`}
+                      className="block bg-white border border-ink-line rounded-z-md p-3 hover:border-ink transition-colors text-center"
+                    >
+                      <p className="font-sans font-semibold text-ink text-z-body-sm">{c.name}</p>
+                      <p className="font-sans text-z-caption text-accent-dark font-semibold mt-1">
+                        {c.count} {c.count === 1 ? "provider" : "providers"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {/* Full directory CTA */}
-      <div className="bg-[#1c1c1c] text-white p-6 flex items-center justify-between mb-8">
-        <div>
-          <p className="font-bold text-sm">Browse all {catLower} in {city.name}</p>
-          <p className="text-xs text-white/70 mt-1">
-            Full directory with contact details, operating hours, insurance acceptance, and more
-          </p>
-        </div>
-        <Link
-          href={`/directory/${city.slug}/${category.slug}`}
-          className="bg-[#006828] text-white px-4 py-2 text-xs font-bold hover:bg-green-600 transition-colors flex-shrink-0"
-        >
-          View all {totalCount}
-        </Link>
-      </div>
+          {/* Cross-links: other categories in same city */}
+          {otherCategories.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Other top-rated categories in {city.name}
+              </h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {otherCategories.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/best/${city.slug}/${c.slug}`}
+                      className="block bg-white border border-ink-line rounded-z-md p-3 hover:border-ink transition-colors"
+                    >
+                      <p className="font-sans font-semibold text-ink text-z-body-sm">{c.name}</p>
+                      <p className="font-sans text-z-caption text-accent-dark font-semibold mt-1">
+                        {c.count} {c.count === 1 ? "provider" : "providers"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {/* Disclaimer */}
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
-          <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings
-          and review counts. They do not constitute a medical recommendation. Provider data is
-          sourced from official {regulator} registers and the UAE Open Healthcare Directory,
-          last verified March 2026. Insurance acceptance, operating hours, and services may
-          change — always confirm directly with the provider before your visit.
-        </p>
-      </div>
-    </div>
+          {/* FAQ */}
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+              Good to know
+            </h2>
+            <div className="max-w-3xl">
+              <FaqSection faqs={faqs} title={`Best ${category.name} in ${city.name} — FAQ`} />
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="border-t border-ink-line pt-4">
+            <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
+              <strong>Disclaimer:</strong> Rankings are based on publicly available Google ratings and
+              review counts. They do not constitute a medical recommendation. Provider data is sourced
+              from official {regulator} registers and the UAE Open Healthcare Directory, last verified
+              March 2026. Insurance acceptance, operating hours, and services may change — always confirm
+              directly with the provider before your visit.
+            </p>
+          </div>
+        </>
+      }
+    />
   );
 }

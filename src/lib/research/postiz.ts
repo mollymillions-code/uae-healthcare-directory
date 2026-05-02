@@ -13,9 +13,16 @@
 
 import crypto from 'crypto';
 
-const POSTIZ_API = process.env.POSTIZ_API_BASE || 'http://localhost:4007/api';
-const JWT_SECRET = process.env.POSTIZ_JWT_SECRET || 'e9500e515c41844ac29e316b61d7c7ea18a1973aac6be3a1dd13a8573c3628b7';
-const USER_ID = process.env.POSTIZ_USER_ID || 'dfa2ec3e-4d78-4361-a585-ba7e0cd9fc19';
+const POSTIZ_API = process.env.POSTIZ_API_BASE;
+const JWT_SECRET = process.env.POSTIZ_JWT_SECRET;
+const USER_ID = process.env.POSTIZ_USER_ID;
+
+function getPostizConfig() {
+  if (!POSTIZ_API || !JWT_SECRET || !USER_ID) {
+    throw new Error('Postiz integration is not configured');
+  }
+  return { api: POSTIZ_API, jwtSecret: JWT_SECRET, userId: USER_ID };
+}
 
 // Known integration IDs
 export const INTEGRATIONS = {
@@ -25,9 +32,10 @@ export const INTEGRATIONS = {
 
 // ── Token Generation ────────────────────────────────────────────────
 function generateToken(): string {
+  const config = getPostizConfig();
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const payload = Buffer.from(JSON.stringify({
-    id: USER_ID,
+    id: config.userId,
     email: 'mo@zavis.ai',
     providerName: 'LOCAL',
     isSuperAdmin: false,
@@ -36,7 +44,7 @@ function generateToken(): string {
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 3600,
   })).toString('base64url');
-  const sig = crypto.createHmac('sha256', JWT_SECRET)
+  const sig = crypto.createHmac('sha256', config.jwtSecret)
     .update(`${header}.${payload}`)
     .digest('base64url');
   return `${header}.${payload}.${sig}`;
@@ -44,14 +52,16 @@ function generateToken(): string {
 
 // ── API Helpers ─────────────────────────────────────────────────────
 async function postizGet(path: string) {
-  const res = await fetch(`${POSTIZ_API}${path}`, {
+  const config = getPostizConfig();
+  const res = await fetch(`${config.api}${path}`, {
     headers: { auth: generateToken(), 'Content-Type': 'application/json' },
   });
   return res.json();
 }
 
 async function postizPost(path: string, body: unknown) {
-  const res = await fetch(`${POSTIZ_API}${path}`, {
+  const config = getPostizConfig();
+  const res = await fetch(`${config.api}${path}`, {
     method: 'POST',
     headers: { auth: generateToken(), 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -60,7 +70,8 @@ async function postizPost(path: string, body: unknown) {
 }
 
 async function postizDelete(path: string) {
-  const res = await fetch(`${POSTIZ_API}${path}`, {
+  const config = getPostizConfig();
+  const res = await fetch(`${config.api}${path}`, {
     method: 'DELETE',
     headers: { auth: generateToken() },
   });

@@ -508,7 +508,7 @@ Then the listing is updated with corrected information
 ```
 [Browser / AI Crawler]
          ↓ HTTPS
-[Vercel Edge Network (CDN)]
+[Cloudflare CDN]
          ↓
 [Next.js 14 (App Router)]
          ↓
@@ -530,15 +530,15 @@ Then the listing is updated with corrected information
 |-------|------------|-----------|
 | Framework | Next.js 14 (App Router) | SSG for 1,900+ pages, API routes, React Server Components |
 | Styling | Tailwind CSS 3 | Utility-first, fast iteration, responsive |
-| Database | Neon Postgres (serverless) | Serverless scale, Vercel-native integration |
+| Database | Neon Postgres (serverless) | Serverless scale, managed Postgres integration |
 | ORM | Drizzle ORM | Type-safe, lightweight, edge-compatible |
-| Hosting | Vercel | Auto-deploy from GitHub, edge CDN, serverless functions |
+| Hosting | EC2 + PM2 behind Cloudflare | Controlled deployment, persistent Node runtime, edge routing |
 | Search | API route with SQL ILIKE + trigram | Simple, no external search service needed for V1 |
 | Maps | Google Maps Embed API | Free tier for embeds, universal UX |
 | Reviews | Google Places API | Industry-standard rating source |
 | Image Gen | Gemini API (Imagen 3) | AI-generated city and category images |
 | Data Pipeline | agent-browser + Node.js scrapers | Headless browser scraping of government portals |
-| Analytics | Vercel Analytics + Google Analytics | Traffic, performance, Core Web Vitals |
+| Analytics | Cloudflare Analytics + Google Analytics | Traffic, performance, Core Web Vitals |
 
 ### Third-Party Integrations
 
@@ -1013,7 +1013,7 @@ Response:
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| Largest Contentful Paint | < 1.5s | Vercel Speed Insights, P75 |
+| Largest Contentful Paint | < 1.5s | RUM or WebPageTest, P75 |
 | First Input Delay | < 100ms | Core Web Vitals |
 | Cumulative Layout Shift | < 0.1 | Core Web Vitals |
 | Time to First Byte | < 200ms | SSG pages served from CDN |
@@ -1022,7 +1022,7 @@ Response:
 
 ### Security
 
-- [x] HTTPS everywhere (Vercel default)
+- [x] HTTPS everywhere through Cloudflare and origin TLS
 - [x] Input validation on all API routes
 - [x] SQL injection prevention (Drizzle ORM parameterized queries)
 - [x] XSS prevention (React default escaping)
@@ -1250,7 +1250,7 @@ The one thing someone remembers: **"It looks like a newspaper, not a website."**
   "@context": "https://schema.org",
   "@type": "MedicalOrganization",
   "name": "Smile Design Dental Clinic",
-  "url": "https://uae-healthcare-directory.vercel.app/uae/dubai/marina/dental/smile-design",
+  "url": "https://www.zavis.ai/uae/dubai/marina/dental/smile-design",
   "telephone": "+971-4-XXX-XXXX",
   "email": "info@smiledesign.ae",
   "address": {

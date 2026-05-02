@@ -60,7 +60,7 @@ export default async function ReportsHubPageAr() {
   );
 
   return (
-    <div dir="rtl" className="text-right">
+    <div dir="rtl" className="font-arabic text-right">
       {schemaNodes.map((node, i) => (
         <JsonLd key={`report-hub-schema-ar-${i}`} data={node} />
       ))}

@@ -8,8 +8,9 @@ import { Timeline } from "@/components/landing/Timeline";
 import { LogoBar } from "@/components/landing/LogoBar";
 import { homeTabs, homeTabContent, platformPillars } from "@/data/landing/home";
 import { emrPartners, channelPartners } from "@/data/landing/brand-partners";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, BadgeCheck, Users, ShieldCheck } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { trackEvent } from "@/lib/gtag";
 
 export function HomePageClient() {
@@ -76,19 +77,18 @@ export function HomePageClient() {
               <div className="inline-flex items-center gap-2 bg-[#006828]/[0.08] rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#006828]" />
                 <span className="font-['Geist',sans-serif] font-medium text-[#006828] text-sm">
-                  AI Patient Success Platform
+                  AI front desk for growing clinics
                 </span>
               </div>
               <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[34px] sm:text-[46px] lg:text-[60px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em] mb-6">
-                The AI Patient Success Platform{" "}
-                <span className="text-[#006828]">for Healthcare Providers</span>
+                Keep your schedule full with{" "}
+                <span className="text-[#006828]">AI patient operations</span>
               </h1>
               <p className="font-['Geist',sans-serif] font-medium text-base sm:text-lg text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
-                Zavis connects every patient channel into one platform,
-                deploys AI agents that book appointments around the clock,
-                and automates reminders, follow-ups, and recall campaigns.
-                The result: more revenue per patient, fewer no-shows,
-                and measurably higher satisfaction scores.
+                Zavis helps UAE clinics respond faster, book more visits,
+                recover missed calls, send reminders, collect payments, and
+                bring patients back for follow-up. Your team gets one place
+                to manage the work around every appointment.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <ShimmerLink
@@ -100,7 +100,7 @@ export function HomePageClient() {
                   <ArrowRight className="w-4 h-4" />
                 </ShimmerLink>
                 <span className="font-['Geist',sans-serif] text-sm text-black/40">
-                  First AI workflow live by Day 3
+                  First workflow live in days, not months
                 </span>
               </div>
             </AnimatedSection>
@@ -123,10 +123,10 @@ export function HomePageClient() {
           {/* Client Logo Ticker */}
           <div className="mt-16 lg:mt-24 bg-white/60 rounded-2xl sm:rounded-3xl border border-black/[0.06] py-8 sm:py-10 px-6">
             <p className="text-center font-['Bricolage_Grotesque',sans-serif] font-medium text-sm sm:text-base text-[#1c1c1c] tracking-tight mb-2">
-              Trusted by leading healthcare brands across the UAE
+              Built for UAE private healthcare teams
             </p>
             <p className="text-center font-['Geist',sans-serif] text-xs text-black/40 mb-8">
-              Dental chains, dermatology clinics, wellness centers, and multi-specialty hospitals
+              Dental, dermatology, aesthetics, wellness, and multi-specialty clinics
             </p>
             <div
               ref={marqueeContainerRef}
@@ -184,13 +184,12 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-12 lg:mb-16">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight mb-5 max-w-3xl mx-auto leading-[1.1]">
-              Increase Revenue. Reduce No-Shows. Elevate Patient Satisfaction.
+              More booked visits. Fewer missed calls. Less front-desk drag.
             </h2>
             <p className="font-['Geist',sans-serif] font-medium text-sm sm:text-base text-black/50 leading-relaxed max-w-2xl mx-auto">
-              AI agents that respond instantly and book appointments 24/7.
-              Automated reminders that reduce no-shows consistently.
-              Seamless omnichannel communication that makes patients feel
-              known and cared for at every touchpoint.
+              Patients expect quick replies on WhatsApp, phone, and social.
+              Zavis gives your team AI support, booking workflows, reminders,
+              payment nudges, and recall campaigns in one operating system.
             </p>
           </AnimatedSection>
 
@@ -198,10 +197,10 @@ export function HomePageClient() {
           <AnimatedSection delay={0.1}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { value: "24/7", label: "AI agents booking appointments around the clock" },
-                { value: "Most", label: "Routine patient queries handled without staff" },
-                { value: "Day 3", label: "First AI workflow live and booking patients" },
-                { value: "Full", label: "Ad spend attributed to collected revenue" },
+                { value: "24/7", label: "AI replies for common patient requests" },
+                { value: "1 inbox", label: "WhatsApp, calls, web, and social together" },
+                { value: "Fast", label: "Booking, reminder, and recall workflows" },
+                { value: "Clear", label: "Lead source tied to booked and paid visits" },
               ].map((stat, i) => (
                 <div
                   key={i}
@@ -225,7 +224,7 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-10 lg:mb-14">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight leading-[1.1]">
-              One Platform for the Entire Patient Journey
+              One system for the work around every visit
             </h2>
           </AnimatedSection>
 
@@ -257,10 +256,10 @@ export function HomePageClient() {
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection>
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-center text-black tracking-tight mb-4 max-w-3xl mx-auto leading-[1.1]">
-              How Each Capability Drives Your Outcomes
+              How Zavis keeps patient work moving
             </h2>
             <p className="text-center font-['Geist',sans-serif] font-medium text-sm text-black/40 mb-10 lg:mb-12">
-              See how Zavis increases revenue, reduces no-shows, and improves satisfaction across every workflow.
+              Start with the patient channel that leaks the most time, then connect booking, reminders, recall, and reporting.
             </p>
           </AnimatedSection>
 
@@ -333,12 +332,11 @@ export function HomePageClient() {
                   </p>
                 </div>
                 <p className="font-['Geist',sans-serif] font-medium text-sm text-black/50 leading-relaxed">
-                  Patient inquiries arrive across WhatsApp, Instagram, phone,
-                  and web forms. Each channel lives in a separate tool. Leads
-                  go cold before coordinators can respond. No-shows pile up
-                  because reminders are manual. Ad spend cannot be traced to
-                  actual revenue. Staff spend most of their day on routine
-                  queries instead of complex patient care.
+                  A patient sends a WhatsApp message, another calls after
+                  hours, and a third fills a lead form. The team checks
+                  separate tools, copies details into the EMR, chases
+                  confirmations by hand, and guesses which campaigns produced
+                  real bookings.
                 </p>
               </div>
               {/* With Zavis */}
@@ -350,14 +348,111 @@ export function HomePageClient() {
                   </p>
                 </div>
                 <p className="font-['Geist',sans-serif] font-medium text-sm text-black/70 leading-relaxed">
-                  Every channel feeds into one patient timeline. AI agents
-                  respond instantly, qualify intent, and book directly into
-                  your EMR. Automated reminders at 24h and 12h cut no-shows.
-                  Post-visit follow-ups and recall campaigns drive retention
-                  and repeat revenue. Every booking is attributed from the
-                  original ad click to collected payment. Staff focus on
-                  complex care while AI handles the volume.
+                  Zavis brings those conversations into one patient timeline.
+                  AI handles common questions, missed-call follow-up, and
+                  intake details. Staff book from clean context, reminders go
+                  out on schedule, payment links follow visits, and recall
+                  campaigns bring patients back.
                 </p>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+      </section>
+
+      {/* List your clinic on Zavis directory */}
+      <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-[1200px] mx-auto">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#006828] via-[#0a7a32] to-[#04461c] p-8 sm:p-12 lg:p-16">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)]"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-40 -left-32 h-[420px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(255,176,120,0.22),transparent_70%)]"
+            />
+            <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-7">
+                <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-xs text-white/70 uppercase tracking-[0.12em] mb-4">
+                  For UAE healthcare providers
+                </p>
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-white text-[40px] sm:text-[48px] lg:text-[56px] leading-[1.04] tracking-[-0.024em]">
+                  List your clinic on the <br className="hidden sm:block" />Zavis directory.
+                </h2>
+                <p className="mt-5 font-['Geist',sans-serif] text-white/80 text-base sm:text-lg leading-relaxed max-w-xl">
+                  Reach 12,500+ patients searching for clinics, hospitals, and pharmacies
+                  every week. Free forever, regulator-verified, and live in 2–3 days.
+                </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <OwnerWhatsappCta
+                    action="get_listed"
+                    surface="landing_list_clinic_section"
+                    label="List your clinic via WhatsApp"
+                    variant="invert"
+                    className="px-6 py-3.5 text-base"
+                  />
+                  <Link
+                    href="/claim"
+                    onClick={() =>
+                      trackEvent("landing_list_clinic_secondary_click", {
+                        surface: "landing_list_clinic_section",
+                        cta_label: "Already on Zavis? Claim your listing",
+                      })
+                    }
+                    className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-transparent text-white hover:bg-white/10 px-5 py-3 font-['Geist',sans-serif] font-medium text-sm transition-colors"
+                  >
+                    Already on Zavis? Claim your listing
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+                <p className="mt-3 font-['Geist',sans-serif] text-xs text-white/55 leading-relaxed">
+                  We confirm your role at the clinic before WhatsApp opens. No card, no
+                  trial, no sales call.
+                </p>
+              </div>
+
+              <div className="lg:col-span-5 grid grid-cols-1 gap-3">
+                {[
+                  {
+                    Icon: BadgeCheck,
+                    title: "Regulator-verified",
+                    desc: "DHA, DOH, MOHAP cross-referenced. A trust badge patients filter by.",
+                  },
+                  {
+                    Icon: Users,
+                    title: "12,500+ patients searching",
+                    desc: "Listed alongside the most-trusted UAE clinics, hospitals, and pharmacies.",
+                  },
+                  {
+                    Icon: ShieldCheck,
+                    title: "Free forever",
+                    desc: "No card, no trial, no upsell. The directory is a public utility.",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.title}
+                    className="rounded-2xl bg-white/[0.07] border border-white/15 p-5 backdrop-blur-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-white/[0.10] flex items-center justify-center flex-shrink-0">
+                        <c.Icon
+                          className="h-5 w-5 text-white"
+                          strokeWidth={1.75}
+                        />
+                      </div>
+                      <div>
+                        <p className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-white text-base">
+                          {c.title}
+                        </p>
+                        <p className="mt-1 font-['Geist',sans-serif] text-sm text-white/65 leading-relaxed">
+                          {c.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

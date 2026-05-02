@@ -26,6 +26,7 @@
 import { useEffect, useState } from "react";
 import { Phone, MessageCircle, MapPin, Globe } from "lucide-react";
 import { trackProviderCta, type ProviderTrackingInfo } from "@/lib/provider-tracking";
+import { recordConsumerEvent } from "@/lib/consumer-intent-client";
 
 export interface StickyMobileCtaProps {
   providerName: string;
@@ -92,18 +93,31 @@ export function StickyMobileCta({
 
   function handleClick(type: "call" | "whatsapp" | "directions" | "website") {
     trackProviderCta(type, "sticky_mobile_cta", provider);
+    // Account prompt is triggered globally by recordConsumerEvent →
+    // PostActionAccountPrompt (mounted in src/app/layout.tsx).
+    recordConsumerEvent({
+      action: `provider_${type}_click`,
+      surface: "sticky_mobile_cta",
+      providerId,
+      entityType: "provider",
+      entitySlug: providerSlug,
+      entityName: providerName,
+      ctaLabel: type,
+      metadata: { citySlug, categorySlug, isClaimed },
+    }).catch(() => undefined);
   }
 
   return (
-    <div
-      role="region"
-      aria-label="Contact provider"
-      className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden transition-transform duration-200 ease-out ${
-        visible ? "translate-y-0" : "translate-y-full"
-      }`}
-    >
-      <div className="bg-white border-t border-black/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
-        <div className="flex gap-2 px-3 py-3 max-w-[1280px] mx-auto">
+    <>
+      <div
+        role="region"
+        aria-label="Contact provider"
+        className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden transition-transform duration-200 ease-out ${
+          visible ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        <div className="bg-white border-t border-black/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+          <div className="flex gap-2 px-3 py-3 max-w-[1280px] mx-auto">
           {phone && (
             <a
               href={`tel:${phone}`}
@@ -154,8 +168,9 @@ export function StickyMobileCta({
               <span>Website</span>
             </a>
           )}
-        </div>
+          </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,12 +1,16 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { ListingsTemplate, ListingsCrossLink } from "@/components/directory-v2/templates/ListingsTemplate";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getCityBySlug, getCategories, getProviders, getProviderCountByCategoryAndCity } from "@/lib/data";
+import {
+  getCityBySlug, getCategories, getProviders, getProviderCountByCategoryAndCity,
+  LocalProvider,
+} from "@/lib/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 // ISR only — no generateStaticParams. The page does a heavy
@@ -16,15 +20,19 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 interface Props { params: { city: string } }
 
-async function getWalkInProviders(citySlug: string) {
-  const { providers } = await getProviders({ citySlug, categorySlug: "clinics", limit: 99999 });
+async function getWalkInProvidersLocal(citySlug: string) {
+  const { providers } = await safe(
+    getProviders({ citySlug, categorySlug: "clinics", limit: 99999 }),
+    { providers: [] as LocalProvider[], total: 0, page: 1, totalPages: 0 },
+    "walkin:city",
+  );
   return providers;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = (await getWalkInProviders(city.slug)).length;
+  const count = (await getWalkInProvidersLocal(city.slug)).length;
   const base = getBaseUrl();
   const url = `${base}/directory/${city.slug}/walk-in`;
   return {
@@ -51,21 +59,29 @@ function getGPFeeRange(s: string): string {
 export default async function WalkInClinicsPage({ params }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
-  const allWalkIns = await getWalkInProviders(city.slug);
+  const allWalkIns = await getWalkInProvidersLocal(city.slug);
   if (allWalkIns.length === 0) notFound();
   const base = getBaseUrl();
   const regulator = getRegulatorName(city.slug);
   const gpFee = getGPFeeRange(city.slug);
   const count = allWalkIns.length;
-  const sorted = [...allWalkIns].sort((a, b) => { const r = Number(b.googleRating) - Number(a.googleRating); return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0); });
-  const top20 = sorted.slice(0, 20);
+  const sorted = [...allWalkIns].sort((a, b) => {
+    const r = Number(b.googleRating) - Number(a.googleRating);
+    return r !== 0 ? r : (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+  });
   const ratedProviders = sorted.filter((p) => Number(p.googleRating) > 0);
   const walkInCategorySlugs = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
-  const catCounts = await Promise.all(walkInCategorySlugs.map((slug) => getProviderCountByCategoryAndCity(slug, city.slug)));
-  const walkInCategories = getCategories().filter((cat) => {
+  const catCounts = await Promise.all(
+    walkInCategorySlugs.map((slug) =>
+      safe(getProviderCountByCategoryAndCity(slug, city.slug), 0, `walkin:count:${slug}`),
+    ),
+  );
+  const categories = getCategories();
+  const walkInCategories = categories.filter((cat) => {
     const idx = walkInCategorySlugs.indexOf(cat.slug);
     return idx >= 0 && catCounts[idx] > 0;
   });
+
   const faqs = [
     { question: `How many walk-in clinics are there in ${city.name}?`, answer: `According to the UAE Open Healthcare Directory, there are ${count}+ walk-in friendly clinics and polyclinics in ${city.name}, UAE. These include general practice clinics, multi-specialty polyclinics, and family medicine centers that accept patients without prior appointments. Data sourced from official ${regulator} registers, last verified March 2026.` },
     { question: `What is the typical wait time at walk-in clinics in ${city.name}?`, answer: `Walk-in wait times at clinics in ${city.name} typically range from 15 to 45 minutes for GP consultations. Wait times may be longer during morning rush (8-10 AM) and evening hours (5-8 PM). Multi-specialty polyclinics generally have shorter wait times due to multiple practitioners on staff.` },
@@ -75,61 +91,128 @@ export default async function WalkInClinicsPage({ params }: Props) {
     { question: `What services do walk-in clinics in ${city.name} offer?`, answer: `Walk-in clinics in ${city.name} typically offer general practice consultations, basic health screenings, minor injury treatment, vaccinations, prescription renewals, sick notes, blood tests, and referrals to specialists.` },
   ];
 
+  const breadcrumbSchemaItems = [
+    { name: "UAE", url: base },
+    { name: city.name, url: `${base}/directory/${city.slug}` },
+    { name: "Walk-In Clinics", url: `${base}/directory/${city.slug}/walk-in` },
+  ];
+
+  const topRated = ratedProviders[0];
+
   return (
-    <>
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JsonLd data={breadcrumbSchema([{ name: "UAE", url: base }, { name: city.name, url: `${base}/directory/${city.slug}` }, { name: "Walk-In Clinics", url: `${base}/directory/${city.slug}/walk-in` }])} />
-        <JsonLd data={speakableSchema([".answer-block"])} />
-        <JsonLd data={faqPageSchema(faqs)} />
-        {ratedProviders.length >= 5 && <JsonLd data={itemListSchema(`Walk-In Clinics in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />}
-        <Breadcrumb items={[{ label: "UAE", href: "/" }, { label: city.name, href: `/directory/${city.slug}` }, { label: "Walk-In Clinics" }]} />
-        <div className="mb-8">
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-3">Walk-In Clinics in {city.name}, UAE</h1>
-          <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed mb-4">{city.name} has {count}+ clinics and polyclinics that accept walk-in patients without appointments. Most general clinics in the UAE operate on a walk-in basis, with typical wait times of 15-45 minutes for GPs. Healthcare in {city.name} is regulated by {regulator}.</p>
-          <div className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-6" data-answer-block="true">
-            <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
-              According to the UAE Open Healthcare Directory, there are {count}+ walk-in clinics in {city.name}. Most UAE clinics accept walk-in patients without appointments, though wait times vary from 15-45 minutes for GPs.
-              {ratedProviders.length > 0 && ratedProviders[0] && (<> The highest-rated walk-in clinic is <strong>{ratedProviders[0].name}</strong> with a {ratedProviders[0].googleRating}-star Google rating{ratedProviders[0].googleReviewCount > 0 ? ` based on ${ratedProviders[0].googleReviewCount.toLocaleString()} patient reviews` : ""}.</>)}{" "}
-              A standard GP walk-in consultation costs {gpFee}. All listings are sourced from official government registers, last verified March 2026.
-            </p>
-          </div>
-        </div>
-        {walkInCategories.length > 1 && (
-          <section className="mb-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {walkInCategories.map((cat) => { const cc = catCounts[walkInCategorySlugs.indexOf(cat.slug)] ?? 0; return (
-                <Link key={cat.slug} href={`/directory/${city.slug}/walk-in/${cat.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors">
-                  <span className="font-['Geist',sans-serif] font-medium">Walk-In {cat.name}</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{cc} {cc === 1 ? "provider" : "providers"}</span>
-                </Link>); })}
+    <ListingsTemplate
+      breadcrumbs={[
+        { label: "UAE", href: "/" },
+        { label: city.name, href: `/directory/${city.slug}` },
+        { label: "Walk-In Clinics" },
+      ]}
+      eyebrow={`Walk-in · ${city.name}`}
+      title={`Walk-in clinics in ${city.name}.`}
+      subtitle={
+        <span>
+          {count}+ clinics and polyclinics in {city.name} that accept walk-in patients — typical GP wait: 15-45 minutes. Regulated by {regulator}.
+        </span>
+      }
+      aeoAnswer={
+        <>
+          According to the UAE Open Healthcare Directory, there are {count}+ walk-in clinics in {city.name}. Most UAE clinics accept walk-in patients without appointments, though wait times vary from 15-45 minutes for GPs.
+          {topRated && (
+            <>
+              {" "}The highest-rated walk-in clinic is <strong>{topRated.name}</strong> with a {topRated.googleRating}-star Google rating{topRated.googleReviewCount > 0 ? ` based on ${topRated.googleReviewCount.toLocaleString()} patient reviews` : ""}.
+            </>
+          )}{" "}
+          A standard GP walk-in consultation costs {gpFee}. All listings are sourced from official government registers, last verified March 2026.
+        </>
+      }
+      total={count}
+      providers={sorted.map((p) => {
+        const cat = categories.find((c) => c.slug === p.categorySlug);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          citySlug: p.citySlug,
+          categorySlug: p.categorySlug,
+          categoryName: cat?.name ?? null,
+          address: p.address,
+          googleRating: p.googleRating,
+          googleReviewCount: p.googleReviewCount,
+          isClaimed: p.isClaimed,
+          isVerified: p.isVerified,
+          photos: p.photos ?? null,
+          coverImageUrl: p.coverImageUrl ?? null,
+        };
+      })}
+      schemas={
+        <>
+          <JsonLd data={breadcrumbSchema(breadcrumbSchemaItems)} />
+          <JsonLd data={speakableSchema([".answer-block"])} />
+          <JsonLd data={faqPageSchema(faqs)} />
+          {ratedProviders.length >= 5 && (
+            <JsonLd data={itemListSchema(`Walk-In Clinics in ${city.name}`, ratedProviders.slice(0, 10), city.name, base)} />
+          )}
+        </>
+      }
+      belowGrid={
+        <>
+          {walkInCategories.length > 1 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+                Walk-in {city.name.toLowerCase()} by specialty
+              </h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {walkInCategories.map((cat) => {
+                  const cc = catCounts[walkInCategorySlugs.indexOf(cat.slug)] ?? 0;
+                  return (
+                    <li key={cat.slug}>
+                      <Link
+                        href={`/directory/${city.slug}/walk-in/${cat.slug}`}
+                        className="flex items-center justify-between bg-white border border-ink-line rounded-z-md px-4 py-3 hover:border-ink transition-colors"
+                      >
+                        <span className="font-sans text-z-body-sm font-medium text-ink">Walk-in {cat.name}</span>
+                        <span className="font-sans text-z-caption text-ink-muted">{cc} {cc === 1 ? "provider" : "providers"}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          </section>
-        )}
-        <section className="mb-10">
-          <ol className="space-y-0">
-            {top20.map((p, i) => (
-              <li key={p.id} className="article-row">
-                <span className="text-2xl font-bold text-[#006828] leading-none mt-0.5 w-8 shrink-0 text-center">{String(i + 1).padStart(2, "0")}</span>
-                <div className="flex-1 min-w-0"><div className="flex items-start justify-between gap-4 flex-wrap"><div className="flex-1 min-w-0">
-                  <Link href={`/directory/${p.citySlug}/${p.categorySlug}/${p.slug}`} className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors">{p.name}</Link>
-                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                    {Number(p.googleRating) > 0 && <span className="text-xs font-semibold text-[#006828]">{p.googleRating}/5</span>}
-                    {p.googleReviewCount > 0 && <span className="font-['Geist',sans-serif] text-xs text-black/40">{p.googleReviewCount.toLocaleString()} reviews</span>}
-                    {p.facilityType && <span className="font-['Geist',sans-serif] text-xs text-black/40">{p.facilityType}</span>}
-                    {p.phone && <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`} className="font-['Geist',sans-serif] text-xs text-black/40 hover:text-[#006828] transition-colors">{p.phone}</a>}
-                  </div>
-                  {p.address && <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1 line-clamp-1">{p.address}</p>}
-                </div><div className="shrink-0"><span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[10px] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif]">Walk-In</span></div></div></div>
-              </li>))}
-          </ol>
-          {count > 20 && <p className="font-['Geist',sans-serif] text-sm text-black/40 mt-4">Showing top 20 of {count}+ walk-in clinics.{" "}<Link href={`/directory/${city.slug}/clinics`} className="text-[#006828] hover:underline font-medium">Browse all clinics in {city.name} &rarr;</Link></p>}
-        </section>
-        <section className="mb-10"><div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Link href={`/directory/${city.slug}`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">All Providers</span><span className="font-['Geist',sans-serif] text-xs text-black/40">{city.name}</span></Link>
-          <Link href={`/directory/${city.slug}/insurance`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">By Insurance</span><span className="font-['Geist',sans-serif] text-xs text-black/40">Daman, AXA, Cigna...</span></Link>
-          <Link href={`/directory/${city.slug}/top`} className="flex items-center justify-between bg-[#f8f8f6] border border-black/[0.06] rounded-xl px-4 py-3 text-sm text-[#1c1c1c] hover:border-[#006828]/15 hover:bg-[#006828]/[0.04] transition-colors"><span className="font-['Geist',sans-serif] font-medium">Top Rated</span><span className="font-['Geist',sans-serif] text-xs text-black/40">By patient reviews</span></Link>
-        </div></section>
-        <FaqSection faqs={faqs} title={`Walk-In Clinics in ${city.name} — FAQ`} />
-      </div>
-    </>
+          )}
+
+          <div>
+            <h2 className="font-display font-semibold text-ink text-z-h1 mb-4">
+              Related in {city.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <ListingsCrossLink
+                label={`All healthcare in ${city.name}`}
+                href={`/directory/${city.slug}`}
+              />
+              <ListingsCrossLink
+                label={`Insurance in ${city.name}`}
+                href={`/directory/${city.slug}/insurance`}
+                sub="Daman, AXA, Cigna..."
+              />
+              <ListingsCrossLink
+                label={`Top-rated in ${city.name}`}
+                href={`/directory/${city.slug}/top`}
+                sub="By patient reviews"
+              />
+            </div>
+          </div>
+
+          {faqs.length > 0 && (
+            <div>
+              <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">
+                Walk-in clinics in {city.name} — FAQ
+              </h2>
+              <div className="max-w-3xl">
+                <FaqSection faqs={faqs} />
+              </div>
+            </div>
+          )}
+        </>
+      }
+    />
   );
 }

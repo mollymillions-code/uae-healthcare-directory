@@ -20,6 +20,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAreaSpecialtyCombos(3).map((combo) => ({
     area: combo.areaSlug,
     specialty: combo.specialtySlug,

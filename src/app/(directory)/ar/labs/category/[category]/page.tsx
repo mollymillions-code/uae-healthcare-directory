@@ -20,6 +20,7 @@ import { ar } from "@/lib/i18n";
 export const revalidate = 43200;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return TEST_CATEGORIES.map((cat) => ({ category: cat.slug }));
 }
 
@@ -125,7 +126,7 @@ export default function ArabicTestCategoryPage({
   ];
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       <JsonLd
         data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },

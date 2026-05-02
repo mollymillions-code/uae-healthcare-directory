@@ -7,6 +7,7 @@ import {
 export const revalidate = 43200;
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return generateGccFilterStaticParams("sa", "24-hour");
 }
 

@@ -37,6 +37,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().map((c) => ({ city: c.slug }));
 }
 
@@ -105,7 +106,7 @@ export default async function ArabicBestInCityPage({ params }: Props) {
   const sortedCategories = [...categoryData].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd data={breadcrumbSchema([
         { name: ar.home, url: `${base}/ar` },
         { name: ar.bestProviders, url: `${base}/ar/best` },

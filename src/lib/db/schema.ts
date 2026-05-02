@@ -414,6 +414,328 @@ export const claimRequests = pgTable(
   })
 );
 
+// ─── Clinic Portal: Organizations, Users, Ownership & Edits ─────────────────
+
+export const clinicOrganizations = pgTable(
+  "clinic_organizations",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug"),
+    primaryEmail: text("primary_email"),
+    phone: text("phone"),
+    website: text("website"),
+    status: text("status").notNull().default("active"),
+    source: text("source").notNull().default("claim"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    slugIdx: index("idx_clinic_organizations_slug").on(table.slug),
+    primaryEmailIdx: index("idx_clinic_organizations_primary_email").on(table.primaryEmail),
+    statusIdx: index("idx_clinic_organizations_status").on(table.status),
+  })
+);
+
+export const clinicUsers = pgTable(
+  "clinic_users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    name: text("name"),
+    passwordHash: text("password_hash"),
+    phone: text("phone"),
+    status: text("status").notNull().default("invited"),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("uq_clinic_users_email").on(table.email),
+    statusIdx: index("idx_clinic_users_status").on(table.status),
+    createdAtIdx: index("idx_clinic_users_created_at").on(table.createdAt),
+  })
+);
+
+export const clinicMemberships = pgTable(
+  "clinic_memberships",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => clinicOrganizations.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => clinicUsers.id, { onDelete: "cascade" }),
+    role: text("role").notNull().default("manager"),
+    status: text("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    orgUserUnique: uniqueIndex("uq_clinic_memberships_org_user").on(
+      table.organizationId,
+      table.userId
+    ),
+    orgIdx: index("idx_clinic_memberships_org").on(table.organizationId),
+    userIdx: index("idx_clinic_memberships_user").on(table.userId),
+    statusIdx: index("idx_clinic_memberships_status").on(table.status),
+  })
+);
+
+export const providerOwnerships = pgTable(
+  "provider_ownerships",
+  {
+    id: text("id").primaryKey(),
+    providerId: text("provider_id")
+      .notNull()
+      .references(() => providers.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => clinicOrganizations.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("active"),
+    source: text("source").notNull().default("claim_approved"),
+    claimRequestId: text("claim_request_id").references(() => claimRequests.id, {
+      onDelete: "set null",
+    }),
+    approvedBy: text("approved_by"),
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    providerOrgUnique: uniqueIndex("uq_provider_ownerships_provider_org").on(
+      table.providerId,
+      table.organizationId
+    ),
+    providerIdx: index("idx_provider_ownerships_provider").on(table.providerId),
+    orgIdx: index("idx_provider_ownerships_org").on(table.organizationId),
+    statusIdx: index("idx_provider_ownerships_status").on(table.status),
+    claimIdx: index("idx_provider_ownerships_claim").on(table.claimRequestId),
+  })
+);
+
+export const clinicInvites = pgTable(
+  "clinic_invites",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => clinicOrganizations.id, { onDelete: "cascade" }),
+    providerId: text("provider_id").references(() => providers.id, {
+      onDelete: "cascade",
+    }),
+    email: text("email").notNull(),
+    role: text("role").notNull().default("manager"),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdBy: text("created_by"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenHashUnique: uniqueIndex("uq_clinic_invites_token_hash").on(table.tokenHash),
+    orgIdx: index("idx_clinic_invites_org").on(table.organizationId),
+    providerIdx: index("idx_clinic_invites_provider").on(table.providerId),
+    emailIdx: index("idx_clinic_invites_email").on(table.email),
+    expiresAtIdx: index("idx_clinic_invites_expires_at").on(table.expiresAt),
+  })
+);
+
+export type ProviderPortalEditPayload = {
+  phone?: string | null;
+  phoneSecondary?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
+  website?: string | null;
+  address?: string | null;
+  shortDescription?: string | null;
+  description?: string | null;
+  services?: string[];
+  insurance?: string[];
+  languages?: string[];
+  operatingHours?: Record<string, unknown> | null;
+  logoUrl?: string | null;
+  coverImageUrl?: string | null;
+  photos?: string[];
+};
+
+export const providerEditRequests = pgTable(
+  "provider_edit_requests",
+  {
+    id: text("id").primaryKey(),
+    providerId: text("provider_id")
+      .notNull()
+      .references(() => providers.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => clinicOrganizations.id, { onDelete: "cascade" }),
+    requestedByUserId: text("requested_by_user_id").references(() => clinicUsers.id, {
+      onDelete: "set null",
+    }),
+    status: text("status").notNull().default("pending"),
+    payload: jsonb("payload").$type<ProviderPortalEditPayload>().notNull(),
+    reviewedBy: text("reviewed_by"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    rejectionReason: text("rejection_reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    providerIdx: index("idx_provider_edit_requests_provider").on(table.providerId),
+    orgIdx: index("idx_provider_edit_requests_org").on(table.organizationId),
+    userIdx: index("idx_provider_edit_requests_user").on(table.requestedByUserId),
+    statusIdx: index("idx_provider_edit_requests_status").on(table.status),
+    createdAtIdx: index("idx_provider_edit_requests_created_at").on(table.createdAt),
+  })
+);
+
+export const providerPortalSessions = pgTable(
+  "provider_portal_sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => clinicUsers.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => clinicOrganizations.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    source: text("source").notNull().default("portal"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenHashUnique: uniqueIndex("uq_provider_portal_sessions_token_hash").on(
+      table.tokenHash
+    ),
+    userIdx: index("idx_provider_portal_sessions_user").on(table.userId),
+    orgIdx: index("idx_provider_portal_sessions_org").on(table.organizationId),
+    expiresAtIdx: index("idx_provider_portal_sessions_expires_at").on(table.expiresAt),
+  })
+);
+
+export const providerPortalAuditLogs = pgTable(
+  "provider_portal_audit_logs",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id").references(() => clinicOrganizations.id, {
+      onDelete: "set null",
+    }),
+    providerId: text("provider_id").references(() => providers.id, {
+      onDelete: "set null",
+    }),
+    actorUserId: text("actor_user_id").references(() => clinicUsers.id, {
+      onDelete: "set null",
+    }),
+    actorType: text("actor_type").notNull().default("clinic_user"),
+    action: text("action").notNull(),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    orgIdx: index("idx_provider_portal_audit_logs_org").on(table.organizationId),
+    providerIdx: index("idx_provider_portal_audit_logs_provider").on(table.providerId),
+    actorIdx: index("idx_provider_portal_audit_logs_actor").on(table.actorUserId),
+    actionIdx: index("idx_provider_portal_audit_logs_action").on(table.action),
+    createdAtIdx: index("idx_provider_portal_audit_logs_created_at").on(table.createdAt),
+  })
+);
+
+// ─── Consumer Accounts ───────────────────────────────────────────────────────
+
+export const consumerUsers = pgTable(
+  "consumer_users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    name: text("name"),
+    passwordHash: text("password_hash").notNull(),
+    phone: text("phone"),
+    preferredCitySlug: text("preferred_city_slug"),
+    preferredInsurance: text("preferred_insurance"),
+    marketingOptIn: boolean("marketing_opt_in").notNull().default(false),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("uq_consumer_users_email").on(table.email),
+    createdAtIdx: index("idx_consumer_users_created_at").on(table.createdAt),
+  })
+);
+
+export const consumerPasswordResetTokens = pgTable(
+  "consumer_password_reset_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => consumerUsers.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenHashUnique: uniqueIndex("uq_consumer_reset_tokens_hash").on(table.tokenHash),
+    userIdx: index("idx_consumer_reset_tokens_user").on(table.userId),
+    expiresAtIdx: index("idx_consumer_reset_tokens_expires_at").on(table.expiresAt),
+  })
+);
+
+export const consumerSavedProviders = pgTable(
+  "consumer_saved_providers",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => consumerUsers.id, { onDelete: "cascade" }),
+    providerId: text("provider_id")
+      .notNull()
+      .references(() => providers.id, { onDelete: "cascade" }),
+    source: text("source"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.providerId] }),
+    userIdx: index("idx_consumer_saved_providers_user").on(table.userId),
+    providerIdx: index("idx_consumer_saved_providers_provider").on(table.providerId),
+    createdAtIdx: index("idx_consumer_saved_providers_created_at").on(table.createdAt),
+  })
+);
+
+export const consumerProviderEvents = pgTable(
+  "consumer_provider_events",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => consumerUsers.id, { onDelete: "set null" }),
+    providerId: text("provider_id").references(() => providers.id, { onDelete: "set null" }),
+    entityType: text("entity_type").notNull().default("provider"),
+    entitySlug: text("entity_slug"),
+    entityName: text("entity_name"),
+    action: text("action").notNull(),
+    surface: text("surface").notNull(),
+    pageUrl: text("page_url"),
+    ctaLabel: text("cta_label"),
+    anonymousId: text("anonymous_id"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index("idx_consumer_provider_events_user").on(table.userId),
+    providerIdx: index("idx_consumer_provider_events_provider").on(table.providerId),
+    actionIdx: index("idx_consumer_provider_events_action").on(table.action),
+    surfaceIdx: index("idx_consumer_provider_events_surface").on(table.surface),
+    createdAtIdx: index("idx_consumer_provider_events_created_at").on(table.createdAt),
+  })
+);
+
 // ─── Journal Articles ─────────────────────────────────────────────────────────
 
 export type ArticleCitation = {
@@ -971,5 +1293,262 @@ export const adminChanges = pgTable(
   (table) => ({
     entityIdx: index("idx_admin_changes_entity").on(table.entityType, table.entityId),
     createdIdx: index("idx_admin_changes_created").on(table.createdAt),
+  })
+);
+
+// Tracks every slug a provider has ever had. When a provider's slug changes
+// (rename, admin edit, marketing-friendly short URL), the old slug is archived
+// here. Lookups on a missing slug consult this table and 301 to the canonical
+// provider URL — predictable, no fuzzy matching, search-engine safe.
+export const providerSlugHistory = pgTable(
+  "provider_slug_history",
+  {
+    oldSlug: text("old_slug").primaryKey(),
+    providerId: text("provider_id").notNull(),
+    citySlug: text("city_slug"),
+    archivedAt: timestamp("archived_at", { withTimezone: true }).notNull().defaultNow(),
+    reason: text("reason"),
+  },
+  (table) => ({
+    providerIdx: index("idx_provider_slug_history_provider").on(table.providerId),
+  })
+);
+
+// ===========================================================================
+// Open Healthcare Jobs by Zavis — schema for the third user-type marketplace.
+// ===========================================================================
+
+export const candidateUsers = pgTable(
+  "candidate_users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    name: text("name"),
+    passwordHash: text("password_hash"),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    marketingOptIn: boolean("marketing_opt_in").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("uq_candidate_users_email").on(table.email),
+    createdAtIdx: index("idx_candidate_users_created_at").on(table.createdAt),
+  })
+);
+
+export const candidateProfiles = pgTable(
+  "candidate_profiles",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    role: text("role").notNull(), // role family — see DISCIPLINES taxonomy
+    disciplineSlug: text("discipline_slug"),
+    specialtySlug: text("specialty_slug"),
+    subspecialtySlug: text("subspecialty_slug"),
+    experienceYears: integer("experience_years"),
+    currentEmployerOptional: text("current_employer_optional"),
+    licenseStatus: text("license_status"), // 'dha'|'doh'|'mohap'|'dataflow_pending'|'outside_uae'|'none'
+    licenseNumberOptional: text("license_number_optional"),
+    preferredCitySlugs: text("preferred_city_slugs").array(),
+    currentCitySlug: text("current_city_slug"),
+    willingToRelocate: boolean("willing_to_relocate").default(false),
+    visaStatus: text("visa_status"), // 'citizen'|'residence'|'needs_sponsorship'
+    salaryExpectationMinAed: integer("salary_expectation_min_aed"),
+    salaryExpectationMaxAed: integer("salary_expectation_max_aed"),
+    employmentTypePref: text("employment_type_pref").array(),
+    bioMd: text("bio_md"),
+    cvUrl: text("cv_url"),
+    cvUploadedAt: timestamp("cv_uploaded_at", { withTimezone: true }),
+    photoUrl: text("photo_url"),
+    languages: text("languages").array(),
+    availability: text("availability").default("open"),
+    visibility: text("visibility").notNull().default("limited"),
+    profileCompleteness: integer("profile_completeness").notNull().default(0),
+    notifyEmail: boolean("notify_email").notNull().default(true),
+    notifyWhatsapp: boolean("notify_whatsapp").notNull().default(false),
+    whatsappNumber: text("whatsapp_number"),
+    consentTermsAt: timestamp("consent_terms_at", { withTimezone: true }).notNull(),
+    consentTermsVersion: text("consent_terms_version").notNull(),
+    consentDataProcessingAt: timestamp("consent_data_processing_at", { withTimezone: true }).notNull(),
+    consentRecruiterVisibilityAt: timestamp("consent_recruiter_visibility_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    specialtyCityIdx: index("idx_candidate_profiles_specialty_city").on(table.specialtySlug, table.currentCitySlug),
+    disciplineCityIdx: index("idx_candidate_profiles_discipline_city").on(table.disciplineSlug, table.currentCitySlug),
+    visibilityIdx: index("idx_candidate_profiles_visibility").on(table.visibility, table.availability),
+  })
+);
+
+export const jobs = pgTable(
+  "jobs",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    titleAr: text("title_ar"),
+    clinicId: text("clinic_id"),
+    externalClinicName: text("external_clinic_name"),
+    externalClinicUrl: text("external_clinic_url"),
+    citySlug: text("city_slug").notNull(),
+    role: text("role"), // role family — see DISCIPLINES taxonomy
+    disciplineSlug: text("discipline_slug"),
+    specialtySlug: text("specialty_slug").notNull(),
+    subspecialtySlug: text("subspecialty_slug"),
+    seniority: text("seniority"),
+    employmentType: text("employment_type"),
+    descriptionMd: text("description_md").notNull(),
+    requirementsMd: text("requirements_md"),
+    benefitsMd: text("benefits_md"),
+    licenseRequired: text("license_required"),
+    dataflowRequired: boolean("dataflow_required"),
+    visaSponsorship: boolean("visa_sponsorship"),
+    salaryMinAed: integer("salary_min_aed"),
+    salaryMaxAed: integer("salary_max_aed"),
+    salaryDisclosed: boolean("salary_disclosed").default(false),
+    applicationDeadline: timestamp("application_deadline", { withTimezone: true }),
+    postedAt: timestamp("posted_at", { withTimezone: true }).notNull().defaultNow(),
+    closingAt: timestamp("closing_at", { withTimezone: true }),
+    status: text("status").notNull().default("draft"),
+    source: text("source").notNull().default("zavis_curated"),
+    postedByClinicUserId: text("posted_by_clinic_user_id"),
+    viewCount: integer("view_count").notNull().default(0),
+    applicationCount: integer("application_count").notNull().default(0),
+    savedCount: integer("saved_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    statusPostedIdx: index("idx_jobs_status_posted").on(table.status, table.postedAt),
+    cityCatIdx: index("idx_jobs_city_specialty").on(table.citySlug, table.specialtySlug, table.status),
+    cityDisciplineIdx: index("idx_jobs_city_discipline").on(table.citySlug, table.disciplineSlug, table.status),
+    disciplineIdx: index("idx_jobs_discipline").on(table.disciplineSlug, table.status),
+    clinicIdx: index("idx_jobs_clinic").on(table.clinicId),
+  })
+);
+
+export const jobApplications = pgTable(
+  "job_applications",
+  {
+    id: text("id").primaryKey(),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    candidateProfileId: text("candidate_profile_id").references(() => candidateProfiles.id),
+    coverNoteMd: text("cover_note_md"),
+    cvUrlAtApply: text("cv_url_at_apply"),
+    status: text("status").notNull().default("submitted"),
+    statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),
+    statusUpdatedByClinicUserId: text("status_updated_by_clinic_user_id"),
+    candidateVisibleStatus: text("candidate_visible_status"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    jobCandidateUnique: uniqueIndex("uq_job_applications_job_candidate").on(table.jobId, table.candidateUserId),
+    candidateIdx: index("idx_job_applications_candidate").on(table.candidateUserId, table.createdAt),
+    jobIdx: index("idx_job_applications_job").on(table.jobId, table.status),
+  })
+);
+
+export const profileInterestEvents = pgTable(
+  "profile_interest_events",
+  {
+    id: text("id").primaryKey(),
+    candidateProfileId: text("candidate_profile_id")
+      .notNull()
+      .references(() => candidateProfiles.id, { onDelete: "cascade" }),
+    recruiterClinicId: text("recruiter_clinic_id"),
+    recruiterClinicUserId: text("recruiter_clinic_user_id"),
+    source: text("source").notNull(),
+    jobId: text("job_id").references(() => jobs.id),
+    messageMd: text("message_md"),
+    notifiedCandidateAt: timestamp("notified_candidate_at", { withTimezone: true }),
+    candidateRespondedAt: timestamp("candidate_responded_at", { withTimezone: true }),
+    candidateResponse: text("candidate_response"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    candidateIdx: index("idx_profile_interest_candidate").on(table.candidateProfileId, table.createdAt),
+  })
+);
+
+export const candidateSavedJobs = pgTable(
+  "candidate_saved_jobs",
+  {
+    id: text("id").primaryKey(),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    source: text("source"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userJobUnique: uniqueIndex("uq_candidate_saved_jobs_user_job").on(table.candidateUserId, table.jobId),
+  })
+);
+
+export const jobAlertSubscriptions = pgTable(
+  "job_alert_subscriptions",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    candidateUserId: text("candidate_user_id").references(() => candidateUsers.id),
+    citySlugs: text("city_slugs").array(),
+    specialtySlugs: text("specialty_slugs").array(),
+    seniority: text("seniority").array(),
+    frequency: text("frequency").notNull().default("weekly"),
+    consentPdplAt: timestamp("consent_pdpl_at", { withTimezone: true }).notNull().defaultNow(),
+    unsubscribeToken: text("unsubscribe_token").notNull().unique(),
+    unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  }
+);
+
+export const candidateNotifications = pgTable(
+  "candidate_notifications",
+  {
+    id: text("id").primaryKey(),
+    candidateUserId: text("candidate_user_id")
+      .notNull()
+      .references(() => candidateUsers.id, { onDelete: "cascade" }),
+    channel: text("channel").notNull(),
+    type: text("type").notNull(),
+    payload: jsonb("payload"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index("idx_candidate_notifications_user").on(table.candidateUserId, table.createdAt),
+  })
+);
+
+export const jobCandidateInterests = pgTable(
+  "job_candidate_interests",
+  {
+    id: text("id").primaryKey(),
+    jobId: text("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    candidateProfileId: text("candidate_profile_id")
+      .notNull()
+      .references(() => candidateProfiles.id, { onDelete: "cascade" }),
+    source: text("source"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    jobCandidateUnique: uniqueIndex("uq_job_candidate_interests_job_candidate").on(table.jobId, table.candidateProfileId),
   })
 );

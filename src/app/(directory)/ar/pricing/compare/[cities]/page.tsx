@@ -142,6 +142,7 @@ function analysePricing(cityASlug: string, cityBSlug: string) {
 // ─── Generate Static Params ───────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllCityPairs().map(({ cityA, cityB }) => ({
     cities: `${cityA}-vs-${cityB}`,
   }));
@@ -258,7 +259,7 @@ export default async function ArCityComparisonPage({
 
   return (
     <div
-      className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8"
       dir="rtl"
       lang="ar"
     >

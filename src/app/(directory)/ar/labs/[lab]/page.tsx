@@ -21,6 +21,7 @@ import { ar, getArabicCityName } from "@/lib/i18n";
 export const revalidate = 43200;
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return LAB_PROFILES.map((lab) => ({ lab: lab.slug }));
 }
 
@@ -120,7 +121,7 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
   ];
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       <JsonLd
         data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },

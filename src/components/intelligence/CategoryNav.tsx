@@ -11,6 +11,7 @@ export function CategoryNav({ activeCategory }: CategoryNavProps) {
       <div className="flex items-center gap-0 -mb-px overflow-x-auto scrollbar-none">
         <Link
           href="/intelligence"
+          prefetch={false}
           className={`px-4 py-2.5 font-['Geist',sans-serif] text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
             !activeCategory
               ? "text-[#1c1c1c] border-[#006828]"
@@ -23,6 +24,7 @@ export function CategoryNav({ activeCategory }: CategoryNavProps) {
           <Link
             key={cat.slug}
             href={`/intelligence/category/${cat.slug}`}
+            prefetch={false}
             className={`px-4 py-2.5 font-['Geist',sans-serif] text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
               activeCategory === cat.slug
                 ? "text-[#1c1c1c] border-[#006828]"

@@ -1,8 +1,8 @@
 name: Full content pipeline (with review + images)
 
 on:
-  schedule:
-    - cron: '0 */2 * * *'
+  # Automatic GitHub Actions schedules are disabled. Move this job to the
+  # self-hosted CI host before re-enabling an automated cadence.
   workflow_dispatch:
 
 # Own concurrency group — prevents two pipeline runs from overlapping.

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
@@ -7,14 +8,16 @@ import { StarRating } from "@/components/shared/StarRating";
 import dynamic from "next/dynamic";
 const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
 import { JsonLd } from "@/components/seo/JsonLd";
+import { FaqSection } from "@/components/seo/FaqSection";
 import {
-  getCityBySlug, getCategories,
+  getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug, getAreasByCity,
+  getSubcategoriesByCategory,
   getProviders, getTopRatedProviders,
 } from "@/lib/data";
 import {
   medicalOrganizationSchema, breadcrumbSchema,
-  itemListSchema, speakableSchema,
+  itemListSchema, speakableSchema, faqPageSchema,
   truncateTitle, truncateDescription,
 } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -22,6 +25,11 @@ import {
   getCategoryImageUrl, hasValidHours, formatVerifiedDateAr,
   resolveSegments,
 } from "@/lib/directory-utils";
+import {
+  collectProviderImageUrls,
+  getPrimaryProviderImageUrl,
+  isUsableProviderImageUrl,
+} from "@/lib/media/provider-images";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import Image from "next/image";
 import {
@@ -50,11 +58,29 @@ function parsePage(searchParams: Props["searchParams"]): number {
 
 // No generateStaticParams — pages render on-demand via ISR.
 
+function isPotentialListingRoute(citySlug: string, segments: string[]): boolean {
+  const [seg1, seg2, seg3] = segments;
+
+  if (segments.length === 2) {
+    const category = getCategoryBySlug(seg1);
+    if (!category) return false;
+    return !getSubcategoriesByCategory(category.slug).some((sub) => sub.slug === seg2);
+  }
+
+  if (segments.length === 3) {
+    return Boolean(seg3 && getAreaBySlug(citySlug, seg1) && getCategoryBySlug(seg2));
+  }
+
+  return false;
+}
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
+  if (resolved.type === "listing") noStore();
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
   const page = parsePage(searchParams);
@@ -153,6 +179,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       const catNameAr = getArabicCategoryName(resolved.category.slug);
       const enListingUrl = `${base}/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
       const arListingUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}/${resolved.provider.slug}`;
+      const providerOgImage =
+        getPrimaryProviderImageUrl(resolved.provider, { absoluteOnly: true }) ??
+        getCategoryImageUrl(resolved.category.slug, base);
 
       // --- Arabic SEO title: hard 60-char cap, high-intent modifiers ---
       const arMaxTitleLen = 60;
@@ -208,7 +237,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
           locale: 'ar_AE',
           siteName: 'دليل الرعاية الصحية الإماراتي المفتوح',
           url: arListingUrl,
-          images: [{ url: getCategoryImageUrl(resolved.category.slug, base), width: 1200, height: 630, alt: `${resolved.provider.name} — ${catNameAr} في ${cityNameAr}` }],
+          images: [{ url: providerOgImage, width: 1200, height: 630, alt: `${resolved.provider.name} — ${catNameAr} في ${cityNameAr}` }],
         },
       };
     }
@@ -220,9 +249,19 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
   const city = getCityBySlug(params.city);
   if (!city) notFound();
+  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
+  if (resolved.type === "listing") {
+    noStore();
+    const lastSegment = params.segments[params.segments.length - 1];
+    if (lastSegment && lastSegment !== resolved.provider.slug) {
+      const canonicalCategory = resolved.provider.categorySlug ?? resolved.category.slug;
+      const areaPart = "area" in resolved && resolved.area ? `/${resolved.area.slug}` : "";
+      permanentRedirect(`/ar/directory/${city.slug}${areaPart}/${canonicalCategory}/${resolved.provider.slug}`);
+    }
+  }
 
   const base = getBaseUrl();
   const cityNameAr = getArabicCityName(city.slug);
@@ -245,7 +284,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
     const regulator = getArabicRegulator(city.slug);
 
     return (
-      <div className="container-tc py-8">
+      <div dir="rtl" className="font-arabic container-tc py-8">
         <JsonLd data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },
           { name: cityNameAr, url: `${base}/ar/directory/${city.slug}` },
@@ -492,6 +531,10 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
     const area = provider.areaSlug ? getAreaBySlug(city.slug, provider.areaSlug) : null;
     const areaNameAr = area?.nameAr || area?.name || "";
     const nearbyProviders = (await getTopRatedProviders(city.slug, 4)).filter((p) => p.id !== provider.id);
+    const providerPhotoUrls = collectProviderImageUrls(provider, { limit: 8 });
+    const attributedGalleryPhotos = (provider.galleryPhotos ?? []).filter((photo) =>
+      isUsableProviderImageUrl(photo.url)
+    );
 
     const answerBlock = `وفقاً لدليل الرعاية الصحية المفتوح في الإمارات، ${provider.name} هو ${catNameAr} ${provider.isVerified ? "معتمد " : ""}في ${areaNameAr ? areaNameAr + "، " : ""}${cityNameAr}، الإمارات${hasValidHours(provider.operatingHours) && provider.operatingHours.mon ? `، مفتوح ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة" : `${provider.operatingHours.mon.open}–${provider.operatingHours.mon.close}`}` : ""}. ${provider.services.length > 0 ? `الخدمات: ${provider.services.slice(0, 4).join("، ")}.` : ""} ${provider.insurance.length > 0 ? "يقبل التأمين الصحي." : ""} ${provider.googleRating && Number(provider.googleRating) > 0 ? `تقييم Google: ${provider.googleRating}/5 من ${provider.googleReviewCount?.toLocaleString("ar-AE")} مراجعة.` : ""} ${provider.phone ? `للتواصل: ${provider.phone}.` : ""} البيانات مصدرها السجلات الحكومية الرسمية. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`;
 
@@ -537,24 +580,24 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </div>
 
             {/* Photo gallery */}
-            {provider.galleryPhotos && provider.galleryPhotos.length > 1 && (
+            {providerPhotoUrls.length > 1 && (
               <div className="mb-6" data-section="gallery">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-semibold text-dark flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-accent" /> الصور
                   </h2>
                   <span className="text-xs text-muted">
-                    {provider.galleryPhotos.length} صور · عبر Google
+                    {providerPhotoUrls.length} صور
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {provider.galleryPhotos.slice(0, 8).map((photo, idx) => (
+                  {providerPhotoUrls.map((photoUrl, idx) => (
                     <div
-                      key={idx}
+                      key={`${photoUrl}-${idx}`}
                       className="relative aspect-square overflow-hidden border border-black/[0.06]"
                     >
                       <Image
-                        src={photo.url}
+                        src={photoUrl}
                         alt={`${provider.name} — صورة ${idx + 1}`}
                         fill
                         className="object-cover"
@@ -564,9 +607,9 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                     </div>
                   ))}
                 </div>
-                {provider.galleryPhotos.some((p) => p.attributions?.length > 0) && (
+                {attributedGalleryPhotos.some((p) => p.attributions?.length > 0) && (
                   <p className="text-[11px] text-muted mt-2">
-                    الصور من {Array.from(new Set(provider.galleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join("، ")} عبر خرائط Google
+                    الصور من {Array.from(new Set(attributedGalleryPhotos.flatMap((p) => p.attributions?.map((a) => a.displayName) || []))).slice(0, 3).join("، ")} عبر خرائط Google
                   </p>
                 )}
               </div>
@@ -930,6 +973,60 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </div>
           </div>
         </div>
+
+        {/* Arabic FAQ — Phase 1.5 of insurance-seo-strategy-plan.md.
+            Mirrors the EN listing-page FAQ structure so providers
+            have consistent Q&A coverage in both locales. Picked up by
+            Google's faqPageSchema for rich-result eligibility. */}
+        {(() => {
+          const arabicProviderFaqs = [
+            {
+              question: `هل يقبل ${provider.name} التأمين الصحي؟`,
+              answer: provider.insurance.length > 0
+                ? `نعم. ${provider.name} يقبل ${provider.insurance.length} ${provider.insurance.length === 1 ? "خطة تأمين" : "خطة تأمين"}، تشمل ${provider.insurance.slice(0, 3).join("، ")}${provider.insurance.length > 3 ? ` و${provider.insurance.length - 3} خطط أخرى` : ""}. تأكد دائماً من تفاصيل التغطية وترتيبات الفوترة المباشرة مع العيادة قبل الزيارة.`
+                : `${provider.name} لم يؤكد بعد خطط التأمين المقبولة على دليل الرعاية الصحية المفتوح في الإمارات. اتصل بالعيادة مباشرة للاستفسار عن تأمينك.`,
+            },
+            {
+              question: `ما هي خطط التأمين التي يقبلها ${provider.name}؟`,
+              answer: provider.insurance.length > 0
+                ? `${provider.name} يقبل خطط التأمين التالية: ${provider.insurance.join("، ")}. تأكد دائماً من تفاصيل التغطية مباشرة مع المقدم قبل الزيارة.`
+                : `اتصل بـ ${provider.name} مباشرة لتأكيد خطط التأمين المقبولة حالياً.`,
+            },
+            {
+              question: `ما هي ساعات عمل ${provider.name} في ${cityNameAr}؟`,
+              answer: hasValidHours(provider.operatingHours) && provider.operatingHours.mon
+                ? `يعمل ${provider.name} في ${cityNameAr} وفق الجدول التالي: ${provider.operatingHours.mon.open === "00:00" ? "على مدار الساعة طوال أيام الأسبوع" : `من ${provider.operatingHours.mon.open} إلى ${provider.operatingHours.mon.close} في أيام الأسبوع`}. آخر تحقق: ${formatVerifiedDateAr(provider.lastVerified)}.`
+                : `اتصل بـ ${provider.name} مباشرة للحصول على ساعات العمل الحالية. الهاتف: ${provider.phone || "راجع البطاقة"}.`,
+            },
+            {
+              question: `ما هي الخدمات الطبية المتوفرة في ${provider.name}؟`,
+              answer: provider.services.length > 0
+                ? `يقدم ${provider.name} الخدمات الطبية التالية: ${provider.services.join("، ")}. هذه المعلومات مصدرها السجلات الرسمية للجهات الصحية في الإمارات.`
+                : `اتصل بـ ${provider.name} للحصول على قائمة كاملة بالخدمات الطبية المتاحة.`,
+            },
+            {
+              question: `كيف أصل إلى ${provider.name} في ${areaNameAr || cityNameAr}؟`,
+              answer: `${provider.name} يقع في ${provider.address}${areaNameAr ? `، في منطقة ${areaNameAr} بـ ${cityNameAr}` : `، ${cityNameAr}`}، الإمارات.${Number(provider.latitude) !== 0 ? " يمكنك الحصول على الاتجاهات عبر خرائط Google." : ""} ${provider.phone ? `للاتجاهات أو المواعيد، اتصل بالرقم ${provider.phone}.` : ""}`,
+            },
+            ...(provider.googleRating && Number(provider.googleRating) > 0 ? [{
+              question: `ما هو تقييم ${provider.name} على Google؟`,
+              answer: `يحظى ${provider.name} بتقييم ${provider.googleRating} نجوم على Google من ${provider.googleReviewCount?.toLocaleString("ar-AE") || "0"} تقييم من المرضى. التقييمات تعكس تجارب المرضى الحقيقية ويتم تحديثها باستمرار.`,
+            }] : []),
+            ...(provider.languages.length > 0 ? [{
+              question: `ما اللغات التي يتحدث بها فريق ${provider.name}؟`,
+              answer: `يتحدث فريق ${provider.name} اللغات التالية: ${provider.languages.join("، ")}. هذا يساعد في خدمة مجتمع ${cityNameAr} متعدد الثقافات.`,
+            }] : []),
+          ];
+          return (
+            <>
+              <JsonLd data={faqPageSchema(arabicProviderFaqs)} />
+              <div className="mt-8 mb-6">
+                <h2 className="font-bold text-dark mb-4 text-2xl">الأسئلة الشائعة</h2>
+                <FaqSection faqs={arabicProviderFaqs} />
+              </div>
+            </>
+          );
+        })()}
 
         {/* Language Switch */}
         <div className="text-center pt-6 pb-4">

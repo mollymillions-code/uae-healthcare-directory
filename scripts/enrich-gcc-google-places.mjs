@@ -3,14 +3,14 @@
  * Google Places Details Enrichment for GCC Providers
  *
  * Enriches existing GCC providers (QA, SA, BH, KW) that have a google_place_id
- * but are missing phone, website, operating hours, reviews, or photos.
+ * but are missing phone, website, operating hours, reviews, or Google photo ref.
  *
  * Uses the Google Places Details API with field masks to minimize cost:
  *   - formatted_phone_number, international_phone_number
  *   - website
  *   - opening_hours (weekday_text)
  *   - reviews (top 5)
- *   - photos (first 3 references)
+ *   - google_photo_url (primary photo reference only; never public photos)
  *
  * Cost: ~$0.017 per request (Place Details with Basic + Contact + Atmosphere fields)
  * Rate limit: 200ms between requests (5 QPS, well within 10 QPS limit)
@@ -153,7 +153,7 @@ async function getProvidersToEnrich(country = null) {
   const placeholders = countries.map((_, i) => `$${i + 1}`).join(", ");
 
   const query = `
-    SELECT id, name, google_place_id, phone, website, operating_hours, review_summary, photos
+    SELECT id, name, google_place_id, phone, website, operating_hours, review_summary, photos, google_photo_url
     FROM providers
     WHERE country IN (${placeholders})
       AND google_place_id IS NOT NULL
@@ -191,9 +191,9 @@ async function updateProvider(providerId, data) {
     setClauses.push(`review_summary = $${paramIdx++}`);
     values.push(JSON.stringify(data.reviewSummary));
   }
-  if (data.photos !== undefined) {
-    setClauses.push(`photos = $${paramIdx++}`);
-    values.push(JSON.stringify(data.photos));
+  if (data.googlePhotoUrl !== undefined) {
+    setClauses.push(`google_photo_url = $${paramIdx++}`);
+    values.push(data.googlePhotoUrl);
   }
 
   // Always update the timestamp
@@ -333,13 +333,12 @@ function extractReviewSummary(reviews) {
 }
 
 /**
- * Extract first 3 photo references from the photos array.
- * These are Google photo_reference strings that can be used with the Places Photos API.
+ * Extract the primary Google photo reference without publishing it as a photo URL.
  */
-function extractPhotoRefs(photos) {
+function extractPrimaryPhotoRef(photos) {
   if (!photos || photos.length === 0) return null;
 
-  return photos.slice(0, 3).map((p) => p.photo_reference).filter(Boolean);
+  return photos[0]?.photo_reference || null;
 }
 
 // ── Rate Limiter ─────────────────────────────────────────────────────────────
@@ -509,17 +508,14 @@ async function main() {
           }
         }
 
-        // Photos: update if provider doesn't have photos
-        const existingPhotos = provider.photos;
-        const hasPhotos =
-          existingPhotos &&
-          Array.isArray(existingPhotos) &&
-          existingPhotos.length > 0;
+        // Photo references are internal data only. Do not write them into
+        // photos, which is rendered directly on directory pages.
+        const hasPhotoRef = Boolean(provider.google_photo_url);
 
-        if (!hasPhotos) {
-          const photoRefs = extractPhotoRefs(details.photos);
-          if (photoRefs && photoRefs.length > 0) {
-            updateData.photos = photoRefs;
+        if (!hasPhotoRef) {
+          const photoRef = extractPrimaryPhotoRef(details.photos);
+          if (photoRef) {
+            updateData.googlePhotoUrl = photoRef;
             stats.photosFilled++;
             hasNewData = true;
           }

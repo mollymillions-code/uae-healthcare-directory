@@ -10,6 +10,7 @@ import { DoctorProfileFacts } from "./DoctorProfileFacts";
 import { DoctorProfileFaq } from "./DoctorProfileFaq";
 import { DoctorInitialsAvatar } from "./DoctorInitialsAvatar";
 import type { ProfessionalIndexRecord } from "@/lib/professionals";
+import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 
 interface DoctorProfilePageProps {
   doctor: ProfessionalIndexRecord;
@@ -50,6 +51,27 @@ export function DoctorProfilePage({
       />
 
       <DoctorProfileHero doctor={doctor} />
+
+      <section className="mt-6 rounded-2xl border border-[#006828]/15 bg-white p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+        <div>
+          <h2 className="font-['Bricolage_Grotesque',sans-serif] text-lg font-medium tracking-tight text-[#1c1c1c]">
+            Need to update this doctor or clinic profile?
+          </h2>
+          <p className="mt-1 font-['Geist',sans-serif] text-sm text-black/45">
+            Clinic owners and authorized teams can request edits through WhatsApp.
+          </p>
+        </div>
+        <OwnerWhatsappCta
+          action="edit"
+          surface="doctor_profile_owner_cta"
+          doctorName={`Dr. ${titleCasedName}`}
+          doctorSlug={doctor.slug}
+          providerName={doctor.primaryFacilityName}
+          label="Request edit via WhatsApp"
+          variant="secondary"
+          className="mt-4 shrink-0 sm:mt-0"
+        />
+      </section>
 
       {/* Editorial intro */}
       <section className="mt-6 rounded-2xl border border-black/[0.06] bg-white p-6 sm:p-8">

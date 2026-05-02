@@ -33,6 +33,7 @@ import { ar, getArabicCityName } from "@/lib/i18n";
 // ─── Static Params ────────────────────────────────────────────────────────────
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return CITIES.map((city) => ({ city: city.slug }));
 }
 
@@ -348,7 +349,7 @@ export default async function ArabicLabCityPage({
   };
 
   return (
-    <div className="container-tc py-8" dir="rtl" lang="ar">
+    <div className="font-arabic container-tc py-8" dir="rtl" lang="ar">
       {/* JSON-LD */}
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqPageSchema(faqs)} />

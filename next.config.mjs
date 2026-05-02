@@ -11,11 +11,14 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   images: {
-    // Serve WebP by default. Without this, Next.js sometimes falls back
-    // to JPEG even when the source is .webp — the optimizer was returning
-    // 500 when browsers sent Accept: image/webp, causing a JPEG fallback
-    // that was 3× larger and never cached by Cloudflare. Adding avif as
-    // a preferred format when browsers support it further reduces bytes.
+    // Disable the built-in image optimizer. All images are served as
+    // direct static URLs (R2 CDN, /public/, WebP/PNG assets) with standard
+    // <img>-equivalent delivery — no runtime proxy, no /_next/image
+    // transformation. This removes the per-request CPU + memory cost of
+    // re-encoding and lets Cloudflare cache every asset at the edge
+    // directly off the origin URL. `formats` + `remotePatterns` become
+    // no-ops when unoptimized=true but stay for documentation.
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "cdn.who.int" },
@@ -37,6 +40,29 @@ const nextConfig = {
       { protocol: "https", hostname: "**.googleusercontent.com" },
     ],
   },
+  async redirects() {
+    // City slug aliases — common UAE abbreviations users type or paste in URLs.
+    // 301 to the canonical slug so search engines collapse the duplicates and
+    // ISR/CDN caches don't fragment across variants.
+    const cityAliases = [
+      { from: "uaq", to: "umm-al-quwain" },
+      { from: "rak", to: "ras-al-khaimah" },
+    ];
+    const redirects = [];
+    for (const { from, to } of cityAliases) {
+      redirects.push({
+        source: `/directory/${from}/:path*`,
+        destination: `/directory/${to}/:path*`,
+        permanent: true,
+      });
+      redirects.push({
+        source: `/ar/directory/${from}/:path*`,
+        destination: `/ar/directory/${to}/:path*`,
+        permanent: true,
+      });
+    }
+    return redirects;
+  },
   async headers() {
     return [
       {
@@ -47,17 +73,17 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://snap.licdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://googleads.g.doubleclick.net https://crm.zavis.ai https://ddwl4m2hdecbv.cloudfront.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://snap.licdn.com https://static.cloudflareinsights.com https://www.clarity.ms https://googleads.g.doubleclick.net https://ddwl4m2hdecbv.cloudfront.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com https://*.facebook.com https://snap.licdn.com https://static.cloudflareinsights.com https://www.google.com https://www.google.co.in https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://px.ads.linkedin.com https://www.clarity.ms https://crm.zavis.ai https://clientops.zavisinternaltools.in",
-              "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://crm.zavis.ai https://www.google.com https://maps.google.com https://*.google.com",
+              "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com https://*.facebook.com https://snap.licdn.com https://static.cloudflareinsights.com https://www.google.com https://www.google.co.in https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://px.ads.linkedin.com https://www.clarity.ms https://app.zavis.ai https://crm.zavis.ai https://clientops.zavisinternaltools.in",
+              "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://www.youtube-nocookie.com https://app.zavis.ai https://crm.zavis.ai https://www.google.com https://maps.google.com https://*.google.com",
               "media-src 'self' https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
-              "frame-ancestors 'self'",
+              "frame-ancestors 'self' https://app.zavis.ai https://crm.zavis.ai",
             ].join("; "),
           },
         ],

@@ -64,7 +64,7 @@ export default function ArabicAccessibilityPage() {
   ]);
 
   return (
-    <>
+    <div dir="rtl" className="font-arabic">
       <JsonLd data={webPageNode} />
       <JsonLd data={breadcrumbNode} />
 
@@ -277,6 +277,6 @@ export default function ArabicAccessibilityPage() {
           </p>
         </article>
       </div>
-    </>
+    </div>
   );
 }

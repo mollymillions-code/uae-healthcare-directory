@@ -44,6 +44,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return JOURNAL_CATEGORIES.map((c) => ({ category: c.slug }));
 }
 
@@ -84,7 +85,7 @@ export default async function ArabicCategoryPage({ params }: PageProps) {
   const arabicDesc = ARABIC_CATEGORY_DESCRIPTIONS[cat.slug] || cat.description;
 
   return (
-    <div dir="rtl" lang="ar">
+    <div className="font-arabic" dir="rtl" lang="ar">
       {/* Back link */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link

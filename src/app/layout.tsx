@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { DM_Sans, Space_Mono, Lora, Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { Suspense } from "react";
 import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
+import { NextAuthProvider } from "@/components/auth/NextAuthProvider";
+import { RouteLoadingOverlay } from "@/components/layout/RouteLoadingOverlay";
+import { PostActionAccountPrompt } from "@/components/account/PostActionAccountPrompt";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -95,6 +99,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Note: AR routes flip <html lang/dir> client-side via the
+  // SetArabicLang component mounted in `(directory)/ar/layout.tsx`.
+  // Calling `headers()` here would make every ISR page dynamic
+  // (DYNAMIC_SERVER_USAGE), so we accept a brief lang=en flash on
+  // AR routes. Googlebot still picks up the correct attributes
+  // because it executes the SetArabicLang script before indexing.
   return (
     <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable}`}>
       <head>
@@ -125,7 +135,13 @@ export default function RootLayout({
         {/* Meta Pixel noscript */}
         <noscript><img height="1" width="1" style={{display:'none'}} src="https://www.facebook.com/tr?id=1045406841134462&ev=PageView&noscript=1" alt="facebook-pixel" /></noscript>
         <RouteChangeTracker />
-        {children}
+        <Suspense fallback={null}>
+          <RouteLoadingOverlay />
+        </Suspense>
+        <NextAuthProvider>
+          {children}
+          <PostActionAccountPrompt />
+        </NextAuthProvider>
       </body>
     </html>
   );

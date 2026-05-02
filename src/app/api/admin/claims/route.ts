@@ -2,20 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { claimRequests, providers } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
-
-function isAuthorized(request: NextRequest): boolean {
-  const key = process.env.DASHBOARD_KEY || "";
-  // Accept cookie (browser) or x-api-key header (programmatic)
-  const cookie = request.cookies.get("zavis_dashboard_auth")?.value;
-  const header = request.headers.get("x-api-key");
-  return (!!cookie && cookie === key) || (!!header && header === key);
-}
+import { createProviderPortalInvite } from "@/lib/provider-portal/invites";
+import { validateAdminAuth } from "@/lib/admin-auth";
+import { readJsonObject } from "@/lib/http/read-json";
 
 /** GET — list all claims with provider name */
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = validateAdminAuth(request);
+  if (authError) return authError;
 
   const claims = await db
     .select({
@@ -45,11 +39,12 @@ export async function GET(request: NextRequest) {
 
 /** PATCH — approve or reject a claim */
 export async function PATCH(request: NextRequest) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = validateAdminAuth(request);
+  if (authError) return authError;
 
-  const body = await request.json();
+  const parsed = await readJsonObject(request);
+  if (parsed.error) return parsed.error;
+  const body = parsed.data;
   const { claimId, action, rejectionReason, reviewerName } = body as {
     claimId: string;
     action: "approve" | "reject";
@@ -74,11 +69,25 @@ export async function PATCH(request: NextRequest) {
   if (!claim) {
     return NextResponse.json({ error: "Claim not found" }, { status: 404 });
   }
+  if (claim.status !== "pending") {
+    return NextResponse.json({ error: "Claim has already been reviewed" }, { status: 409 });
+  }
 
   const now = new Date();
   const reviewer = reviewerName || "Admin";
 
   if (action === "approve") {
+    const portalInvite = await createProviderPortalInvite({
+      providerId: claim.providerId,
+      email: claim.contactEmail,
+      contactName: claim.contactName,
+      contactPhone: claim.contactPhone,
+      role: "manager",
+      claimRequestId: claim.id,
+      createdBy: reviewer,
+      source: "claim_approved",
+    });
+
     // Update claim status
     await db
       .update(claimRequests)
@@ -107,7 +116,7 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, status: "approved" });
+    return NextResponse.json({ success: true, status: "approved", portalInvite });
   }
 
   if (action === "reject") {

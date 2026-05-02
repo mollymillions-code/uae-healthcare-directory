@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAreaSpecialtyCombos(3).map((combo) => ({
     area: combo.areaSlug,
     specialty: combo.specialtySlug,
@@ -112,7 +113,7 @@ export default function ArAreaSpecialtyPage({ params }: Props) {
   );
 
   return (
-    <div dir="rtl" lang="ar" className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div dir="rtl" lang="ar" className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "الرئيسية", url: base },

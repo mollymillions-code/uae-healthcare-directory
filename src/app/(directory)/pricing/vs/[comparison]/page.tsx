@@ -21,6 +21,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getAllComparisonSlugs().map((slug) => ({ comparison: slug }));
 }
 

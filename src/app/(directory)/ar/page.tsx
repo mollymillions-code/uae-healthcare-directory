@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { speakableSchema } from "@/lib/seo";
-import { getBaseUrl } from "@/lib/helpers";
+import { getBaseUrl, getCityImagePath } from "@/lib/helpers";
 import {
   getCities,
   getCategories,
@@ -13,6 +13,7 @@ import {
 } from "@/lib/data";
 import { ar, getArabicCityName, getArabicCategoryName, getArabicRegulator } from "@/lib/i18n";
 import { ChevronLeft } from "lucide-react";
+import { safe } from "@/lib/safeData";
 
 export const revalidate = 86400;
 
@@ -34,18 +35,18 @@ export default async function ArabicHomePage() {
   const categories = getCategories();
   const base = getBaseUrl();
 
-  // Pre-fetch all async data
+  // Pre-fetch all async data (wrapped in safe())
   const [topProviders, cityCounts, catCounts] = await Promise.all([
-    getTopRatedProviders(undefined, 8),
-    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
-    Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))),
+    safe(getTopRatedProviders(undefined, 8), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "ar.topProviders"),
+    safe(Promise.all(cities.map((c) => getProviderCountByCity(c.slug))), cities.map(() => 0) as number[], "ar.cityCounts"),
+    safe(Promise.all(categories.map((cat) => getProviderCountByCategory(cat.slug))), categories.map(() => 0) as number[], "ar.catCounts"),
   ]);
   const cityCountMap = Object.fromEntries(cities.map((c, i) => [c.slug, cityCounts[i]]));
   const catCountMap = Object.fromEntries(categories.map((cat, i) => [cat.slug, catCounts[i]]));
   const totalProviders = cityCounts.reduce((sum, count) => sum + count, 0);
 
   return (
-    <>
+    <div dir="rtl" className="font-arabic">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebSite",
@@ -137,21 +138,18 @@ export default async function ArabicHomePage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {cities.map((city) => {
             const count = cityCountMap[city.slug] ?? 0;
-            const hasImage = ["dubai", "abu-dhabi", "sharjah", "ajman", "al-ain", "ras-al-khaimah", "fujairah", "umm-al-quwain"].includes(city.slug);
             return (
               <Link
                 key={city.slug}
                 href={`/ar/directory/${city.slug}`}
                 className="group card-hero min-h-[160px] sm:min-h-[200px]"
               >
-                {hasImage && (
-                  <Image
-                    src={`/images/cities/${city.slug}.webp`}
-                    alt={getArabicCityName(city.slug)}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                )}
+                <Image
+                  src={getCityImagePath(city.slug)}
+                  alt={getArabicCityName(city.slug)}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
                 <div className="overlay" />
                 <div className="content">
                   <span className="badge mb-2 w-fit text-[10px]">{count} {ar.providers}</span>
@@ -306,6 +304,6 @@ export default async function ArabicHomePage() {
           Switch to English / التبديل إلى الإنجليزية
         </Link>
       </section>
-    </>
+    </div>
   );
 }

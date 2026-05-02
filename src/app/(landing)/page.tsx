@@ -4,9 +4,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationSchema, websiteWithSearchSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "AI Patient Success Platform for Healthcare Providers",
+  title: "AI Patient Operations Platform for UAE Clinics",
   description:
-    "Zavis is the AI patient success platform for healthcare providers. Automate patient engagement across WhatsApp, voice, and web with AI-powered booking, CRM, and campaign management.",
+    "Zavis helps UAE clinics manage WhatsApp, calls, bookings, reminders, payments, recall campaigns, and patient follow-up with AI-supported workflows.",
   alternates: {
     canonical: "https://www.zavis.ai",
   },

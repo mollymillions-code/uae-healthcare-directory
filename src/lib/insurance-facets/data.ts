@@ -25,6 +25,7 @@ import type { InsuranceProvider } from "@/lib/constants/insurance";
 import {
   getProvidersByInsurance,
   getProviderCountByInsurance,
+  getProviderCountByInsuranceCategory,
   type LocalProvider,
 } from "@/lib/data";
 import {
@@ -237,8 +238,12 @@ export async function isTriFacetEligible(
   const geoOk = getInsurancePlansByGeo(citySlug).some((p) => p.slug === insurerSlug);
   if (!geoOk) return false;
 
-  const { total } = await getProvidersAcceptingInsurance(insurerSlug, citySlug, categorySlug);
-  return total >= TRI_FACET_MIN_PROVIDERS;
+  const count = await getProviderCountByInsuranceCategory(
+    insurerSlug,
+    citySlug,
+    categorySlug,
+  );
+  return count >= TRI_FACET_MIN_PROVIDERS;
 }
 
 /**
@@ -267,8 +272,8 @@ export async function isDuoFacetEligible(
  * extracted it here so both 2-facet and 3-facet pages share one source.
  */
 const POPULAR_SLUGS = [
-  "daman", "daman-enhanced", "daman-basic",
-  "axa", "cigna", "bupa", "aetna", "allianz",
+  "daman",
+  "axa", "cigna", "bupa", "aetna", "allianz", "metlife",
   "oman-insurance", "orient", "adnic", "hayah", "nas", "mednet",
   "dic", "takaful-emarat", "salama", "thiqa",
 ];

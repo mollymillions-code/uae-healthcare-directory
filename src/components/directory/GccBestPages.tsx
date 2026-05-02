@@ -298,10 +298,10 @@ export async function GccBestIndexPage({
       />
 
       <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
+        <h1 className="font-display font-semibold text-[28px] sm:text-[34px] text-ink tracking-tight mb-2">
           Best Healthcare Providers in {country.name}
         </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
+        <p className="font-sans text-sm text-ink-muted">
           {totalProviders > 0
             ? `${totalProviders.toLocaleString()} providers across ${cityData.length} cities`
             : `${cities.length} cities`}
@@ -310,10 +310,10 @@ export async function GccBestIndexPage({
       </div>
 
       <div
-        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
+        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-z-md py-5 px-6 mb-8"
         data-answer-block="true"
       >
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+        <p className="font-sans text-ink-muted leading-relaxed">
           {totalProviders > 0
             ? `The ${country.name} Healthcare Directory lists ${totalProviders.toLocaleString()} healthcare providers across ${cityData.length} cities. Select a city below to find the best-rated hospitals, clinics, dental practices, and specialists — all ranked by Google rating and verified against official ${regulatorStr} government registers.`
             : `The ${country.name} Healthcare Directory covers ${cities.length} cities. Select a city below to browse healthcare providers regulated by ${regulatorStr}.`}
@@ -324,7 +324,7 @@ export async function GccBestIndexPage({
       {sortedCities.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Select a City
             </h2>
           </div>
@@ -333,18 +333,18 @@ export async function GccBestIndexPage({
               <Link
                 key={city.slug}
                 href={countryBestUrl(country.code, city.slug)}
-                className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
+                className="block border border-ink-line rounded-z-lg p-5 hover:border-ink transition-colors group"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-base font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
+                  <h3 className="text-base font-bold text-ink group-hover:text-accent-deep transition-colors">
                     {city.name}
                   </h3>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-black/40">
+                  <span className="text-ink-muted">
                     {city.count.toLocaleString()} providers
                   </span>
-                  <span className="text-black/40">
+                  <span className="text-ink-muted">
                     {city.catCount} categories
                   </span>
                 </div>
@@ -358,7 +358,7 @@ export async function GccBestIndexPage({
       {topCombos.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Popular Searches
             </h2>
           </div>
@@ -371,12 +371,12 @@ export async function GccBestIndexPage({
                   combo.citySlug,
                   combo.catSlug
                 )}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
+                className="block border border-ink-line p-3 hover:border-ink transition-colors group"
               >
-                <p className="text-xs font-bold text-[#1c1c1c] group-hover:text-[#006828] transition-colors">
+                <p className="text-xs font-bold text-ink group-hover:text-accent-deep transition-colors">
                   Best {combo.catName} in {combo.cityName}
                 </p>
-                <p className="text-[11px] text-[#006828] font-bold mt-1">
+                <p className="text-[11px] text-accent-deep font-bold mt-1">
                   {combo.count} providers
                 </p>
               </Link>
@@ -393,23 +393,23 @@ export async function GccBestIndexPage({
       {/* Methodology */}
       <section className="mb-10 mt-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
             Ranking Methodology
           </h2>
         </div>
-        <div className="bg-[#f8f8f6] border border-black/[0.06] p-5">
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
+        <div className="bg-surface-cream border border-ink-line p-5">
+          <p className="font-sans text-sm text-ink-muted leading-relaxed mb-3">
             The {country.name} Healthcare Directory ranks providers by{" "}
             <strong>Google rating</strong> (highest first), using{" "}
             <strong>review count</strong> as a tiebreaker. Only providers with a
             rating above 0 are included in rankings.
           </p>
-          <p className="font-['Geist',sans-serif] text-sm text-black/40 leading-relaxed mb-3">
+          <p className="font-sans text-sm text-ink-muted leading-relaxed mb-3">
             All provider data is sourced from official{" "}
             <strong>{regulatorStr}</strong> government registers in{" "}
             {country.name}.
           </p>
-          <p className="text-[11px] text-black/40">
+          <p className="text-[11px] text-ink-muted">
             These rankings do not constitute medical advice. Always verify
             credentials and consult with your healthcare provider before making
             decisions.
@@ -417,8 +417,8 @@ export async function GccBestIndexPage({
         </div>
       </section>
 
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
+      <div className="border-t border-ink-line pt-4">
+        <p className="text-[11px] text-ink-muted leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available
           Google ratings and review counts and do not constitute a medical
           recommendation. Provider data is sourced from official {regulatorStr}{" "}
@@ -588,20 +588,20 @@ export async function GccBestCityPage({
       />
 
       <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
+        <h1 className="font-display font-semibold text-[28px] sm:text-[34px] text-ink tracking-tight mb-2">
           Best Healthcare in {city.name}
         </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
+        <p className="font-sans text-sm text-ink-muted">
           {totalCount.toLocaleString()} providers across {categoryData.length}{" "}
           categories &middot; {regulatorStr}
         </p>
       </div>
 
       <div
-        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
+        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-z-md py-5 px-6 mb-8"
         data-answer-block="true"
       >
-        <p className="font-['Geist',sans-serif] text-black/40 leading-relaxed">
+        <p className="font-sans text-ink-muted leading-relaxed">
           The {country.name} Healthcare Directory lists{" "}
           {totalCount.toLocaleString()} healthcare providers in {city.name}{" "}
           across {categoryData.length} specialties. Below you will find the
@@ -615,13 +615,13 @@ export async function GccBestCityPage({
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={countryDirectoryUrl(country.code, city.slug)}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-ink-line px-3 py-1.5 text-ink-muted hover:border-ink hover:text-accent-deep transition-colors"
         >
           Full {city.name} directory
         </Link>
         <Link
           href={countryBestUrl(country.code)}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-ink-line px-3 py-1.5 text-ink-muted hover:border-ink hover:text-accent-deep transition-colors"
         >
           All cities
         </Link>
@@ -631,7 +631,7 @@ export async function GccBestCityPage({
       {sortedCategories.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Top-Rated by Category
             </h2>
           </div>
@@ -640,10 +640,10 @@ export async function GccBestCityPage({
               <Link
                 key={cat.slug}
                 href={countryBestUrl(country.code, city.slug, cat.slug)}
-                className="block border border-black/[0.06] rounded-2xl p-5 hover:border-[#006828]/15 transition-colors group"
+                className="block border border-ink-line rounded-z-lg p-5 hover:border-ink transition-colors group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                  <h3 className="font-display text-z-body-sm font-semibold text-ink tracking-tight group-hover:text-accent-deep transition-colors">
                     {cat.name}
                   </h3>
                   <span className="bg-[#006828] text-white text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
@@ -651,11 +651,11 @@ export async function GccBestCityPage({
                   </span>
                 </div>
                 {cat.topProvider ? (
-                  <div className="border-t border-black/[0.06] pt-3">
-                    <p className="text-[10px] text-black/40 uppercase tracking-wider mb-1">
+                  <div className="border-t border-ink-line pt-3">
+                    <p className="text-[10px] text-ink-muted uppercase tracking-wider mb-1">
                       #1 Highest Rated
                     </p>
-                    <p className="text-xs font-bold text-[#1c1c1c] truncate">
+                    <p className="text-xs font-bold text-ink truncate">
                       {cat.topProvider.name}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
@@ -665,7 +665,7 @@ export async function GccBestCityPage({
                         </span>
                       )}
                       {cat.topProvider.googleReviewCount > 0 && (
-                        <span className="text-[11px] text-black/40">
+                        <span className="text-[11px] text-ink-muted">
                           {cat.topProvider.googleReviewCount.toLocaleString()}{" "}
                           reviews
                         </span>
@@ -673,8 +673,8 @@ export async function GccBestCityPage({
                     </div>
                   </div>
                 ) : (
-                  <div className="border-t border-black/[0.06] pt-3">
-                    <p className="font-['Geist',sans-serif] text-xs text-black/40">
+                  <div className="border-t border-ink-line pt-3">
+                    <p className="font-sans text-xs text-ink-muted">
                       {cat.count} providers listed
                     </p>
                   </div>
@@ -694,7 +694,7 @@ export async function GccBestCityPage({
       {otherCities.length > 0 && (
         <section className="mb-10 mt-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Best Healthcare in Other Cities
             </h2>
           </div>
@@ -703,12 +703,12 @@ export async function GccBestCityPage({
               <Link
                 key={c.slug}
                 href={countryBestUrl(country.code, c.slug)}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
+                className="block border border-ink-line p-3 hover:border-ink transition-colors group text-center"
               >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                <p className="font-display text-z-body-sm font-semibold text-ink tracking-tight group-hover:text-accent-deep transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
+                <p className="text-xs text-accent-deep font-bold mt-1">
                   {c.totalProviders.toLocaleString()} providers
                 </p>
               </Link>
@@ -717,8 +717,8 @@ export async function GccBestCityPage({
         </section>
       )}
 
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
+      <div className="border-t border-ink-line pt-4">
+        <p className="text-[11px] text-ink-muted leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available
           Google ratings and review counts. They do not constitute a medical
           recommendation. Provider data is sourced from official {regulatorStr}{" "}
@@ -1033,10 +1033,10 @@ export async function GccBestCategoryPage({
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
+        <h1 className="font-display font-semibold text-[28px] sm:text-[34px] text-ink tracking-tight mb-2">
           Best {category.name} in {city.name}
         </h1>
-        <p className="font-['Geist',sans-serif] text-sm text-black/40">
+        <p className="font-sans text-sm text-ink-muted">
           Top {Math.min(ranked.length, 10)} highest-rated out of {totalCount}{" "}
           providers &middot; Ranked by patient ratings, years of practice &amp;
           insurance coverage &middot; {regulatorStr}
@@ -1045,13 +1045,13 @@ export async function GccBestCategoryPage({
 
       {/* Editorial Intro */}
       <div
-        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-xl py-5 px-6 mb-8"
+        className="border-l-4 border-[#006828] bg-[#006828]/[0.04] rounded-z-md py-5 px-6 mb-8"
         data-answer-block="true"
       >
-        <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] sm:text-[18px] text-[#1c1c1c] tracking-tight mb-3">
+        <p className="font-display font-semibold text-[16px] sm:text-[18px] text-ink tracking-tight mb-3">
           {intro.headline}
         </p>
-        <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+        <p className="font-sans text-sm text-ink-soft leading-relaxed">
           {intro.body}
         </p>
       </div>
@@ -1060,19 +1060,19 @@ export async function GccBestCategoryPage({
       <div className="flex flex-wrap gap-2 mb-8 text-xs">
         <Link
           href={countryDirectoryUrl(country.code, city.slug, category.slug)}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-ink-line px-3 py-1.5 text-ink-muted hover:border-ink hover:text-accent-deep transition-colors"
         >
           All {catLower} in {city.name}
         </Link>
         <Link
           href={countryBestUrl(country.code, city.slug)}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-ink-line px-3 py-1.5 text-ink-muted hover:border-ink hover:text-accent-deep transition-colors"
         >
           All categories in {city.name}
         </Link>
         <Link
           href={countryBestUrl(country.code)}
-          className="border border-black/[0.06] px-3 py-1.5 text-black/40 hover:border-[#006828]/15 hover:text-[#006828] transition-colors"
+          className="border border-ink-line px-3 py-1.5 text-ink-muted hover:border-ink hover:text-accent-deep transition-colors"
         >
           All cities
         </Link>
@@ -1081,57 +1081,57 @@ export async function GccBestCategoryPage({
       {/* Selection Criteria */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
             How We Rank: Selection Criteria
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <div className="border border-black/[0.06] rounded-xl p-5">
+          <div className="border border-ink-line rounded-z-md p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-accent-deep font-bold text-sm">
                 1
               </span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">
+              <h3 className="font-display font-semibold text-sm text-ink tracking-tight">
                 Patient Ratings
               </h3>
             </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+            <p className="font-sans text-xs text-ink-soft leading-relaxed">
               Google rating is the primary ranking signal. Only providers with a
               rating above 0 are included. Review count serves as a tiebreaker.
             </p>
           </div>
-          <div className="border border-black/[0.06] rounded-xl p-5">
+          <div className="border border-ink-line rounded-z-md p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-accent-deep font-bold text-sm">
                 2
               </span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">
+              <h3 className="font-display font-semibold text-sm text-ink tracking-tight">
                 Years of Practice
               </h3>
             </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+            <p className="font-sans text-xs text-ink-soft leading-relaxed">
               Established facilities with years of operation signal stability
               and clinical experience. We surface year of establishment where
               available.
             </p>
           </div>
-          <div className="border border-black/[0.06] rounded-xl p-5">
+          <div className="border border-ink-line rounded-z-md p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-[#006828] font-bold text-sm">
+              <span className="w-8 h-8 rounded-full bg-[#006828]/10 flex items-center justify-center text-accent-deep font-bold text-sm">
                 3
               </span>
-              <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight">
+              <h3 className="font-display font-semibold text-sm text-ink tracking-tight">
                 Insurance Coverage
               </h3>
             </div>
-            <p className="font-['Geist',sans-serif] text-xs text-black/50 leading-relaxed">
+            <p className="font-sans text-xs text-ink-soft leading-relaxed">
               Wider insurance acceptance signals accessibility and compliance
               with major payer networks. We show the number of accepted plans
               alongside each provider.
             </p>
           </div>
         </div>
-        <p className="text-[11px] text-black/40 leading-relaxed">
+        <p className="text-[11px] text-ink-muted leading-relaxed">
           All provider data is sourced from official{" "}
           <strong>{regulatorStr}</strong> licensed facilities registers. Rankings
           are updated regularly. These rankings do not constitute a medical
@@ -1142,7 +1142,7 @@ export async function GccBestCategoryPage({
       {/* Comparison Table */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
             Top {Math.min(comparisonProviders.length, 10)} {category.name} —
             Side-by-Side Comparison
           </h2>
@@ -1150,29 +1150,29 @@ export async function GccBestCategoryPage({
         <div className="overflow-x-auto -mx-4 sm:mx-0">
           <table className="w-full min-w-[700px] border-collapse">
             <thead>
-              <tr className="bg-[#f8f8f6]">
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
+              <tr className="bg-surface-cream">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
                   #
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
                   Provider
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
                   Rating
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
                   Reviews
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
                   Est.
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
                   Insurance
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-center px-3 py-3 border-b border-black/[0.08]">
                   Verified
                 </th>
-                <th className="font-['Geist',sans-serif] text-[11px] font-semibold text-black/50 uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
+                <th className="font-sans text-[11px] font-semibold text-ink-soft uppercase tracking-wider text-left px-3 py-3 border-b border-black/[0.08]">
                   Area
                 </th>
               </tr>
@@ -1188,7 +1188,7 @@ export async function GccBestCategoryPage({
                     className={`${idx % 2 === 0 ? "bg-white" : "bg-[#fafaf9]"} hover:bg-[#006828]/[0.02] transition-colors`}
                   >
                     <td className="px-3 py-3 border-b border-black/[0.04]">
-                      <span className="font-bold text-[#006828] text-sm">
+                      <span className="font-bold text-accent-deep text-sm">
                         #{idx + 1}
                       </span>
                     </td>
@@ -1200,12 +1200,12 @@ export async function GccBestCategoryPage({
                           p.categorySlug,
                           p.slug
                         )}
-                        className="font-['Bricolage_Grotesque',sans-serif] font-medium text-sm text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
+                        className="font-display font-semibold text-sm text-ink tracking-tight hover:text-accent-deep transition-colors"
                       >
                         {p.name}
                       </Link>
                       {p.phone && (
-                        <p className="font-['Geist',sans-serif] text-[10px] text-black/30 mt-0.5">
+                        <p className="font-sans text-[10px] text-ink-muted mt-0.5">
                           {p.phone}
                         </p>
                       )}
@@ -1216,14 +1216,14 @@ export async function GccBestCategoryPage({
                       </span>
                     </td>
                     <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
+                      <span className="font-sans text-xs text-ink-soft font-medium">
                         {p.googleReviewCount > 0
                           ? p.googleReviewCount.toLocaleString()
                           : "\u2014"}
                       </span>
                     </td>
                     <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60">
+                      <span className="font-sans text-xs text-ink-soft">
                         {yearsOfPractice !== null ? (
                           <span title={`Established ${p.yearEstablished}`}>
                             {yearsOfPractice}+ yrs
@@ -1234,7 +1234,7 @@ export async function GccBestCategoryPage({
                       </span>
                     </td>
                     <td className="px-3 py-3 border-b border-black/[0.04] text-center">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/60 font-medium">
+                      <span className="font-sans text-xs text-ink-soft font-medium">
                         {p.insurance.length > 0
                           ? `${p.insurance.length} plans`
                           : "\u2014"}
@@ -1242,15 +1242,15 @@ export async function GccBestCategoryPage({
                     </td>
                     <td className="px-3 py-3 border-b border-black/[0.04] text-center">
                       {p.isVerified ? (
-                        <span className="inline-block bg-[#006828]/[0.08] text-[#006828] text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">
+                        <span className="inline-block bg-[#006828]/[0.08] text-accent-deep text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full">
                           Yes
                         </span>
                       ) : (
-                        <span className="text-xs text-black/30">&mdash;</span>
+                        <span className="text-xs text-ink-muted">&mdash;</span>
                       )}
                     </td>
                     <td className="px-3 py-3 border-b border-black/[0.04]">
-                      <span className="font-['Geist',sans-serif] text-xs text-black/50">
+                      <span className="font-sans text-xs text-ink-soft">
                         {p.areaSlug
                           ? titleCase(p.areaSlug.replace(/-/g, " "))
                           : "\u2014"}
@@ -1270,7 +1270,7 @@ export async function GccBestCategoryPage({
                 city.slug,
                 category.slug
               )}
-              className="text-xs text-[#006828] font-bold hover:underline"
+              className="text-xs text-accent-deep font-bold hover:underline"
             >
               View all {totalCount} {catLower} in {city.name} &rarr;
             </Link>
@@ -1281,7 +1281,7 @@ export async function GccBestCategoryPage({
       {/* Detailed Ranked Provider List */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
             Top {Math.min(ranked.length, 15)} {category.name} — Detailed
             Profiles
           </h2>
@@ -1290,9 +1290,9 @@ export async function GccBestCategoryPage({
           {top15.map((p, idx) => (
             <div
               key={p.id}
-              className="flex items-start gap-3 py-4 border-b border-black/[0.06] last:border-b-0"
+              className="flex items-start gap-3 py-4 border-b border-ink-line last:border-b-0"
             >
-              <span className="text-lg font-bold text-[#006828] w-8 flex-shrink-0 text-center mt-0.5">
+              <span className="text-lg font-bold text-accent-deep w-8 flex-shrink-0 text-center mt-0.5">
                 #{idx + 1}
               </span>
               <div className="flex-1 min-w-0">
@@ -1304,34 +1304,34 @@ export async function GccBestCategoryPage({
                       p.categorySlug,
                       p.slug
                     )}
-                    className="text-sm font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] tracking-tight hover:text-[#006828] transition-colors"
+                    className="text-sm font-display font-semibold text-ink tracking-tight hover:text-accent-deep transition-colors"
                   >
                     {p.name}
                   </Link>
                   {p.isVerified && (
-                    <span className="inline-block bg-[#006828]/[0.08] text-[#006828] font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-['Geist',sans-serif] text-[9px]">
+                    <span className="inline-block bg-[#006828]/[0.08] text-accent-deep font-medium uppercase tracking-wide px-2.5 py-0.5 rounded-full font-sans text-[9px]">
                       Verified
                     </span>
                   )}
                 </div>
-                <p className="font-['Geist',sans-serif] text-xs text-black/40 mb-1.5">
+                <p className="font-sans text-xs text-ink-muted mb-1.5">
                   {p.address}
                 </p>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
                   {p.yearEstablished && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                    <span className="font-sans text-[11px] text-ink-soft">
                       Est. {p.yearEstablished} (
                       {currentYear - p.yearEstablished}+ years)
                     </span>
                   )}
                   {p.insurance.length > 0 && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                    <span className="font-sans text-[11px] text-ink-soft">
                       {p.insurance.length} insurance plan
                       {p.insurance.length !== 1 ? "s" : ""} accepted
                     </span>
                   )}
                   {p.languages.length > 0 && (
-                    <span className="font-['Geist',sans-serif] text-[11px] text-black/50">
+                    <span className="font-sans text-[11px] text-ink-soft">
                       {p.languages.length} language
                       {p.languages.length !== 1 ? "s" : ""}
                     </span>
@@ -1342,13 +1342,13 @@ export async function GccBestCategoryPage({
                     {p.insurance.slice(0, 4).map((ins) => (
                       <span
                         key={ins}
-                        className="text-[10px] border border-black/[0.06] px-1.5 py-0.5 text-black/40"
+                        className="text-[10px] border border-ink-line px-1.5 py-0.5 text-ink-muted"
                       >
                         {ins}
                       </span>
                     ))}
                     {p.insurance.length > 4 && (
-                      <span className="text-[10px] text-black/40">
+                      <span className="text-[10px] text-ink-muted">
                         +{p.insurance.length - 4} more
                       </span>
                     )}
@@ -1361,7 +1361,7 @@ export async function GccBestCategoryPage({
                     p.categorySlug,
                     p.slug
                   )}
-                  className="text-xs text-[#006828] font-bold hover:underline"
+                  className="text-xs text-accent-deep font-bold hover:underline"
                 >
                   View full profile &rarr;
                 </Link>
@@ -1371,7 +1371,7 @@ export async function GccBestCategoryPage({
                   {p.googleRating} ★
                 </span>
                 {p.googleReviewCount > 0 && (
-                  <span className="text-[11px] text-black/40">
+                  <span className="text-[11px] text-ink-muted">
                     {p.googleReviewCount.toLocaleString()} reviews
                   </span>
                 )}
@@ -1387,7 +1387,7 @@ export async function GccBestCategoryPage({
                 city.slug,
                 category.slug
               )}
-              className="text-xs text-[#006828] font-bold hover:underline"
+              className="text-xs text-accent-deep font-bold hover:underline"
             >
               View all {totalCount} {catLower} in {city.name} &rarr;
             </Link>
@@ -1398,36 +1398,36 @@ export async function GccBestCategoryPage({
       {/* Quick Stats */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-          <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+          <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
             {category.name} in {city.name} — Quick Stats
           </h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{totalCount}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+          <div className="border border-ink-line rounded-z-lg p-5 text-center">
+            <p className="text-2xl font-bold text-accent-deep">{totalCount}</p>
+            <p className="font-sans text-xs text-ink-muted mt-1">
               Total Providers
             </p>
           </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">{average}</p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+          <div className="border border-ink-line rounded-z-lg p-5 text-center">
+            <p className="text-2xl font-bold text-accent-deep">{average}</p>
+            <p className="font-sans text-xs text-ink-muted mt-1">
               Avg. Rating
             </p>
           </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">
+          <div className="border border-ink-line rounded-z-lg p-5 text-center">
+            <p className="text-2xl font-bold text-accent-deep">
               {ranked.length}
             </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            <p className="font-sans text-xs text-ink-muted mt-1">
               Rated Providers
             </p>
           </div>
-          <div className="border border-black/[0.06] rounded-2xl p-5 text-center">
-            <p className="text-2xl font-bold text-[#006828]">
+          <div className="border border-ink-line rounded-z-lg p-5 text-center">
+            <p className="text-2xl font-bold text-accent-deep">
               {commonInsurers.length > 0 ? commonInsurers.length + "+" : "\u2014"}
             </p>
-            <p className="font-['Geist',sans-serif] text-xs text-black/40 mt-1">
+            <p className="font-sans text-xs text-ink-muted mt-1">
               Insurers Accepted
             </p>
           </div>
@@ -1435,14 +1435,14 @@ export async function GccBestCategoryPage({
 
         {commonInsurers.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-ink tracking-tight mb-2">
               Most Commonly Accepted Insurance
             </p>
             <div className="flex flex-wrap gap-2">
               {commonInsurers.map((ins) => (
                 <span
                   key={ins}
-                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
+                  className="text-xs border border-ink-line px-2 py-1 text-ink-muted"
                 >
                   {ins}
                 </span>
@@ -1453,14 +1453,14 @@ export async function GccBestCategoryPage({
 
         {topNeighborhoods.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] tracking-tight mb-2">
+            <p className="text-xs font-['Bricolage_Grotesque',sans-serif] font-semibold text-ink tracking-tight mb-2">
               Top Neighborhoods
             </p>
             <div className="flex flex-wrap gap-2">
               {topNeighborhoods.map((area) => (
                 <span
                   key={area.slug}
-                  className="text-xs border border-black/[0.06] px-2 py-1 text-black/40"
+                  className="text-xs border border-ink-line px-2 py-1 text-ink-muted"
                 >
                   {titleCase(area.slug.replace(/-/g, " "))} ({area.count})
                 </span>
@@ -1480,7 +1480,7 @@ export async function GccBestCategoryPage({
       {otherCities.length > 0 && (
         <section className="mb-10 mt-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Best {category.name} in Other Cities
             </h2>
           </div>
@@ -1489,12 +1489,12 @@ export async function GccBestCategoryPage({
               <Link
                 key={c.slug}
                 href={countryBestUrl(country.code, c.slug, category.slug)}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group text-center"
+                className="block border border-ink-line p-3 hover:border-ink transition-colors group text-center"
               >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                <p className="font-display text-z-body-sm font-semibold text-ink tracking-tight group-hover:text-accent-deep transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
+                <p className="text-xs text-accent-deep font-bold mt-1">
                   {c.count} {c.count === 1 ? "provider" : "providers"}
                 </p>
               </Link>
@@ -1507,7 +1507,7 @@ export async function GccBestCategoryPage({
       {otherCategories.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
-            <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
+            <h2 className="font-display font-semibold text-[20px] sm:text-[24px] text-ink tracking-tight">
               Other Top-Rated Categories in {city.name}
             </h2>
           </div>
@@ -1516,12 +1516,12 @@ export async function GccBestCategoryPage({
               <Link
                 key={c.slug}
                 href={countryBestUrl(country.code, city.slug, c.slug)}
-                className="block border border-black/[0.06] p-3 hover:border-[#006828]/15 transition-colors group"
+                className="block border border-ink-line p-3 hover:border-ink transition-colors group"
               >
-                <p className="font-['Bricolage_Grotesque',sans-serif] text-sm font-semibold text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                <p className="font-display text-z-body-sm font-semibold text-ink tracking-tight group-hover:text-accent-deep transition-colors">
                   {c.name}
                 </p>
-                <p className="text-xs text-[#006828] font-bold mt-1">
+                <p className="text-xs text-accent-deep font-bold mt-1">
                   {c.count} {c.count === 1 ? "provider" : "providers"}
                 </p>
               </Link>
@@ -1550,8 +1550,8 @@ export async function GccBestCategoryPage({
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-black/[0.06] pt-4">
-        <p className="text-[11px] text-black/40 leading-relaxed">
+      <div className="border-t border-ink-line pt-4">
+        <p className="text-[11px] text-ink-muted leading-relaxed">
           <strong>Disclaimer:</strong> Rankings are based on publicly available
           Google ratings and review counts. They do not constitute a medical
           recommendation. Provider data is sourced from official {regulatorStr}{" "}

@@ -1,11 +1,12 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getProfessionalsByCategory } from "@/lib/professionals";
 import {
   PROFESSIONAL_CATEGORIES,
+  ALL_SPECIALTIES,
   getSpecialtiesByCategory,
   getCategoryBySlug,
 } from "@/lib/constants/professionals";
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return PROFESSIONAL_CATEGORIES.map((cat) => ({
     category: cat.slug,
   }));
@@ -45,7 +47,20 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(params.category);
-  if (!cat) notFound();
+  if (!cat) {
+    // Bypass the Map-based lookup with direct iteration. The Map version
+    // (getSpecialtyBySlug) appeared to return undefined at runtime in some
+    // builds even though the data was present in source, possibly due to
+    // module init ordering with how Next.js bundles route chunks. Direct
+    // .find() against the imported array is more reliable.
+    const specialty = ALL_SPECIALTIES.find((s) => s.slug === params.category);
+    if (specialty) {
+      permanentRedirect(
+        `/professionals/${specialty.category}/${specialty.slug}`,
+      );
+    }
+    notFound();
+  }
 
   const base = getBaseUrl();
   const specialties = getSpecialtiesByCategory(cat.slug);

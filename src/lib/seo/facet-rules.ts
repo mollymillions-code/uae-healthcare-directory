@@ -56,8 +56,8 @@ import {
   getProviderCountByCategoryAndCity,
   getProviderCountByAreaAndCity,
   getProviderCountByInsurance,
+  getProviderCountByInsuranceCategory,
   getProviderCountByLanguage,
-  getProvidersByInsurance,
 } from "@/lib/data";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -163,35 +163,74 @@ export const HUB_FACET_MIN_PROVIDERS = 10;
 // ─── Allowlists (centralized from sitemap.ts) ─────────────────────────────
 
 /**
- * The 6 payer slugs that actually have long-form editorial copy in
- * `src/lib/insurance-facets/editorial-copy.ts` and are therefore
- * allowed to appear in tri-facet (city × insurer × specialty) URLs.
- * Any slug added to that editorial file must also be added here.
+ * Payer slugs allowed to appear in tri-facet (city × insurer × category)
+ * URLs. Each entry MUST have a corresponding row in
+ * `src/lib/insurance-facets/editorial-copy.ts` so the page has real
+ * content to render — not just a boilerplate template.
+ *
+ * 2026-05-02: reconciled to canonical slugs. Provider DB labels are
+ * "Daman", "AXA", "Cigna", "Bupa Global", "Allianz Care", "Aetna
+ * International" etc. Canonical short slugs in `INSURANCE_PROVIDERS`
+ * (daman, axa, cigna, bupa, allianz, aetna) match those labels via
+ * case-insensitive substring; the previously-listed product-specific
+ * slugs (daman-enhanced, allianz-care, bupa-global, aetna-international)
+ * had no matching `getInsurancePlan(slug)` entry under
+ * `INSURANCE_PROVIDERS`, so the page resolver returned null and
+ * tri-facet routes 404'd while the sitemap still emitted them.
+ *
+ * The slugs below are the indexable URL space — every entry must:
+ *   1. exist in `INSURANCE_PROVIDERS` (`src/lib/constants/insurance.ts`)
+ *   2. exist in `INSURANCE_EDITORIAL` (`src/lib/insurance-facets/editorial-copy.ts`)
+ *   3. have ≥ TRI_FACET_MIN_PROVIDERS in DB for at least one (city, cat) tuple
  */
 export const TRI_FACET_INSURER_ALLOW: ReadonlySet<string> = new Set([
+  // Government / legacy carriers
   "thiqa",
-  "daman-enhanced",
-  "daman-basic",
+  "daman",
   "hayah",
   "adnic",
   "oman-insurance",
+  // International + private carriers
+  "axa",
+  "cigna",
+  "metlife",
+  "allianz",
+  "bupa",
+  "aetna",
 ]);
 
 /**
- * The 8 evergreen specialties that tri-facet URLs are allowed to use.
- * These match the top-inventory categories across all emirates and
- * have enough provider coverage to reliably clear
- * `TRI_FACET_MIN_PROVIDERS` for the payers in `TRI_FACET_INSURER_ALLOW`.
+ * Directory category slugs allowed in tri-facet URLs. Slugs MUST match
+ * the actual `categories` constants in `src/lib/constants/categories.ts`
+ * — previously this list contained "dentists/dermatologists/etc"
+ * professional-naming conventions that did not match any directory
+ * category, silently breaking sitemap emission. Fixed 2026-05-02.
+ *
+ * 2026-05-02: rewritten to data-backed categories. The previous list
+ * mixed facility-level categories (clinics, dental) with doctor-level
+ * specialties (cardiology, orthopedics, ent, mental-health, ob-gyn).
+ * The `providers` table only stores `category_slug` at the facility
+ * level — most specialties have 0 facility rows because cardiologists
+ * are indexed under `professionals_index` keyed off facilities of
+ * category `clinics` or `hospitals`. Including specialty slugs here
+ * caused tri-facet routes to render `notFound()` (per-tuple count = 0)
+ * while the sitemap still advertised them.
+ *
+ * Slugs below are restricted to category_slug values with non-trivial
+ * facility coverage in production data.
  */
 export const TRI_FACET_CATEGORY_ALLOW: ReadonlySet<string> = new Set([
-  "hospitals",
   "clinics",
-  "dentists",
-  "dermatologists",
-  "pediatricians",
-  "gynecologists",
-  "ophthalmologists",
-  "cardiologists",
+  "dental",
+  "hospitals",
+  "dermatology",
+  "ophthalmology",
+  "pediatrics",
+  "pharmacy",
+  "home-healthcare",
+  "physiotherapy",
+  "radiology-imaging",
+  "labs-diagnostics",
 ]);
 
 /**
@@ -584,10 +623,12 @@ export async function getProviderCountForCombo(
         : 0;
     case "city|specialty|insurance":
     case "city|category|insurance": {
-      // No single-query helper — filter by category on the JS side.
       if (!citySlug || !insurerSlug || !specialtySlug) return 0;
-      const providers = await getProvidersByInsurance(insurerSlug, citySlug);
-      return providers.filter((p) => p.categorySlug === specialtySlug).length;
+      return getProviderCountByInsuranceCategory(
+        insurerSlug,
+        citySlug,
+        specialtySlug,
+      );
     }
     case "city|condition": {
       // A condition maps to N specialties via condition-specialty-map.

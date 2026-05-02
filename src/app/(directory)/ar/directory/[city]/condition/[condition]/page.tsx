@@ -148,7 +148,7 @@ export default async function ArabicConditionPage({ params }: Props) {
   });
 
   return (
-    <div dir="rtl" lang="ar" className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div dir="rtl" lang="ar" className="font-arabic max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {schemaNodes.map((node, idx) => (
         <JsonLd key={idx} data={node} />
       ))}
@@ -245,6 +245,7 @@ export default async function ArabicConditionPage({ params }: Props) {
             {providers.slice(0, 18).map((p) => (
               <ProviderCard
                 key={p.id}
+                providerId={p.id}
                 name={p.name}
                 slug={p.slug}
                 citySlug={p.citySlug}

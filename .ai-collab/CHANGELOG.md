@@ -1,5 +1,288 @@
 # Zavis Landing - Changelog
 
+## 2026-05-02 — [Claude Code] Phase 2 SEO + Tier 4 patches + URGENT QA fix on /login + provider-portal email plumbing
+
+**Signed by:** Claude Code Opus 4.7 · 2026-05-02T13:00:00+04:00
+**Branch:** `phase-1-seo-and-handoff` (local), to be pushed to `codex/staging-green-full-20260430211038`
+**Status:** Local-only; **NOT pushed to `live`** per explicit user directive ("Push everything to the codex branch itself, and let the current setup exist like it is existing. I will later work with Codex to solve for that.")
+**Why:** Continuation of the Phase 2 SEO buildout, the deployment-mess Tier 4 loose ends, and an urgent QA fix on `/login` that was serving the research dashboard password gate to consumers.
+
+### What changed
+
+**1) URGENT QA: `/login` was the research dashboard password gate**
+
+User screenshot showed visitors clicking "Sign in" landing on a page titled "RESEARCH DASHBOARD / Welcome back / Dashboard password" — a copy of the staff research dashboard auth page that had been wired in as `/login` at some point. Replaced `src/app/(directory)/login/page.tsx` with a real consumer NextAuth credentials login (email + password → `signIn("credentials", ...)` → redirect to `/account` or `?redirect=`). Links to `/forgot-password` and `/signup` for account creation. The page footer makes clear that clinics manage listings via the Zavis platform, not via this directory. The internal staff research dashboard gate is still reachable at `/dashboard-auth` for staff.
+
+**Strategic constraint flagged for codex** (user message 2026-05-02):
+> "The sign-in is supposed to be happening via the Zavis platform for the clinics, but for the patients and users, the sign-in will happen here. For clinics, there is not going to be any sign-in here."
+
+This conflicts with codex's embed-first design captured in `docs/ops/clinic-portal-intent.md`. `/provider-portal/login` was NOT deleted (it's load-bearing for the existing invite/activate flow). Codex needs to decide: keep portal embed-only, redirect login to platform, or rip out `/provider-portal/*` entirely. See `docs/ops/deployment-mess-issue.md` § "2026-05-02 Update" for the full handoff.
+
+**2) Phase 2 SEO buildout**
+
+- **NEW** `src/app/(directory)/best/[city]/[category]/accepting/[insurer]/page.tsx` — Top-N tri-facet route. Uses `ListingsTemplate`, gates render on `isTriFacetEligible(insurerSlug, citySlug, categorySlug)`, includes 7-question FAQ helper inline, JsonLd: WebPage + ItemList + BreadcrumbList + FAQPage. `revalidate=21600`, `dynamicParams=true`, `generateStaticParams` returns `[]` unless `PREBUILD_STATIC_ROUTES=1`.
+- **NEW** `src/app/(directory)/ar/best/[city]/[category]/accepting/[insurer]/page.tsx` — Arabic mirror. Uses `getArabicCityName(city.slug)` and `getArabicCategoryName(category.slug)` from `@/lib/i18n` (NOT `LocalCategory.nameAr` — that field doesn't exist).
+- **EXTENDED** `src/app/sitemap.ts` — emits `/best/{city}/{category}/accepting/{insurer}` URLs alongside existing tri-facet URLs, with EN+AR hreflang alternates.
+- **EXTENDED** `src/app/(directory)/insurance/[insurer]/page.tsx` — added "Top clinics by city × category accepting {insurer}" section with chip links pointing to the new `/best/...` routes. Uses `TRI_FACET_INSURER_ALLOW`, `TRI_FACET_CATEGORY_ALLOW`, `isTriFacetEligible`, `getInsurancePlansByGeo`.
+- **CRITICAL BUG FIX** `src/lib/seo/facet-rules.ts` — `TRI_FACET_CATEGORY_ALLOW` had wrong slugs (`dentists, dermatologists, pediatricians, gynecologists, ophthalmologists, cardiologists`) that did not match real directory slugs (`dental, dermatology, pediatrics, ob-gyn, ophthalmology, cardiology`). This had been silently breaking sitemap tri-facet emission. Fixed slugs and expanded `TRI_FACET_INSURER_ALLOW` from 6 → 12 (added: axa, cigna, metlife, allianz-care, bupa-global, aetna-international) and `TRI_FACET_CATEGORY_ALLOW` from 8 → 12 (added: orthopedics, mental-health, ent, fertility-ivf).
+- **EXTENDED** `src/lib/insurance-facets/editorial-copy.ts` — added 6 new INSURANCE_EDITORIAL entries with bilingual ~200-word copy. Marked as drafts for editorial team verification.
+- **NEW** `docs/playbooks/insurance-guide-listicle-briefs.md` — 10 detailed Phase 3 content briefs for the editorial team. Slugs: walk-in-clinic-insurance, direct-billing-insurance-uae, same-day-claims-insurance, dental-insurance-uae-2026, chronic-disease-coverage-uae, outpatient-vs-inpatient-uae, expat-vs-resident-insurance, top-up-insurance-uae, mandatory-health-insurance-emirates, insurance-claim-process-uae.
+
+**3) AR FAQ infrastructure on catchall listing branch**
+
+`src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx` now mounts `<FaqSection>` + `<JsonLd data={faqPageSchema(arabicProviderFaqs)} />` on the listing branch. 7-question Arabic FAQ array with bilingual provider context.
+
+**4) Tier 4a: `/professionals/cardiology` redirect bug**
+
+The page rendered the not-found page despite the source containing `permanentRedirect(...)` for specialty matches. Hypothesis: Map-based `getSpecialtyBySlug` returned `undefined` at runtime due to module init ordering with Next.js bundling. Switched to direct `ALL_SPECIALTIES.find((s) => s.slug === params.category)` against the imported array. Same fix applied to AR mirror.
+
+**5) Tier 4b: `/insurance` hub 30-second timeout**
+
+Removed `export const dynamic = "force-dynamic"` from `src/app/(directory)/insurance/page.tsx`. The flag was overriding the file's `export const revalidate = 43200` ISR setting and forcing ~351 DB queries on every request, which caused 30s timeouts on production. ISR was correctly configured; the `dynamic` flag was the only culprit.
+
+**6) Tier 4c: `promote-staged.sh` migration drift**
+
+Old script applied a single hardcoded migration file (`scripts/db/migrations/2026-04-30-provider-verification-badges.sql`) and silently let everything else drift. **This was the root cause of the consumer-accounts and provider-slug-history outages in late April** — when those migrations weren't applied to the EC2 database, code that did `db.select().from(consumerUsers)` failed because Drizzle SELECTs all schema columns. Patched `scripts/ec2-deploy-infra/promote-staged.sh` to iterate ALL `.sql` files in `scripts/db/migrations/` in lexical (date-prefixed) order. All migrations were verified to be idempotent (CREATE TABLE IF NOT EXISTS, INSERT ON CONFLICT DO NOTHING, idempotent UPDATEs), so reapplying on every promote is self-healing — schema drift is caught here, not at request time. The repo version of promote-staged.sh propagates to EC2 via the existing `deploy.sh` "Sync deploy infra to EC2 (drift prevention)" step on the next deploy.
+
+**7) Tier 4d: provider portal email invite plumbing**
+
+The invite path was creating `clinicInvites` rows + activation URL but never sending an email — admin had to copy-paste the URL out of the JSON response and forward it manually. Refactored `src/lib/auth/email.ts` to extract a shared `dispatchEmail()` helper (Plunk → Resend → console.warn fallback), added `sendProviderPortalInviteEmail()` exporting from the same module, and wired it into `createProviderPortalInvite()` in `src/lib/provider-portal/invites.ts`. Best-effort dispatch: failures are caught and logged but don't fail the invite creation; admin always still gets the activation URL in the API response as a manual fallback.
+
+**Note:** This works for the existing flow but may be obsolete depending on codex's decision on the provider-portal-on-Zavis-platform migration. If portal moves to platform, this plumbing can be deleted cleanly — `sendProviderPortalInviteEmail` is the only export added.
+
+**8) Cleanup**
+
+- **DELETED** `src/components/layout/Header.tsx` — confirmed orphan via `grep -rln "from.*['\"]@/components/layout/Header"` (zero hits across the codebase).
+- **EDITED** `src/components/layout/Footer.tsx` — removed broken `<Link href="/api/search">` that would 405.
+
+### Files touched
+
+- `src/app/(directory)/login/page.tsx` (rewrite)
+- `src/app/(directory)/best/[city]/[category]/accepting/[insurer]/page.tsx` (NEW)
+- `src/app/(directory)/ar/best/[city]/[category]/accepting/[insurer]/page.tsx` (NEW)
+- `src/app/(directory)/professionals/[category]/page.tsx` (Map → find)
+- `src/app/(directory)/ar/professionals/[category]/page.tsx` (Map → find)
+- `src/app/(directory)/insurance/page.tsx` (drop force-dynamic)
+- `src/app/(directory)/insurance/[insurer]/page.tsx` (Top-N section)
+- `src/app/(directory)/ar/directory/[city]/[...segments]/page.tsx` (FAQ block)
+- `src/app/sitemap.ts` (best-of route emission)
+- `src/lib/seo/facet-rules.ts` (slug typo fix + allow-list expansion)
+- `src/lib/insurance-facets/editorial-copy.ts` (6 new bilingual entries)
+- `src/lib/auth/email.ts` (dispatchEmail + sendProviderPortalInviteEmail)
+- `src/lib/provider-portal/invites.ts` (wire invite email)
+- `scripts/ec2-deploy-infra/promote-staged.sh` (auto-apply all migrations)
+- `src/components/layout/Footer.tsx` (remove broken /api/search link)
+- `src/components/layout/Header.tsx` (DELETED — orphan)
+- `docs/playbooks/insurance-guide-listicle-briefs.md` (NEW)
+- `docs/ops/qa-audit-2026-05-02.md` (NEW)
+- `docs/ops/deployment-mess-issue.md` (appended 2026-05-02 update)
+
+### Lint/typecheck status
+
+- All touched/new files pass `npx eslint <file>` clean.
+- `npx tsc --noEmit -p .` shows ONLY pre-existing errors unrelated to this work (missing `framer-motion` types, etc. — all in files Claude Code did not touch in this commit).
+
+### What ships next time `promote-staged.sh` runs against this branch
+
+The codex branch tip already at production. Once this work is merged INTO the codex branch (per user direction), the next promote will:
+1. Apply all migrations in `scripts/db/migrations/` (idempotent, safe to rerun)
+2. Build the new `/best/...` route (EN + AR), emit Top-N sitemap URLs
+3. Serve the new consumer `/login` form
+4. Drop the `/insurance` hub timeout
+5. Fix the `/professionals/cardiology` redirect
+6. Send actual emails for provider portal invites (if `PLUNK_SECRET_KEY` or `RESEND_API_KEY` is set in `/home/ubuntu/zavis-shared/.env.local`)
+
+### What does NOT ship from this work
+
+- The `live` branch divergence is still open. Codex must decide whether to merge codex lineage into `live` or revert.
+- `/provider-portal/login` is still the clinic sign-in route. Codex must decide its fate per the new strategic constraint.
+- Phase 3 listicle prose is briefs-only — editorial team must write the actual article bodies.
+
+---
+
+## 2026-04-26 — [Claude Code] Hide Ghasaq Medical Center (Sharjah) from the public site
+
+**Signed by:** Claude Code · 2026-04-26T00:00:00+04:00
+
+**What:** Added a `HIDDEN_PROVIDER_SLUGS` exclusion list in `src/lib/data.ts`.
+Slugs in the list are filtered out of every public-facing read path:
+
+- `getProviderBySlug(slug)` returns `undefined` → detail page renders 404.
+- `getProviders(...)` adds a `notInArray(providers.slug, HIDDEN_PROVIDER_SLUGS)`
+  condition on the DB path and a `.filter` on the JSON-fallback path → cards
+  drop out of every listing, search result, and `/api/providers`/`/api/search`
+  payload.
+- `dbSelectProviders(...)` adds the same `notInArray` so every helper that
+  flows through it (city/area/category counters, top-N selectors) is consistent.
+
+**Why:** Need to remove `Ghasaq Medical Center` (Sharjah, slug
+`ghasaq-medical-center-sharjah`, MOHAP id `mohap_03388`) from the public
+directory without deleting the row. The chokepoint approach keeps the
+underlying data, makes the change reversible (delete the slug from the
+array), and avoids touching the 42+ pages that call these functions.
+
+**Scope of change:**
+- `src/lib/data.ts` only — 7 small insertions:
+  1. New `HIDDEN_PROVIDER_SLUGS` constant block (top of file).
+  2. New lazy-loaded `_notInArray` reference.
+  3. `_notInArray = ormMod.notInArray` in `ensureDbModules`.
+  4. Filter in `dbSelectProviders`.
+  5. Filter in `getProviders` JSON-fallback path.
+  6. Filter in `getProviders` DB path.
+  7. Early-return in `getProviderBySlug`.
+
+**Not touched:** schema, migrations, GCC sitemap routes (already filter
+`status='active'`, and Ghasaq is in UAE so it never appears in those), admin
+endpoints (auth-gated), the DB row itself.
+
+**Reversal:** remove `"ghasaq-medical-center-sharjah"` from the array and
+redeploy.
+
+## 2026-04-24 — [Codex] Local Postgres backup hardening without moving DB
+
+**Signed by:** Codex · 2026-04-24T20:10:00+05:30
+
+**What happened:**
+
+- Verified current production Postgres state on `13.234.162.47`: PostgreSQL 16.13, local `zavis_landing`, 39 public tables, 16,941 providers, local dump size ~105 MB.
+- Confirmed existing local nightly backups in `/var/backups/zavis-landing`.
+- Added step-two hardening while keeping DB local:
+  - `scripts/ec2-deploy-infra/db-backup.sh`
+  - `scripts/ec2-deploy-infra/db-restore-smoke-test.sh`
+  - `scripts/ec2-deploy-infra/db-backup-health-check.sh`
+  - `scripts/ec2-deploy-infra/db-backup.env.example`
+  - `docs/ops/postgres-local-backup-hardening.md`
+- Installed scripts on EC2 under `/home/ubuntu/zavis-deploy/`.
+- Created `/home/ubuntu/zavis-deploy/db-backup.env` and `/home/ubuntu/zavis-deploy/db-backup-encryption.key`.
+- Enabled encrypted off-box R2 uploads under `database-backups/zavis-landing/`.
+- Added cron:
+  - daily backup at `02:17 UTC`
+  - weekly restore smoke test at `02:45 UTC` on Sundays
+  - daily health check at `03:05 UTC`
+- Backup/restore cron uses `/tmp/zavis-deploy.lock`, so it does not overlap with production deploy/build.
+- `pg_dump` and `pg_restore` now run with low CPU/I/O priority.
+
+**Verification:**
+
+- Manual backup produced local dump + checksum.
+- Encrypted R2 object uploaded successfully after forcing R2 region to `auto`.
+- Backup health check OK.
+- Restore smoke test OK: 39 tables, 16,941 providers.
+- Confirmed the throwaway restore DB was dropped.
+- After validation load, canceled stale `ClientWrite` app queries and verified origin `/` and Bella Rose returned 200.
+
+**Remaining risk:**
+
+- This does not add DB failover. App and DB are still on one box.
+- Encrypted remote backups are only useful for disaster recovery if the encryption key is kept outside the server.
+
+---
+
+## 2026-04-24 — [Codex] Production provider recovery + self-hosted deploy gate
+
+**Signed by:** Codex · 2026-04-24T19:45:00+05:30
+
+**What happened:**
+
+- Recovered production provider routes after stacked blue/green failures. Active slot is green on port 3201, blue is stopped, and `DB_POOL_MAX=25` is set on EC2.
+- Hardened the directory/media pipeline and provider route behavior across commits `46d2428`, `c6a60b9`, `9424815`, `95e204d`, and final remote state `20f6482`.
+- Added a slug-length guard for `/professionals/facility/[facility]` so long hash-like slugs return 404 instead of causing `ENAMETOOLONG` cache writes.
+- Added a directory media audit script and provider media normalization so directory pages avoid real-time image compression/path surprises.
+- Hardened EC2 deploy builds by defaulting `NEXT_PRIVATE_BUILD_WORKER_COUNT=1`.
+- Added self-hosted deploy gate:
+  - `scripts/ec2-deploy-infra/github-webhook-deploy.mjs`
+  - `scripts/ec2-deploy-infra/webhook-deploy.service`
+  - `scripts/ec2-deploy-infra/webhook.env.example`
+  - `scripts/ec2-deploy-infra/nginx-webhook-location.conf`
+  - `docs/ops/self-hosted-cicd.md`
+- Installed `zavis-webhook-deploy.service` on EC2, listening on `127.0.0.1:8787`, exposed through Nginx at `/hooks/github/live-deploy`.
+- Disabled automatic GitHub Actions deploy/schedule triggers; workflows now remain manual fallback only.
+- Added `Jenkinsfile` as a future separate-CI-host option that calls the same signed production deploy gate after lint/typecheck/build.
+
+**Verification:**
+
+- `node --check scripts/ec2-deploy-infra/github-webhook-deploy.mjs` passed.
+- Local webhook smoke test: valid signed ping returned 202; bad signature returned 401.
+- EC2/Nginx webhook tests: unsigned public POST returned 401; signed public push for `refs/heads/not-live` returned 202 ignored; GET returns 405.
+- Production origin checks: `/`, Bella Rose EN/AR, and Dental Hub routes return 200 with `Host: www.zavis.ai`; Dental Hub warmed in ~10.5s.
+- Public cache-busted checks: root, Bella Rose, and Dental Hub return 200.
+
+**Pending:**
+
+- GitHub webhook registration is blocked until an admin token with `admin:repo_hook` scope is available. Current `gh` token returned: `This API operation needs the "admin:repo_hook" scope`.
+- Cloudflare cache purge may still be required for exact URLs that were previously cached as 404 HITs.
+
+---
+
+## 2026-04-22 — [Claude Code] Site-wide directory redesign: Airbnb UX archetype + Zavis visual identity
+
+**Signed by:** Claude Code · 2026-04-22T00:45:00+04:00
+
+**What happened:**
+
+A complete visual + interaction refresh of the `(directory)` route group — ~60 pages rewritten against a new design system + 3 reusable templates. The design combines Airbnb's interaction patterns (sticky morphing search pill, horizontal chip rails, photo-first cards, photo-mosaic detail hero, sticky booking card, scroll-reveal bottom bar, shared-element photo viewer modal) with Zavis brand identity (accent-green CTAs, cream surface, Bricolage display + DM Sans body, warm radial-gradient heroes).
+
+**New design system**
+
+- `tailwind.config.ts` — added `ink`, `surface`, `state` color tokens; `z-container|wide|full` container widths; typography ladder (`display-xl|lg|md`, `z-h1|h2|h3`, `z-body|body-sm|caption|micro`); radii (`rounded-z-sm|md|lg|pill|search`); aspect tokens (`aspect-z-card` 20:19, `aspect-z-mosaic` 2:1); transition tokens (`duration-z-fast|base|med|slow`, `ease-z-standard|exit|overshoot`).
+- `src/app/globals.css` — `:root` motion tokens (`--dur-*`, `--ease-*`); scrollbar-hide utilities (`.z-no-scrollbar`, `.z-snap-rail`); shadow system (`.shadow-z-card|hover|pill|float|sticky`); keyframes for `z-heart-pop` + `z-fade-up` + `.z-stagger`; `prefers-reduced-motion: reduce` global block; `.z-anchor` scroll-margin for sticky nav.
+- `src/lib/safeData.ts` — `safe(promise, fallback, label)` wrapper so local DB schema drift never crashes a page.
+
+**New component library at `src/components/directory-v2/`**
+
+- **header/**: `ZavisHeader` (sticky, scroll-aware, scroll-morph SearchPill big→compact), `SearchPill` (4-segment with per-segment hover/focus), `SegmentFlyout` (Specialty/City/Date/Insurance dropdowns with autocomplete + auto-advance), `SearchPillModal` (scrim + flyout choreography).
+- **rails/**: `CategoryRail` (horizontal chip-pill scroll, hidden scrollbar, auto-appearing arrows, edge-fade gradients; short-name map for long specialty labels).
+- **filters/**: `FilterChip` (Airbnb applied-state black-fill flip), `FilterChipRow`, `FilterDrawer` (right-side sticky-footer drawer with live match count).
+- **cards/**: `ProviderCardV2` (20:19 photo, full-card overlay-link for valid HTML, heart top-right, carousel dots bottom), `CityCard`, `SpecialtyTile`, `HeartButton` (optimistic scale pop via CSS keyframes), `PhotoCarousel` (arrows on hover, telescoping dots, GPU-only zoom).
+- **detail/**: `PhotoMosaic` (1-big-4-small, rounded outer corners only), `PhotoViewer` (shared-element `layoutId` Framer Motion modal, keyboard nav, vertical scroll gallery), `BookingCard` (right-column sticky w/ Call/WhatsApp/Website/Directions/Claim, analytics-wired), `StickyBottomBar` (IntersectionObserver slide-up when booking-card exits viewport, analytics-wired), `ReviewDistribution` (6 healthcare sub-scores: Punctuality / Diagnosis clarity / Bedside manner / Follow-up / Facility / Value), `AmenityGrid` (services, accessibility), `HostCard` (clinic/provider intro), `ShowAllModal` (generic modal shell).
+- **templates/**: `ListingsTemplate`, `ProviderDetailTemplate`, `HubPageTemplate`, `ProcedurePricingTemplate` (procedure-pricing bespoke: pricing cards, city-comparison table, related procedures, provider grid).
+- **shared/**: `EmptyStateV2`, `SkeletonCard` + `SkeletonGrid` (static grey placeholders — no shimmer by design), `cn()` util (clsx + tailwind-merge), `motion.ts` Framer variants + canonical easing/duration constants.
+
+**Pages rewritten (~60 files)**
+
+- **Core flow**: `/directory` home (new `DirectoryHomeHero` client component), `/directory/[city]`, catch-all `[city]/[...segments]` with all 6 branches migrated (city-category, city-area, area-category, area-insurance, city-category-subcategory, listing, city-service), `/search` with new `SearchControls` client component (entity-type toggle + chip selects + emergency toggle + All-filters drawer + applied-state chips with X-to-clear).
+- **Content hubs**: `/specialties`, `/specialties/[specialty]`, `/specialties/[specialty]/medications`, `/conditions`, `/conditions/[condition]`, `/conditions/[condition]/medications`, `/medications`, `/medications/[slug]`, `/medications/[slug]/alternatives`, `/medication-classes/[slug]`, `/pharmacy` + 3 educational (`generic-vs-brand`, `how-delivery-works`, `prescription-refill`), `/find-a-doctor`, `/find-a-doctor/[specialty]`, `/insurance`, `/insurance/[insurer]`, `/labs`, `/labs/[lab]`, `/brands/[slug]`, `/verified-reviews`, `/doctors-at/[slug]`.
+- **Functional**: `/claim`, `/claim/[listingId]` (form + file upload + validation preserved verbatim), `/pricing`, `/login`.
+- **Editorial / policy**: `/methodology`, `/data-sources`, `/accessibility`, `/editorial-policy` (sticky TOC on `lg:`), `/terms` (sticky TOC).
+- **Filter variants** (19): `[city]/24-hour` + `/24-hour/[category]` + `/24-hours` + `/walk-in` + `/walk-in/[category]` + `/emergency` + `/government` + `/government/[category]` + `/top` + `/top/[category]` + `[area]/24-hour|walk-in|emergency|government|top` + UAE-wide `/directory/top` + `/directory/top/[category]`.
+- **Filter / content continued** (21): `[city]/insurance` + `/insurance/[insurer]` + `/insurance/[insurer]/[category]` + `/language` + `/language/[lang]` + `/language/[lang]/[category]` + `/condition` + `/condition/[condition]` + `/procedures` + `/procedures/[procedure]` + `[area]/procedures` + `[area]/procedures/[procedure]` + `/directory/compare` + `/compare/[slug]` + `/directory/guide` + `/guide/[slug]` + `/best/[city]/[category]` + per-city pharmacy (3 files) + per-city medications.
+- **GCC cascade**: 3 shared components (`GccFilterPage`, `GccDirectoryPages`, `GccBestPages`) refreshed → auto-updates every `/qa|/sa|/bh|/kw` route without per-page edits.
+- **Arabic mirror**: 105 pages got `dir="rtl"` + `font-arabic` wrapper (structural RTL flip; full template migration deferred as follow-up).
+
+**SEO preservation**
+
+Every `generateMetadata` preserved verbatim (titles under 52 chars, descriptions under 155 chars, canonical + hreflang `en-AE` / `ar-AE` / `x-default`, OG images). Every `<JsonLd>` schema preserved: WebSite, WebPage, BreadcrumbList, FAQPage, ItemList, CollectionPage, MedicalOrganization, MedicalWebPage, MedicalCondition, InsuranceAgency, Drug, Physician, Organization, SpeakableSpecification, neighborhoodHubSchema, specialtyHubSchema, procedureSchema, procedureCityOffersSchema, generateConditionPageSchema, medicalOrganizationSchema, generateFullProviderSchema. `.answer-block` + `data-answer-block="true"` preserved for speakable. FAQ copy word-for-word. `robots: { index: false }` preserved on `/search`. Arabic hreflang crawl anchor preserved on every English page that has an AR mirror. `revalidate` + `dynamicParams` flags untouched.
+
+**Analytics preservation**
+
+Upstream's `src/lib/provider-tracking.ts` (`trackProviderCta(ctaType, surface, provider)`) wired through new `BookingCard` (surface: "sidebar") and `StickyBottomBar` (surface: "sticky_mobile_cta"). CTA taxonomy preserved: `call | whatsapp | directions | website | claim_listing`. Old `ProviderSidebarCta` + `StickyMobileCta` components remain in the codebase but are no longer mounted in the listing branch (ProviderDetailTemplate renders the new surfaces). GA4 events stay 1:1 comparable with pre-refresh baseline.
+
+**Merge with upstream (8 commits)**
+
+Rebased onto `origin/live` after fetching. Picked up: `4c6c100 feat(analytics): provider conversion tracking`, `8fe4b5f feat(admin): ship admin dashboard`, `3ac892b feat: email notification on book-a-demo`, `f221247 fix(lint): drop unused imports`, `cc877b8 fix(directory): real Google Places images` (dup of mine), `6fd30e6 chore(docs): ai-collab`, `392c8ed chore(infra): MEMORY_FLOOR_MB`, 4 admin follow-up fixes. One conflict resolved in `[...segments]/page.tsx`: kept new `ProviderDetailTemplate` (removed legacy sidebar/mobile-CTA markup from upstream) and re-wired upstream's `trackProviderCta` into the new surfaces so analytics coverage stays equivalent.
+
+**Dependencies**
+
+- Added `framer-motion@^12.38.0` to `dependencies` — used selectively for scroll-driven pill morph, shared-element photo viewer (`layoutId`), filter drawer slide-in, fade-in stagger. Code-split on detail-only modals. Net incremental bundle ~12–15 KB gzipped on core pages.
+- Added `overrides.html-encoding-sniffer: 4.0.0` to `package.json` to unbreak `jsdom@29` transitive CJS/ESM on Node < 20.19. Prod CI (Node 20.x latest) doesn't need the override but it's harmless.
+
+**Build & check**
+
+- `npx tsc --noEmit --skipLibCheck` exits 0.
+- `NODE_OPTIONS="--max-old-space-size=8192" npm run build` passes (tested under Node 22.22.2 via nvm; CI runs Node 20 via setup-node@v4 which resolves to 20.20+).
+- Dev server on `localhost:3333` smoke-tested across: `/directory`, `/directory/dubai`, `/directory/dubai/clinics`, `/directory/dubai/clinics/<provider>`, `/directory/dubai/dubai-marina`, `/directory/dubai/dubai-marina/clinics`, `/search`, `/search?specialty=...&city=...&insurance=...`, `/specialties`, `/specialties/clinics`, `/conditions`, `/medications`, `/pharmacy`, `/pharmacy/generic-vs-brand`, `/find-a-doctor`, `/find-a-doctor/cardiology`, `/insurance`, `/insurance/daman`, `/labs`, `/verified-reviews`, `/claim`, `/pricing`, `/login`, `/methodology`, `/data-sources`, `/accessibility`, `/editorial-policy`, `/terms` — all 200.
+
+**Deferred (follow-ups)**
+
+- Full template migration of the 100+ Arabic pages (RTL scaffold ships now; legacy body classes remain). Tracked as separate engagement.
+- Bespoke `ProcedurePricingTemplate` is in place and wired; Arabic mirrors of procedure-pricing pages still use legacy body. Same follow-up as Arabic migration.
+- Image LCP optimization on heavy hubs (`/insurance`, `/labs`) — first-compile is slow locally (DB-bound). Not a prod issue; Lighthouse pass is a post-deploy task.
+- Filter-variant subcategory and city-service Arabic routes will inherit new templates once the Arabic migration ships.
+
+**Why:** Stakeholders requested a visible refresh mirroring Airbnb's UX calibre while keeping the Zavis brand. The sweep shipped a consistent templates-driven design-system layer that every current and future directory page inherits, plus the analytics/SEO primitives stay intact so no regression in ranked impressions or conversion tracking is expected.
+
+---
+
 ## 2026-04-19 — [Claude Code] ProviderCard renders real Google Places images on listing grids
 
 **Signed by:** Claude Code · 2026-04-19T00:00:00+04:00

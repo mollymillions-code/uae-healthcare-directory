@@ -56,7 +56,7 @@ export default function ArabicComparePage() {
   ];
 
   return (
-    <div className="container-tc py-8">
+    <div dir="rtl" className="font-arabic container-tc py-8">
       <JsonLd
         data={breadcrumbSchema([
           { name: "الإمارات", url: `${base}/ar` },

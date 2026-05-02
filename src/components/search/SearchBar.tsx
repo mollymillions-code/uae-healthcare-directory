@@ -33,6 +33,7 @@ import { CONDITIONS } from "@/lib/constants/conditions";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import type { HealthcareEntityType } from "@/lib/search/types";
+import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
 
 export interface SearchBarProps {
   defaultQuery?: string;
@@ -88,6 +89,7 @@ export function SearchBar({
     if (language) params.set("language", language);
     if (entityType && entityType !== "both") params.set("entityType", entityType);
     if (emergency) params.set("emergency", "true");
+    dispatchRouteLoadingStart();
     router.push(`${basePath}?${params.toString()}`);
   }
 
@@ -96,6 +98,8 @@ export function SearchBar({
     return (
       <form onSubmit={handleSubmit} className="flex gap-2 items-center" role="search">
         <input
+          data-zavis-search-root="true"
+          data-zavis-search-query="true"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -116,7 +120,7 @@ export function SearchBar({
 
   // ── Full mode ────────────────────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} role="search" aria-label={arabic ? "بحث الرعاية الصحية" : "Healthcare search"}>
+    <form onSubmit={handleSubmit} role="search" aria-label={arabic ? "بحث الرعاية الصحية" : "Healthcare search"} data-zavis-search-root="true">
       {/* Row 1 — free text + emergency */}
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
         <div className="sm:col-span-9">
@@ -125,6 +129,7 @@ export function SearchBar({
           </label>
           <input
             id="search-q"
+            data-zavis-search-query="true"
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -159,6 +164,7 @@ export function SearchBar({
           </label>
           <select
             id="search-city"
+            data-zavis-search-city="true"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             className="input-tc cursor-pointer"
@@ -177,6 +183,7 @@ export function SearchBar({
           </label>
           <select
             id="search-specialty"
+            data-zavis-search-specialty="true"
             value={specialty}
             onChange={(e) => setSpecialty(e.target.value)}
             className="input-tc cursor-pointer"
@@ -213,6 +220,7 @@ export function SearchBar({
           </label>
           <select
             id="search-insurance"
+            data-zavis-search-insurance="true"
             value={insurance}
             onChange={(e) => setInsurance(e.target.value)}
             className="input-tc cursor-pointer"
