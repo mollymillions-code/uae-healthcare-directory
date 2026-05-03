@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Sparkles, Copy, Check, Star, Mail } from "lucide-react";
+import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+import { AIDisclaimer } from "@/components/tools/AIDisclaimer";
 
 interface Variant {
   tone: string;
@@ -173,9 +175,12 @@ export function ReviewReplyClient() {
       {/* Results */}
       {variants && variants.length > 0 && (
         <div className="mt-6 space-y-4">
-          <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c] tracking-tight">
-            Reply variants
-          </h3>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c] tracking-tight">
+              Reply variants
+            </h3>
+            <ZavisAIBadge />
+          </div>
           {variants.map((v, i) => (
             <div key={i} className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden">
               <div className="px-5 py-3 border-b border-black/[0.06] flex items-center justify-between flex-wrap gap-2">
@@ -223,6 +228,7 @@ export function ReviewReplyClient() {
               </div>
             </div>
           ))}
+          <AIDisclaimer context="review reply" />
         </div>
       )}
 

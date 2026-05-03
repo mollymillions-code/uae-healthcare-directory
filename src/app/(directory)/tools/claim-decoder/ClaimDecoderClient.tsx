@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search, Copy, Check, Mail, Sparkles, Loader2 } from "lucide-react";
 import type { ClaimCode } from "@/lib/tools/claim-codes";
 import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+import { AIDisclaimer } from "@/components/tools/AIDisclaimer";
 
 interface Props {
   codes: ClaimCode[];
@@ -279,6 +280,7 @@ export function ClaimDecoderClient({ codes, topCodes }: Props) {
                 </p>
               </div>
             )}
+            <AIDisclaimer context="rejection analysis" />
           </div>
         )}
       </div>

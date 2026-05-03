@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+import { AIDisclaimer } from "@/components/tools/AIDisclaimer";
 
 interface AIIntakeQuestion {
   id: string;
@@ -271,6 +272,7 @@ export function IntakeFormClient() {
             >
               Copy form as JSON
             </button>
+            <AIDisclaimer context="intake form" />
           </div>
         )}
       </div>

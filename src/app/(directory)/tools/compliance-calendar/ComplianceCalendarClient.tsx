@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Calendar, Download, Mail, Check, Sparkles, Loader2 } from "lucide-react";
 import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+import { AIDisclaimer } from "@/components/tools/AIDisclaimer";
 import {
   type Authority,
   type LicenseType,
@@ -253,6 +254,7 @@ export function ComplianceCalendarClient() {
                 </ul>
               </div>
             )}
+            <AIDisclaimer context="compliance plan" />
           </div>
         )}
       </div>

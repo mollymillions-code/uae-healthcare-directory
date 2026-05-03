@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Copy, Check, Mail, Sparkles, Loader2 } from "lucide-react";
 import type { WhatsAppTemplate, Specialty, MessageType } from "@/lib/tools/whatsapp-templates";
 import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+import { AIDisclaimer } from "@/components/tools/AIDisclaimer";
 
 interface Props {
   templates: WhatsAppTemplate[];
@@ -250,6 +251,7 @@ export function WhatsAppTemplatesClient({ templates, specialties, messageTypes }
                 </p>
               </div>
             )}
+            <AIDisclaimer context="WhatsApp message" />
           </div>
         )}
       </div>
