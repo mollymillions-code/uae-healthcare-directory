@@ -15,9 +15,9 @@ import {
 
 export const revalidate = 86400;
 
-const TITLE = "Free Tools for UAE Clinics";
+const TITLE = "Free UAE-Specific AI Tools for Clinics — Powered by Zavis AI";
 const DESCRIPTION =
-  "Free, no-signup tools for UAE clinic operators: claim rejection decoder, bilingual WhatsApp templates, regulator compliance calendar, NABIDH-aware intake forms, AI Google review reply generator. Built for the UAE healthcare market.";
+  "The first UAE-specific AI tools for clinic operators. Free forever, no signup. AI-powered claim rejection analyzer, bilingual WhatsApp generator, personalized compliance plan, intake form builder, Google review reply — built for UAE healthcare and PDPL-safe by design.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -32,36 +32,41 @@ interface Tool {
   blurb: string;
   audience: string;
   icon: React.ElementType;
+  ai: boolean;
 }
 
 const TOOLS: Tool[] = [
   {
     slug: "claim-decoder",
-    title: "UAE Claim Rejection Decoder",
-    blurb: "Paste a DHPO, eClaimLink, Shafafiya or NEXtCARE rejection code — get the plain-English explanation, common cause, and the fix.",
+    title: "UAE Claim Rejection Analyzer",
+    blurb: "Paste the full insurer rejection text (DHPO / Daman / Shafafiya / NEXtCARE). AI returns UAE-specific root cause, resubmission steps, and a draft email to the insurer in English + Arabic.",
     audience: "Insurance coordinators · Billing managers",
     icon: AlertCircle,
+    ai: true,
   },
   {
     slug: "whatsapp-templates",
-    title: "Bilingual WhatsApp Templates",
-    blurb: "64 ready-to-use reminder templates (appointment, follow-up, payment, no-show recovery) in English + Arabic across 8 specialties.",
+    title: "Bilingual WhatsApp Generator",
+    blurb: "Describe your scenario in plain English — AI generates a bilingual UAE-tone WhatsApp message with PDPL-safe placeholders. Plus 64 ready-to-use templates as fallback.",
     audience: "Practice managers · Front-desk leads",
     icon: MessageSquare,
+    ai: true,
   },
   {
     slug: "compliance-calendar",
-    title: "UAE Healthcare Compliance Calendar",
-    blurb: "License renewals, CME deadlines, DataFlow verification, insurance contract renewals — all in one calendar with email reminders.",
+    title: "Personalized UAE Compliance Plan",
+    blurb: "Describe your clinic — AI returns a personalized 30/60/90-day compliance + ops priority list with UAE-specific gotchas. Plus a static deadline computer for the basics.",
     audience: "Clinic owners · Compliance officers",
     icon: Calendar,
+    ai: true,
   },
   {
     slug: "intake-form",
-    title: "Bilingual Patient Intake Form Generator",
-    blurb: "Build a NABIDH-aware, PDPL-compliant intake form in English + Arabic. Pick sections, add custom questions, export printable HTML.",
+    title: "AI Patient Intake Form Builder",
+    blurb: "Describe your clinic — AI generates a complete bilingual PDPL-compliant intake form with specialty-specific sections + UAE consent blocks. Plus a manual section picker.",
     audience: "Clinic owners · Front-desk leads",
     icon: ClipboardList,
+    ai: true,
   },
   {
     slug: "review-reply",
@@ -69,6 +74,7 @@ const TOOLS: Tool[] = [
     blurb: "Paste a Google review (Arabic or English), get 3 PDPL-safe reply variants in both languages — empathetic, grateful, concise.",
     audience: "Practice managers · Marketing leads",
     icon: Sparkles,
+    ai: true,
   },
 ];
 
@@ -93,13 +99,13 @@ export default function ToolsIndexPage() {
 
         <div className="max-w-3xl mt-6">
           <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-[#006828] mb-3">
-            Free for UAE clinics · No signup
+            ✦ Powered by Zavis AI · Free forever · No signup
           </p>
-          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[40px] text-[#1c1c1c] tracking-tight leading-[1.05]">
-            Tools that solve real UAE clinic problems.
+          <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[44px] text-[#1c1c1c] tracking-tight leading-[1.05]">
+            The first UAE-specific AI tools for clinic operators.
           </h1>
           <p className="mt-4 font-['Geist',sans-serif] text-base leading-relaxed text-black/55">
-            Built for UAE clinic operators by Zavis. Bilingual. PDPL-compliant. Sourced from official authority documentation. No login, no paywall, no marketing emails unless you opt in.
+            5 free AI tools built for the UAE — claim rejection analyzer, bilingual WhatsApp generator, personalized compliance plan, intake form builder, Google review reply. Bilingual EN + AR, PDPL-safe by design, no login, no paywall. Plus the static fallback every tool has, so they still work even if the AI is rate-limited.
           </p>
         </div>
 
@@ -117,9 +123,17 @@ export default function ToolsIndexPage() {
                     <Icon className="h-5 w-5" strokeWidth={2.25} />
                   </span>
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
-                      {t.title}
-                    </h2>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c] tracking-tight group-hover:text-[#006828] transition-colors">
+                        {t.title}
+                      </h2>
+                      {t.ai && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#006828]/20 bg-[#006828]/[0.04] px-2 py-0.5 font-['Geist_Mono',monospace] text-[9px] font-semibold uppercase tracking-[0.12em] text-[#006828]">
+                          <Sparkles className="h-2.5 w-2.5" strokeWidth={2.5} />
+                          AI
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-2 font-['Geist',sans-serif] text-sm text-black/55 leading-relaxed">
                       {t.blurb}
                     </p>

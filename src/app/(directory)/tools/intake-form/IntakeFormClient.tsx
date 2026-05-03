@@ -1,6 +1,35 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Sparkles, Loader2 } from "lucide-react";
+import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
+
+interface AIIntakeQuestion {
+  id: string;
+  labelEn: string;
+  labelAr: string;
+  type: string;
+  required: boolean;
+  placeholderEn?: string;
+  placeholderAr?: string;
+  options?: Array<{ valueEn: string; valueAr: string } | string>;
+}
+interface AIIntakeSection {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  questions: AIIntakeQuestion[];
+}
+interface AIIntakeResult {
+  formName: string;
+  formNameAr: string;
+  introTextEn: string;
+  introTextAr: string;
+  sections: AIIntakeSection[];
+  consentBlocks: Array<{ titleEn: string; titleAr: string; bodyEn: string; bodyAr: string; required: boolean }>;
+  regulatoryNotes: string[];
+  tipsForClinic: string[];
+}
 import { Download, FileText, Mail, Check } from "lucide-react";
 import { SECTIONS, SPECIALTY_LABELS, type Specialty, type Section } from "@/lib/tools/intake-form";
 
@@ -13,6 +42,45 @@ export function IntakeFormClient() {
   const [customQuestions, setCustomQuestions] = useState<string[]>([""]);
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  // AI generator state
+  const [aiDescription, setAiDescription] = useState("");
+  const [aiResult, setAiResult] = useState<AIIntakeResult | null>(null);
+  const [aiStatus, setAiStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [aiError, setAiError] = useState("");
+
+  async function runAIGenerate(e: React.FormEvent) {
+    e.preventDefault();
+    if (aiDescription.trim().length < 20) {
+      setAiError("Describe your clinic in at least 20 characters.");
+      setAiStatus("error");
+      return;
+    }
+    setAiStatus("loading");
+    setAiError("");
+    setAiResult(null);
+    try {
+      const res = await fetch("/api/tools/intake-form/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clinicDescription: aiDescription,
+          specialty: specialty || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAiError(data.error || "Could not generate. Try again.");
+        setAiStatus("error");
+        return;
+      }
+      setAiResult(data);
+      setAiStatus("idle");
+    } catch {
+      setAiError("Network error. Try again.");
+      setAiStatus("error");
+    }
+  }
 
   const activeSections = useMemo(
     () => SECTIONS.filter((s) => includedSections.has(s.id)),
@@ -89,7 +157,133 @@ export function IntakeFormClient() {
   }
 
   return (
-    <div className="grid lg:grid-cols-[1fr_1fr] gap-6">
+    <div className="space-y-8">
+      {/* ── AI generator (primary action) ─────────────────────────────── */}
+      <div className="rounded-2xl border-2 border-[#006828]/15 bg-gradient-to-br from-[#006828]/[0.04] via-white to-white p-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-[#006828]" strokeWidth={2.25} />
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c]">
+              Generate a tailored intake form for your clinic
+            </p>
+          </div>
+          <ZavisAIBadge />
+        </div>
+        <p className="mt-2 font-['Geist',sans-serif] text-[13px] text-black/55 leading-relaxed">
+          Describe your clinic — specialty, patient mix, insurers accepted, anything specific. Zavis AI generates a complete bilingual (EN + AR) PDPL-compliant intake form: patient info, medical history, specialty-specific sections, insurance, and consent blocks.
+        </p>
+
+        <form onSubmit={runAIGenerate} className="mt-4 space-y-3">
+          <textarea
+            value={aiDescription}
+            onChange={(e) => setAiDescription(e.target.value)}
+            placeholder="e.g. 'OB/GYN clinic in Dubai Marina, mix of Daman + Thiqa + cash patients, accept Bupa Global for high-net-worth, want a form that captures OB history + last menstrual period + insurance pre-auth'"
+            rows={4}
+            maxLength={4000}
+            className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 font-['Geist',sans-serif] text-[14px] text-[#1c1c1c] placeholder:text-black/30 outline-none focus:border-[#006828] focus:ring-2 focus:ring-[#006828]/15"
+          />
+          <button
+            type="submit"
+            disabled={aiStatus === "loading"}
+            className="inline-flex items-center gap-2 rounded-full bg-[#006828] px-5 py-2.5 font-['Geist',sans-serif] text-sm font-semibold text-white hover:bg-[#005220] disabled:opacity-60"
+          >
+            {aiStatus === "loading" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
+                Generating…
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" strokeWidth={2.25} />
+                Generate with Zavis AI
+              </>
+            )}
+          </button>
+          <p className="font-['Geist',sans-serif] text-[11px] text-black/40">
+            Free · 5 generations per IP per hour. Output is yours to print, edit or paste into your EMR.
+          </p>
+        </form>
+
+        {aiError && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 font-['Geist',sans-serif] text-[13px] text-red-700">
+            {aiError}
+          </p>
+        )}
+
+        {aiResult && (
+          <div className="mt-6 rounded-2xl border border-black/[0.06] bg-white p-5 space-y-4">
+            <div>
+              <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] text-[#1c1c1c]">
+                {aiResult.formName}
+              </p>
+              <p className="mt-1 font-['Geist',sans-serif] text-[14px] text-black/65">
+                {aiResult.introTextEn}
+              </p>
+            </div>
+            {aiResult.sections?.map((sec) => (
+              <div key={sec.id} className="border-t border-black/[0.05] pt-4">
+                <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#006828]">
+                  {sec.titleEn} <span className="text-black/30">·</span> <span dir="rtl">{sec.titleAr}</span>
+                </p>
+                <ul className="mt-2 space-y-1.5 font-['Geist',sans-serif] text-[13px] text-black/70">
+                  {sec.questions.map((q) => (
+                    <li key={q.id} className="flex gap-2">
+                      <span className="font-['Geist_Mono',monospace] text-[10px] text-black/40 mt-0.5 flex-shrink-0">{q.type}</span>
+                      <span>
+                        {q.labelEn} {q.required && <span className="text-red-500">*</span>}
+                        <span className="text-black/40 mx-2">·</span>
+                        <span dir="rtl">{q.labelAr}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {aiResult.consentBlocks?.length > 0 && (
+              <div className="border-t border-black/[0.05] pt-4">
+                <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#006828]">
+                  Consent blocks
+                </p>
+                {aiResult.consentBlocks.map((c, i) => (
+                  <div key={i} className="mt-2">
+                    <p className="font-['Geist',sans-serif] text-[13px] font-medium text-[#1c1c1c]">{c.titleEn}</p>
+                    <p className="mt-1 font-['Geist',sans-serif] text-[12px] text-black/55">{c.bodyEn}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {aiResult.tipsForClinic?.length > 0 && (
+              <div className="rounded-xl bg-[#006828]/[0.04] px-4 py-3 mt-4">
+                <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#006828]">
+                  Tips for rolling this out
+                </p>
+                <ul className="mt-1 space-y-1 font-['Geist',sans-serif] text-[12px] text-[#1c1c1c]">
+                  {aiResult.tipsForClinic.map((t, i) => (
+                    <li key={i}>• {t}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(aiResult, null, 2))}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3.5 py-1.5 font-['Geist',sans-serif] text-xs font-medium text-[#1c1c1c] hover:border-[#006828]/30"
+            >
+              Copy form as JSON
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <span className="h-px flex-1 bg-black/[0.08]" />
+        <span className="font-['Geist_Mono',monospace] text-[10px] font-medium uppercase tracking-[0.16em] text-black/40">
+          Or build manually with the section picker
+        </span>
+        <span className="h-px flex-1 bg-black/[0.08]" />
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr_1fr] gap-6">
       {/* Builder */}
       <div className="rounded-2xl border border-black/[0.06] bg-white p-6 lg:max-h-[80vh] lg:overflow-y-auto">
         <h3 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c] tracking-tight mb-4">
@@ -242,6 +436,7 @@ export function IntakeFormClient() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

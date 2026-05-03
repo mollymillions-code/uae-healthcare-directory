@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Calendar, Download, Mail, Check } from "lucide-react";
+import { Calendar, Download, Mail, Check, Sparkles, Loader2 } from "lucide-react";
+import { ZavisAIBadge } from "@/components/tools/ZavisAIBadge";
 import {
   type Authority,
   type LicenseType,
@@ -10,6 +11,22 @@ import {
   LICENSE_LABELS,
   computeMilestones,
 } from "@/lib/tools/compliance-calendar";
+
+interface AIPersonalizeItem {
+  title: string;
+  due: string;
+  category: string;
+  why: string;
+  action: string;
+}
+interface AIPersonalizeResult {
+  clinicSnapshot: string;
+  next30Days: AIPersonalizeItem[];
+  next60Days: AIPersonalizeItem[];
+  next90Days: AIPersonalizeItem[];
+  watchOutFor: string[];
+  documentsToHaveOnFile: string[];
+}
 
 const CATEGORY_STYLES: Record<UpcomingMilestone["category"], { label: string; bg: string; text: string }> = {
   license_renewal: { label: "License renewal", bg: "bg-red-50", text: "text-red-700" },
@@ -29,6 +46,45 @@ export function ComplianceCalendarClient() {
   });
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  // AI personalizer state
+  const [aiDescription, setAiDescription] = useState("");
+  const [aiResult, setAiResult] = useState<AIPersonalizeResult | null>(null);
+  const [aiStatus, setAiStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [aiError, setAiError] = useState("");
+
+  async function runAIPersonalize(e: React.FormEvent) {
+    e.preventDefault();
+    if (aiDescription.trim().length < 20) {
+      setAiError("Describe your clinic in at least 20 characters.");
+      setAiStatus("error");
+      return;
+    }
+    setAiStatus("loading");
+    setAiError("");
+    setAiResult(null);
+    try {
+      const res = await fetch("/api/tools/compliance-calendar/personalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clinicDescription: aiDescription,
+          emirate: authority === "DHA" ? "Dubai" : authority === "DOH" ? "Abu Dhabi" : "Northern Emirates",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAiError(data.error || "Could not personalize. Try again.");
+        setAiStatus("error");
+        return;
+      }
+      setAiResult(data);
+      setAiStatus("idle");
+    } catch {
+      setAiError("Network error. Try again.");
+      setAiStatus("error");
+    }
+  }
 
   const validLicenseTypes = useMemo(() => {
     const set = new Set(RULES.filter((r) => r.authority === authority).map((r) => r.licenseType));
@@ -92,6 +148,123 @@ export function ComplianceCalendarClient() {
 
   return (
     <div className="max-w-3xl">
+      {/* ── AI personalizer (primary action) ──────────────────────────── */}
+      <div className="mb-10 rounded-2xl border-2 border-[#006828]/15 bg-gradient-to-br from-[#006828]/[0.04] via-white to-white p-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-[#006828]" strokeWidth={2.25} />
+            <p className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[18px] text-[#1c1c1c]">
+              Get a personalized 90-day compliance plan
+            </p>
+          </div>
+          <ZavisAIBadge />
+        </div>
+        <p className="mt-2 font-['Geist',sans-serif] text-[13px] text-black/55 leading-relaxed">
+          Describe your clinic in plain English — emirate, specialty, headcount, recent hires, current concerns. Zavis AI returns a 30/60/90-day priority list tailored to your setup, plus UAE-specific gotchas to watch out for.
+        </p>
+
+        <form onSubmit={runAIPersonalize} className="mt-4 space-y-3">
+          <textarea
+            value={aiDescription}
+            onChange={(e) => setAiDescription(e.target.value)}
+            placeholder="e.g. '3-clinic dental group in Dubai with 14 dentists, just hired 4 hygienists from Philippines, planning to add ortho specialty next quarter, current pain is Dataflow timelines'"
+            rows={4}
+            maxLength={4000}
+            className="w-full rounded-xl border border-black/[0.08] bg-white px-4 py-3 font-['Geist',sans-serif] text-[14px] text-[#1c1c1c] placeholder:text-black/30 outline-none focus:border-[#006828] focus:ring-2 focus:ring-[#006828]/15"
+          />
+          <button
+            type="submit"
+            disabled={aiStatus === "loading"}
+            className="inline-flex items-center gap-2 rounded-full bg-[#006828] px-5 py-2.5 font-['Geist',sans-serif] text-sm font-semibold text-white hover:bg-[#005220] disabled:opacity-60"
+          >
+            {aiStatus === "loading" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
+                Personalizing…
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" strokeWidth={2.25} />
+                Personalize with Zavis AI
+              </>
+            )}
+          </button>
+          <p className="font-['Geist',sans-serif] text-[11px] text-black/40">
+            Free · 5 personalizations per IP per hour. Your input is never stored or shared.
+          </p>
+        </form>
+
+        {aiError && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 font-['Geist',sans-serif] text-[13px] text-red-700">
+            {aiError}
+          </p>
+        )}
+
+        {aiResult && (
+          <div className="mt-5 space-y-5">
+            <p className="font-['Geist',sans-serif] text-[13px] italic text-black/65">
+              {aiResult.clinicSnapshot}
+            </p>
+            {(["next30Days", "next60Days", "next90Days"] as const).map((window) => {
+              const items = aiResult[window];
+              if (!items?.length) return null;
+              const label = window === "next30Days" ? "Next 30 days" : window === "next60Days" ? "Days 31–60" : "Days 61–90";
+              return (
+                <div key={window}>
+                  <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-[#006828]">
+                    {label}
+                  </p>
+                  <div className="mt-2 space-y-2">
+                    {items.map((item, i) => (
+                      <div key={i} className="rounded-xl border border-black/[0.06] bg-white p-3">
+                        <div className="flex items-start justify-between gap-3 flex-wrap">
+                          <p className="font-['Geist',sans-serif] text-[14px] font-medium text-[#1c1c1c]">{item.title}</p>
+                          <span className="rounded-full bg-[#f8f8f6] px-2 py-0.5 font-['Geist_Mono',monospace] text-[10px] text-black/55">{item.due}</span>
+                        </div>
+                        <p className="mt-1 font-['Geist',sans-serif] text-[12px] text-black/55">{item.why}</p>
+                        <p className="mt-1 font-['Geist',sans-serif] text-[12px] text-[#006828]"><strong>Action:</strong> {item.action}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            {aiResult.watchOutFor?.length > 0 && (
+              <div className="rounded-xl bg-amber-50 px-4 py-3">
+                <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-800">
+                  Watch out for
+                </p>
+                <ul className="mt-1 space-y-1 font-['Geist',sans-serif] text-[13px] text-amber-900">
+                  {aiResult.watchOutFor.map((w, i) => (
+                    <li key={i}>• {w}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {aiResult.documentsToHaveOnFile?.length > 0 && (
+              <div>
+                <p className="font-['Geist_Mono',monospace] text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45">
+                  Documents to keep on file
+                </p>
+                <ul className="mt-1 space-y-1 font-['Geist',sans-serif] text-[12px] text-black/65">
+                  {aiResult.documentsToHaveOnFile.map((d, i) => (
+                    <li key={i}>• {d}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="mb-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-black/[0.08]" />
+        <span className="font-['Geist_Mono',monospace] text-[10px] font-medium uppercase tracking-[0.16em] text-black/40">
+          Or compute deadlines from your renewal date
+        </span>
+        <span className="h-px flex-1 bg-black/[0.08]" />
+      </div>
+
       {/* Form */}
       <div className="rounded-2xl border border-black/[0.06] bg-white p-6">
         <div className="grid sm:grid-cols-3 gap-4">
