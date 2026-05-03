@@ -126,13 +126,13 @@ function LoginForm() {
           <div className="relative flex flex-1 flex-col justify-between px-12 py-14 xl:px-16 xl:py-16">
             <div>
               <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-[#88e0a8]">
-                Open Healthcare Jobs · UAE
+                The UAE healthcare network · Free
               </p>
               <h2 className="mt-5 font-['Bricolage_Grotesque',sans-serif] text-[32px] font-medium leading-[1.15] tracking-[-0.015em] text-white xl:text-[36px]">
-                The free, open jobs board for UAE healthcare workers.
+                The professional network for UAE healthcare workers.
               </h2>
               <p className="mt-5 max-w-[440px] font-['Geist',sans-serif] text-[15px] leading-relaxed text-white/65">
-                Doctors, nurses, lab techs, sonographers, pharmacists, dental staff, billers, coders, clinic managers — every UAE healthcare role, in one place. No fees. No spam.
+                Build your profile once — discipline, city, licence, salary, CV — and let hiring clinics in the Zavis network find you. Doctors, nurses, lab techs, sonographers, pharmacists, dental staff, billers, coders, clinic managers — every UAE healthcare role.
               </p>
             </div>
 
@@ -142,8 +142,8 @@ function LoginForm() {
                   <Briefcase className="h-3.5 w-3.5 text-[#88e0a8]" strokeWidth={2.25} />
                 </span>
                 <div>
-                  <p className="font-['Geist',sans-serif] text-[14px] font-medium text-white">Apply once, pick up anywhere.</p>
-                  <p className="font-['Geist',sans-serif] text-[13px] text-white/50">Saved jobs and applications travel with your account.</p>
+                  <p className="font-['Geist',sans-serif] text-[14px] font-medium text-white">Build once, get found anywhere.</p>
+                  <p className="font-['Geist',sans-serif] text-[13px] text-white/50">Your profile travels across discipline, city and clinic-network matches.</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">

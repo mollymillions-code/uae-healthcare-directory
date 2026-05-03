@@ -652,12 +652,12 @@ function Step6Visibility({
     {
       value: "public",
       title: "Public",
-      body: "Your profile (without contact info) appears in the public Zavis directory and search engines. Strongest signal that you&apos;re open. Recruiters see your full profile only if you&apos;ve also enabled recruiter visibility below.",
+      body: "Your profile (without contact info) appears in the public Zavis directory and search engines. Strongest signal that you're open. Recruiters see your full profile only if you've also enabled recruiter visibility below.",
     },
     {
       value: "limited",
       title: "Limited (recommended)",
-      body: "Your profile is visible only inside Zavis and only when you apply or when a recruiter you&apos;ve enabled visibility for views it. Default for most candidates.",
+      body: "Your profile is visible only inside Zavis and only when you apply or when a recruiter you've enabled visibility for views it. Default for most candidates.",
     },
     {
       value: "private",

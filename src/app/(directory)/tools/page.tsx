@@ -15,7 +15,7 @@ import {
 
 export const revalidate = 86400;
 
-const TITLE = "Free Tools for UAE Clinics — Zavis";
+const TITLE = "Free Tools for UAE Clinics";
 const DESCRIPTION =
   "Free, no-signup tools for UAE clinic operators: claim rejection decoder, bilingual WhatsApp templates, regulator compliance calendar, NABIDH-aware intake forms, AI Google review reply generator. Built for the UAE healthcare market.";
 

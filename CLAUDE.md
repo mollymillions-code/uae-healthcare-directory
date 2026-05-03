@@ -20,7 +20,7 @@ This is the Zavis Landing production site (zavis.ai). Every push to `live` deplo
 - **Framework:** Next.js 14.2.35 (App Router), React 18, TypeScript, Tailwind CSS
 - **Database:** PostgreSQL 16 on EC2 (localhost:5432), database `zavis_landing`, user `zavis_admin`
 - **ORM:** Drizzle ORM via `drizzle-orm/node-postgres` — schema at `src/lib/db/schema.ts`
-- **Hosting:** AWS EC2 (13.205.197.148), PM2 process `zavis-landing` on port 3200, Nginx reverse proxy
+- **Hosting:** AWS Lightsail (`13.234.162.47`, instance name `zavis-prod-32gb`, Mumbai ap-south-1a, 32 GB RAM / 8 vCPU / 640 GB SSD). Blue-green PM2 with `zavis-blue` on port 3200 and `zavis-green` on port 3201, Nginx reverse proxy. SSH: `~/.ssh/zavis-site.pem ubuntu@13.234.162.47`. **Do NOT confuse with `13.205.197.148`** — that is a separate EC2 instance with sibling tooling (analytics, MCP servers, internal dashboards) and a stale zavis-landing checkout. Operations on `13.205.197.148` do NOT affect production. See the `zavis-website-ec2-deploy` skill before SSH'ing.
 
 ## Database Driver — CRITICAL
 
