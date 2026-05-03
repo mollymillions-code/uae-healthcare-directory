@@ -17,7 +17,7 @@ export const revalidate = 86400;
 
 const TITLE = "Free Tools for UAE Clinics — Zavis";
 const DESCRIPTION =
-  "Free, no-signup tools for UAE clinic operators: claim rejection decoder, bilingual WhatsApp templates, DHA/DOH/MOHAP compliance calendar, NABIDH-aware intake forms, AI Google review reply generator. Built for the UAE healthcare market.";
+  "Free, no-signup tools for UAE clinic operators: claim rejection decoder, bilingual WhatsApp templates, regulator compliance calendar, NABIDH-aware intake forms, AI Google review reply generator. Built for the UAE healthcare market.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -51,7 +51,7 @@ const TOOLS: Tool[] = [
   },
   {
     slug: "compliance-calendar",
-    title: "DHA / DOH / MOHAP Compliance Calendar",
+    title: "UAE Healthcare Compliance Calendar",
     blurb: "License renewals, CME deadlines, DataFlow verification, insurance contract renewals — all in one calendar with email reminders.",
     audience: "Clinic owners · Compliance officers",
     icon: Calendar,

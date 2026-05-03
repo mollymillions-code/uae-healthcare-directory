@@ -22,7 +22,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const d = getDiscipline(params.slug);
   if (!d) return {};
-  const title = `${d.name} Jobs in UAE | Zavis`;
+  const title = `${d.name} Jobs in UAE`;
   const description = `${d.plural} in UAE — build your professional profile, upload your CV, get found by hiring clinics. ${
     d.licenseAuthority ? "Regulator-aware. " : ""
   }Free for healthcare workers.`.slice(0, 155);

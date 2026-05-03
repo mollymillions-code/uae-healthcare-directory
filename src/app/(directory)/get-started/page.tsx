@@ -8,7 +8,7 @@ import { getBaseUrl } from "@/lib/helpers";
 
 export const revalidate = 86400;
 
-const TITLE = "Get started with Zavis — patient, candidate, or clinic | Zavis";
+const TITLE = "Get started — patient, candidate, or clinic";
 const DESCRIPTION =
   "Zavis is the open UAE healthcare network — directory, jobs board, and editorial intelligence in one place. Pick your path: patients save clinics and insurance prefs, candidates apply to UAE healthcare jobs for free, clinics manage their listings and post jobs.";
 

@@ -39,7 +39,6 @@ import { getAllFacilitySlugs, getFacilitySpecialtyCombos, getAreaStats, getAreaS
 import { getTopAreas, getTopFacilities, getProfessionalsByAreaAndCategory } from "@/lib/workforce";
 import { GUIDES } from "@/lib/guides/data";
 import { DISCIPLINES as JOBS_DISCIPLINES } from "@/lib/jobs/disciplines";
-import { JOBS_GUIDES } from "@/lib/jobs/guides-data";
 
 const GUIDE_SLUGS = [
   "how-uae-healthcare-works", "health-insurance-uae", "what-is-dha",
@@ -923,8 +922,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   //   /jobs/login, /jobs/signup, /get-started — entry points
   // ──────────────────────────────────────────────────────────────────────
   entries.push({ url: `${baseUrl}/jobs`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.9 });
-  entries.push({ url: `${baseUrl}/jobs/login`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.4 });
-  entries.push({ url: `${baseUrl}/jobs/signup`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.6 });
+  // /jobs/login and /jobs/signup are intentionally NOT in the sitemap —
+  // they're transactional auth pages with `robots: noindex`. See their
+  // respective layout.tsx for the metadata.
   entries.push({ url: `${baseUrl}/get-started`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   for (const city of cities) {
     entries.push({ url: `${baseUrl}/jobs/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.85 });
@@ -935,11 +935,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const city of cities) {
       entries.push({ url: `${baseUrl}/jobs/discipline/${d.slug}/${city.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.75 });
     }
-  }
-  // Editorial guides
-  entries.push({ url: `${baseUrl}/jobs/guides`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "weekly", priority: 0.7 });
-  for (const guide of JOBS_GUIDES) {
-    entries.push({ url: `${baseUrl}/jobs/guides/${guide.slug}`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.7 });
   }
 
   // Pricing hub — procedures, comparisons, lists, guides, journeys

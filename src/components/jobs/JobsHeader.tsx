@@ -28,12 +28,6 @@ export function JobsHeader() {
             Browse jobs
           </Link>
           <Link
-            href="/jobs/guides"
-            className="hidden font-['Geist',sans-serif] text-[13px] font-medium text-black/55 transition-colors hover:text-[#006828] md:inline"
-          >
-            Guides
-          </Link>
-          <Link
             href="/jobs/login"
             className="font-['Geist',sans-serif] text-[13px] font-medium text-black/55 transition-colors hover:text-[#006828]"
           >

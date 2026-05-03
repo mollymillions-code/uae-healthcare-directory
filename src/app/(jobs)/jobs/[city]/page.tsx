@@ -26,7 +26,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!city) return {};
-  const title = `Healthcare Careers in ${city.name} | Zavis`;
+  const title = `Healthcare Careers in ${city.name}`;
   const description = `Healthcare workers in ${city.name}, UAE — register your profile and let hiring clinics find you. Free, PDPL-compliant.`.slice(0, 155);
   return {
     title,

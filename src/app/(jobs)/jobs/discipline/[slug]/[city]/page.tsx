@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const d = getDiscipline(params.slug);
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!d || !city) return {};
-  const title = `${d.name} Jobs in ${city.name} | Zavis`;
+  const title = `${d.name} Jobs in ${city.name}`;
   const description = `${d.plural} jobs in ${city.name}, UAE. ${d.blurb} Free for healthcare workers.`.slice(0, 155);
   return {
     title,

@@ -21,7 +21,7 @@ export const CITIES = [
     latitude: "24.4538352",
     longitude: "54.3773438",
     sortOrder: 2,
-    description: "Abu Dhabi, the capital of the UAE, offers premier healthcare services regulated by the Department of Health (DOH), with major facilities on Al Reem Island, Al Maryah Island, and Khalifa City.",
+    description: "Abu Dhabi, the capital of the UAE, offers premier healthcare services across major facilities on Al Reem Island, Al Maryah Island, and Khalifa City.",
   },
   {
     slug: "sharjah",

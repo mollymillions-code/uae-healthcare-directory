@@ -25,7 +25,7 @@ import { JobsSearchHero } from "@/components/jobs/JobsSearchHero";
 
 export const revalidate = 3600;
 
-const TITLE = "UAE Healthcare Jobs — Find Your Next Role | Zavis";
+const TITLE = "UAE Healthcare Jobs — Find Your Next Role";
 const DESCRIPTION =
   "Search UAE healthcare jobs by discipline, city and experience. Build a professional profile, upload your CV, and get found by hiring clinics. Free for healthcare workers.";
 
