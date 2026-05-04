@@ -45,7 +45,11 @@ const MODEL = process.env.CLAUDE_MODEL || "haiku";
 const CLAUDE_TIMEOUT_MS = parseInt(process.env.CLAUDE_TIMEOUT_MS || "120000", 10);
 
 const COUNTRIES = ["sa", "qa", "bh", "kw"];
-const CATEGORIES = ["clinics", "hospitals", "dental", "physiotherapy", "neurology"];
+// All categories — opaque slugs cause 404s regardless of category enrichment scope
+const CATEGORIES = [
+  "clinics", "hospitals", "dental", "physiotherapy", "neurology",
+  "pharmacy", "labs-diagnostics",
+];
 
 const { DATABASE_URL } = process.env;
 if (!DATABASE_URL) {
@@ -261,7 +265,10 @@ async function main() {
   log(`Concurrency: ${CONCURRENCY}`);
   log(``);
 
-  // Pick opaque-slug enriched providers, prefer those with description set first
+  // Pick all opaque-slug providers — enriched first (description), then the rest.
+  // Earlier passes targeted only enriched. The remaining 269 unenriched still
+  // 404 with their hashed slugs, so reslug them too (they'll be noindex'd via
+  // sitemap-gating but at least their URLs resolve to something coherent).
   const { rows } = await pool.query(
     `SELECT
        id, slug, name, name_ar, city_slug, country, category_slug,
@@ -271,7 +278,6 @@ async function main() {
        AND country = ANY($1)
        AND category_slug = ANY($2)
        AND status = 'active'
-       AND google_fetched_at IS NOT NULL
      ORDER BY (description IS NOT NULL AND description <> '') DESC, country, city_slug, name
      LIMIT $3`,
     [COUNTRIES, CATEGORIES, LIMIT]

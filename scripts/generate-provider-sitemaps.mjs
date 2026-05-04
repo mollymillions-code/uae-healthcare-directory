@@ -358,11 +358,11 @@ async function main() {
          operating_hours
        FROM providers
        WHERE status = 'active'
-         AND country = 'ae'
+         AND country IN ('ae','sa','qa','bh','kw')
          AND slug IS NOT NULL
          AND city_slug IS NOT NULL
          AND category_slug IS NOT NULL
-       ORDER BY city_slug ASC, slug ASC`,
+       ORDER BY country ASC, city_slug ASC, slug ASC`,
     );
     rows = result.rows;
   } catch (err) {
