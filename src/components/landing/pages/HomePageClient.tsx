@@ -382,7 +382,7 @@ export function HomePageClient() {
                 </h2>
                 <p className="mt-5 font-['Geist',sans-serif] text-white/80 text-base sm:text-lg leading-relaxed max-w-xl">
                   Reach 12,500+ patients searching for clinics, hospitals, and pharmacies
-                  every week. Free forever, regulator-verified, and live in 2–3 days.
+                  every week. Regulator-verified, and live in 2–3 days.
                 </p>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -427,8 +427,8 @@ export function HomePageClient() {
                   },
                   {
                     Icon: ShieldCheck,
-                    title: "Free forever",
-                    desc: "No card, no trial, no upsell. The directory is a public utility.",
+                    title: "Free to claim",
+                    desc: "No card, no trial, no upsell.",
                   },
                 ].map((c) => (
                   <div

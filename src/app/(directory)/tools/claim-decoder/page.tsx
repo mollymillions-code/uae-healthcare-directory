@@ -10,7 +10,7 @@ export const revalidate = 86400;
 
 const TITLE = "UAE Claim Rejection Decoder — DHPO, eClaimLink, Shafafiya, NEXtCARE";
 const DESCRIPTION =
-  "Paste a UAE health-insurance rejection code and get the plain-English explanation, the most common cause, and the recommended fix. Free tool by Zavis. No login.";
+  "Paste a UAE health-insurance rejection code and get the plain-English explanation, the most common cause, and the recommended fix. Free tool by Zavis.";
 
 export const metadata: Metadata = {
   title: TITLE,

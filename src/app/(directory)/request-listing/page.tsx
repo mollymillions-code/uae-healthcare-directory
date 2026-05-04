@@ -18,7 +18,7 @@ import { getBaseUrl } from "@/lib/helpers";
 
 const PAGE_TITLE = "List Your Clinic on Zavis — UAE Open Healthcare Directory";
 const PAGE_DESCRIPTION =
-  "List your UAE or GCC clinic, hospital, pharmacy, lab, or dental practice on the Zavis Directory via WhatsApp. Free forever, regulator-verified, live in 2–3 days.";
+  "List your UAE or GCC clinic, hospital, pharmacy, lab, or dental practice on the Zavis Directory via WhatsApp. Regulator-verified, live in 2–3 days.";
 
 export const metadata: Metadata = {
   title: PAGE_TITLE,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "List Your Clinic on Zavis",
     description:
-      "List your UAE clinic on the Zavis Directory via WhatsApp. Free forever, regulator-verified.",
+      "List your UAE clinic on the Zavis Directory via WhatsApp. Regulator-verified.",
   },
   robots: { index: true, follow: true },
 };
@@ -202,7 +202,7 @@ export default function RequestListingPage() {
                 One conversation
               </p>
               <h2 className="font-display font-semibold text-white text-display-lg tracking-[-0.02em] leading-[1.05]">
-                List on Zavis. <br />Free forever.
+                List on Zavis.
               </h2>
               <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
                 No card, no trial, no sales call. Tap WhatsApp, share your licence, and

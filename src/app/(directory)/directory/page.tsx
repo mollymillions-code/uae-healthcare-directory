@@ -130,7 +130,7 @@ export default async function DirectoryHomePage() {
     {
       question: "What is the UAE Open Healthcare Directory?",
       answer:
-        "A free, comprehensive directory of licensed healthcare providers across all seven Emirates. Sourced from official UAE healthcare licensing data. Ratings from Google Maps. By Zavis.",
+        "A free, comprehensive directory of licensed healthcare providers across all seven Emirates. Sourced from official UAE healthcare licensing data. By Zavis.",
     },
     {
       question: "How do I find a doctor near me?",
@@ -288,13 +288,13 @@ export default async function DirectoryHomePage() {
               Icon: Star,
               title: "Real patient reviews",
               desc:
-                "Google ratings pulled directly from verified patient reviews — no curation, no pay-to-play, no fake 5-stars.",
+                "Real patient reviews — no curation, no pay-to-play, no fake 5-stars.",
             },
             {
               Icon: Sparkles,
-              title: "Free. Forever.",
+              title: "Free to use.",
               desc:
-                "No paywall. No login. No tracking scripts. Built as a public utility for UAE residents and visitors alike.",
+                "Open access for UAE residents, visitors, clinicians, and policymakers — no paywall on any directory page.",
             },
           ].map((f) => (
             <div

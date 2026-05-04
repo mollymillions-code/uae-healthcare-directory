@@ -126,7 +126,7 @@ export default async function CompareHubPage() {
           significantly by emirate. This page provides {totalPages}{" "}
           data-driven side-by-side comparisons to help patients, families, and
           employers make informed decisions about where to seek care. All data
-          is sourced from official government registers and Google Maps ratings,
+          is sourced from official government registers,
           last verified March 2026.
         </>
       }
@@ -166,7 +166,7 @@ export default async function CompareHubPage() {
           <div className="mt-8 border-t border-ink-line pt-4">
             <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
               <strong>Disclaimer:</strong> All provider counts, ratings, and cost estimates are based
-              on data from official UAE healthcare licensing data and Google Maps,
+              on data from official UAE healthcare licensing data,
               last verified March 2026. Consultation fees are indicative ranges and may vary by provider,
               insurance status, and visit complexity. This information is for comparison and educational
               purposes only and does not constitute medical advice.

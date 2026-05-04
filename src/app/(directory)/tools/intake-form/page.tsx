@@ -9,7 +9,7 @@ export const revalidate = 86400;
 
 const TITLE = "Bilingual Patient Intake Form Generator (UAE) — NABIDH-aware, EN+AR";
 const DESCRIPTION =
-  "Free intake-form generator for UAE clinics. Bilingual (English + Arabic), NABIDH consent-aware, PDPL-compliant marketing consent. Customize sections, preview live, export as printable HTML. No login.";
+  "Free intake-form generator for UAE clinics. Bilingual (English + Arabic), NABIDH consent-aware, PDPL-compliant marketing consent. Customize sections, preview live, export as printable HTML.";
 
 export const metadata: Metadata = {
   title: TITLE,

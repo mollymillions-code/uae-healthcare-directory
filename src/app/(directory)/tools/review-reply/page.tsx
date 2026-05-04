@@ -9,7 +9,7 @@ export const revalidate = 86400;
 
 const TITLE = "Free AI Google Review Reply Generator for UAE Clinics — PDPL-safe, EN+AR";
 const DESCRIPTION =
-  "Paste a Google review (Arabic or English), get 3 PDPL-compliant reply variants in both languages — empathetic, grateful, concise. Built for UAE clinics. No login.";
+  "Paste a Google review (Arabic or English), get 3 PDPL-compliant reply variants in both languages — empathetic, grateful, concise. Built for UAE clinics.";
 
 export const metadata: Metadata = {
   title: TITLE,

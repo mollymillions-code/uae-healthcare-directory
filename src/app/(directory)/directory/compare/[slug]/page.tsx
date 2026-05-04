@@ -196,7 +196,7 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
             <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
               According to the UAE Open Healthcare Directory, {cityA.name} has{" "}
               {statsA.totalProviders.toLocaleString()} licensed healthcare providers while {cityB.name} has{" "}
-              {statsB.totalProviders.toLocaleString()}. Healthcare in {cityA.name} is regulated by the {statsA.regulator}, while {cityB.name} is regulated by the {statsB.regulator}. GP consultations cost {statsA.gpFeeRange} in {cityA.name} compared to {statsB.gpFeeRange} in {cityB.name}. Both cities require employer-provided health insurance for residents. Below is a detailed side-by-side comparison of provider counts, average ratings, costs, and top-rated facilities. Data sourced from official government registers and Google Maps, verified March 2026.
+              {statsB.totalProviders.toLocaleString()}. Healthcare in {cityA.name} is regulated by the {statsA.regulator}, while {cityB.name} is regulated by the {statsB.regulator}. GP consultations cost {statsA.gpFeeRange} in {cityA.name} compared to {statsB.gpFeeRange} in {cityB.name}. Both cities require employer-provided health insurance for residents. Below is a detailed side-by-side comparison of provider counts, average ratings, costs, and top-rated facilities. Data sourced from official government registers, verified March 2026.
             </p>
           </div>
         </div>
@@ -381,7 +381,7 @@ function CityComparisonView({ data }: { data: CityComparisonData }) {
         </div>
         <div className="mt-8 border-t border-ink-line pt-4">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-            <strong>Disclaimer:</strong> Provider counts and ratings are based on data from official UAE healthcare licensing data and Google Maps, last verified March 2026. Consultation fees are indicative ranges and may vary by provider, insurance status, and visit complexity. This comparison is for informational purposes only and does not constitute medical advice.
+            <strong>Disclaimer:</strong> Provider counts and ratings are based on data from official UAE healthcare licensing data, last verified March 2026. Consultation fees are indicative ranges and may vary by provider, insurance status, and visit complexity. This comparison is for informational purposes only and does not constitute medical advice.
           </p>
         </div>
       </section>
@@ -469,7 +469,7 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
               emergency departments, and multi-specialty services under one roof. Clinics focus on
               outpatient consultations, routine check-ups, and minor procedures with shorter wait times
               and lower fees. Below is a data-driven side-by-side comparison. Data sourced from official
-              government registers and Google Maps, verified March 2026.
+              government registers, verified March 2026.
             </p>
           </div>
         </div>
@@ -602,7 +602,7 @@ function CategoryComparisonView({ data }: { data: CategoryComparisonData }) {
         </div>
         <div className="mt-8 border-t border-ink-line pt-4">
           <p className="font-sans text-z-caption text-ink-muted leading-relaxed">
-            <strong>Disclaimer:</strong> Provider counts, ratings, and cost estimates are based on data from official UAE healthcare licensing data and Google Maps, last verified March 2026. Consultation fees are indicative ranges. This comparison is for informational purposes only and does not constitute medical advice.
+            <strong>Disclaimer:</strong> Provider counts, ratings, and cost estimates are based on data from official UAE healthcare licensing data, last verified March 2026. Consultation fees are indicative ranges. This comparison is for informational purposes only and does not constitute medical advice.
           </p>
         </div>
       </section>

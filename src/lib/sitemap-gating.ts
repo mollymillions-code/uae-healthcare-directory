@@ -41,13 +41,18 @@ export interface ProviderGatingInput {
   website?: string | null;
   description?: string | null;
   operatingHours?: Record<string, unknown> | null;
+  galleryPhotos?: unknown[] | null;
 }
 
 /**
- * A provider passes the sitemap/index gate if it has at least two of
- * the five enrichment signals. Fewer than two makes it a thin stub that
- * we neither submit to Google (sitemap exclusion) nor allow to be
- * indexed (page-level noindex).
+ * A provider passes the sitemap/index gate when:
+ *   (a) It has at least one form of unique content — either a real
+ *       description (>80 chars) or at least one gallery photo. This is
+ *       the primary "thin content" guard: structured data alone (rating,
+ *       hours, phone) is not enough for Google to consider a page
+ *       worthy of indexing without unique text or imagery, AND
+ *   (b) It has at least two of the five enrichment signals below, which
+ *       acts as a secondary completeness check for half-populated rows.
  *
  * Signals:
  *   1. Google rating > 0
@@ -55,13 +60,24 @@ export interface ProviderGatingInput {
  *   3. Non-empty website
  *   4. Description longer than 80 characters
  *   5. Non-empty operating hours object
+ *
+ * Pages that fail (a) get noindex regardless of their other fields —
+ * this ensures DHA-seeded providers with phone+rating but no actual
+ * unique content do not contribute to "thin content" SEO penalties.
  */
 export function isEnrichedForSitemap(row: ProviderGatingInput): boolean {
+  const hasDescription =
+    Boolean(row.description && String(row.description).trim().length > 80);
+  const hasPhotos =
+    Array.isArray(row.galleryPhotos) && row.galleryPhotos.length > 0;
+  const hasUniqueContent = hasDescription || hasPhotos;
+  if (!hasUniqueContent) return false;
+
   const fields = [
     Boolean(row.googleRating && Number(row.googleRating) > 0),
     Boolean(row.phone && String(row.phone).trim().length > 0),
     Boolean(row.website && String(row.website).trim().length > 0),
-    Boolean(row.description && String(row.description).trim().length > 80),
+    hasDescription,
     Boolean(
       row.operatingHours &&
         typeof row.operatingHours === "object" &&

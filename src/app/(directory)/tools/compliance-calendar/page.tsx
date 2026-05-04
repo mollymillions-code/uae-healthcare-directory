@@ -9,7 +9,7 @@ export const revalidate = 86400;
 
 const TITLE = "DHA / DOH / MOHAP Compliance Calendar — License Renewals, CME, DataFlow (2026)";
 const DESCRIPTION =
-  "Free interactive compliance calendar for UAE clinics and healthcare professionals. Plan license renewals, CME deadlines, DataFlow verification, and inspection windows across DHA, DOH, MOHAP. Email reminders 90/60/30 days out. No login.";
+  "Free interactive compliance calendar for UAE clinics and healthcare professionals. Plan license renewals, CME deadlines, DataFlow verification, and inspection windows across DHA, DOH, MOHAP. Email reminders 90/60/30 days out.";
 
 export const metadata: Metadata = {
   title: TITLE,

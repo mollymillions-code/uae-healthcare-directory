@@ -366,7 +366,7 @@ export async function GccDirectoryHome({
               </h2>
               <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
                 {totalProviders > 0
-                  ? `${totalProviders.toLocaleString()} licensed providers from official ${country.regulators.join(" & ")} registers. Free. Open. No paywall.`
+                  ? `${totalProviders.toLocaleString()} licensed providers from official ${country.regulators.join(" & ")} registers.`
                   : `Directory launching soon for ${country.name}. Powered by official ${country.regulators.join(" & ")} data.`}
               </p>
               <Link

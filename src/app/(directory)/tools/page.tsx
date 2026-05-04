@@ -17,7 +17,7 @@ export const revalidate = 86400;
 
 const TITLE = "Free UAE-Specific AI Tools for Clinics — Powered by Zavis AI";
 const DESCRIPTION =
-  "The first UAE-specific AI tools for clinic operators. Free forever, no signup. AI-powered claim rejection analyzer, bilingual WhatsApp generator, personalized compliance plan, intake form builder, Google review reply — built for UAE healthcare and PDPL-safe by design.";
+  "The first UAE-specific AI tools for clinic operators. Free, no signup. AI-powered claim rejection analyzer, bilingual WhatsApp generator, personalized compliance plan, intake form builder, Google review reply — built for UAE healthcare and PDPL-safe by design.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -99,7 +99,7 @@ export default function ToolsIndexPage() {
 
         <div className="max-w-3xl mt-6">
           <p className="font-['Geist_Mono',monospace] text-[11px] font-medium uppercase tracking-[0.18em] text-[#006828] mb-3">
-            ✦ Powered by Zavis AI · Free forever · No signup
+            ✦ Powered by Zavis AI · Free · No signup
           </p>
           <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[44px] text-[#1c1c1c] tracking-tight leading-[1.05]">
             The first UAE-specific AI tools for clinic operators.

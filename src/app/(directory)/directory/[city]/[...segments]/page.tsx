@@ -1382,7 +1382,7 @@ export default async function CatchAllPage({ params, searchParams }: Props) {
       },
       { question: `Which insurance plans does ${provider.name} accept?`, answer: provider.insurance.length > 0 ? `${provider.name} accepts the following insurance plans: ${provider.insurance.join(", ")}. Always confirm coverage details directly with the provider before your visit.` : `Contact ${provider.name} directly to confirm which insurance plans are currently accepted.` },
       { question: `What medical services are available at ${provider.name}?`, answer: provider.services.length > 0 ? `${provider.name} provides the following medical services: ${provider.services.join(", ")}. This information is sourced from official UAE health authority records.` : `Contact ${provider.name} for a full list of available medical services.` },
-      { question: `How do I get to ${provider.name} in ${locationLabel}?`, answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${parseFloat(provider.latitude) !== 0 ? " You can find directions via Google Maps." : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}` },
+      { question: `How do I get to ${provider.name} in ${locationLabel}?`, answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${parseFloat(provider.latitude) !== 0 ? " You can use any maps app for turn-by-turn directions." : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}` },
     ];
     // Dynamic FAQ: Google rating
     if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {

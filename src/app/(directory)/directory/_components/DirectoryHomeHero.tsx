@@ -66,7 +66,7 @@ export function DirectoryHomeHero({ totalProviders }: Props) {
         >
           Browse{" "}
           <span className="font-semibold text-ink">{totalProviders.toLocaleString()}+ licensed providers</span>{" "}
-          across 8 cities and 26 specialties — sourced from official government registers. Free. Open. No paywall.
+          across 8 cities and 26 specialties — sourced from official government registers.
         </motion.p>
 
         {/* Unified search — same component as /search so the experience is

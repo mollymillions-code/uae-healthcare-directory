@@ -21,14 +21,14 @@ import { getBaseUrl } from "@/lib/helpers";
 export const metadata: Metadata = {
   title: "Claim Your Clinic's Listing — UAE Open Healthcare Directory",
   description:
-    "Claim your DHA/DOH/MOHAP-licensed clinic, hospital, pharmacy, or dental practice on the Zavis Directory via WhatsApp. Free forever. Edit hours, insurance, services, and photos once verified.",
+    "Claim your DHA/DOH/MOHAP-licensed clinic, hospital, pharmacy, or dental practice on the Zavis Directory via WhatsApp. Edit hours, insurance, services, and photos once verified.",
   alternates: {
     canonical: `${getBaseUrl()}/claim`,
   },
   openGraph: {
     title: "Claim Your Healthcare Listing on Zavis",
     description:
-      "UAE healthcare providers can claim and manage their Zavis listing via WhatsApp. DHA, DOH, MOHAP cross-referenced. Free, no card, no sales call.",
+      "UAE healthcare providers can claim and manage their Zavis listing via WhatsApp. Verified against official licensing registers. No card, no sales call.",
     url: `${getBaseUrl()}/claim`,
     type: "website",
     locale: "en_AE",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Claim Your Healthcare Listing on Zavis",
     description:
-      "Claim your UAE clinic on the Zavis Directory via WhatsApp. Free forever, regulator-verified.",
+      "Claim your UAE clinic on the Zavis Directory via WhatsApp. Regulator-verified.",
   },
   robots: { index: true, follow: true },
 };
@@ -57,7 +57,7 @@ const FAQS = [
   {
     question: "Is claiming free?",
     answer:
-      "Yes. Claiming and maintaining your listing is free forever. No card, no trial, no hidden tier. We built this directory as a public utility — the business model lives elsewhere in Zavis (patient-success software), not in the directory.",
+      "Yes. Claiming and maintaining your listing is free — no card, no trial, no hidden tier.",
   },
   {
     question: "What can I edit once verified?",
@@ -147,7 +147,7 @@ export default function ClaimPage() {
               </h1>
               <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
                 Verify your clinic, hospital, pharmacy, or dental practice in under two
-                minutes. Update hours, insurance, services, and photos — free, forever.
+                minutes. Update hours, insurance, services, and photos.
                 Reach thousands of UAE patients actively searching for the care you provide.
               </p>
 
@@ -458,7 +458,7 @@ export default function ClaimPage() {
                 Ready when you are
               </p>
               <h2 className="font-display font-semibold text-white text-display-lg tracking-[-0.02em] leading-[1.05]">
-                One WhatsApp message. <br />Free forever.
+                One WhatsApp message.
               </h2>
               <p className="font-sans text-white/70 text-z-body mt-4 max-w-lg leading-relaxed">
                 No card, no trial, no sales call. Tap WhatsApp, share your licence, and

@@ -10,7 +10,7 @@ export const revalidate = 86400;
 
 const TITLE = "Free WhatsApp Templates for UAE Clinics — Bilingual (EN+AR), 8 Specialties, 8 Use-cases";
 const DESCRIPTION =
-  "60+ ready-to-use WhatsApp reminder templates for UAE clinics — appointment confirmations, reminders, follow-ups, payment reminders. Bilingual English + Arabic. UAE-appropriate formality. No login.";
+  "60+ ready-to-use WhatsApp reminder templates for UAE clinics — appointment confirmations, reminders, follow-ups, payment reminders. Bilingual English + Arabic. UAE-appropriate formality.";
 
 export const metadata: Metadata = {
   title: TITLE,
