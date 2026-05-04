@@ -1,37 +1,41 @@
 #!/usr/bin/env node
 /**
- * Thicken thin GCC provider pages — Stage 1: Places enrichment only.
+ * LLM-matched GCC provider enrichment — runs LOCALLY using the local
+ * Claude Code subscription via the `claude` CLI.
  *
- * Targets: providers in (sa, qa, bh, kw) AND category in
- *   (clinics, hospitals, dental, physiotherapy, neurology) where the row has
- *   no description, no gallery_photos, and no google_place_id.
+ * For the residuals that Stage 1's Jaccard matcher couldn't confidently
+ * resolve (drift cases with stale place_ids, low-Jaccard transliterations,
+ * Arabic/English mismatches), this script:
  *
- * Per provider:
- *   1. Places searchText -> match top result by jaccard(name) >= 0.3
- *   2. Place Details (FieldMask *) with Referer header
- *   3. Download up to 10 photos -> sharp -> WebP -> R2
- *   4. Single atomic UPDATE (no description — that's Stage 2)
+ *   1. Searches Places (top 5 candidates within country bbox)
+ *   2. Asks Claude (local CLI) to pick the best match (or NONE) given the
+ *      DB name, city, country, and the candidate Google names + addresses
+ *   3. If matched: fetches full Place Details, downloads up to 10 photos
+ *      to R2, generates EN+AR description in the SAME LLM call, writes
+ *      everything in one atomic UPDATE
  *
- * Stage 2 (descriptions) runs in scripts/write-gcc-descriptions.mjs which
- * batches providers and shells out to the local `claude` CLI to use the
- * Claude Code subscription (no API key needed, no per-token spend).
+ * Why one combined LLM call (match + description): saves cache_creation
+ * tokens and CLI startup overhead. ~500 residuals total — manageable.
+ *
+ * DB access: SSH tunnel from laptop to prod Postgres on port 15432.
  *
  * Environment:
  *   GOOGLE_PLACES_API_KEY        Places-restricted key (referer-locked)
  *   GOOGLE_PLACES_REFERER        e.g. https://www.zavis.ai/
- *   DATABASE_URL                 Postgres (local on EC2 or via SSH tunnel)
+ *   DATABASE_URL                 postgres://USER:PASS@localhost:15432/zavis_landing
  *   R2_*                         R2 credentials + bucket + public url
+ *   CLAUDE_CLI                   Optional path to claude binary (default: claude)
  *
  * Flags:
  *   --test          Cap to 5 providers
  *   --limit=N       Hard cap
- *   --country=cc    Single country (default: all four)
- *   --concurrency=N Workers (default: 6)
- *   --dry-run       Plan only, no API/R2/DB writes
+ *   --concurrency=N Workers (default: 3 — claude CLI is the bottleneck)
+ *   --dry-run       Plan only
  */
 
 import pg from "pg";
 import fs from "fs";
+import { spawn } from "child_process";
 import { S3Client, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 
@@ -40,17 +44,17 @@ const { Pool } = pg;
 const args = process.argv.slice(2);
 const TEST_MODE = args.includes("--test");
 const DRY_RUN = args.includes("--dry-run");
-const CLEAR_PIDS = args.includes("--clear-pids");
 const getArg = (name, def) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.split("=")[1] : def;
 };
-const COUNTRY_FILTER = getArg("country", null);
 const LIMIT = parseInt(getArg("limit", TEST_MODE ? "5" : "10000"), 10);
-const CONCURRENCY = parseInt(getArg("concurrency", "6"), 10);
-const JACCARD_THRESHOLD = parseFloat(getArg("threshold", "0.30"));
+const CONCURRENCY = parseInt(getArg("concurrency", "3"), 10);
+const CLAUDE_CLI = process.env.CLAUDE_CLI || "claude";
+const MATCH_MODEL = process.env.CLAUDE_MATCH_MODEL || "sonnet";
+const DESC_MODEL = process.env.CLAUDE_DESC_MODEL || "haiku";
 
-const COUNTRIES = COUNTRY_FILTER ? [COUNTRY_FILTER] : ["sa", "qa", "bh", "kw"];
+const COUNTRIES = ["sa", "qa", "bh", "kw"];
 const CATEGORIES = ["clinics", "hospitals", "dental", "physiotherapy", "neurology"];
 
 const PHOTO_WIDTH_PX = 1600;
@@ -58,7 +62,7 @@ const MAX_PHOTOS = 10;
 const MAX_REVIEWS = 5;
 const OUT_WIDTH_PX = 1200;
 const OUT_WEBP_QUALITY = 80;
-const JACCARD_MATCH_THRESHOLD = JACCARD_THRESHOLD;
+const SEARCH_CANDIDATES = 5;
 
 const COST_SEARCH_USD = 0.032;
 const COST_DETAILS_USD = 0.025;
@@ -101,16 +105,14 @@ const s3 = DRY_RUN
     });
 
 const RUN_ID = Date.now();
-const LOG_FILE = `/tmp/thicken-gcc-${RUN_ID}.log`;
-const FAILED_FILE = `/tmp/thicken-gcc-${RUN_ID}-failures.json`;
-const NO_MATCH_FILE = `/tmp/thicken-gcc-${RUN_ID}-no-match.json`;
+const LOG_FILE = `/tmp/llm-match-gcc-${RUN_ID}.log`;
+const FAILED_FILE = `/tmp/llm-match-gcc-${RUN_ID}-failures.json`;
+const NO_MATCH_FILE = `/tmp/llm-match-gcc-${RUN_ID}-no-match.json`;
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}`;
   console.log(line);
-  try {
-    fs.appendFileSync(LOG_FILE, line + "\n");
-  } catch {}
+  try { fs.appendFileSync(LOG_FILE, line + "\n"); } catch {}
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -124,81 +126,46 @@ async function retry(fn, label, attempts = 3) {
       lastErr = e;
       const msg = e.message || String(e);
       if (msg.includes("403") || msg.includes("API_KEY") || msg.includes("INVALID_ARGUMENT")) throw e;
-      if (i < attempts - 1) {
-        await sleep(1000 * Math.pow(2, i));
-      }
+      if (i < attempts - 1) await sleep(1000 * Math.pow(2, i));
     }
   }
   throw lastErr;
 }
 
-function jaccard(a, b) {
-  // Keep latin alnum + Arabic (U+0600-06FF) + Arabic Supplement (U+0750-077F) +
-  // whitespace. Strip everything else (punctuation, decoration).
-  const norm = (s) =>
-    new Set(
-      String(s || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9؀-ۿݐ-ݿ\s]/g, " ")
-        .split(/\s+/)
-        .filter((t) => t.length > 1)
-    );
-  const sa = norm(a);
-  const sb = norm(b);
-  if (sa.size === 0 || sb.size === 0) return 0;
-  const inter = new Set([...sa].filter((x) => sb.has(x))).size;
-  const union = new Set([...sa, ...sb]).size;
-  return inter / union;
-}
-
 const COUNTRY_NAME = { sa: "Saudi Arabia", qa: "Qatar", bh: "Bahrain", kw: "Kuwait" };
-
-// Country bounding boxes — used as locationRestriction so Places search can't
-// jump countries on us. (lat/lng pairs: low=south-west, high=north-east)
 const COUNTRY_BBOX = {
   sa: { low: { latitude: 16.0, longitude: 34.0 }, high: { latitude: 32.5, longitude: 55.7 } },
   qa: { low: { latitude: 24.4, longitude: 50.7 }, high: { latitude: 26.2, longitude: 51.7 } },
   bh: { low: { latitude: 25.5, longitude: 50.3 }, high: { latitude: 26.4, longitude: 50.8 } },
   kw: { low: { latitude: 28.5, longitude: 46.5 }, high: { latitude: 30.1, longitude: 48.5 } },
 };
-
 const CITY_DISPLAY_OVERRIDE = {
-  "al-rayyan": "Al Rayyan",
-  "isa-town": "Isa Town",
-  "kuwait-city": "Kuwait City",
-  "hamad-town": "Hamad Town",
+  "al-rayyan": "Al Rayyan", "isa-town": "Isa Town", "kuwait-city": "Kuwait City", "hamad-town": "Hamad Town",
 };
 function cityDisplay(slug) {
   if (CITY_DISPLAY_OVERRIDE[slug]) return CITY_DISPLAY_OVERRIDE[slug];
-  return slug
-    .split("-")
-    .map((p) => p[0].toUpperCase() + p.slice(1))
-    .join(" ");
+  return slug.split("-").map((p) => p[0].toUpperCase() + p.slice(1)).join(" ");
 }
 
 // ─── Places API ─────────────────────────────────────────────────────────────
 async function searchPlace(name, citySlug, country) {
   return retry(async () => {
     const query = `${name}, ${cityDisplay(citySlug)}, ${COUNTRY_NAME[country]}`;
-    const body = { textQuery: query, maxResultCount: 3 };
+    const body = { textQuery: query, maxResultCount: SEARCH_CANDIDATES };
     const bbox = COUNTRY_BBOX[country];
-    if (bbox) {
-      body.locationRestriction = { rectangle: bbox };
-    }
+    if (bbox) body.locationRestriction = { rectangle: bbox };
     const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": PLACES_KEY,
-        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.rating,places.location",
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.types,places.rating,places.userRatingCount",
         Referer: PLACES_REFERER,
       },
       body: JSON.stringify(body),
     });
     const json = await res.json();
-    if (!res.ok || json.error) {
-      throw new Error(`search ${res.status} ${json.error?.message || res.statusText}`);
-    }
+    if (!res.ok || json.error) throw new Error(`search ${res.status} ${json.error?.message || res.statusText}`);
     return json.places || [];
   }, `search(${name.slice(0, 30)})`);
 }
@@ -207,16 +174,10 @@ async function fetchPlaceDetails(placeId) {
   return retry(async () => {
     const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`;
     const res = await fetch(url, {
-      headers: {
-        "X-Goog-Api-Key": PLACES_KEY,
-        "X-Goog-FieldMask": "*",
-        Referer: PLACES_REFERER,
-      },
+      headers: { "X-Goog-Api-Key": PLACES_KEY, "X-Goog-FieldMask": "*", Referer: PLACES_REFERER },
     });
     const json = await res.json();
-    if (!res.ok || json.error) {
-      throw new Error(`details ${res.status} ${json.error?.message || res.statusText}`);
-    }
+    if (!res.ok || json.error) throw new Error(`details ${res.status} ${json.error?.message || res.statusText}`);
     return json;
   }, `details(${placeId.slice(0, 12)})`);
 }
@@ -224,13 +185,10 @@ async function fetchPlaceDetails(placeId) {
 async function downloadPhoto(photoResourceName) {
   return retry(async () => {
     const url = `https://places.googleapis.com/v1/${photoResourceName}/media?maxWidthPx=${PHOTO_WIDTH_PX}&key=${PLACES_KEY}`;
-    const res = await fetch(url, {
-      redirect: "follow",
-      headers: { Referer: PLACES_REFERER },
-    });
+    const res = await fetch(url, { redirect: "follow", headers: { Referer: PLACES_REFERER } });
     if (!res.ok) throw new Error(`photo ${res.status}`);
     const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length < 500) throw new Error(`photo too small (${buf.length}b)`);
+    if (buf.length < 500) throw new Error(`photo too small`);
     return { buffer: buf, contentType: res.headers.get("content-type") || "image/jpeg" };
   }, `photo(${photoResourceName.slice(-12)})`);
 }
@@ -238,28 +196,13 @@ async function downloadPhoto(photoResourceName) {
 // ─── R2 ─────────────────────────────────────────────────────────────────────
 async function r2Exists(key) {
   if (DRY_RUN) return false;
-  try {
-    await s3.send(new HeadObjectCommand({ Bucket: R2_BUCKET, Key: key }));
-    return true;
-  } catch {
-    return false;
-  }
+  try { await s3.send(new HeadObjectCommand({ Bucket: R2_BUCKET, Key: key })); return true; } catch { return false; }
 }
-
 async function r2Upload(key, buffer, contentType) {
   if (DRY_RUN) return `${R2_PUBLIC_URL}/${key}`;
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-      CacheControl: "public, max-age=31536000, immutable",
-    })
-  );
+  await s3.send(new PutObjectCommand({ Bucket: R2_BUCKET, Key: key, Body: buffer, ContentType: contentType, CacheControl: "public, max-age=31536000, immutable" }));
   return `${R2_PUBLIC_URL}/${key}`;
 }
-
 async function optimizePhoto(buffer) {
   const optimized = await sharp(buffer, { failOn: "none" })
     .rotate()
@@ -270,9 +213,124 @@ async function optimizePhoto(buffer) {
   return { buffer: optimized, contentType: "image/webp", widthPx: meta.width || 0, heightPx: meta.height || 0, bytes: optimized.length };
 }
 
+// ─── Claude CLI ─────────────────────────────────────────────────────────────
+const CLAUDE_TIMEOUT_MS = parseInt(process.env.CLAUDE_TIMEOUT_MS || "120000", 10);
+
+function runClaudeCLI(prompt, model) {
+  return new Promise((resolve, reject) => {
+    const cliArgs = [
+      "--print", "--model", model, "--output-format", "json",
+      "--disallowedTools", "Bash Read Write Edit Glob Grep WebFetch WebSearch Agent TodoWrite NotebookEdit",
+      "--append-system-prompt", "Output ONLY raw JSON. No preamble, no markdown fences, no commentary. Must be valid JSON.parse-able output.",
+      prompt,
+    ];
+    const proc = spawn(CLAUDE_CLI, cliArgs, { stdio: ["ignore", "pipe", "pipe"] });
+    let out = "", err = "";
+    let settled = false;
+    const settle = (fn) => (...a) => { if (!settled) { settled = true; fn(...a); } };
+    const ok = settle(resolve);
+    const fail = settle(reject);
+
+    const timer = setTimeout(() => {
+      try { proc.kill("SIGKILL"); } catch {}
+      fail(new Error(`claude timeout ${CLAUDE_TIMEOUT_MS}ms`));
+    }, CLAUDE_TIMEOUT_MS);
+
+    proc.stdout.on("data", (d) => (out += d.toString()));
+    proc.stderr.on("data", (d) => (err += d.toString()));
+    proc.on("error", (e) => { clearTimeout(timer); fail(e); });
+    proc.on("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) return fail(new Error(`claude exit ${code}: ${err.slice(0, 200)}`));
+      try {
+        const env = JSON.parse(out);
+        if (env.is_error) return fail(new Error(`claude is_error: ${(env.result || "").slice(0, 200)}`));
+        ok(env.result || "");
+      } catch (e) {
+        fail(new Error(`claude envelope parse: ${out.slice(0, 200)}`));
+      }
+    });
+  });
+}
+
+async function llmMatchAndDescribe(provider, candidates) {
+  const ctx = {
+    db_name: provider.name,
+    db_city: cityDisplay(provider.city_slug),
+    db_country: COUNTRY_NAME[provider.country],
+    db_category: provider.category_slug,
+    db_address: provider.address || null,
+    google_candidates: candidates.map((c, i) => ({
+      idx: i,
+      id: c.id,
+      name: c.displayName?.text || "",
+      address: c.formattedAddress || "",
+      types: (c.types || []).slice(0, 5),
+      rating: c.rating || null,
+      ratingCount: c.userRatingCount || 0,
+    })),
+  };
+
+  const prompt = `Pick the Google Maps result that best matches the DB facility, OR return -1 if none of them is the same place.
+
+Match rules:
+- Same business name (allowing transliteration EN<->AR, abbreviations like "Dr"/"Doctor", honorifics, branch suffixes)
+- Same city/country
+- Same category family (clinic / hospital / dental / etc.)
+- If the top candidate is a different facility (e.g. "Royal Hospital" vs "Royal Bahrain Hospital" — different brands), return -1.
+
+Output strict JSON: {"chosen_idx": <number from 0 to ${candidates.length - 1}, or -1>, "confidence": <"high"|"medium"|"low">, "reason": "<one sentence>"}
+
+Data:
+${JSON.stringify(ctx, null, 2)}`;
+
+  return retry(async () => {
+    const result = await runClaudeCLI(prompt, MATCH_MODEL);
+    const cleaned = result.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+    const parsed = JSON.parse(cleaned);
+    if (typeof parsed.chosen_idx !== "number") throw new Error(`bad chosen_idx: ${cleaned.slice(0, 100)}`);
+    return parsed;
+  }, `match(${provider.name.slice(0, 30)})`);
+}
+
+async function llmDescribe(provider, place) {
+  const ctx = {
+    name: provider.name,
+    city: cityDisplay(provider.city_slug),
+    country: COUNTRY_NAME[provider.country],
+    category: provider.category_slug,
+    address: place.formattedAddress || provider.address || "",
+    rating: place.rating || null,
+    ratingCount: place.userRatingCount || 0,
+    types: (place.types || []).slice(0, 8),
+    editorialSummary: place.editorialSummary?.text || null,
+    topReviews: (place.reviews || []).slice(0, 3).map((r) => r.text?.text || r.originalText?.text).filter(Boolean),
+  };
+
+  const prompt = `Write an objective 120-160 word directory listing for this GCC healthcare facility. Output strict JSON: {"en": "<English>", "ar": "<Arabic>"}.
+
+Rules:
+- Factual, neutral. NO superlatives ("best", "leading", "premier"), NO marketing fluff.
+- Mention: facility type, city/country, what it offers, rating if present, and one notable review detail if useful.
+- Do NOT invent services, hours, doctors, certifications, or insurance.
+- Do NOT mention DHA, DOH, MOHAP, or any UAE regulator (this is GCC, not UAE).
+- The Arabic must be natural Modern Standard Arabic.
+
+Data:
+${JSON.stringify(ctx, null, 2)}`;
+
+  return retry(async () => {
+    const result = await runClaudeCLI(prompt, DESC_MODEL);
+    const cleaned = result.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+    const parsed = JSON.parse(cleaned);
+    if (!parsed.en || !parsed.ar) throw new Error("missing en/ar");
+    return { en: String(parsed.en).trim(), ar: String(parsed.ar).trim() };
+  }, `desc(${provider.name.slice(0, 30)})`);
+}
+
 // ─── Per-provider ───────────────────────────────────────────────────────────
 async function processOne(provider, stats) {
-  const { id, name, city_slug, category_slug, country, google_place_id: existingPid } = provider;
+  const { id, name, city_slug, category_slug, country } = provider;
 
   try {
     if (DRY_RUN) {
@@ -281,59 +339,35 @@ async function processOne(provider, stats) {
       return;
     }
 
-    // If we already have a place_id from a prior pass, skip search and go
-    // straight to details. Drift check below catches stale ids.
-    let topId = existingPid || null;
-    if (!topId) {
-      const candidates = await searchPlace(name, city_slug, country);
-      stats.searchCalls++;
+    const candidates = await searchPlace(name, city_slug, country);
+    stats.searchCalls++;
 
-      if (candidates.length === 0) {
-        stats.noMatch++;
-        stats.noMatches.push({ id, name, reason: "zero_results" });
-        log(`✗ ${name}: zero results`);
-        return;
-      }
-
-      const top = candidates[0];
-      const sim = jaccard(name, top.displayName?.text || "");
-      if (sim < JACCARD_MATCH_THRESHOLD) {
-        stats.noMatch++;
-        stats.noMatches.push({
-          id,
-          name,
-          reason: "low_jaccard",
-          topGoogle: top.displayName?.text,
-          sim: Number(sim.toFixed(2)),
-        });
-        log(`? ${name} ↔ "${top.displayName?.text}" sim=${sim.toFixed(2)} — skip`);
-        return;
-      }
-      topId = top.id;
-    } else {
-      stats.preExistingPid++;
+    if (candidates.length === 0) {
+      stats.noMatch++;
+      stats.noMatches.push({ id, name, reason: "zero_results" });
+      log(`✗ ${name}: zero search results`);
+      return;
     }
 
-    const place = await fetchPlaceDetails(topId);
+    const verdict = await llmMatchAndDescribe(provider, candidates);
+    stats.llmMatchCalls++;
+
+    if (verdict.chosen_idx < 0 || verdict.chosen_idx >= candidates.length) {
+      stats.noMatch++;
+      stats.noMatches.push({
+        id,
+        name,
+        reason: "llm_rejected",
+        topGoogle: candidates[0]?.displayName?.text,
+        verdict,
+      });
+      log(`? ${name} — llm rejected (${verdict.confidence}): ${verdict.reason}`);
+      return;
+    }
+
+    const chosen = candidates[verdict.chosen_idx];
+    const place = await fetchPlaceDetails(chosen.id);
     stats.detailsCalls++;
-
-    // Drift guard for pre-existing place_ids — if Google's name no longer
-    // resembles the DB name, treat as orphan and skip.
-    if (existingPid) {
-      const sim = jaccard(name, place.displayName?.text || "");
-      if (sim < 0.2) {
-        stats.drift++;
-        stats.noMatches.push({
-          id,
-          name,
-          reason: "drift",
-          topGoogle: place.displayName?.text,
-          sim: Number(sim.toFixed(2)),
-        });
-        log(`⚠ drift ${name} ↔ "${place.displayName?.text}" sim=${sim.toFixed(2)} — skip`);
-        return;
-      }
-    }
 
     const photoDescriptors = (place.photos || []).slice(0, MAX_PHOTOS);
     const photoResults = await Promise.all(
@@ -358,7 +392,6 @@ async function processOne(provider, stats) {
           };
         } catch (err) {
           stats.photosFailed++;
-          log(`  photo ${i} fail for ${id}: ${err.message}`);
           return null;
         }
       })
@@ -375,29 +408,22 @@ async function processOne(provider, stats) {
       relativePublishTimeDescription: r.relativePublishTimeDescription || null,
     }));
 
-    // Derive operating_hours legacy shape from weekdayDescriptions if present
-    const weekdayDescriptions =
-      place.regularOpeningHours?.weekdayDescriptions ||
-      place.currentOpeningHours?.weekdayDescriptions ||
-      null;
-    const operatingHours = weekdayDescriptions
-      ? { weekdayDescriptions, source: "google_places" }
-      : null;
+    let description = { en: null, ar: null };
+    if (galleryPhotos.length > 0 || reviews.length > 0 || place.editorialSummary?.text) {
+      try {
+        description = await llmDescribe(provider, place);
+        stats.descCalls++;
+      } catch (err) {
+        log(`  desc fail for ${name}: ${err.message}`);
+      }
+    }
 
-    // Derive is_24_hours from descriptions
-    const is24Hours = !!(
-      weekdayDescriptions &&
-      weekdayDescriptions.length > 0 &&
-      weekdayDescriptions.every((d) => /open 24 hours/i.test(d))
-    );
-
-    // Coordinates (clamp to numeric(10,7))
+    const weekdayDescriptions = place.regularOpeningHours?.weekdayDescriptions || place.currentOpeningHours?.weekdayDescriptions || null;
+    const operatingHours = weekdayDescriptions ? { weekdayDescriptions, source: "google_places" } : null;
+    const is24Hours = !!(weekdayDescriptions && weekdayDescriptions.length > 0 && weekdayDescriptions.every((d) => /open 24 hours/i.test(d)));
     const lat = place.location?.latitude != null ? Number(place.location.latitude.toFixed(7)) : null;
     const lng = place.location?.longitude != null ? Number(place.location.longitude.toFixed(7)) : null;
-
-    // Arabic name if Google's displayName came back in Arabic
-    const nameAr =
-      place.displayName?.languageCode === "ar" ? place.displayName.text : null;
+    const nameAr = place.displayName?.languageCode === "ar" ? place.displayName.text : null;
 
     await pool.query(
       `UPDATE providers SET
@@ -431,11 +457,12 @@ async function processOne(provider, stats) {
          address                      = COALESCE(NULLIF(address, ''), $26),
          website                      = COALESCE(NULLIF(website, ''), $27),
          phone                        = COALESCE(NULLIF(phone, ''), $28),
-         phone_secondary              = COALESCE(NULLIF(phone_secondary, ''), $29),
+         description                  = COALESCE(NULLIF(description, ''), $29),
+         description_ar               = COALESCE(NULLIF(description_ar, ''), $30),
          updated_at                   = NOW()
-       WHERE id = $30`,
+       WHERE id = $31`,
       [
-        topId,
+        chosen.id,
         JSON.stringify(place),
         JSON.stringify(galleryPhotos),
         JSON.stringify(reviews),
@@ -454,7 +481,7 @@ async function processOne(provider, stats) {
         place.addressComponents ? JSON.stringify(place.addressComponents) : null,
         place.businessStatus || null,
         coverImageUrl,
-        coverImageUrl, // legacy google_photo_url alias
+        coverImageUrl,
         place.rating || null,
         place.userRatingCount || null,
         lat,
@@ -463,9 +490,8 @@ async function processOne(provider, stats) {
         place.formattedAddress || null,
         place.websiteUri || null,
         place.internationalPhoneNumber || null,
-        place.nationalPhoneNumber && place.nationalPhoneNumber !== place.internationalPhoneNumber
-          ? place.nationalPhoneNumber
-          : null,
+        description.en,
+        description.ar,
         id,
       ]
     );
@@ -473,15 +499,10 @@ async function processOne(provider, stats) {
     stats.success++;
 
     if (stats.success % 5 === 0 || stats.success === stats.total) {
-      const cost =
-        stats.searchCalls * COST_SEARCH_USD +
-        stats.detailsCalls * COST_DETAILS_USD +
-        stats.photosDownloaded * COST_PHOTO_USD;
       const elapsed = ((Date.now() - stats.startedAt) / 1000).toFixed(0);
-      const rate = (stats.success / (elapsed || 1)).toFixed(1);
-      log(
-        `✓ [${stats.success}/${stats.total}] ${name.slice(0, 40)} — ${galleryPhotos.length}ph ${reviews.length}rv | $${cost.toFixed(2)} | ${rate}/s | ${elapsed}s`
-      );
+      const rate = (stats.success / (elapsed || 1)).toFixed(2);
+      const cost = stats.searchCalls * COST_SEARCH_USD + stats.detailsCalls * COST_DETAILS_USD + stats.photosDownloaded * COST_PHOTO_USD;
+      log(`✓ [${stats.success}/${stats.total}] ${name.slice(0, 40)} — ${galleryPhotos.length}ph ${reviews.length}rv ${description.en ? "+desc" : ""} | confidence=${verdict.confidence} | $${cost.toFixed(2)} | ${rate}/s | ${elapsed}s`);
     }
   } catch (err) {
     stats.failed++;
@@ -506,40 +527,19 @@ async function runPool(items, worker, concurrency) {
 
 async function main() {
   log(`═══════════════════════════════════════════════════════════════════`);
-  log(`Thicken thin GCC providers — run ${RUN_ID}`);
+  log(`LLM-matched GCC enrichment — run ${RUN_ID}`);
   log(`═══════════════════════════════════════════════════════════════════`);
-  log(`Mode:        ${TEST_MODE ? "TEST (5)" : "FULL"}${DRY_RUN ? " [DRY RUN]" : ""}${CLEAR_PIDS ? " [CLEAR-PIDS]" : ""}`);
+  log(`Mode:        ${TEST_MODE ? "TEST (5)" : "FULL"}${DRY_RUN ? " [DRY RUN]" : ""}`);
+  log(`Match model: ${MATCH_MODEL}`);
+  log(`Desc model:  ${DESC_MODEL}`);
   log(`Countries:   ${COUNTRIES.join(", ")}`);
   log(`Categories:  ${CATEGORIES.join(", ")}`);
-  log(`Threshold:   ${JACCARD_MATCH_THRESHOLD}`);
   log(`Limit:       ${LIMIT}`);
   log(`Concurrency: ${CONCURRENCY}`);
   log(``);
 
-  if (CLEAR_PIDS) {
-    const cleared = await pool.query(
-      `UPDATE providers SET google_place_id = NULL
-       WHERE country = ANY($1)
-         AND category_slug = ANY($2)
-         AND status = 'active'
-         AND COALESCE(description, '') = ''
-         AND jsonb_array_length(COALESCE(gallery_photos, '[]'::jsonb)) = 0
-         AND google_fetched_at IS NULL
-         AND google_place_id IS NOT NULL
-       RETURNING id`,
-      [COUNTRIES, CATEGORIES]
-    );
-    log(`Cleared ${cleared.rowCount} stale place_ids — they'll go through search path on this run`);
-    log(``);
-  }
-
-  // "Thin" = no description AND no gallery photos. Many providers already have
-  // a google_place_id from a prior incomplete enrichment — we still want to
-  // re-fetch details for them, so we skip the search step in processOne when
-  // an existing place_id is present.
-  // google_fetched_at IS NULL acts as a resume guard so re-runs skip what's done.
   const { rows } = await pool.query(
-    `SELECT id, name, slug, address, city_slug, category_slug, country, google_place_id
+    `SELECT id, name, slug, address, city_slug, category_slug, country
      FROM providers
      WHERE country = ANY($1)
        AND category_slug = ANY($2)
@@ -552,7 +552,7 @@ async function main() {
     [COUNTRIES, CATEGORIES, LIMIT]
   );
 
-  log(`Found ${rows.length} thin providers to process`);
+  log(`Found ${rows.length} residual providers needing LLM matching`);
   log(``);
 
   if (rows.length === 0) {
@@ -566,13 +566,13 @@ async function main() {
     success: 0,
     failed: 0,
     noMatch: 0,
-    drift: 0,
-    preExistingPid: 0,
     searchCalls: 0,
     detailsCalls: 0,
     photosDownloaded: 0,
     photosSkipped: 0,
     photosFailed: 0,
+    llmMatchCalls: 0,
+    descCalls: 0,
     failures: [],
     noMatches: [],
     startedAt: Date.now(),
@@ -581,25 +581,22 @@ async function main() {
   await runPool(rows, (row) => processOne(row, stats), CONCURRENCY);
 
   const elapsed = ((Date.now() - stats.startedAt) / 1000).toFixed(1);
-  const cost =
-    stats.searchCalls * COST_SEARCH_USD +
-    stats.detailsCalls * COST_DETAILS_USD +
-    stats.photosDownloaded * COST_PHOTO_USD;
+  const cost = stats.searchCalls * COST_SEARCH_USD + stats.detailsCalls * COST_DETAILS_USD + stats.photosDownloaded * COST_PHOTO_USD;
 
   log(``);
   log(`═══════════════════════════════════════════════════════════════════`);
   log(`DONE in ${elapsed}s`);
   log(`═══════════════════════════════════════════════════════════════════`);
   log(`  Providers OK:        ${stats.success}/${stats.total}`);
-  log(`  Pre-existing PID:    ${stats.preExistingPid} (skipped search)`);
-  log(`  No match (skipped):  ${stats.noMatch}`);
-  log(`  PID drift skipped:   ${stats.drift}`);
+  log(`  No match:            ${stats.noMatch}`);
   log(`  Failures:            ${stats.failed}`);
   log(`  Search calls:        ${stats.searchCalls}`);
+  log(`  LLM match calls:     ${stats.llmMatchCalls}`);
   log(`  Details calls:       ${stats.detailsCalls}`);
   log(`  Photos downloaded:   ${stats.photosDownloaded}`);
   log(`  Photos skipped:      ${stats.photosSkipped}`);
   log(`  Photos failed:       ${stats.photosFailed}`);
+  log(`  LLM desc calls:      ${stats.descCalls}`);
   log(`  Estimated cost:      $${cost.toFixed(2)}`);
 
   if (stats.failures.length) {
