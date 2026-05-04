@@ -111,8 +111,12 @@ export default async function CityPage({ params }: Props) {
   const regulator = getRegulatorName(city.name);
   const regulatorShort = getRegulatorShort(city.slug);
 
+  // SEO: fetch 60 top-rated to surface as a flat alphabetical link block at
+  // the bottom of the city home page. Reduces pagination depth between the
+  // city home and individual provider detail pages, which helps Google's
+  // crawl budget reach more URLs from a high-priority page.
   const [topProviders, total, catCounts, areaCounts] = await Promise.all([
-    safe(getTopRatedProviders(city.slug, 12), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "topProviders"),
+    safe(getTopRatedProviders(city.slug, 60), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "topProviders"),
     safe(getProviderCountByCity(city.slug), 0, "total"),
     safe(Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))), categories.map(() => 0) as number[], "catCounts"),
     safe(Promise.all(areas.map((a) => getProviderCountByAreaAndCity(a.slug, city.slug))), areas.map(() => 0) as number[], "areaCounts"),
@@ -127,6 +131,18 @@ export default async function CityPage({ params }: Props) {
 
   const rated = topProviders.filter((p) => Number(p.googleRating) > 0);
   const featured = rated.length > 0 ? rated.slice(0, 8) : topProviders.slice(0, 8);
+  // Flat alphabetical link block — surfaces 50+ provider URLs from city home
+  // for crawl-budget efficiency. Excludes the 8 already shown as cards.
+  const featuredIds = new Set(featured.map((p) => p.id));
+  const indexLinks = topProviders
+    .filter((p) => !featuredIds.has(p.id))
+    .slice(0, 50)
+    .map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      categorySlug: p.categorySlug,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "en"));
 
   const railItems = catsWithCounts.slice(0, 14).map((c) => ({
     slug: c.slug,
@@ -375,6 +391,40 @@ export default async function CityPage({ params }: Props) {
                 />
               );
             })}
+          </div>
+        </section>
+      )}
+
+      {/* ─── More providers (flat A-Z link index for crawl-budget efficiency) ─── */}
+      {indexLinks.length > 0 && (
+        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+          <header className="mb-6">
+            <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
+              More providers in {city.name}
+            </p>
+            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+              {indexLinks.length}+ rated facilities, A–Z.
+            </h2>
+          </header>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 border-t border-ink-line pt-6">
+            {indexLinks.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/directory/${city.slug}/${p.categorySlug}/${p.slug}`}
+                  className="font-sans text-z-body-sm text-ink hover:text-accent-dark hover:underline decoration-1 underline-offset-2 line-clamp-1"
+                >
+                  {p.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6">
+            <Link
+              href={`/directory/${city.slug}/clinics`}
+              className="inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-accent-dark hover:underline decoration-1 underline-offset-2"
+            >
+              Browse all {total.toLocaleString()} listings in {city.name} →
+            </Link>
           </div>
         </section>
       )}
