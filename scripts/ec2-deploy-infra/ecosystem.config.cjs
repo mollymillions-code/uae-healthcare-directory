@@ -1,16 +1,18 @@
 // PM2 ecosystem config for the zavis-landing blue-green deployment.
 //
-// Steady state: each slot runs 2 cluster workers with a 4G max_memory_restart.
+// Steady state: each slot runs 2 cluster workers with a 6G max_memory_restart.
 // Workers bloat from ~150MB to 2-3GB over 24h due to ISR cache accumulation.
-// At 4G, PM2 gracefully restarts before memory pressure becomes a problem,
-// while giving workers enough headroom to handle bot-traffic spikes (Applebot,
-// ChatGPT-User, Bingbot) without crash-looping.
+// 6G gives workers comfortable headroom for bot-traffic spikes (Applebot,
+// ChatGPT-User, Bingbot) and ISR cache growth without restart-induced
+// cold-cache thrash. Box has 30 GB RAM total, 4 workers × 6G = 24 GB peak,
+// well under host capacity.
 //
 // History:
-// - Old 6G ceiling allowed workers to bloat unchecked and caused OOM crashes.
+// - The original 6G ceiling caused OOM crashes on the smaller 8 GB box.
 // - 2G ceiling (2026-04-11 → 2026-05-05) was too tight under crawler load,
 //   causing premature restarts → cold ISR cache → cascading 30-50s TTFB.
-//   Bumped to 4G during the 2026-05-05 incident; verified stable at <1.2s.
+//   Briefly bumped to 4G during the 2026-05-05 incident.
+// - Returned to 6G after migration to 30 GB box; verified stable at <1.2s.
 //
 // Deploy-time override: during the bounded-overlap transition documented in
 // docs/ops/blue-green-deploy-oom-runbook.md section 9.1, the deploy script
@@ -35,7 +37,7 @@ module.exports = {
       args: "start -p 3200",
       exec_mode: "cluster",
       instances: Number.parseInt(process.env.ZAVIS_PM2_INSTANCES ?? "2", 10),
-      max_memory_restart: "4G",
+      max_memory_restart: "6G",
       env: {
         NODE_ENV: "production",
         PORT: 3200,
@@ -52,7 +54,7 @@ module.exports = {
       args: "start -p 3201",
       exec_mode: "cluster",
       instances: Number.parseInt(process.env.ZAVIS_PM2_INSTANCES ?? "2", 10),
-      max_memory_restart: "4G",
+      max_memory_restart: "6G",
       env: {
         NODE_ENV: "production",
         PORT: 3201,
