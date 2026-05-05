@@ -1284,7 +1284,18 @@ export const CITIES = [
     sortOrder: 207,
     description: "Wadi Al Dawasir is a locality in Saudi Arabia with healthcare providers serving the surrounding area.",
   },
-
+  // ─── Turkey Cities ───────────────────────────────────────────────────────────
+  {
+    slug: "istanbul",
+    name: "Istanbul",
+    emirate: "Istanbul Province",
+    country: "tr",
+    nameAr: "إسطنبول",
+    latitude: "41.0082000",
+    longitude: "28.9784000",
+    sortOrder: 1,
+    description: "Istanbul is Turkey's largest healthcare market, with major university hospitals, private hospital groups, specialist clinics, dental centers, and medical tourism providers serving local and international patients.",
+  },
 ] as const;
 
 export const AREAS: Record<string, { slug: string; name: string; nameAr?: string; latitude: string; longitude: string }[]> = {

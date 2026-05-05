@@ -36,7 +36,7 @@ const remoteScript = `#!/bin/bash
 sudo -u postgres psql zavis_landing -P format=unaligned -P tuples_only=on -P pager=off -P recordsep_zero <<'PSQL'
 SELECT json_build_object('id', id, 'name', name, 'country', country, 'google_rating', google_rating, 'review_summary', review_summary)::text
 FROM providers
-WHERE country IN ('ae','bh','kw','qa','sa')
+WHERE country IN ('ae','bh','kw','qa','sa','tr')
   AND status = 'active'
   AND review_summary IS NOT NULL
   AND jsonb_array_length(review_summary) > 0

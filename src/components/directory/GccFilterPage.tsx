@@ -53,6 +53,7 @@ const REGULATORS: Record<GccCountryCode, string> = {
   sa: "the Saudi Ministry of Health (MOH) and Saudi Commission for Health Specialties (SCFHS)",
   bh: "the National Health Regulatory Authority (NHRA)",
   kw: "the Kuwait Ministry of Health (MOH)",
+  tr: "the Republic of Turkey Ministry of Health",
 };
 
 const REGULATORS_SHORT: Record<GccCountryCode, string> = {
@@ -60,6 +61,7 @@ const REGULATORS_SHORT: Record<GccCountryCode, string> = {
   sa: "MOH Saudi",
   bh: "NHRA Bahrain",
   kw: "MOH Kuwait",
+  tr: "Turkey MoH",
 };
 
 const CURRENCIES: Record<GccCountryCode, { code: string; symbol: string; lowGP: number; highGP: number; lowED: number; highED: number }> = {
@@ -67,6 +69,7 @@ const CURRENCIES: Record<GccCountryCode, { code: string; symbol: string; lowGP: 
   sa: { code: "SAR", symbol: "SAR", lowGP: 150, highGP: 400, lowED: 250, highED: 1000 },
   bh: { code: "BHD", symbol: "BHD", lowGP: 15, highGP: 40, lowED: 25, highED: 100 },
   kw: { code: "KWD", symbol: "KWD", lowGP: 15, highGP: 50, lowED: 30, highED: 120 },
+  tr: { code: "TRY", symbol: "TRY", lowGP: 900, highGP: 2500, lowED: 1500, highED: 6000 },
 };
 
 const INSURANCE_PROVIDERS: Record<GccCountryCode, string> = {
@@ -74,6 +77,7 @@ const INSURANCE_PROVIDERS: Record<GccCountryCode, string> = {
   sa: "Bupa Arabia, Tawuniya, MedGulf, Allianz Saudi, and CCHI-mandated plans",
   bh: "Bahrain National Insurance, SIO (Social Insurance Organization), AXA Gulf, and GIG Insurance",
   kw: "Gulf Insurance Group, Warba Insurance, Al Ahleia, and Afiya (mandatory expat health insurance)",
+  tr: "SGK, private health insurance plans, international insurers, and travel health insurance",
 };
 
 const FILTER_LABELS: Record<FilterKind, { title: string; urlSegment: string; description: string }> = {

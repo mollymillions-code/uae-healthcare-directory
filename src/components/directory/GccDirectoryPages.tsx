@@ -94,6 +94,7 @@ const GCC_REGULATOR_SHORT: Record<string, string> = {
   sa: "MOH",
   bh: "NHRA",
   kw: "MOH",
+  tr: "MoH",
 };
 
 function getCountryRegulatorShort(countryCode: string): string {

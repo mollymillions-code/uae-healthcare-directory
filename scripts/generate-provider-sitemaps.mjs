@@ -358,7 +358,7 @@ async function main() {
          operating_hours
        FROM providers
        WHERE status = 'active'
-         AND country IN ('ae','sa','qa','bh','kw')
+         AND country IN ('ae','sa','qa','bh','kw','tr')
          AND slug IS NOT NULL
          AND city_slug IS NOT NULL
          AND category_slug IS NOT NULL

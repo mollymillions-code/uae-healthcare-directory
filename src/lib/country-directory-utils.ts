@@ -1,14 +1,14 @@
 /**
- * Shared utilities for GCC country directory routes.
+ * Shared utilities for country-prefixed directory routes.
  * UAE uses the existing /directory/* routes (no country prefix).
- * Qatar, Saudi Arabia, Bahrain, Kuwait use /[country]/directory/* routes.
+ * Additional countries use /[country]/directory/* routes.
  */
 
 import { COUNTRIES, type Country } from "@/lib/constants/countries";
 import { CITIES } from "@/lib/constants/cities";
 
 /** Country codes that use the /[country]/directory/* route pattern */
-export const GCC_COUNTRY_CODES = ["qa", "sa", "bh", "kw"] as const;
+export const GCC_COUNTRY_CODES = ["qa", "sa", "bh", "kw", "tr"] as const;
 export type GccCountryCode = (typeof GCC_COUNTRY_CODES)[number];
 
 /** Validate that a country code is a valid GCC (non-UAE) country */
@@ -57,6 +57,7 @@ export const COUNTRY_NAMES: Record<string, string> = {
   sa: "Saudi Arabia",
   bh: "Bahrain",
   kw: "Kuwait",
+  tr: "Turkey",
 };
 
 /** Country locale codes for SEO */
@@ -65,4 +66,5 @@ export const COUNTRY_LOCALES: Record<string, string> = {
   sa: "en_SA",
   bh: "en_BH",
   kw: "en_KW",
+  tr: "en_TR",
 };

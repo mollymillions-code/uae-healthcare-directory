@@ -60,6 +60,16 @@ export const COUNTRIES: Country[] = [
     callingCode: "+965",
     flagEmoji: "\ud83c\uddf0\ud83c\uddfc",
   },
+  {
+    code: "tr",
+    name: "Turkey",
+    nameAr: "\u062a\u0631\u0643\u064a\u0627",
+    slug: "tr",
+    currency: "TRY",
+    regulators: ["Ministry of Health"],
+    callingCode: "+90",
+    flagEmoji: "\ud83c\uddf9\ud83c\uddf7",
+  },
 ];
 
 export const DEFAULT_COUNTRY_CODE = "ae";
