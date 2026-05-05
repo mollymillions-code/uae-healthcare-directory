@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BadgeCheck, Building2, Clock3, ExternalLink, FilePenLine } from "lucide-react";
+import { BadgeCheck, Building2, Clock3, ExternalLink, Eye, FilePenLine } from "lucide-react";
 import { ProviderPortalLogoutButton } from "@/components/provider-portal/ProviderPortalLogoutButton";
 import { getCurrentProviderPortalContext } from "@/lib/provider-portal/current-user";
 import { listOwnedProviders, listProviderEditRequests } from "@/lib/provider-portal/access";
@@ -123,11 +123,18 @@ export default async function ProviderPortalPage({
                   </div>
                   <div className="flex flex-wrap gap-2 lg:justify-end">
                     <Link
-                      href={`/provider-portal/listings/${listing.id}${embedded ? "?embed=1" : ""}`}
+                      href={`/provider-portal/profile/${listing.id}${embedded ? "?embed=1" : ""}`}
                       className="inline-flex items-center gap-2 rounded-full bg-[#006828] px-4 py-2 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c]"
                     >
+                      <Eye className="h-4 w-4" />
+                      View profile
+                    </Link>
+                    <Link
+                      href={`/provider-portal/listings/${listing.id}${embedded ? "?embed=1" : ""}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] px-4 py-2 font-['Geist',sans-serif] text-sm font-medium text-black/55 transition-colors hover:border-[#006828]/30 hover:text-[#006828]"
+                    >
                       <FilePenLine className="h-4 w-4" />
-                      Manage
+                      Edit
                     </Link>
                     <Link
                       href={publicHref}
