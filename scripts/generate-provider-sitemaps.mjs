@@ -355,6 +355,7 @@ async function main() {
          phone,
          website,
          description,
+         gallery_photos,
          operating_hours
        FROM providers
        WHERE status = 'active'

@@ -55,9 +55,10 @@ const getArg = (name, def) => {
 const COUNTRY = getArg("country", "ae");
 const LIMIT = parseInt(getArg("limit", TEST_MODE ? "5" : "100000"), 10);
 const CONCURRENCY = parseInt(getArg("concurrency", "8"), 10);
+const REFERER = process.env.GOOGLE_PLACES_REFERER || "https://www.zavis.ai/";
 
 const PHOTO_WIDTH_PX = 1600; // single canonical size; Cloudflare transforms handle resizing
-const MAX_PHOTOS = 10;
+const MAX_PHOTOS = parseInt(getArg("max-photos", "10"), 10);
 const MAX_REVIEWS = 5;
 const OUTPUT_IMAGE_WIDTH_PX = 1200;
 const OUTPUT_WEBP_QUALITY = 80;
@@ -218,6 +219,7 @@ async function fetchPlaceDetails(placeId) {
         headers: {
           "X-Goog-Api-Key": API_KEY,
           "X-Goog-FieldMask": "*",
+          "Referer": REFERER,
         },
       });
       const json = await res.json();
@@ -236,7 +238,7 @@ async function downloadPhoto(photoResourceName) {
   return retryWithBackoff(
     async () => {
       const url = `https://places.googleapis.com/v1/${photoResourceName}/media?maxWidthPx=${PHOTO_WIDTH_PX}&key=${API_KEY}`;
-      const res = await fetch(url, { redirect: "follow" });
+      const res = await fetch(url, { redirect: "follow", headers: { "Referer": REFERER } });
       if (!res.ok) throw new Error(`photo ${res.status} ${res.statusText}`);
       const contentType = res.headers.get("content-type") || "image/jpeg";
       const buf = Buffer.from(await res.arrayBuffer());
@@ -451,7 +453,7 @@ async function main() {
        AND country = $1
        AND status = 'active'
        ${whereResume}
-     ORDER BY id
+     ORDER BY google_review_count DESC NULLS LAST, id
      LIMIT $2`,
     [COUNTRY, LIMIT]
   );
