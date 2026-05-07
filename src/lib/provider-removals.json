@@ -1,6 +1,21 @@
 {
   "providers": [
     {
+      "slug": "dr-anna-wellbeing-resolution-dmcc-dubai",
+      "aliases": [],
+      "names": [
+        "DR Anna Wellbeing Resolution DMCC",
+        "Dr Anna Wellbeing Resolution DMCC"
+      ],
+      "citySlug": "dubai",
+      "categorySlug": "clinics",
+      "paths": [
+        "/directory/dubai/clinics/dr-anna-wellbeing-resolution-dmcc-dubai",
+        "/ar/directory/dubai/clinics/dr-anna-wellbeing-resolution-dmcc-dubai"
+      ],
+      "reason": "Provider deletion request received 2026-05-07"
+    },
+    {
       "slug": "ghasaq-medical-center-sharjah",
       "aliases": [
         "ghassaq-medical-center-sharjah",
