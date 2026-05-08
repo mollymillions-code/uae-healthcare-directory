@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/research/db'
 
 // GET /api/pipeline/runs/[id]/comments
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const sql = getDb()
   const rows = await sql`
     SELECT * FROM pipeline_comments
@@ -16,10 +14,8 @@ export async function GET(
 }
 
 // POST /api/pipeline/runs/[id]/comments — add a comment
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const sql = getDb()
   const body = await request.json()
   const { stage, content, author = 'reviewer' } = body

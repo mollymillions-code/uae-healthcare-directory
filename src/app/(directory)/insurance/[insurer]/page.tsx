@@ -33,12 +33,13 @@ import { getCities, getCategoryBySlug } from "@/lib/data";
 export const revalidate = 43200;
 
 interface Props {
-  params: { insurer: string };
+  params: Promise<{ insurer: string }>;
 }
 
 export const dynamicParams = true;
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const profile = getInsurerProfile(params.insurer);
   if (!profile) return {};
   const base = getBaseUrl();
@@ -61,7 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function InsurerDetailPage({ params }: Props) {
+export default async function InsurerDetailPage(props: Props) {
+  const params = await props.params;
   const profile = getInsurerProfile(params.insurer);
   if (!profile) notFound();
 

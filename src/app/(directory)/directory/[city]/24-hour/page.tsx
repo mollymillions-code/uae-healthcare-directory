@@ -22,7 +22,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 /** Only generate pages for cities with 3+ 24-hour providers */
@@ -48,7 +48,8 @@ function getRegulatorName(citySlug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
 
@@ -72,7 +73,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function TwentyFourHourCityPage({ params }: Props) {
+export default async function TwentyFourHourCityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

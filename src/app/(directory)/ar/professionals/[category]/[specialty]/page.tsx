@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { category: string; specialty: string };
+  params: Promise<{ category: string; specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -28,7 +28,8 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec || spec.category !== params.category) return {};
   const base = getBaseUrl();
@@ -54,7 +55,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArSpecialtyPage({ params }: Props) {
+export default async function ArSpecialtyPage(props: Props) {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec || spec.category !== params.category) notFound();
 
@@ -89,7 +91,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           },
         }}
       />
-
       <JsonLd
         data={breadcrumbSchema([
           { name: ar.home, url: `${base}/ar` },
@@ -99,7 +100,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           { name: spec.nameAr },
         ])}
       />
-
       <Breadcrumb
         items={[
           { label: ar.home, href: "/ar" },
@@ -109,7 +109,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           { label: spec.nameAr },
         ]}
       />
-
       {/* Hero */}
       <div className="mb-10">
         <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
@@ -146,7 +145,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           ))}
         </div>
       </div>
-
       {/* Related directory category */}
       {spec.relatedDirectoryCategory && (
         <div className="mb-10 border border-black/[0.06] p-4">
@@ -161,7 +159,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           </p>
         </div>
       )}
-
       {/* Top Facilities for this Specialty */}
       {stats.topFacilities.length > 0 && (
         <>
@@ -201,7 +198,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           </div>
         </>
       )}
-
       {/* Full Professional Listing */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
@@ -251,7 +247,6 @@ export default function ArSpecialtyPage({ params }: Props) {
           تصفح جميع كوادر {spec.nameAr} حسب المنشأة باستخدام جدول أبرز المنشآت أعلاه.
         </p>
       )}
-
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">

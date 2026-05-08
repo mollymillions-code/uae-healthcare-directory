@@ -29,11 +29,12 @@ export function generateStaticParams() {
   return ALL_SPECIALTIES.map((s) => ({ specialty: s.slug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { specialty: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ specialty: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const metrics = getSpecialtyWorkforceMetrics(params.specialty);
   if (!metrics) return {};
   const spec = getSpecialtyBySlug(params.specialty);
@@ -127,11 +128,12 @@ function getSupplyAssessmentAr(
   return parts.join(" ");
 }
 
-export default function ArabicSpecialtyWorkforcePage({
-  params,
-}: {
-  params: { specialty: string };
-}) {
+export default async function ArabicSpecialtyWorkforcePage(
+  props: {
+    params: Promise<{ specialty: string }>;
+  }
+) {
+  const params = await props.params;
   const metrics = getSpecialtyWorkforceMetrics(params.specialty);
   if (!metrics) notFound();
 

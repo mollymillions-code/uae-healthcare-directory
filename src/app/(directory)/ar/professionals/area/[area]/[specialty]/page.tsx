@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { area: string; specialty: string };
+  params: Promise<{ area: string; specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -28,7 +28,8 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const areaInfo = DUBAI_AREAS.find((a) => a.slug === params.area);
   const spec = getSpecialtyBySlug(params.specialty);
   if (!areaInfo || !spec) {
@@ -64,7 +65,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArAreaSpecialtyPage({ params }: Props) {
+export default async function ArAreaSpecialtyPage(props: Props) {
+  const params = await props.params;
   const areaInfo = DUBAI_AREAS.find((a) => a.slug === params.area);
   const spec = getSpecialtyBySlug(params.specialty);
   if (!areaInfo || !spec) notFound();

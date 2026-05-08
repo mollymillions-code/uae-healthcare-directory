@@ -25,7 +25,7 @@ const CATEGORY_DESCRIPTIONS_AR: Record<string, string> = {
 };
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 export function generateStaticParams() {
@@ -35,7 +35,8 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) return {};
   const base = getBaseUrl();
@@ -59,7 +60,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArabicCategoryPage({ params }: Props) {
+export default async function ArabicCategoryPage(props: Props) {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) {
     // Direct .find() — see EN counterpart for context on why we don't use

@@ -214,11 +214,12 @@ function getCityRegulator(citySlug: string): { abbrev: string; full: string } {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { city: string; category: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ city: string; category: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const city = CITIES.find((c) => c.slug === params.city);
   const cat = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!city || !cat) return { title: "Not Found" };
@@ -262,11 +263,12 @@ export function generateMetadata({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function HomeCollectionCityCategoryPage({
-  params,
-}: {
-  params: { city: string; category: string };
-}) {
+export default async function HomeCollectionCityCategoryPage(
+  props: {
+    params: Promise<{ city: string; category: string }>;
+  }
+) {
+  const params = await props.params;
   const city = CITIES.find((c) => c.slug === params.city);
   const cat = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!city || !cat) notFound();

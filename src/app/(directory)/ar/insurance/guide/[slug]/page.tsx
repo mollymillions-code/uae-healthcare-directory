@@ -182,7 +182,8 @@ export function generateStaticParams() {
 
 /* ─── البيانات الوصفية ─── */
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const guide = GUIDES.find((g) => g.slug === params.slug);
   if (!guide) return {};
   const base = getBaseUrl();
@@ -545,7 +546,8 @@ const GUIDE_CONTENT: Record<string, () => JSX.Element> = {
 
 /* ─── الصفحة ─── */
 
-export default function ArabicInsuranceGuidePage({ params }: { params: { slug: string } }) {
+export default async function ArabicInsuranceGuidePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const guide = GUIDES.find((g) => g.slug === params.slug);
   if (!guide) notFound();
 

@@ -13,12 +13,13 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 export const dynamicParams = true;
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
@@ -36,7 +37,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function InsuranceIndexPage({ params }: Props) {
+export default async function InsuranceIndexPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

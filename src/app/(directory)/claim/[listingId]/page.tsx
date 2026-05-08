@@ -13,12 +13,11 @@ import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { getProviderByIdOrSlug } from "@/lib/data";
 
 interface ClaimFormPageProps {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: ClaimFormPageProps): Promise<Metadata> {
+export async function generateMetadata(props: ClaimFormPageProps): Promise<Metadata> {
+  const params = await props.params;
   const provider = await getProviderByIdOrSlug(params.listingId);
 
   if (!provider) {
@@ -35,7 +34,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function ClaimFormPage({ params }: ClaimFormPageProps) {
+export default async function ClaimFormPage(props: ClaimFormPageProps) {
+  const params = await props.params;
   const provider = await getProviderByIdOrSlug(params.listingId);
 
   if (!provider) {

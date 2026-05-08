@@ -21,7 +21,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 /** Only generate pages for cities with 3+ emergency providers */
@@ -52,7 +52,8 @@ function getEmergencyNumber(): string {
   return "998 (Ambulance) or 999 (Police/Fire)";
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
 
@@ -76,7 +77,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function EmergencyCityPage({ params }: Props) {
+export default async function EmergencyCityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

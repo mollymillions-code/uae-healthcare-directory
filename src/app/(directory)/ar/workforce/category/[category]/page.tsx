@@ -24,11 +24,12 @@ export function generateStaticParams() {
   return PROFESSIONAL_CATEGORIES.map((c) => ({ category: c.slug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { category: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const profile = getCategoryWorkforceProfile(params.category);
   if (!profile) return {};
   const cat = PROFESSIONAL_CATEGORIES.find((c) => c.slug === params.category);
@@ -64,11 +65,12 @@ const OECD_BENCHMARKS: Record<string, { label: string; per100K: number }> = {
   "allied-health": { label: "متوسط منظمة OECD للمهن الصحية المساندة", per100K: 500 },
 };
 
-export default function ArabicCategoryWorkforcePage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function ArabicCategoryWorkforcePage(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+) {
+  const params = await props.params;
   const profile = getCategoryWorkforceProfile(params.category);
   if (!profile) notFound();
 

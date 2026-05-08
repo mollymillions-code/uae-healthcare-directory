@@ -30,8 +30,8 @@ export const dynamicParams = true;
 export const revalidate = 0;
 
 interface Props {
-  params: { specialty: string };
-  searchParams: { page?: string };
+  params: Promise<{ specialty: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 const PAGE_SIZE = 24;
@@ -65,7 +65,8 @@ function toTitleCase(s: string): string {
     .join(" ");
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const base = getBaseUrl();
   const specialtyName = resolveSpecialtyName(params.specialty);
   const { total } = await safe(
@@ -104,7 +105,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SpecialtyHubPage({ params, searchParams }: Props) {
+export default async function SpecialtyHubPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const base = getBaseUrl();
   const specialtyName = resolveSpecialtyName(params.specialty);
   const pageRaw = Number(searchParams?.page ?? "1");

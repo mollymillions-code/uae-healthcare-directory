@@ -15,7 +15,7 @@ import { Pill, Stethoscope } from "lucide-react";
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { specialty: string } }
+interface Props { params: Promise<{ specialty: string }> }
 
 function toTitle(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -27,7 +27,8 @@ export async function generateStaticParams() {
   return cats.map((c) => ({ specialty: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.specialty);
   const specName = cat?.name ?? toTitle(params.specialty);
   const base = getBaseUrl();
@@ -53,7 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SpecialtyDetailPage({ params }: Props) {
+export default async function SpecialtyDetailPage(props: Props) {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.specialty);
   // Accept either a known category or a specialty slug with medications
   const allSpecs = await safe(

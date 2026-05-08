@@ -264,7 +264,7 @@ function getGuideBySlug(slug: string): GuideDefinition | undefined {
 }
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
@@ -272,7 +272,8 @@ export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) return {};
 
@@ -300,7 +301,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArProfessionalsGuidePage({ params }: Props) {
+export default async function ArProfessionalsGuidePage(props: Props) {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) notFound();
 

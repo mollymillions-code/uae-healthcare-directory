@@ -23,7 +23,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string; area: string };
+  params: Promise<{ city: string; area: string }>;
 }
 
 /** Only generate pages for city x area combos with 3+ government providers */
@@ -63,7 +63,8 @@ function getGovernmentOperator(citySlug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) return {};
@@ -88,7 +89,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function GovernmentAreaPage({ params }: Props) {
+export default async function GovernmentAreaPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();

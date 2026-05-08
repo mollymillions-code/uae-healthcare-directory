@@ -13,7 +13,7 @@ import { Pill } from "lucide-react";
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { slug: string } }
+interface Props { params: Promise<{ slug: string }> }
 
 export async function generateStaticParams() {
   if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
@@ -21,7 +21,8 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const data = await getAlternativeMedications(params.slug);
   if (!data || data.alternatives.length === 0) return {};
   const base = getBaseUrl();
@@ -32,7 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function AlternativesPage({ params }: Props) {
+export default async function AlternativesPage(props: Props) {
+  const params = await props.params;
   const data = await safe(getAlternativeMedications(params.slug), null, "alternatives");
   if (!data || data.alternatives.length === 0) notFound();
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { MapPin, Newspaper, BookOpen, User, LogIn } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
@@ -40,49 +41,54 @@ export function MobileNav({
           />
         ))}
         <div className="border-b border-black/5">
-          <a
+          <Link
             href="/directory"
+            onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
             <MapPin className="w-4 h-4 opacity-50" />
             UAE Healthcare Directory
-          </a>
+          </Link>
         </div>
         <div className="border-b border-black/5">
-          <a
+          <Link
             href="/intelligence"
+            onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
             <Newspaper className="w-4 h-4 opacity-50" />
             Intelligence
-          </a>
+          </Link>
         </div>
         <div className="border-b border-black/5">
-          <a
+          <Link
             href="/research"
+            onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
             <BookOpen className="w-4 h-4 opacity-50" />
             Research
-          </a>
+          </Link>
         </div>
         <div className="border-b border-black/5">
           {sessionStatus === "authenticated" ? (
-            <a
+            <Link
               href="/account"
+              onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
             >
               <User className="w-4 h-4 opacity-50" />
               My account
-            </a>
+            </Link>
           ) : (
-            <a
+            <Link
               href="/login"
+              onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
             >
               <LogIn className="w-4 h-4 opacity-50" />
               Sign in
-            </a>
+            </Link>
           )}
         </div>
         <div className="mt-6">

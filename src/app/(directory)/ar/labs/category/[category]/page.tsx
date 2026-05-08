@@ -24,11 +24,12 @@ export function generateStaticParams() {
   return TEST_CATEGORIES.map((cat) => ({ category: cat.slug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { category: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const cat = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!cat) return { title: "الفئة غير موجودة" };
 
@@ -60,11 +61,12 @@ export function generateMetadata({
   };
 }
 
-export default function ArabicTestCategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function ArabicTestCategoryPage(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+) {
+  const params = await props.params;
   const cat = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!cat) notFound();
 

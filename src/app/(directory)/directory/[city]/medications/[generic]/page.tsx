@@ -13,7 +13,7 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { city: string; generic: string } }
+interface Props { params: Promise<{ city: string; generic: string }> }
 
 // Only pre-generate for high-intent medications × UAE cities
 export async function generateStaticParams() {
@@ -28,7 +28,8 @@ export async function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const data = await safe(
     getMedicationWithBrands(params.generic),
@@ -55,7 +56,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CityMedicationPage({ params }: Props) {
+export default async function CityMedicationPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const data = await safe(
     getMedicationWithBrands(params.generic),

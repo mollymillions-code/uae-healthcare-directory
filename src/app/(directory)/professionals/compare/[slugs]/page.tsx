@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slugs: string };
+  params: Promise<{ slugs: string }>;
 }
 
 export function generateStaticParams() {
@@ -41,7 +41,8 @@ function parseSlugs(slugs: string): { slugA: string; slugB: string } | null {
   return { slugA: parts[0], slugB: parts[1] };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const parsed = parseSlugs(params.slugs);
   if (!parsed) return {};
 
@@ -64,7 +65,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function CompareSpecialtiesPage({ params }: Props) {
+export default async function CompareSpecialtiesPage(props: Props) {
+  const params = await props.params;
   const parsed = parseSlugs(params.slugs);
   if (!parsed) notFound();
 
@@ -105,7 +107,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           ],
         }}
       />
-
       <Breadcrumb
         items={[
           { label: "UAE", href: "/" },
@@ -115,7 +116,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           { label: `${specA.name} vs ${specB.name}` },
         ]}
       />
-
       {/* Hero */}
       <div className="mb-10">
         <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
@@ -134,7 +134,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           </p>
         </div>
       </div>
-
       {/* Side-by-Side Stats */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
@@ -275,7 +274,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
         </div>
       </div>
       </div>
-
       {/* Top Facilities Comparison */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
@@ -327,7 +325,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           </div>
         </div>
       </div>
-
       {/* When to See Each Specialty */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
@@ -370,7 +367,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           )}
         </div>
       </div>
-
       {/* Cross-links */}
       <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[20px] sm:text-[24px] text-[#1c1c1c] tracking-tight">
@@ -417,7 +413,6 @@ export default function CompareSpecialtiesPage({ params }: Props) {
           </div>
         </div>
       </div>
-
       {/* Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">

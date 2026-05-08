@@ -157,7 +157,8 @@ export function generateStaticParams() {
   return LAB_TESTS.map((test) => ({ test: test.slug }));
 }
 
-export function generateMetadata({ params }: { params: { test: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ test: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const test = getLabTest(params.test);
   if (!test) return { title: "Test Not Found" };
 
@@ -186,7 +187,8 @@ export function generateMetadata({ params }: { params: { test: string } }): Meta
 
 // ─── Page ────────────────────────────────────────────────────────────────────────
 
-export default function TestDetailPage({ params }: { params: { test: string } }) {
+export default async function TestDetailPage(props: { params: Promise<{ test: string }> }) {
+  const params = await props.params;
   const test = getLabTest(params.test);
   if (!test) notFound();
 

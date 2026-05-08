@@ -20,7 +20,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { area: string; category: string };
+  params: Promise<{ area: string; category: string }>;
 }
 
 export function generateStaticParams() {
@@ -38,7 +38,8 @@ export function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const areaInfo = DUBAI_AREAS.find((a) => a.slug === params.area);
   const catInfo = PROFESSIONAL_CATEGORIES.find((c) => c.slug === params.category);
   if (!areaInfo || !catInfo) return {};
@@ -60,7 +61,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function AreaCategoryPage({ params }: Props) {
+export default async function AreaCategoryPage(props: Props) {
+  const params = await props.params;
   const areaInfo = DUBAI_AREAS.find((a) => a.slug === params.area);
   const catInfo = PROFESSIONAL_CATEGORIES.find((c) => c.slug === params.category);
   if (!areaInfo || !catInfo) notFound();

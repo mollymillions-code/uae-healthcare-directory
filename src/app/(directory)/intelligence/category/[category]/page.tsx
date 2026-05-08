@@ -14,7 +14,7 @@ import { ArrowLeft } from "lucide-react";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 export async function generateStaticParams() {
@@ -22,7 +22,8 @@ export async function generateStaticParams() {
   return JOURNAL_CATEGORIES.map((c) => ({ category: c.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const cat = getJournalCategory(params.category);
   if (!cat) return {};
 
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage(props: PageProps) {
+  const params = await props.params;
   await loadDbArticles();
   const cat = getJournalCategory(params.category);
   if (!cat) notFound();

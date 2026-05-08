@@ -232,11 +232,12 @@ export function generateStaticParams() {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { cities: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ cities: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const base = getBaseUrl();
   const parsed = parseCitiesSlug(params.cities);
   if (!parsed) return { title: "City Comparison Not Found" };
@@ -263,11 +264,12 @@ export function generateMetadata({
 
 // ─── Page Component ───────────────────────────────────────────────────────────
 
-export default function CityComparisonPage({
-  params,
-}: {
-  params: { cities: string };
-}) {
+export default async function CityComparisonPage(
+  props: {
+    params: Promise<{ cities: string }>;
+  }
+) {
+  const params = await props.params;
   const base = getBaseUrl();
   const parsed = parseCitiesSlug(params.cities);
   if (!parsed) notFound();

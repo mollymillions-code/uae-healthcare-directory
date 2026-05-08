@@ -7,10 +7,11 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default function ArabicSearchPage({ searchParams }: Props) {
+export default async function ArabicSearchPage(props: Props) {
+  const searchParams = await props.searchParams;
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(searchParams ?? {})) {

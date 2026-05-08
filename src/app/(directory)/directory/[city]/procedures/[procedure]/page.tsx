@@ -32,7 +32,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string; procedure: string };
+  params: Promise<{ city: string; procedure: string }>;
 }
 
 export function generateStaticParams() {
@@ -51,7 +51,8 @@ export function generateStaticParams() {
   return params;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const proc = getProcedureBySlug(params.procedure);
@@ -114,7 +115,8 @@ function getCoverageBadgeClass(coverage: MedicalProcedure["insuranceCoverage"]):
   }
 }
 
-export default async function ProcedureCityPage({ params }: Props) {
+export default async function ProcedureCityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 
@@ -228,7 +230,6 @@ export default async function ProcedureCityPage({ params }: Props) {
       {offersSchema && <JsonLd data={offersSchema} />}
       <JsonLd data={faqPageSchema(faqs)} />
       <JsonLd data={speakableSchema([".answer-block"])} />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-surface-cream">
         <div className="pointer-events-none absolute inset-0">
@@ -285,7 +286,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </div>
         </div>
       </section>
-
       {/* Price highlight cards */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -306,7 +306,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </div>
         </div>
       </section>
-
       {/* Prose body — about + what to expect */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         <div className="max-w-[720px]">
@@ -358,7 +357,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           )}
         </div>
       </section>
-
       {/* City comparison table */}
       <section className="bg-surface-cream py-12 mt-16">
         <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8">
@@ -414,7 +412,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </div>
         </div>
       </section>
-
       {/* Insurance coverage */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-[720px]">
@@ -442,7 +439,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </div>
         </div>
       </section>
-
       {/* Related providers */}
       {providers.length > 0 && (
         <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -483,7 +479,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           )}
         </section>
       )}
-
       {/* Related procedures */}
       {relatedProcs.length > 0 && (
         <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -514,7 +509,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </ul>
         </section>
       )}
-
       {/* Related links */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <ul className="flex flex-wrap gap-2">
@@ -544,7 +538,6 @@ export default async function ProcedureCityPage({ params }: Props) {
           </li>
         </ul>
       </section>
-
       {/* FAQ */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
         <div className="max-w-3xl">

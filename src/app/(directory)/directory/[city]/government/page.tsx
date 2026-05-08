@@ -12,7 +12,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
-interface Props { params: { city: string } }
+interface Props { params: Promise<{ city: string }> }
 
 const GOV_NAME_TERMS = ["- dubai health","- dha","ministry of health","government","public health protection","primary health","health center -","health centre -","tawam hospital","al ain hospital","al qassimi hospital","saqr hospital","fujairah hospital","dibba hospital","kalba hospital","khorfakkan hospital","masafi hospital","sheikh khalifa medical city","sheikh shakhbout","mafraq hospital","corniche hospital","kanad hospital","al dhafra hospital","al wagan hospital"];
 const GOV_FT = ["primary healthcare"];
@@ -58,7 +58,8 @@ function getGovOperator(s: string): string {
   return "the UAE healthcare regulator";
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const govProvidersMeta = await getGovProviders(city.slug);
@@ -73,7 +74,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function GovernmentPage({ params }: Props) {
+export default async function GovernmentPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   const govProviders = await getGovProviders(city.slug);

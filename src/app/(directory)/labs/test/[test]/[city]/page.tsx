@@ -42,7 +42,8 @@ function getCityRegulator(slug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export function generateMetadata({ params }: { params: { test: string; city: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ test: string; city: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const test = getLabTest(params.test);
   const cityName = getCityName(params.city);
   if (!test) return { title: "Not Found" };
@@ -66,7 +67,8 @@ export function generateMetadata({ params }: { params: { test: string; city: str
   };
 }
 
-export default function TestCityPage({ params }: { params: { test: string; city: string } }) {
+export default async function TestCityPage(props: { params: Promise<{ test: string; city: string }> }) {
+  const params = await props.params;
   const test = getLabTest(params.test);
   const city = CITIES.find((c) => c.slug === params.city);
   if (!test || !city) notFound();

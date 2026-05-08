@@ -17,7 +17,7 @@ import { Pill, Stethoscope } from "lucide-react";
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { condition: string } }
+interface Props { params: Promise<{ condition: string }> }
 
 function toTitle(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -29,7 +29,8 @@ export async function generateStaticParams() {
   return all.filter((c) => c.medications.length >= 2).map((c) => ({ condition: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const conditionName = toTitle(params.condition);
   const meds = await getMedicationsByCondition(params.condition);
   if (meds.length === 0) return {};
@@ -54,7 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ConditionDetailPage({ params }: Props) {
+export default async function ConditionDetailPage(props: Props) {
+  const params = await props.params;
   const meds = await safe(
     getMedicationsByCondition(params.condition),
     [] as Awaited<ReturnType<typeof getMedicationsByCondition>>,

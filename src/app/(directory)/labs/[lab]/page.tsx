@@ -23,7 +23,8 @@ export function generateStaticParams() {
   return LAB_PROFILES.map((lab) => ({ lab: lab.slug }));
 }
 
-export function generateMetadata({ params }: { params: { lab: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ lab: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const lab = getLabProfile(params.lab);
   if (!lab) return { title: "Lab Not Found" };
 
@@ -48,7 +49,8 @@ export function generateMetadata({ params }: { params: { lab: string } }): Metad
   };
 }
 
-export default function LabDetailPage({ params }: { params: { lab: string } }) {
+export default async function LabDetailPage(props: { params: Promise<{ lab: string }> }) {
+  const params = await props.params;
   const lab = getLabProfile(params.lab);
   if (!lab) notFound();
 
@@ -154,7 +156,6 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
           })),
         }}
       />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-surface-cream">
         <div className="pointer-events-none absolute inset-0">
@@ -268,7 +269,6 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
           </div>
         </div>
       </section>
-
       <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-14">
         {/* Highlights */}
         {lab.highlights.length > 0 && (
@@ -381,7 +381,6 @@ export default function LabDetailPage({ params }: { params: { lab: string } }) {
           </div>
         </section>
       </div>
-
       {/* FAQ */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 sm:pb-24">
         <header className="mb-6">

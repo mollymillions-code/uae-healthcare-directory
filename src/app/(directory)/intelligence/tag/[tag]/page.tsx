@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { tag: string };
+  params: Promise<{ tag: string }>;
 }
 
 export async function generateStaticParams() {
@@ -18,7 +18,8 @@ export async function generateStaticParams() {
   return getAllTags().slice(0, 10).map((t) => ({ tag: t.tag }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const tag = decodeURIComponent(params.tag);
   const base = getBaseUrl();
 
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function TagPage({ params }: PageProps) {
+export default async function TagPage(props: PageProps) {
+  const params = await props.params;
   await loadDbArticles();
   const tag = decodeURIComponent(params.tag);
   const articles = getArticlesByTag(tag);

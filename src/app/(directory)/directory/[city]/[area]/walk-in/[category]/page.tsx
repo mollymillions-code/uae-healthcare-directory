@@ -24,7 +24,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string; area: string; category: string };
+  params: Promise<{ city: string; area: string; category: string }>;
 }
 
 const WALK_IN_CATS = [
@@ -95,7 +95,8 @@ function getWaitTimeText(categorySlug: string): string {
   }
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const cat = getCategoryBySlug(params.category);
@@ -119,7 +120,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function AreaWalkInCategoryPage({ params }: Props) {
+export default async function AreaWalkInCategoryPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const cat = getCategoryBySlug(params.category);

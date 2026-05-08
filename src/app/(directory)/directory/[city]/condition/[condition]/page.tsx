@@ -28,7 +28,7 @@ import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTe
 export const revalidate = 21600;
 
 interface Props {
-  params: { city: string; condition: string };
+  params: Promise<{ city: string; condition: string }>;
 }
 
 export async function generateStaticParams() {
@@ -56,7 +56,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const condition = getConditions().find((c) => c.slug === params.condition);
@@ -139,7 +140,8 @@ async function getProvidersForCondition(
   return result;
 }
 
-export default async function ConditionPage({ params }: Props) {
+export default async function ConditionPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

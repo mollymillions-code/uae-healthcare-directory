@@ -11,7 +11,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 /** Return categories that have 5+ qualified providers UAE-wide */
@@ -37,7 +37,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) return {};
 
@@ -61,7 +62,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function TopCategoryUAEPage({ params }: Props) {
+export default async function TopCategoryUAEPage(props: Props) {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) notFound();
 

@@ -18,7 +18,7 @@ export const revalidate = 43200;
 // build time in parallel blew the pg pool (Deploy 6 failure, 2026-04-11).
 // Pages render on first visit and cache for 12 hours.
 export const dynamicParams = true;
-interface Props { params: { city: string } }
+interface Props { params: Promise<{ city: string }> }
 
 async function getWalkInProvidersLocal(citySlug: string) {
   const { providers } = await safe(
@@ -29,7 +29,8 @@ async function getWalkInProvidersLocal(citySlug: string) {
   return providers;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = (await getWalkInProvidersLocal(city.slug)).length;
@@ -56,7 +57,8 @@ function getGPFeeRange(s: string): string {
   return "AED 80-200";
 }
 
-export default async function WalkInClinicsPage({ params }: Props) {
+export default async function WalkInClinicsPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   const allWalkIns = await getWalkInProvidersLocal(city.slug);

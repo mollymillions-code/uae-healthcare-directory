@@ -4,14 +4,18 @@ export const revalidate = 21600;
 export const dynamicParams = true;
 
 interface Props {
-  params: { city: string; segments: string[] };
-  searchParams?: { page?: string };
+  params: Promise<{ city: string; segments: string[] }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
-export async function generateMetadata({ params, searchParams }: Props) {
+export async function generateMetadata(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   return generateGccSegmentsMetadata("bh", params, searchParams);
 }
 
-export default function Page({ params, searchParams }: Props) {
+export default async function Page(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   return <GccSegmentsPage countryCode="bh" params={params} searchParams={searchParams} />;
 }

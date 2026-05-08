@@ -11,14 +11,15 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { city: string } }
+interface Props { params: Promise<{ city: string }> }
 
 export function generateStaticParams() {
   if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().filter(c => c.country === "ae").map(c => ({ city: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CityPharmacyDeliveryPage({ params }: Props) {
+export default async function CityPharmacyDeliveryPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   const base = getBaseUrl();

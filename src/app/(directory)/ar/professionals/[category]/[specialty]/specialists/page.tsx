@@ -23,7 +23,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { category: string; specialty: string };
+  params: Promise<{ category: string; specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -38,7 +38,8 @@ export function generateStaticParams() {
     .filter((p): p is { category: string; specialty: string } => p !== null);
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec || spec.category !== params.category) return {};
 
@@ -66,7 +67,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArSpecialistsPage({ params }: Props) {
+export default async function ArSpecialistsPage(props: Props) {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec || spec.category !== params.category) notFound();
 

@@ -5,8 +5,7 @@ import Link from "next/link";
 import { ProviderCard } from "@/components/provider/ProviderCard";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 import { StarRating } from "@/components/shared/StarRating";
-import dynamic from "next/dynamic";
-const GoogleMapEmbed = dynamic(() => import("@/components/maps/GoogleMapEmbed").then(mod => mod.GoogleMapEmbed), { ssr: false, loading: () => <div className="w-full h-64 bg-light-100 animate-pulse" /> });
+import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FaqSection } from "@/components/seo/FaqSection";
 import {
@@ -43,14 +42,14 @@ export const revalidate = 21600;
 export const dynamicParams = true;
 
 interface Props {
-  params: { city: string; segments: string[] };
-  searchParams?: { page?: string };
+  params: Promise<{ city: string; segments: string[] }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
 // Matches the English LIST_PAGE_SIZE so pagination stays symmetric across locales.
 const LIST_PAGE_SIZE = 20;
 
-function parsePage(searchParams: Props["searchParams"]): number {
+function parsePage(searchParams?: { page?: string }): number {
   const raw = Number(searchParams?.page ?? "1");
   if (!Number.isFinite(raw) || raw < 1) return 1;
   return Math.floor(raw);
@@ -74,7 +73,9 @@ function isPotentialListingRoute(citySlug: string, segments: string[]): boolean 
   return false;
 }
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   if (isPotentialListingRoute(city.slug, params.segments)) noStore();
@@ -246,7 +247,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   }
 }
 
-export default async function ArabicCatchAllPage({ params, searchParams }: Props) {
+export default async function ArabicCatchAllPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   if (isPotentialListingRoute(city.slug, params.segments)) noStore();
@@ -548,7 +551,6 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
           { name: provider.name },
         ])} />
         <JsonLd data={speakableSchema([".answer-block"])} />
-
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted mb-6 flex-wrap">
           <Link href="/ar" className="hover:text-accent transition-colors">{ar.home}</Link>
@@ -559,7 +561,6 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
           <span>/</span>
           <span className="text-dark font-medium">{provider.name}</span>
         </nav>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="mb-4">
@@ -808,7 +809,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                         // No microdata attrs — the JSON-LD provider node
                         // already ships these snippets as nested Reviews.
                         // See the matching comment in the English template.
-                        <article key={i} className="bg-white p-4 border border-black/[0.04]">
+                        (<article key={i} className="bg-white p-4 border border-black/[0.04]">
                           <div className="flex items-center gap-0.5 mb-2">
                             {Array.from({ length: 5 }).map((_, starIdx) => (
                               <Star
@@ -828,7 +829,7 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
                             </span>
                             {s.relative_time && <span> · {s.relative_time}</span>}
                           </p>
-                        </article>
+                        </article>)
                       ))}
                     </div>
                   </div>
@@ -973,7 +974,6 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </div>
           </div>
         </div>
-
         {/* Arabic FAQ — Phase 1.5 of insurance-seo-strategy-plan.md.
             Mirrors the EN listing-page FAQ structure so providers
             have consistent Q&A coverage in both locales. Picked up by
@@ -1027,7 +1027,6 @@ export default async function ArabicCatchAllPage({ params, searchParams }: Props
             </>
           );
         })()}
-
         {/* Language Switch */}
         <div className="text-center pt-6 pb-4">
           <Link href={`/directory/${city.slug}/${category.slug}/${provider.slug}`} className="text-accent text-sm hover:underline">

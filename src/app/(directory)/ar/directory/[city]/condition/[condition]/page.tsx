@@ -26,10 +26,11 @@ import { getArabicCityName, getArabicCategoryName } from "@/lib/i18n";
 export const revalidate = 21600;
 
 interface Props {
-  params: { city: string; condition: string };
+  params: Promise<{ city: string; condition: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const condition = getConditions().find((c) => c.slug === params.condition);
@@ -94,7 +95,8 @@ async function getProvidersForCondition(
   return result;
 }
 
-export default async function ArabicConditionPage({ params }: Props) {
+export default async function ArabicConditionPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

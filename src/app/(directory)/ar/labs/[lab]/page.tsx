@@ -25,7 +25,8 @@ export function generateStaticParams() {
   return LAB_PROFILES.map((lab) => ({ lab: lab.slug }));
 }
 
-export function generateMetadata({ params }: { params: { lab: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ lab: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const lab = getLabProfile(params.lab);
   if (!lab) return { title: "المختبر غير موجود" };
 
@@ -57,7 +58,8 @@ export function generateMetadata({ params }: { params: { lab: string } }): Metad
   };
 }
 
-export default function ArabicLabDetailPage({ params }: { params: { lab: string } }) {
+export default async function ArabicLabDetailPage(props: { params: Promise<{ lab: string }> }) {
+  const params = await props.params;
   const lab = getLabProfile(params.lab);
   if (!lab) notFound();
 
@@ -160,7 +162,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           })),
         }}
       />
-
       <Breadcrumb
         items={[
           { label: ar.home, href: "/ar" },
@@ -168,7 +169,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           { label: lab.name },
         ]}
       />
-
       {/* Hero */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-dark mb-3">{lab.name}</h1>
@@ -229,7 +229,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           <span>مرخص من {lab.regulators.map((r) => r.toUpperCase()).join("، ")}</span>
         </div>
       </div>
-
       {/* أبرز المزايا */}
       {lab.highlights.length > 0 && (
         <div className="mb-8">
@@ -247,7 +246,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           </div>
         </div>
       )}
-
       {/* باقات الفحص الصحي */}
       {packages.length > 0 && (
         <div className="mb-8">
@@ -262,7 +260,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           </div>
         </div>
       )}
-
       {/* أسعار الفحوصات حسب الفئة */}
       <div className="section-header">
         <h2>أسعار الفحوصات في {lab.name}</h2>
@@ -275,7 +272,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           مع جميع المختبرات في الإمارات.
         </p>
       </div>
-
       {Array.from(pricesByCategory.entries()).map(([category, catPrices]) => (
         <div key={category} className="mb-6">
           <h3 className="text-sm font-bold text-dark mb-2 capitalize">
@@ -319,7 +315,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           </div>
         </div>
       ))}
-
       {/* نبذة عن المختبر */}
       <div className="mt-10 mb-8 p-5 bg-light-50">
         <h2 className="text-lg font-bold text-dark mb-3">نبذة عن {lab.name}</h2>
@@ -343,12 +338,10 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           )}
         </div>
       </div>
-
       {/* الأسئلة الشائعة */}
       <div className="mt-12">
         <FaqSection faqs={faqs} title={`${lab.name} — الأسئلة الشائعة`} />
       </div>
-
       {/* إخلاء المسؤولية */}
       <div className="mt-8 border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-muted leading-relaxed">
@@ -358,7 +351,6 @@ export default function ArabicLabDetailPage({ params }: { params: { lab: string 
           قبل زيارتك. آخر تحقق مارس 2026.
         </p>
       </div>
-
       {/* تبديل اللغة */}
       <div className="text-center pt-4 pb-8">
         <Link href={`/labs/${lab.slug}`} className="text-accent text-sm hover:underline">

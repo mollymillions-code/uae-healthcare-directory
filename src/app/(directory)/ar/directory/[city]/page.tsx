@@ -14,14 +14,15 @@ import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
-interface Props { params: { city: string } }
+interface Props { params: Promise<{ city: string }> }
 
 export function generateStaticParams() {
   if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = await safe(getProviderCountByCity(city.slug), 0, "ar.city.metaCount");
@@ -42,7 +43,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ArabicCityPage({ params }: Props) {
+export default async function ArabicCityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

@@ -16,7 +16,7 @@ import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemp
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 export function generateStaticParams() {
@@ -24,7 +24,8 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
@@ -61,7 +62,8 @@ function getRegulatorName(citySlug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export default function ProcedureIndexPage({ params }: Props) {
+export default async function ProcedureIndexPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

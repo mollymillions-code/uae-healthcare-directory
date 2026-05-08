@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slug: string; specialty: string };
+  params: Promise<{ slug: string; specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -28,7 +28,8 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const profile = getFacilityProfile(params.slug);
   const spec = getSpecialtyBySlug(params.specialty);
   if (!profile || !spec) {
@@ -60,7 +61,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArFacilitySpecialtyPage({ params }: Props) {
+export default async function ArFacilitySpecialtyPage(props: Props) {
+  const params = await props.params;
   const profile = getFacilityProfile(params.slug);
   const spec = getSpecialtyBySlug(params.specialty);
   const professionals = getProfessionalsByFacilityAndSpecialty(

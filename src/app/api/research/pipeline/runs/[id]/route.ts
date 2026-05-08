@@ -4,10 +4,8 @@ import { getDb } from '@/lib/research/db'
 import { publishReportToFilesystem } from '@/lib/research/reports-fs'
 
 // GET /api/pipeline/runs/[id] — get full pipeline run detail
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const sql = getDb()
 
   const runs = await sql`SELECT * FROM pipeline_runs WHERE id = ${params.id}`
@@ -45,10 +43,8 @@ export async function GET(
 }
 
 // PUT /api/pipeline/runs/[id] — update pipeline run (stage transitions, content)
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const sql = getDb()
   const body = await request.json()
 
@@ -77,10 +73,8 @@ export async function PUT(
 }
 
 // PATCH /api/pipeline/runs/[id] — actions: approve, reject, publish
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const sql = getDb()
   const body = await request.json()
   const action = body.action

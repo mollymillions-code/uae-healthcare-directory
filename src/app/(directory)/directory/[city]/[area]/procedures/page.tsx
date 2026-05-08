@@ -19,7 +19,7 @@ import { HubPageTemplate } from "@/components/directory-v2/templates/HubPageTemp
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string; area: string };
+  params: Promise<{ city: string; area: string }>;
 }
 
 /** Return procedures whose related category has at least 1 provider in this area */
@@ -66,7 +66,8 @@ function getRegulatorName(citySlug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) return {};
@@ -92,7 +93,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function AreaProceduresPage({ params }: Props) {
+export default async function AreaProceduresPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   if (!city || !area) notFound();

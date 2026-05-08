@@ -23,14 +23,15 @@ import {
 
 export const revalidate = 43200;
 
-interface Props { params: { city: string } }
+interface Props { params: Promise<{ city: string }> }
 
 export function generateStaticParams() {
   if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = await safe(getProviderCountByCity(city.slug), 0, "metaCount");
@@ -101,7 +102,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 const iconFor = (slug: string) => CATEGORY_ICONS[slug] ?? <Stethoscope className="h-4 w-4" strokeWidth={1.75} />;
 
-export default async function CityPage({ params }: Props) {
+export default async function CityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

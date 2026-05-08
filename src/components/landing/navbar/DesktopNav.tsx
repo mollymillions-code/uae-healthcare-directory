@@ -70,24 +70,24 @@ export function DesktopNav({
             </button>
           </div>
         ))}
-        <a
+        <Link
           href="/directory"
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           UAE Healthcare Directory
-        </a>
-        <a
+        </Link>
+        <Link
           href="/intelligence"
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           Intelligence
-        </a>
-        <a
+        </Link>
+        <Link
           href="/research"
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           Research
-        </a>
+        </Link>
       </div>
 
       {/* Desktop CTA button */}

@@ -238,11 +238,12 @@ export function generateStaticParams() {
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { city: string; category: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ city: string; category: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const cityData = CITIES.find((c) => c.slug === params.city);
   const catData = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!cityData || !catData) return { title: "Not Found" };
@@ -296,11 +297,12 @@ export function generateMetadata({
 
 // ─── Page component ──────────────────────────────────────────────────────────
 
-export default function CityLabCategoryPage({
-  params,
-}: {
-  params: { city: string; category: string };
-}) {
+export default async function CityLabCategoryPage(
+  props: {
+    params: Promise<{ city: string; category: string }>;
+  }
+) {
+  const params = await props.params;
   const cityData = CITIES.find((c) => c.slug === params.city);
   const catData = TEST_CATEGORIES.find((c) => c.slug === params.category);
   if (!cityData || !catData) notFound();

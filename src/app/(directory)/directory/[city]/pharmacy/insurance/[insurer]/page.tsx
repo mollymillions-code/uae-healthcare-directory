@@ -12,7 +12,7 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { city: string; insurer: string } }
+interface Props { params: Promise<{ city: string; insurer: string }> }
 
 export function generateStaticParams() {
   if (process.env.PREBUILD_STATIC_ROUTES !== "1") return [];
@@ -23,7 +23,8 @@ export function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const insurer = INSURANCE_PROVIDERS.find(i => i.slug === params.insurer);
   if (!city || !insurer) return {};
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CityPharmacyInsurerPage({ params }: Props) {
+export default async function CityPharmacyInsurerPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const insurer = INSURANCE_PROVIDERS.find(i => i.slug === params.insurer);
   if (!city || !insurer) notFound();

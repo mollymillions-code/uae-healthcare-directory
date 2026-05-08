@@ -23,10 +23,11 @@ import { CATEGORIES } from "@/lib/constants/categories";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   await loadDbArticles();
   const article = getArticleBySlug(params.slug);
   if (!article) return {};
@@ -56,7 +57,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ArticlePage({ params }: PageProps) {
+export default async function ArticlePage(props: PageProps) {
+  const params = await props.params;
   await loadDbArticles();
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
@@ -99,9 +101,7 @@ export default async function ArticlePage({ params }: PageProps) {
       ])} />
       <JsonLd data={faqPageSchema(articleFaqs)} />
       <JsonLd data={speakableSchema(["h1", "article"])} />
-
       <PageEvent event="article_view" params={{ slug: params.slug, category: fullArticle.category }} />
-
       {/* Back link */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
@@ -112,7 +112,6 @@ export default async function ArticlePage({ params }: PageProps) {
           Back to Intelligence
         </Link>
       </div>
-
       <article className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Article body */}

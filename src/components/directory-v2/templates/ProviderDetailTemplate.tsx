@@ -1,5 +1,4 @@
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { ChevronRight, Star, MapPin as MapPinIcon, BadgeCheck, Clock, Languages as LangIcon, ShieldCheck, Quote, Accessibility, Stethoscope } from "lucide-react";
 import { PhotoMosaic } from "../detail/PhotoMosaic";
 import { BookingCard } from "../detail/BookingCard";
@@ -12,16 +11,11 @@ import { HeartButton } from "../cards/HeartButton";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
+import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import {
   VerifiedClinicBadge,
   VerifiedClinicTrustStrip,
 } from "@/components/provider/VerifiedClinicBadge";
-
-
-const GoogleMapEmbed = dynamic(
-  () => import("@/components/maps/GoogleMapEmbed").then((m) => m.GoogleMapEmbed),
-  { ssr: false, loading: () => <div className="w-full h-80 bg-surface-cream animate-pulse rounded-z-md" /> }
-);
 
 export interface DetailProvider {
   id: string;

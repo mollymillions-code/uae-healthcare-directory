@@ -33,7 +33,7 @@ async function getTopRatedForCategory(
 }
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 export function generateStaticParams() {
@@ -41,7 +41,8 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
 
@@ -67,7 +68,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ArabicBestInCityPage({ params }: Props) {
+export default async function ArabicBestInCityPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

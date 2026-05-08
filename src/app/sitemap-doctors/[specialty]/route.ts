@@ -63,10 +63,11 @@ function buildUrlset(entries: string[]): string {
 }
 
 interface Params {
-  params: { specialty: string };
+  params: Promise<{ specialty: string }>;
 }
 
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(_req: Request, props: Params) {
+  const params = await props.params;
   const baseUrl = getBaseUrl().replace(/\/+$/, "");
   const specialtySlug = params.specialty;
 

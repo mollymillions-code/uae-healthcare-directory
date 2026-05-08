@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useRef } from 'react'
 
 interface ReportViewerProps {
@@ -30,7 +31,7 @@ export function ReportViewer({ html, title, slug }: ReportViewerProps) {
   return (
     <>
       {/* Minimal floating back button */}
-      <a
+      <Link
         href="/research"
         style={{
           position: 'fixed',
@@ -50,7 +51,7 @@ export function ReportViewer({ html, title, slug }: ReportViewerProps) {
         }}
       >
         ZAVIS Research
-      </a>
+      </Link>
 
       <iframe
         ref={iframeRef}

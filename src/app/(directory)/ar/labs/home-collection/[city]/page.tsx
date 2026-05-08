@@ -181,11 +181,12 @@ const CITY_HOME_CONTENT_AR: Record<string, CityHomeContentAr> = {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { city: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ city: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const city = CITIES.find((c) => c.slug === params.city);
   if (!city) return { title: "المدينة غير موجودة" };
 
@@ -221,11 +222,12 @@ export function generateMetadata({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ArabicHomeCollectionCityPage({
-  params,
-}: {
-  params: { city: string };
-}) {
+export default async function ArabicHomeCollectionCityPage(
+  props: {
+    params: Promise<{ city: string }>;
+  }
+) {
+  const params = await props.params;
   const city = CITIES.find((c) => c.slug === params.city);
   if (!city) notFound();
 

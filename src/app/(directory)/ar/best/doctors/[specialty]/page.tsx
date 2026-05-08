@@ -29,7 +29,7 @@ function getDoctorSpecialtyBySlug(slug: string) {
 }
 
 interface Props {
-  params: { specialty: string };
+  params: Promise<{ specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -37,7 +37,8 @@ export function generateStaticParams() {
   return DOCTOR_SPECIALTIES.map((s) => ({ specialty: s.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const spec = getDoctorSpecialtyBySlug(params.specialty);
   if (!spec) return {};
 
@@ -66,7 +67,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
+export default async function ArBestDoctorsBySpecialtyPage(props: Props) {
+  const params = await props.params;
   const spec = getDoctorSpecialtyBySlug(params.specialty);
   if (!spec) notFound();
 
@@ -156,7 +158,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
         ])}
       />
       <JsonLd data={faqPageSchema(faqs)} />
-
       <Breadcrumb
         items={[
           { label: "الإمارات", href: "/ar" },
@@ -165,7 +166,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           { label: spec.nameAr },
         ]}
       />
-
       {/* Hero */}
       <div className="mb-10">
         <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[28px] sm:text-[34px] text-[#1c1c1c] tracking-tight mb-2">
@@ -219,7 +219,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           ))}
         </div>
       </div>
-
       {/* Top 10 Professionals Table */}
       {topProfessionals.length > 0 && (
         <section className="mb-12">
@@ -279,7 +278,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </div>
         </section>
       )}
-
       {/* Top 10 Hospitals/Clinics */}
       {topFacilities.length > 0 && (
         <section className="mb-12">
@@ -339,7 +337,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </div>
         </section>
       )}
-
       {/* How We Rank */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-6 border-b-2 border-[#1c1c1c] pb-3">
@@ -365,7 +362,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </p>
         </div>
       </section>
-
       {/* Related Directory Category */}
       {spec.relatedDirectoryCategory && (
         <section className="mb-10">
@@ -383,10 +379,8 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </div>
         </section>
       )}
-
       {/* FAQs */}
       <FaqSection faqs={faqs} title={`أفضل أطباء ${spec.nameAr} في دبي — أسئلة شائعة`} />
-
       {/* Related Specialties */}
       {relatedSpecialties.length > 0 && (
         <section className="mb-10 mt-10">
@@ -413,7 +407,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </div>
         </section>
       )}
-
       {/* Cross-links */}
       <section className="mb-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -441,7 +434,6 @@ export default function ArBestDoctorsBySpecialtyPage({ params }: Props) {
           </Link>
         </div>
       </section>
-
       {/* DHA Disclaimer */}
       <div className="border-t border-black/[0.06] pt-4">
         <p className="text-[11px] text-black/40 leading-relaxed">

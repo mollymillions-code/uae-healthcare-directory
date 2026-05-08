@@ -19,7 +19,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -28,7 +28,8 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cls = await getMedicationClassBySlug(params.slug);
   if (!cls) return {};
 
@@ -54,7 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MedicationClassPage({ params }: Props) {
+export default async function MedicationClassPage(props: Props) {
+  const params = await props.params;
   const cls = await safe(getMedicationClassBySlug(params.slug), null, "medClass");
   if (!cls) notFound();
 

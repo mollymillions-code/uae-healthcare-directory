@@ -11,17 +11,7 @@ import { CityCard } from "@/components/directory-v2/cards/CityCard";
 import { SpecialtyTile } from "@/components/directory-v2/cards/SpecialtyTile";
 import { ProviderListPaginated } from "@/components/directory/ProviderListPaginated";
 import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTemplate";
-import dynamic from "next/dynamic";
-const GoogleMapEmbed = dynamic(
-  () =>
-    import("@/components/maps/GoogleMapEmbed").then(
-      (mod) => mod.GoogleMapEmbed
-    ),
-  {
-    ssr: false,
-    loading: () => <div className="w-full h-64 bg-surface-cream animate-pulse rounded-z-md" />,
-  }
-);
+import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import {
   breadcrumbSchema,
   speakableSchema,

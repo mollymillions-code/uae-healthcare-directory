@@ -375,12 +375,9 @@ const CONDITIONS: Record<string, ConditionDef> = {
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function getCityName(slug: string): string {
-  return (
-    CITIES.find((c) => c.slug === slug)?.name ||
-    slug
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase())
-  );
+  return (CITIES.find((c) => c.slug === slug)?.name || slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (l) => l.toUpperCase()));
 }
 
 function getRegulator(citySlug: string): string {
@@ -481,11 +478,12 @@ export function generateStaticParams() {
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { condition: string; city: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ condition: string; city: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const condition = CONDITIONS[params.condition];
   const cityName = getCityName(params.city);
   if (!condition) return { title: "Not Found" };
@@ -518,11 +516,12 @@ export function generateMetadata({
 
 // ─── Page Component ────────────────────────────────────────────────────────────
 
-export default function ConditionCityPage({
-  params,
-}: {
-  params: { condition: string; city: string };
-}) {
+export default async function ConditionCityPage(
+  props: {
+    params: Promise<{ condition: string; city: string }>;
+  }
+) {
+  const params = await props.params;
   const condition = CONDITIONS[params.condition];
   const city = CITIES.find((c) => c.slug === params.city);
   if (!condition || !city) notFound();

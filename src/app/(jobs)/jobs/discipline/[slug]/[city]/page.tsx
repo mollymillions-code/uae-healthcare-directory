@@ -18,10 +18,11 @@ export async function generateStaticParams() {
 }
 
 interface Props {
-  params: { slug: string; city: string };
+  params: Promise<{ slug: string; city: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const d = getDiscipline(params.slug);
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!d || !city) return {};
@@ -35,7 +36,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function DisciplineCityPage({ params }: Props) {
+export default async function DisciplineCityPage(props: Props) {
+  const params = await props.params;
   const d = getDiscipline(params.slug);
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!d || !city) notFound();

@@ -12,7 +12,7 @@ import { ArrowLeft, Download, LinkIcon, FileText } from "lucide-react";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const AUTHOR_JOB_TITLES: Record<string, string> = {
@@ -48,7 +48,8 @@ function formatReleaseDate(iso: string): string {
   });
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const report = await getReportBySlug(params.slug);
   if (!report) return {};
   const base = getBaseUrl();
@@ -80,7 +81,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ReportPage({ params }: PageProps) {
+export default async function ReportPage(props: PageProps) {
+  const params = await props.params;
   const report = await getReportBySlug(params.slug);
   if (!report) notFound();
 
@@ -153,7 +155,6 @@ export default async function ReportPage({ params }: PageProps) {
       {schemaNodes.map((node, i) => (
         <JsonLd key={`report-schema-${i}`} data={node} />
       ))}
-
       {/* Back link */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
@@ -164,7 +165,6 @@ export default async function ReportPage({ params }: PageProps) {
           All reports
         </Link>
       </div>
-
       {/* Hero */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10">
         <div className="border-b-2 border-[#1c1c1c]" />
@@ -281,7 +281,6 @@ export default async function ReportPage({ params }: PageProps) {
           </Link>
         </div>
       </section>
-
       {/* Hero image */}
       {report.coverImageUrl && (
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
@@ -297,7 +296,6 @@ export default async function ReportPage({ params }: PageProps) {
           </div>
         </div>
       )}
-
       {/* Body + TOC */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

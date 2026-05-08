@@ -160,7 +160,8 @@ export function generateStaticParams() {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: { params: { test: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ test: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const test = getLabTest(params.test);
   if (!test) return { title: "الفحص غير موجود" };
 
@@ -196,7 +197,8 @@ export function generateMetadata({ params }: { params: { test: string } }): Meta
 
 // ─── الصفحة ────────────────────────────────────────────────────────────────────
 
-export default function ArabicTestDetailPage({ params }: { params: { test: string } }) {
+export default async function ArabicTestDetailPage(props: { params: Promise<{ test: string }> }) {
+  const params = await props.params;
   const test = getLabTest(params.test);
   if (!test) notFound();
 

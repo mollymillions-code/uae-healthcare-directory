@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 export function generateStaticParams() {
@@ -27,7 +27,8 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) return {};
   const base = getBaseUrl();
@@ -45,7 +46,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function CategoryPage({ params }: Props) {
+export default async function CategoryPage(props: Props) {
+  const params = await props.params;
   const cat = getCategoryBySlug(params.category);
   if (!cat) {
     // Bypass the Map-based lookup with direct iteration. The Map version

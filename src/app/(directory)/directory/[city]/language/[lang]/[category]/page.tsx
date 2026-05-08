@@ -24,12 +24,13 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { city: string; lang: string; category: string };
+  params: Promise<{ city: string; lang: string; category: string }>;
 }
 
 /* ─── Metadata ─── */
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const language = getLanguagesList().find((l) => l.slug === params.lang);
@@ -62,7 +63,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const LISTING_CAP = 30;
 
-export default async function LanguageCategoryPage({ params }: Props) {
+export default async function LanguageCategoryPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

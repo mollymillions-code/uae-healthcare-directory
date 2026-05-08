@@ -34,8 +34,8 @@ function parsePage(searchParams?: { page?: string }): number {
 }
 
 interface Props {
-  params: { city: string; insurer: string };
-  searchParams?: { page?: string };
+  params: Promise<{ city: string; insurer: string }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
 // ─── Regulator helpers ────────────────────────────────────────────────────────
@@ -74,7 +74,9 @@ export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
@@ -123,7 +125,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function InsuranceProviderPage({ params, searchParams }: Props) {
+export default async function InsuranceProviderPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

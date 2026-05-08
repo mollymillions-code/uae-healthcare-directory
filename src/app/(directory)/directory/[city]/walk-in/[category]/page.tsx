@@ -16,7 +16,7 @@ export const revalidate = 43200;
 // fired 54 DB count queries during build which exhausted the pg pool
 // (Deploy 6 failure, 2026-04-11). ISR renders on first visit and caches 12h.
 export const dynamicParams = true;
-interface Props { params: { city: string; category: string } }
+interface Props { params: Promise<{ city: string; category: string }> }
 const WALK_IN_CATEGORY_SLUGS = ["clinics","dental","dermatology","ophthalmology","pediatrics","ent","pharmacy","labs-diagnostics","emergency-care"];
 
 function getRegulatorName(s: string): string {
@@ -38,7 +38,8 @@ function getWalkInWaitEstimate(s: string): string {
   return "15-45 minutes";
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) return {};
@@ -57,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function WalkInCategoryPage({ params }: Props) {
+export default async function WalkInCategoryPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();

@@ -2,10 +2,12 @@ import { GccBestCityPage, generateGccBestCityMetadata } from "@/components/direc
 
 export const revalidate = 43200;
 
-export async function generateMetadata({ params }: { params: { city: string } }) {
+export async function generateMetadata(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   return generateGccBestCityMetadata("bh", params);
 }
 
-export default function Page({ params }: { params: { city: string } }) {
+export default async function Page(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   return <GccBestCityPage countryCode="bh" params={params} />;
 }

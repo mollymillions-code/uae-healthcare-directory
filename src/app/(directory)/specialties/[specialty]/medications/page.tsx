@@ -13,7 +13,7 @@ import { Pill, Stethoscope, ArrowRight } from "lucide-react";
 export const revalidate = 43200;
 export const dynamicParams = true;
 
-interface Props { params: { specialty: string } }
+interface Props { params: Promise<{ specialty: string }> }
 
 function toTitle(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -25,7 +25,8 @@ export async function generateStaticParams() {
   return all.filter((s) => s.medications.length >= 2).map((s) => ({ specialty: s.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const specName = toTitle(params.specialty);
   const meds = await getMedicationsBySpecialty(params.specialty);
   if (meds.length === 0) return {};
@@ -38,7 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SpecialtyMedicationsPage({ params }: Props) {
+export default async function SpecialtyMedicationsPage(props: Props) {
+  const params = await props.params;
   const meds = await safe(getMedicationsBySpecialty(params.specialty), [] as Awaited<ReturnType<typeof getMedicationsBySpecialty>>, "specMeds");
   if (meds.length === 0) notFound();
   const base = getBaseUrl();

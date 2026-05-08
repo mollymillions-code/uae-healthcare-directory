@@ -8,12 +8,13 @@ import { Clock, ArrowLeft, ArrowDown, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export const revalidate = 3600
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const report = getReportBySlug(params.slug)
   if (!report) return { title: 'Report Not Found' }
 
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function ReportPage({ params }: Props) {
+export default async function ReportPage(props: Props) {
+  const params = await props.params;
   const report = getReportBySlug(params.slug)
 
   if (!report) {

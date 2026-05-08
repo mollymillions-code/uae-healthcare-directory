@@ -16,10 +16,11 @@ export async function generateStaticParams() {
 }
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const d = getDiscipline(params.slug);
   if (!d) return {};
   const title = `${d.name} Jobs in UAE`;
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function DisciplineHubPage({ params }: Props) {
+export default async function DisciplineHubPage(props: Props) {
+  const params = await props.params;
   const d = getDiscipline(params.slug);
   if (!d) notFound();
   const base = getBaseUrl();

@@ -19,7 +19,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slugs: string };
+  params: Promise<{ slugs: string }>;
 }
 
 export function generateStaticParams() {
@@ -43,7 +43,8 @@ function parseSlugs(slugs: string): { slugA: string; slugB: string } | null {
   return { slugA: parts[0], slugB: parts[1] };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const parsed = parseSlugs(params.slugs);
   if (!parsed) return {};
 
@@ -74,7 +75,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArCompareSpecialtyPage({ params }: Props) {
+export default async function ArCompareSpecialtyPage(props: Props) {
+  const params = await props.params;
   const parsed = parseSlugs(params.slugs);
   if (!parsed) notFound();
 

@@ -20,10 +20,11 @@ export async function generateStaticParams() {
 }
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!city) return {};
   const title = `Healthcare Careers in ${city.name}`;
@@ -36,7 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function CityHubPage({ params }: Props) {
+export default async function CityHubPage(props: Props) {
+  const params = await props.params;
   const city = UAE_CITIES.find((c) => c.slug === params.city);
   if (!city) notFound();
   const base = getBaseUrl();

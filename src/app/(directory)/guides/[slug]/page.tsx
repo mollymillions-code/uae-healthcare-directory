@@ -19,7 +19,7 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 43200; // 12 hours
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
@@ -27,7 +27,8 @@ export function generateStaticParams() {
   return getAllGuideSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) return {};
 
@@ -91,7 +92,8 @@ function guideArticleSchema(guide: GuideDefinition) {
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 
-export default async function GuidePage({ params }: Props) {
+export default async function GuidePage(props: Props) {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) notFound();
 

@@ -17,7 +17,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 // ─── 24-hour detection ──────────────────────────────────────────────────────
@@ -54,7 +54,8 @@ export function generateStaticParams() {
 
 // ─── generateMetadata ───────────────────────────────────────────────────────
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
@@ -85,7 +86,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default async function TwentyFourHoursPage({ params }: Props) {
+export default async function TwentyFourHoursPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

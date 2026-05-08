@@ -11,10 +11,12 @@ export async function generateStaticParams() {
   return generateGccFilterStaticParams("sa", "walk-in");
 }
 
-export function generateMetadata({ params }: { params: { city: string } }) {
+export async function generateMetadata(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   return generateGccFilterMetadata({ countryCode: "sa", citySlug: params.city, filter: "walk-in" });
 }
 
-export default async function Page({ params }: { params: { city: string } }) {
+export default async function Page(props: { params: Promise<{ city: string }> }) {
+  const params = await props.params;
   return <GccFilterPage countryCode="sa" citySlug={params.city} filter="walk-in" />;
 }

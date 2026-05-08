@@ -16,10 +16,8 @@ const EDITABLE_FIELDS = new Set([
   "isClaimed", "isVerified", "status",
 ]);
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const authError = validateAdminAuth(req);
   if (authError) return authError;
 
@@ -33,10 +31,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const authError = validateAdminAuth(req);
   if (authError) return authError;
 

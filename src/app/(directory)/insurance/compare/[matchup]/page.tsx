@@ -77,12 +77,13 @@ function parseMatchupSlug(slug: string): { slugA: string; slugB: string } | null
 export const dynamicParams = true;
 
 interface Props {
-  params: { matchup: string };
+  params: Promise<{ matchup: string }>;
 }
 
 // ─── Metadata ───────────────────────────────────────────────────────────────
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const parsed = parseMatchupSlug(params.matchup);
   if (!parsed) return {};
 
@@ -221,7 +222,8 @@ function generateVerdict(
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default async function MatchupPage({ params }: Props) {
+export default async function MatchupPage(props: Props) {
+  const params = await props.params;
   const parsed = parseMatchupSlug(params.matchup);
   if (!parsed) notFound();
 

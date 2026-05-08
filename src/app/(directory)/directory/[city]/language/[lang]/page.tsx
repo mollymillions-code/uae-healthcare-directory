@@ -17,7 +17,7 @@ import { ListingsTemplate } from "@/components/directory-v2/templates/ListingsTe
 export const revalidate = 21600;
 
 interface Props {
-  params: { city: string; lang: string };
+  params: Promise<{ city: string; lang: string }>;
 }
 
 export async function generateStaticParams() {
@@ -38,7 +38,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const language = getLanguagesList().find((l) => l.slug === params.lang);
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const LISTING_CAP = 48;
 
-export default async function LanguageProviderPage({ params }: Props) {
+export default async function LanguageProviderPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

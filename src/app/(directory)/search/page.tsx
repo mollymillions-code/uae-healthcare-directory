@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 interface SearchPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     city?: string;
     specialty?: string;
@@ -38,7 +38,7 @@ interface SearchPageProps {
     emergency?: string;
     reason?: string;
     page?: string;
-  };
+  }>;
 }
 
 const RESULT_ICONS: Record<string, React.ElementType> = {
@@ -100,7 +100,8 @@ function ResultGroup({
   );
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
+export default async function SearchPage(props: SearchPageProps) {
+  const searchParams = await props.searchParams;
   const query: HealthcareSearchQuery = normalizeHealthcareSearchQuery({
     q: searchParams.q,
     city: searchParams.city,

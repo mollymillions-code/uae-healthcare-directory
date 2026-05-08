@@ -31,7 +31,7 @@ import { ArrowLeft, Linkedin, Twitter, Globe, Mail } from "lucide-react";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -43,7 +43,8 @@ export async function generateStaticParams() {
   return authors.map((a) => ({ slug: a.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const author = await getAuthorBySlug(params.slug);
   if (!author) return { title: "Author not found | Zavis" };
 
@@ -101,7 +102,8 @@ function AuthorInitialsAvatar({ name, sizePx = 128 }: { name: string; sizePx?: n
   );
 }
 
-export default async function AuthorProfilePage({ params }: PageProps) {
+export default async function AuthorProfilePage(props: PageProps) {
+  const params = await props.params;
   const author = await getAuthorBySlug(params.slug);
   if (!author) notFound();
 
@@ -119,7 +121,6 @@ export default async function AuthorProfilePage({ params }: PageProps) {
           { name: author.name },
         ])}
       />
-
       {/* Back link */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <Link
@@ -130,7 +131,6 @@ export default async function AuthorProfilePage({ params }: PageProps) {
           Back to Masthead
         </Link>
       </div>
-
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         {/* Hero — author header */}
         <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6 mb-10">

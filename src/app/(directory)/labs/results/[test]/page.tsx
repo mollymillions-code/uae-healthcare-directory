@@ -521,7 +521,8 @@ export function generateStaticParams() {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
-export function generateMetadata({ params }: { params: { test: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ test: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const interp = TEST_INTERPRETATIONS[params.test];
   if (!interp) return { title: "Test Results — Not Found" };
 
@@ -541,7 +542,8 @@ export function generateMetadata({ params }: { params: { test: string } }): Meta
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function LabResultsPage({ params }: { params: { test: string } }) {
+export default async function LabResultsPage(props: { params: Promise<{ test: string }> }) {
+  const params = await props.params;
   const interp = TEST_INTERPRETATIONS[params.test];
   if (!interp) notFound();
 

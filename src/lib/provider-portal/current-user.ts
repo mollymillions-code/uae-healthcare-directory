@@ -6,6 +6,6 @@ import {
 
 export async function getCurrentProviderPortalContext() {
   return validateProviderPortalSessionToken(
-    cookies().get(PROVIDER_PORTAL_SESSION_COOKIE)?.value
+    (await cookies()).get(PROVIDER_PORTAL_SESSION_COOKIE)?.value
   );
 }

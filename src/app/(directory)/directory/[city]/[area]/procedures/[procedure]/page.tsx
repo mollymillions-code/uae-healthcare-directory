@@ -20,7 +20,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string; area: string; procedure: string };
+  params: Promise<{ city: string; area: string; procedure: string }>;
 }
 
 function getProcedureBySlug(slug: string): MedicalProcedure | undefined {
@@ -66,7 +66,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const proc = getProcedureBySlug(params.procedure);
@@ -97,7 +98,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function AreaProcedurePage({ params }: Props) {
+export default async function AreaProcedurePage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const area = getAreaBySlug(params.city, params.area);
   const proc = getProcedureBySlug(params.procedure);

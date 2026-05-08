@@ -30,7 +30,7 @@ import { getBaseUrl } from "@/lib/helpers";
 import { getCityBySlug, getProviderBySlug } from "@/lib/data";
 
 interface Props {
-  params: { specialty: string; doctor: string };
+  params: Promise<{ specialty: string; doctor: string }>;
 }
 
 // Revalidate once per hour. Profiles are additive; any upsert to the index
@@ -74,7 +74,8 @@ function buildCanonicalUrl(doctor: ProfessionalIndexRecord): string {
   return `${getBaseUrl()}/find-a-doctor/${doctor.specialtySlug}/${doctor.slug}`;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const doctor = await getCachedDoctor(params.doctor);
   if (!doctor || doctor.specialtySlug !== params.specialty) {
     return { title: "Doctor not found | Zavis" };
@@ -123,7 +124,8 @@ function toTitleCase(s: string): string {
     .join(" ");
 }
 
-export default async function DoctorPage({ params }: Props) {
+export default async function DoctorPage(props: Props) {
+  const params = await props.params;
   const doctor = await getCachedDoctor(params.doctor);
   // Not found OR slug mismatch against specialty parent
   if (!doctor || doctor.status !== "active") notFound();

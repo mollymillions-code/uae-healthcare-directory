@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 const CATEGORY_SLUGS = ["physicians", "dentists", "nurses", "allied-health"];
@@ -30,7 +30,8 @@ function getCategoryMeta(slug: string) {
   return PROFESSIONAL_CATEGORIES.find((c) => c.slug === slug);
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const cat = getCategoryMeta(params.category);
   if (!cat) {
     return {
@@ -59,7 +60,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArTopEmployersByCategoryPage({ params }: Props) {
+export default async function ArTopEmployersByCategoryPage(props: Props) {
+  const params = await props.params;
   const cat = getCategoryMeta(params.category);
   if (!cat) notFound();
 

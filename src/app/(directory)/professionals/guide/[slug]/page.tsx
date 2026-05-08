@@ -148,7 +148,7 @@ function getGuideBySlug(slug: string): GuideDefinition | undefined {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
@@ -156,7 +156,8 @@ export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) return {};
 
@@ -1051,7 +1052,8 @@ function InternationalDoctorsContent() {
 
 // ─── Main Page Component ────────────────────────────────────────────────────
 
-export default function GuidePage({ params }: Props) {
+export default async function GuidePage(props: Props) {
+  const params = await props.params;
   const guide = getGuideBySlug(params.slug);
   if (!guide) notFound();
 

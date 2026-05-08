@@ -533,7 +533,8 @@ export function generateStaticParams() {
 
 /* ─── Metadata ─── */
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const guide = GUIDES.find((g) => g.slug === params.slug);
   if (!guide) return {};
   const base = getBaseUrl();
@@ -1413,7 +1414,8 @@ const GUIDE_CONTENT: Record<string, () => JSX.Element> = {
 
 /* ─── Page ─── */
 
-export default function InsuranceGuidePage({ params }: { params: { slug: string } }) {
+export default async function InsuranceGuidePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const guide = GUIDES.find((g) => g.slug === params.slug);
   if (!guide) notFound();
 

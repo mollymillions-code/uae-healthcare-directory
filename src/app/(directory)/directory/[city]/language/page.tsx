@@ -13,7 +13,7 @@ import { HubPageTemplate, type HubItem } from "@/components/directory-v2/templat
 export const revalidate = 43200;
 
 interface Props {
-  params: { city: string };
+  params: Promise<{ city: string }>;
 }
 
 export function generateStaticParams() {
@@ -21,7 +21,8 @@ export function generateStaticParams() {
   return getCities().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const base = getBaseUrl();
@@ -39,7 +40,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function LanguageIndexPage({ params }: Props) {
+export default async function LanguageIndexPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

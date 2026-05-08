@@ -99,11 +99,12 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ClinicProfilePage({
-  params,
-}: {
-  params: { providerId: string };
-}) {
+export default async function ClinicProfilePage(
+  props: {
+    params: Promise<{ providerId: string }>;
+  }
+) {
+  const params = await props.params;
   const context = await getCurrentProviderPortalContext();
   if (!context) {
     redirect(
@@ -256,7 +257,6 @@ export default async function ClinicProfilePage({
           </div>
         </div>
       </section>
-
       {/* ─── Body grid ─── */}
       <div className="mt-6 grid gap-5 px-5 sm:px-8 lg:grid-cols-[1fr_300px]">
         <div className="space-y-5">
@@ -522,7 +522,6 @@ export default async function ClinicProfilePage({
           </section>
         </aside>
       </div>
-
       {/* Footer attribution */}
       <footer className="mt-10 px-5 sm:px-8">
         <p className="font-['Geist',sans-serif] text-xs text-black/35">

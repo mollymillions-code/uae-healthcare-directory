@@ -17,7 +17,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const DOCTOR_CATEGORIES = new Set(["physicians", "dentists"]);
@@ -29,7 +29,8 @@ export function generateStaticParams() {
     .map((f) => ({ slug: f.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const profile = getFacilityProfile(params.slug);
   if (!profile) {
     return {
@@ -72,7 +73,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArDoctorsAtPage({ params }: Props) {
+export default async function ArDoctorsAtPage(props: Props) {
+  const params = await props.params;
   const profile = getFacilityProfile(params.slug);
   if (!profile) notFound();
 

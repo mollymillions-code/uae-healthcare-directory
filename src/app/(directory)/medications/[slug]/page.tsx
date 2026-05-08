@@ -20,7 +20,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -29,7 +29,8 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const data = await getMedicationWithBrands(params.slug);
   if (!data) return {};
 
@@ -58,7 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MedicationPage({ params }: Props) {
+export default async function MedicationPage(props: Props) {
+  const params = await props.params;
   const data = await safe(getMedicationWithBrands(params.slug), null, "medWithBrands");
   if (!data) notFound();
 
@@ -103,7 +105,6 @@ export default async function MedicationPage({ params }: Props) {
         nonProprietaryName: med.genericName,
         prescriptionStatus: med.isPrescriptionRequired ? "PrescriptionOnly" : "OTC",
       }} />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-surface-cream">
         <div className="pointer-events-none absolute inset-0">
@@ -180,7 +181,6 @@ export default async function MedicationPage({ params }: Props) {
           </div>
         </div>
       </section>
-
       {/* Content */}
       <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

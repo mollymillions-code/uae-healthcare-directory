@@ -494,7 +494,7 @@ export default function VerifiedReviewsPage() {
             This policy is reviewed and updated at least quarterly, and
             whenever a rollout milestone changes. Last updated: 11 April 2026.
             Arabic version:{" "}
-            <a
+            <Link
               href="/ar/verified-reviews"
               className="text-accent-dark hover:underline"
               lang="ar"
@@ -502,7 +502,7 @@ export default function VerifiedReviewsPage() {
               dir="rtl"
             >
               النسخة العربية
-            </a>
+            </Link>
             .
           </p>
         </section>

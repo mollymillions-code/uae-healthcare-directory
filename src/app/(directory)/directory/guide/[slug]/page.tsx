@@ -289,11 +289,12 @@ export function generateStaticParams() {
 
 /* ─── Dynamic metadata ─── */
 
-export function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const article = GUIDE_ARTICLES.find((a) => a.slug === params.slug);
   if (!article) return {};
   return {
@@ -307,11 +308,12 @@ export function generateMetadata({
 
 /* ─── Page component ─── */
 
-export default function GuideArticlePage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function GuideArticlePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const article = GUIDE_ARTICLES.find((a) => a.slug === params.slug);
   if (!article) notFound();
 
@@ -333,7 +335,6 @@ export default function GuideArticlePage({
         ])}
       />
       <JsonLd data={faqPageSchema(article.faqs)} />
-
       {/* Hero */}
       <section className="relative overflow-hidden bg-surface-cream">
         <div className="pointer-events-none absolute inset-0">
@@ -370,7 +371,6 @@ export default function GuideArticlePage({
           </div>
         </div>
       </section>
-
       {/* Prose body */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         <div className="max-w-[720px]">
@@ -398,7 +398,6 @@ export default function GuideArticlePage({
           </div>
         </div>
       </section>
-
       {/* FAQ */}
       <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 sm:pb-24">
         <div className="max-w-3xl">

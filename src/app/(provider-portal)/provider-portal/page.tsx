@@ -14,11 +14,12 @@ function formatDate(value: Date | string | null) {
   });
 }
 
-export default async function ProviderPortalPage({
-  searchParams,
-}: {
-  searchParams: { embed?: string };
-}) {
+export default async function ProviderPortalPage(
+  props: {
+    searchParams: Promise<{ embed?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const context = await getCurrentProviderPortalContext();
   if (!context) redirect("/provider-portal/login?redirect=/provider-portal");
 

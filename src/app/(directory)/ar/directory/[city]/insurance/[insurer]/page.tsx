@@ -20,7 +20,7 @@ import { safe } from "@/lib/safeData";
 export const revalidate = 21600;
 
 interface Props {
-  params: { city: string; insurer: string };
+  params: Promise<{ city: string; insurer: string }>;
 }
 
 // ─── Insurer type label (Arabic) ──────────────────────────────────────────────
@@ -48,7 +48,8 @@ export const dynamicParams = true;
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const insurer = getInsuranceProviders().find((i) => i.slug === params.insurer);
@@ -94,7 +95,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function ArabicInsuranceProviderPage({ params }: Props) {
+export default async function ArabicInsuranceProviderPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
 

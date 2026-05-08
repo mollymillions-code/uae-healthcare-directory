@@ -17,7 +17,7 @@ import { safe } from "@/lib/safeData";
 
 export const revalidate = 43200;
 
-interface Props { params: { city: string; category: string } }
+interface Props { params: Promise<{ city: string; category: string }> }
 
 /** Return all city × category combos that have 10+ providers with rating > 0 and reviewCount > 10 */
 export async function generateStaticParams() {
@@ -49,7 +49,8 @@ export async function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) return {};
@@ -82,7 +83,8 @@ function getRegulatorName(citySlug: string): string {
   return "the UAE healthcare regulator";
 }
 
-export default async function TopCategoryPage({ params }: Props) {
+export default async function TopCategoryPage(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   const cat = getCategoryBySlug(params.category);
   if (!city || !cat) notFound();

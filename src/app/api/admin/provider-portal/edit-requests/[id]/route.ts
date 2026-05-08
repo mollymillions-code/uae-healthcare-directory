@@ -17,10 +17,8 @@ import { readJsonObject } from "@/lib/http/read-json";
 
 export const dynamic = "force-dynamic";
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const authError = validateAdminAuth(request);
   if (authError) return authError;
 

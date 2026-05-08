@@ -2,10 +2,12 @@ import { GccBestCategoryPage, generateGccBestCategoryMetadata } from "@/componen
 
 export const revalidate = 43200;
 
-export async function generateMetadata({ params }: { params: { city: string; category: string } }) {
+export async function generateMetadata(props: { params: Promise<{ city: string; category: string }> }) {
+  const params = await props.params;
   return generateGccBestCategoryMetadata("kw", params);
 }
 
-export default function Page({ params }: { params: { city: string; category: string } }) {
+export default async function Page(props: { params: Promise<{ city: string; category: string }> }) {
+  const params = await props.params;
   return <GccBestCategoryPage countryCode="kw" params={params} />;
 }

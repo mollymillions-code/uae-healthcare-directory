@@ -20,7 +20,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { specialty: string };
+  params: Promise<{ specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -28,7 +28,8 @@ export function generateStaticParams() {
   return ALL_SPECIALTIES.map((s) => ({ specialty: s.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec) return {};
 
@@ -55,7 +56,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ArCareerSpecialtyPage({ params }: Props) {
+export default async function ArCareerSpecialtyPage(props: Props) {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec) notFound();
 

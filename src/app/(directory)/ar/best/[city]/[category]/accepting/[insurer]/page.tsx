@@ -42,7 +42,7 @@ export const dynamicParams = true;
 const TOP_N = 20;
 
 interface Props {
-  params: { city: string; category: string; insurer: string };
+  params: Promise<{ city: string; category: string; insurer: string }>;
 }
 
 function rankProviders(providers: LocalProvider[]): LocalProvider[] {
@@ -113,7 +113,8 @@ function generateBestAcceptingFaqsAr(opts: {
   ];
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const category = getCategoryBySlug(params.category);
@@ -159,7 +160,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function BestAcceptingPageAr({ params }: Props) {
+export default async function BestAcceptingPageAr(props: Props) {
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   const category = getCategoryBySlug(params.category);

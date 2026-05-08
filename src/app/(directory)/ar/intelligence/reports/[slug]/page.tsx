@@ -9,10 +9,11 @@ import { getBaseUrl } from "@/lib/helpers";
 export const revalidate = 3600;
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const report = await getReportBySlug(params.slug);
   if (!report) return {};
   const base = getBaseUrl();
@@ -41,7 +42,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ReportPageAr({ params }: PageProps) {
+export default async function ReportPageAr(props: PageProps) {
+  const params = await props.params;
   const report = await getReportBySlug(params.slug);
   if (!report) notFound();
 

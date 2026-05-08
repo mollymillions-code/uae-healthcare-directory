@@ -37,11 +37,12 @@ export function generateStaticParams() {
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
-export function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const list = getLabListBySlug(params.slug);
   if (!list) return { title: "Not Found" };
 
@@ -577,7 +578,8 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function LabListPage({ params }: { params: { slug: string } }) {
+export default async function LabListPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const list = getLabListBySlug(params.slug);
   if (!list) notFound();
 

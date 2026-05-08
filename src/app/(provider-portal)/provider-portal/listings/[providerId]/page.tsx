@@ -15,13 +15,14 @@ function formatDate(value: Date | string | null) {
   });
 }
 
-export default async function ProviderPortalListingPage({
-  params,
-  searchParams,
-}: {
-  params: { providerId: string };
-  searchParams: { embed?: string };
-}) {
+export default async function ProviderPortalListingPage(
+  props: {
+    params: Promise<{ providerId: string }>;
+    searchParams: Promise<{ embed?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const context = await getCurrentProviderPortalContext();
   if (!context) {
     const redirectTarget = `/provider-portal/listings/${encodeURIComponent(params.providerId)}${

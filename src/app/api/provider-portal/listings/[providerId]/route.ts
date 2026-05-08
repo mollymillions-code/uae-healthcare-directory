@@ -12,10 +12,8 @@ import { readJsonObject } from "@/lib/http/read-json";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { providerId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ providerId: string }> }) {
+  const params = await props.params;
   const context = await getProviderPortalContextFromRequest(request);
   if (!context) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -26,10 +24,8 @@ export async function GET(
   return NextResponse.json({ provider, editRequests });
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { providerId: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ providerId: string }> }) {
+  const params = await props.params;
   const context = await getProviderPortalContextFromRequest(request);
   if (!context) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!canManageProviderListing(context.user.role)) {

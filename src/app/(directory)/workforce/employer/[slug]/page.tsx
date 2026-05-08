@@ -16,7 +16,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
@@ -26,7 +26,8 @@ export function generateStaticParams() {
     .map((f) => ({ slug: f.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const bench = getFacilityBenchmarks(params.slug);
   if (!bench) {
     return {
@@ -67,7 +68,8 @@ function sizeTierLabel(tier: string): string {
   }
 }
 
-export default function EmployerProfilePage({ params }: Props) {
+export default async function EmployerProfilePage(props: Props) {
+  const params = await props.params;
   const bench = getFacilityBenchmarks(params.slug);
   if (!bench) notFound();
 

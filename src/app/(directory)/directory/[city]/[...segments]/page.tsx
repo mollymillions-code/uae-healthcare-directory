@@ -61,8 +61,8 @@ export const revalidate = 21600;
 export const dynamicParams = true;
 
 interface Props {
-  params: { city: string; segments: string[] };
-  searchParams?: { page?: string };
+  params: Promise<{ city: string; segments: string[] }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
 // Parse and clamp the ?page= query param to a positive integer.
@@ -93,7 +93,9 @@ function isPotentialListingRoute(citySlug: string, segments: string[]): boolean 
   return false;
 }
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
   if (isPotentialListingRoute(city.slug, params.segments)) noStore();
@@ -394,7 +396,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   }
 }
 
-export default async function CatchAllPage({ params, searchParams }: Props) {
+export default async function CatchAllPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
   if (isPotentialListingRoute(city.slug, params.segments)) noStore();

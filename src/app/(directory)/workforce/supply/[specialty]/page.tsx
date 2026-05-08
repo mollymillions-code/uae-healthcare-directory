@@ -19,7 +19,7 @@ export const revalidate = 43200;
 export const dynamicParams = true;
 
 interface Props {
-  params: { specialty: string };
+  params: Promise<{ specialty: string }>;
 }
 
 export function generateStaticParams() {
@@ -34,7 +34,8 @@ function getSupplyAssessment(per100K: number): { label: string; description: str
   return { label: "Limited", description: "Specialized care may require referral, longer wait times, or travel." };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec) return {};
 
@@ -55,7 +56,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function SupplySpecialtyPage({ params }: Props) {
+export default async function SupplySpecialtyPage(props: Props) {
+  const params = await props.params;
   const spec = getSpecialtyBySlug(params.specialty);
   if (!spec) notFound();
 
