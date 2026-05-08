@@ -10,6 +10,7 @@ import { ReviewDistribution } from "../detail/ReviewDistribution";
 import { ShareButton } from "../detail/ShareButton";
 import { HeartButton } from "../cards/HeartButton";
 import { FaqSection } from "@/components/seo/FaqSection";
+import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
 import {
   VerifiedClinicBadge,
@@ -91,6 +92,50 @@ interface Props {
 function dayOrder(key: string) {
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
   return days.indexOf(key.toLowerCase());
+}
+
+function normalizeInsuranceName(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const INSURANCE_ALIASES: Record<string, string> = {
+  "allianz care": "allianz",
+  "bupa global": "bupa",
+  "aetna international": "aetna",
+  "now health international": "now-health",
+  "dubai insurance company": "dic",
+  "oman insurance": "oman-insurance",
+  "sukoon": "oman-insurance",
+  "sukoon oman insurance": "oman-insurance",
+  "orient insurance": "orient",
+  "emirates insurance company": "emirates-insurance",
+  "national general insurance": "ngi",
+  "al sagr national insurance": "al-sagr",
+  "fidelity united insurance": "fidelity-united",
+  "dubai national insurance": "dnir",
+  "dubai national insurance and reinsurance": "dnir",
+  "salama islamic insurance": "salama",
+  "nas nextcare": "nas",
+  "nextcare": "nas",
+  "dar al takaful": "watania",
+  "takaful emarat": "takaful-emarat",
+};
+
+const INSURANCE_SLUG_BY_NAME = new Map(
+  INSURANCE_PROVIDERS.flatMap((insurer) => [
+    [normalizeInsuranceName(insurer.name), insurer.slug] as const,
+    [normalizeInsuranceName(insurer.slug), insurer.slug] as const,
+  ]),
+);
+
+function insuranceHref(citySlug: string, label: string) {
+  const normalized = normalizeInsuranceName(label);
+  const slug = INSURANCE_SLUG_BY_NAME.get(normalized) ?? INSURANCE_ALIASES[normalized];
+  return slug ? `/directory/${citySlug}/insurance/${slug}` : "/insurance";
 }
 
 export function ProviderDetailTemplate({
@@ -332,7 +377,7 @@ export function ProviderDetailTemplate({
                   {p.insurance.map((ins) => (
                     <li key={ins}>
                       <Link
-                        href={`/directory/${p.citySlug}/insurance/${ins.toLowerCase().replace(/\s+/g, "-")}`}
+                        href={insuranceHref(p.citySlug, ins)}
                         className="inline-flex items-center rounded-z-pill bg-surface-cream border border-ink-line px-3 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
                       >
                         {ins}
