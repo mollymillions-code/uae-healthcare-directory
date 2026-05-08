@@ -8,6 +8,7 @@ interface Amenity {
 }
 
 interface AmenityGridProps {
+  id?: string;
   title: string;
   items: Amenity[];
   maxVisible?: number;
@@ -19,11 +20,11 @@ interface AmenityGridProps {
  * 2-column grid of facility/service items with checkmark icons. "Show all N"
  * button at the bottom opens a ShowAllModal (caller wires it up).
  */
-export function AmenityGrid({ title, items, maxVisible = 10, onShowAll, className }: AmenityGridProps) {
+export function AmenityGrid({ id, title, items, maxVisible = 10, onShowAll, className }: AmenityGridProps) {
   const visible = items.slice(0, maxVisible);
 
   return (
-    <section className={cn("py-8 border-b border-ink-line z-anchor", className)}>
+    <section id={id} className={cn("py-8 border-b border-ink-line z-anchor", className)}>
       <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">{title}</h2>
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-10">
         {visible.map((it) => (

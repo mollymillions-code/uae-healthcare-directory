@@ -935,28 +935,36 @@ export async function generateGccSegmentsMetadata(
       // Root layout template will append " | Zavis" — DO NOT include it inline
       // or we get "{title} | Zavis | Zavis". Budget 52 chars for the inner title.
       const maxTitleLen = 52;
-      const idealTitle = `${providerDisplay}, ${city.name} — Reviews, Doctors & Insurance`;
-      let seoTitle: string;
-      if (idealTitle.length <= maxTitleLen) {
-        seoTitle = idealTitle;
-      } else {
-        const shortTitle = `${providerDisplay} — Reviews & Insurance`;
-        if (shortTitle.length <= maxTitleLen) {
-          seoTitle = shortTitle;
-        } else {
-          // Word-boundary trim on the provider name — never slice mid-word
-          // (especially important for Arabic provider names).
-          const tail = " — Reviews";
-          const nameBudget = maxTitleLen - tail.length;
-          let trimmedName = providerDisplay;
-          if (trimmedName.length > nameBudget) {
-            const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
-            trimmedName = (lastSpace > 0
-              ? trimmedName.slice(0, lastSpace)
-              : trimmedName.slice(0, nameBudget)).trim();
-          }
-          seoTitle = `${trimmedName}${tail}`;
+      const hasReviewSignal =
+        Boolean(prov.googleRating && Number(prov.googleRating) > 0) ||
+        Boolean(prov.googleReviewCount && prov.googleReviewCount > 0);
+      const intentLabel = hasReviewSignal ? "Reviews" : "Details";
+      const reviewBit = prov.googleReviewCount && prov.googleReviewCount > 0
+        ? `${prov.googleReviewCount.toLocaleString()} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
+        : intentLabel;
+      const ratingBit = prov.googleRating && Number(prov.googleRating) > 0
+        ? `★${prov.googleRating}`
+        : "";
+      const titleCandidates = [
+        `${providerDisplay}, ${city.name} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerDisplay} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerDisplay}, ${city.name} — ${intentLabel}`,
+        `${providerDisplay} — ${intentLabel}`,
+      ];
+      let seoTitle = titleCandidates.find((title) => title.length <= maxTitleLen);
+      if (!seoTitle) {
+        // Word-boundary trim on the provider name — never slice mid-word
+        // (especially important for Arabic provider names).
+        const tail = ` — ${intentLabel}`;
+        const nameBudget = maxTitleLen - tail.length;
+        let trimmedName = providerDisplay;
+        if (trimmedName.length > nameBudget) {
+          const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
+          trimmedName = (lastSpace > 0
+            ? trimmedName.slice(0, lastSpace)
+            : trimmedName.slice(0, nameBudget)).trim();
         }
+        seoTitle = `${trimmedName}${tail}`;
       }
 
       const descParts: string[] = [];
@@ -1598,6 +1606,16 @@ export async function GccSegmentsPage({
       provider.googleReviewCount > 0
     ) {
       providerFaqs.push({
+        question: `Where can I read ${provider.name} reviews?`,
+        answer: `You can read ${provider.name} reviews in the reviews section of this Zavis profile. The provider has a Google rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews.`,
+      });
+    }
+    if (
+      hasValidRating &&
+      provider.googleReviewCount &&
+      provider.googleReviewCount > 0
+    ) {
+      providerFaqs.push({
         question: `What is the Google rating of ${provider.name}?`,
         answer: `${provider.name} has a rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews on Google.`,
       });
@@ -1667,6 +1685,16 @@ export async function GccSegmentsPage({
       provider.googleReviewCount > 0
     ) {
       providerFaqsRich.push({
+        question: `Where can I read ${provider.name} reviews?`,
+        answer: `You can read ${provider.name} reviews in the <a href="${providerProfileUrl}#reviews">reviews section</a> of this Zavis profile. The provider has a Google rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews.`,
+      });
+    }
+    if (
+      hasValidRating &&
+      provider.googleReviewCount &&
+      provider.googleReviewCount > 0
+    ) {
+      providerFaqsRich.push({
         question: `What is the Google rating of ${provider.name}?`,
         answer: `${provider.name} has a rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews on Google. <a href="${providerProfileUrl}">View full profile and reviews</a>`,
       });
@@ -1689,6 +1717,31 @@ export async function GccSegmentsPage({
     const heroImageUrl = isUsableProviderImageUrl(provider.coverImageUrl)
       ? provider.coverImageUrl
       : getCategoryImagePath(category.slug);
+    const hasReviewSection = hasValidRating || Boolean(
+      provider.reviewSummaryV2 ||
+        (provider.reviewSummary &&
+          provider.reviewSummary.length > 0 &&
+          provider.reviewSummary[0] !== "No patient reviews available yet")
+    );
+    const profileSummaryLead =
+      hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0
+        ? `${provider.name} has a ${Number(provider.googleRating).toFixed(1)}/5 Google rating from ${provider.googleReviewCount.toLocaleString()} ${provider.googleReviewCount === 1 ? "review" : "reviews"}.`
+        : `${provider.name} in ${locationLabel}, ${country.name}.`;
+    const profileSummaryTopics = [
+      hasReviewSection ? "patient reviews" : null,
+      provider.address ? "address and directions" : null,
+      provider.operatingHours && Object.keys(provider.operatingHours).length > 0 ? "opening hours" : null,
+      provider.insurance.length > 0 ? "accepted insurance" : null,
+      provider.phone || provider.website ? "contact details" : null,
+    ].filter(Boolean);
+    const profileJumpLinks = [
+      { href: "#reviews", label: "Reviews", show: hasReviewSection },
+      { href: "#hours", label: "Hours", show: Boolean(provider.operatingHours && Object.keys(provider.operatingHours).length > 0) },
+      { href: "#location", label: "Address", show: Boolean(provider.address || hasValidCoords) },
+      { href: "#insurance", label: "Insurance", show: provider.insurance.length > 0 },
+      { href: "#services", label: "Services", show: provider.services.length > 0 },
+      { href: "#faq", label: "FAQ", show: providerFaqs.length > 0 },
+    ].filter((link) => link.show);
 
     return (
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -1788,6 +1841,26 @@ export async function GccSegmentsPage({
             )}
           </div>
         </div>
+        <div className="mb-8 border-b border-black/[0.06] pb-5">
+          <p className="font-['Geist',sans-serif] text-sm text-black/55 leading-relaxed max-w-4xl">
+            {profileSummaryLead}{" "}
+            {profileSummaryTopics.length > 0 &&
+              `Compare ${profileSummaryTopics.join(", ")} in ${locationLabel}.`}
+          </p>
+          {profileJumpLinks.length > 0 && (
+            <nav className="mt-4 flex flex-wrap gap-2" aria-label={`${provider.name} profile sections`}>
+              {profileJumpLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="inline-flex min-h-9 items-center rounded-full border border-black/[0.08] bg-white px-3 py-1.5 font-['Geist',sans-serif] text-sm font-medium text-black/55 hover:border-[#006828]/35 hover:text-[#006828] transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
@@ -1845,6 +1918,7 @@ export async function GccSegmentsPage({
             {/* Services */}
             {provider.services.length > 0 && (
               <div
+                id="services"
                 className="border border-black/[0.06] rounded-2xl p-6 mb-5"
                 data-section="services"
               >
@@ -1907,6 +1981,7 @@ export async function GccSegmentsPage({
               if (rows.length === 0) return null;
               return (
                 <div
+                  id="hours"
                   className="border border-black/[0.06] rounded-2xl p-6 mb-5"
                   data-section="hours"
                 >
@@ -1936,6 +2011,7 @@ export async function GccSegmentsPage({
             {/* Insurance */}
             {provider.insurance.length > 0 && (
               <div
+                id="insurance"
                 className="border border-black/[0.06] rounded-2xl p-6 mb-5"
                 data-section="insurance"
               >
@@ -1962,6 +2038,7 @@ export async function GccSegmentsPage({
             {/* Patient reviews — v2 bulky block when available, else legacy bullets */}
             {provider.reviewSummaryV2 ? (
               <div
+                id="reviews"
                 className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
                 data-section="reviews"
               >
@@ -2090,36 +2167,61 @@ export async function GccSegmentsPage({
                   )}
                 </p>
               </div>
-            ) : (
-              provider.reviewSummary &&
+            ) : provider.reviewSummary &&
               provider.reviewSummary.length > 0 &&
-              provider.reviewSummary[0] !== "No patient reviews available yet" && (
-                <div
-                  className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
-                  data-section="reviews"
-                >
-                  <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
-                    <MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say
-                  </h2>
-                  <ul className="space-y-2">
-                    {provider.reviewSummary.map((point: string, idx: number) => (
-                      <li
-                        key={idx}
-                        className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50"
-                      >
-                        <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {hasValidRating && (
-                    <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
-                      Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
-                    </p>
-                  )}
-                </div>
-              )
-            )}
+              provider.reviewSummary[0] !== "No patient reviews available yet" ? (
+              <div
+                id="reviews"
+                className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
+                data-section="reviews"
+              >
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
+                  <MessageSquareQuote className="h-5 w-5 text-[#006828]" /> What patients say
+                </h2>
+                <ul className="space-y-2">
+                  {provider.reviewSummary.map((point: string, idx: number) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-2 font-['Geist',sans-serif] text-sm text-black/50"
+                    >
+                      <CheckCircle className="h-4 w-4 text-[#006828] flex-shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                {hasValidRating && (
+                  <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-4 pt-3 border-t border-black/[0.06]">
+                    Based on {provider.googleReviewCount?.toLocaleString()} Google reviews. Rating: {provider.googleRating}/5 stars.
+                  </p>
+                )}
+              </div>
+            ) : hasValidRating ? (
+              <div
+                id="reviews"
+                className="border border-black/[0.06] rounded-2xl p-6 mb-5 bg-[#f8f8f6]"
+                data-section="reviews"
+              >
+                <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[#1c1c1c] mb-3 flex items-center gap-2 tracking-tight">
+                  <MessageSquareQuote className="h-5 w-5 text-[#006828]" /> Reviews
+                </h2>
+                <p className="font-['Geist',sans-serif] text-sm text-black/60 leading-relaxed">
+                  {provider.name} has a Google rating of {provider.googleRating}/5
+                  {provider.googleReviewCount
+                    ? ` from ${provider.googleReviewCount.toLocaleString()} ${provider.googleReviewCount === 1 ? "review" : "reviews"}`
+                    : ""}.
+                </p>
+                {provider.googleMapsUri && (
+                  <a
+                    href={provider.googleMapsUri}
+                    target="_blank"
+                    rel="nofollow noopener"
+                    className="mt-3 inline-flex font-['Geist',sans-serif] text-sm font-medium text-[#006828] hover:underline"
+                  >
+                    Read original reviews on Google Maps →
+                  </a>
+                )}
+              </div>
+            ) : null}
 
             {/* Languages */}
             {provider.languages.length > 0 && (
@@ -2140,6 +2242,7 @@ export async function GccSegmentsPage({
 
             {/* Map */}
             <div
+              id="location"
               className="border border-black/[0.06] rounded-2xl p-6 mb-5"
               data-section="location"
             >
@@ -2165,7 +2268,7 @@ export async function GccSegmentsPage({
               </span>
             </div>
 
-            <div className="bg-[#006828]/[0.04] rounded-2xl p-6">
+            <div id="faq" className="bg-[#006828]/[0.04] rounded-2xl p-6">
               <FaqSection
                 faqs={providerFaqs}
                 title={`${provider.name} — FAQ`}

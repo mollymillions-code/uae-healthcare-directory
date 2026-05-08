@@ -259,44 +259,32 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       const prov = resolved.provider;
       const hasRating = prov.googleRating && Number(prov.googleRating) > 0;
       const ratingBit = hasRating ? `★${prov.googleRating}` : "";
+      const hasReviewSignal = hasRating || Boolean(prov.googleReviewCount && prov.googleReviewCount > 0);
+      const intentLabel = hasReviewSignal ? "Reviews" : "Details";
       const reviewBit = prov.googleReviewCount && prov.googleReviewCount > 0
-        ? `${prov.googleReviewCount.toLocaleString()} Reviews`
-        : "";
-      const catShort = resolved.category.name;
+        ? `${prov.googleReviewCount.toLocaleString()} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
+        : intentLabel;
 
-      // Build title from most CTR-impactful parts, progressively trimming
-      // Format priority: "Name City — ★4.5 · Category · 123 Reviews"
-      const titleParts = [ratingBit, catShort, reviewBit].filter(Boolean);
-      const titleTail = titleParts.length > 0 ? ` — ${titleParts.join(" · ")}` : "";
-      const idealTitle = `${providerDisplay} ${city.name}${titleTail}`;
+      // Build title for provider-name and provider-name-reviews SERPs.
+      // "Reviews" must survive truncation on review-backed profiles because
+      // Search Console shows those queries ranking in positions 3-9 with weak CTR.
+      const titleCandidates = [
+        `${providerDisplay} ${city.name} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerDisplay} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerDisplay} ${city.name} — ${intentLabel}`,
+        `${providerDisplay} — ${intentLabel}`,
+      ].filter((title) => title.trim().length > 0);
 
-      let seoTitle: string;
-      if (idealTitle.length <= maxTitleLen) {
-        seoTitle = idealTitle;
-      } else {
-        // Drop review count first
-        const medParts = [ratingBit, catShort].filter(Boolean);
-        const medTitle = `${providerDisplay} ${city.name} — ${medParts.join(" · ")}`;
-        if (medTitle.length <= maxTitleLen) {
-          seoTitle = medTitle;
-        } else {
-          // Drop city, keep rating + category
-          const shortParts = [ratingBit, catShort].filter(Boolean);
-          const shortTitle = `${providerDisplay} — ${shortParts.join(" · ")}`;
-          if (shortTitle.length <= maxTitleLen) {
-            seoTitle = shortTitle;
-          } else {
-            // Word-boundary trim on name + rating only
-            const tail = hasRating ? ` — ${ratingBit}` : "";
-            const nameBudget = maxTitleLen - tail.length;
-            let trimmedName = providerDisplay;
-            if (trimmedName.length > nameBudget) {
-              const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
-              trimmedName = (lastSpace > 0 ? trimmedName.slice(0, lastSpace) : trimmedName.slice(0, nameBudget)).trim();
-            }
-            seoTitle = `${trimmedName}${tail}`;
-          }
+      let seoTitle = titleCandidates.find((title) => title.length <= maxTitleLen);
+      if (!seoTitle) {
+        const tail = ` — ${intentLabel}`;
+        const nameBudget = maxTitleLen - tail.length;
+        let trimmedName = providerDisplay;
+        if (trimmedName.length > nameBudget) {
+          const lastSpace = trimmedName.lastIndexOf(" ", nameBudget);
+          trimmedName = (lastSpace > 0 ? trimmedName.slice(0, lastSpace) : trimmedName.slice(0, nameBudget)).trim();
         }
+        seoTitle = `${trimmedName}${tail}`;
       }
 
       // --- SEO description: CTR-optimized, max ~155 chars ---
@@ -1388,6 +1376,12 @@ export default async function CatchAllPage(props: Props) {
       { question: `What medical services are available at ${provider.name}?`, answer: provider.services.length > 0 ? `${provider.name} provides the following medical services: ${provider.services.join(", ")}. This information is sourced from official UAE health authority records.` : `Contact ${provider.name} for a full list of available medical services.` },
       { question: `How do I get to ${provider.name} in ${locationLabel}?`, answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${parseFloat(provider.latitude) !== 0 ? " You can use any maps app for turn-by-turn directions." : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}` },
     ];
+    if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
+      providerFaqs.push({
+        question: `Where can I read ${provider.name} reviews?`,
+        answer: `You can read ${provider.name} reviews in the reviews section of this Zavis profile. The provider has a Google rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews.`,
+      });
+    }
     // Dynamic FAQ: Google rating
     if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
       providerFaqs.push({
@@ -1456,6 +1450,12 @@ export default async function CatchAllPage(props: Props) {
         answer: `${provider.name} is located at ${provider.address}${areaName ? `, in the ${areaName} area of ${city.name}` : `, ${city.name}`}, UAE.${hasValidCoords ? ` <a href="https://maps.google.com/?q=${lat},${lng}">Get directions</a>` : ""} ${provider.phone ? `For directions or appointments, call ${provider.phone}.` : ""}`,
       },
     ];
+    if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
+      providerFaqsRich.push({
+        question: `Where can I read ${provider.name} reviews?`,
+        answer: `You can read ${provider.name} reviews in the <a href="${providerProfileUrl}#reviews">reviews section</a> of this Zavis profile. The provider has a Google rating of ${provider.googleRating}/5 based on ${provider.googleReviewCount.toLocaleString()} patient reviews.`,
+      });
+    }
     if (hasValidRating && provider.googleReviewCount && provider.googleReviewCount > 0) {
       providerFaqsRich.push({
         question: `What is the Google rating of ${provider.name}?`,

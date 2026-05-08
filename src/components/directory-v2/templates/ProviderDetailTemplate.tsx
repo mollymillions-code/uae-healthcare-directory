@@ -150,6 +150,30 @@ export function ProviderDetailTemplate({
 
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
+  const reviewCount = p.googleReviewCount ?? 0;
+  const hasReviews = hasRating || reviewCount > 0 || Boolean(p.reviewSummaryV2 || (p.reviewSummary && p.reviewSummary.length > 0));
+  const locationText = areaName && cityName ? `${areaName}, ${cityName}` : areaName || cityName || "";
+  const profileSummaryLead = hasRating && reviewCount > 0
+    ? `${p.name} has a ${rating.toFixed(1)}/5 Google rating from ${reviewCount.toLocaleString()} ${reviewCount === 1 ? "review" : "reviews"}.`
+    : `${p.name}${locationText ? ` in ${locationText}` : ""}.`;
+  const profileSummaryTopics = [
+    hasReviews ? "patient reviews" : null,
+    p.address ? "address and directions" : null,
+    p.operatingHours && Object.keys(p.operatingHours).length > 0 ? "opening hours" : null,
+    p.insurance && p.insurance.length > 0 ? "accepted insurance" : null,
+    p.phone || p.whatsapp || p.website ? "contact details" : null,
+  ].filter(Boolean);
+  const profileSummary = profileSummaryTopics.length > 0
+    ? `${profileSummaryLead} Compare ${profileSummaryTopics.join(", ")}${locationText ? ` in ${locationText}` : ""}.`
+    : profileSummaryLead;
+  const profileJumpLinks = [
+    { href: "#reviews", label: "Reviews", show: hasReviews },
+    { href: "#hours", label: "Hours", show: Boolean(p.operatingHours && Object.keys(p.operatingHours).length > 0) },
+    { href: "#location", label: "Address", show: Boolean(p.address || (p.latitude && p.longitude)) },
+    { href: "#insurance", label: "Insurance", show: Boolean(p.insurance && p.insurance.length > 0) },
+    { href: "#services", label: "Services", show: Boolean(p.services && p.services.length > 0) },
+    { href: "#faq", label: "FAQ", show: Boolean(faqs && faqs.length > 0) },
+  ].filter((link) => link.show);
 
   const primaryCtaHref = p.phone
     ? `tel:${p.phone}`
@@ -247,6 +271,22 @@ export function ProviderDetailTemplate({
                 </Link>
               </div>
             )}
+            <p className="mt-4 max-w-3xl font-sans text-z-body text-ink-soft leading-relaxed">
+              {profileSummary}
+            </p>
+            {profileJumpLinks.length > 0 && (
+              <nav className="mt-4 flex flex-wrap gap-2" aria-label={`${p.name} profile sections`}>
+                {profileJumpLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="inline-flex min-h-9 items-center rounded-z-pill border border-ink-line bg-white px-3 py-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:border-ink hover:text-ink transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </nav>
+            )}
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
             <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
@@ -324,6 +364,7 @@ export function ProviderDetailTemplate({
             {/* Services */}
             {p.services && p.services.length > 0 && (
               <AmenityGrid
+                id="services"
                 title="Services offered"
                 items={p.services.map((s) => ({ label: s, icon: <Stethoscope className="h-4 w-4" strokeWidth={2.25} /> }))}
                 maxVisible={12}
