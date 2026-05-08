@@ -120,11 +120,7 @@ export default async function TopUAEPage() {
       providers={top10.map((p) => {
         const cat = categories.find((c) => c.slug === p.categorySlug);
         return {
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: cat?.name ?? null,
           address: p.address,
           googleRating: p.googleRating,

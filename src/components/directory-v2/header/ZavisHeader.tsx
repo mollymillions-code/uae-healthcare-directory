@@ -77,8 +77,8 @@ function focusPageSearch(segment: SearchSegment | "query" = "query"): boolean {
     query: "[data-zavis-search-query='true']",
     specialty: "[data-zavis-search-specialty='true']",
     city: "[data-zavis-search-city='true']",
+    condition: "[data-zavis-search-condition='true']",
     insurance: "[data-zavis-search-insurance='true']",
-    date: "[data-zavis-search-query='true']",
   };
   const selector = fieldMap[segment] || fieldMap.query;
   const field = root.matches(selector)
@@ -119,7 +119,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
   const [searchState, setSearchState] = useState<SearchPillState>({
     specialty: "",
     city: "",
-    date: "",
+    condition: "",
     insurance: "",
   });
 
@@ -147,7 +147,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
     const params = new URLSearchParams();
     if (searchState.specialty) params.set("category", searchState.specialty);
     if (searchState.city) params.set("city", searchState.city);
-    if (searchState.date) params.set("when", searchState.date);
+    if (searchState.condition) params.set("condition", searchState.condition);
     if (searchState.insurance) params.set("insurance", searchState.insurance);
     dispatchRouteLoadingStart();
     router.push(`/search?${params.toString()}`);

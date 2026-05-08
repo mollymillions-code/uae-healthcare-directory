@@ -4,12 +4,12 @@ import { Search } from "lucide-react";
 import { getSearchFacetDisplayLabel } from "@/lib/search/normalization";
 import { cn } from "../shared/cn";
 
-export type SearchSegment = "specialty" | "city" | "date" | "insurance";
+export type SearchSegment = "specialty" | "city" | "condition" | "insurance";
 
 export interface SearchPillState {
   specialty: string;
   city: string;
-  date: string;
+  condition: string;
   insurance: string;
 }
 
@@ -25,7 +25,7 @@ interface SearchPillProps {
 const SEGMENTS: { key: SearchSegment; label: string; placeholder: string }[] = [
   { key: "specialty", label: "Specialty", placeholder: "Any specialty" },
   { key: "city",      label: "City",      placeholder: "Anywhere in UAE" },
-  { key: "date",      label: "Date",      placeholder: "Anytime" },
+  { key: "condition", label: "Condition", placeholder: "Reason for care" },
   { key: "insurance", label: "Insurance", placeholder: "Any insurance" },
 ];
 

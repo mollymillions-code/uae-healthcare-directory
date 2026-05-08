@@ -102,8 +102,10 @@ export async function generateGccDirectoryMetadata(
   if (!country) return {};
 
   const cities = getCitiesByCountry(country.code);
-  const cityCounts = await Promise.all(
-    cities.map((c) => getProviderCountByCity(c.slug))
+  const cityCounts = await safe(
+    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
+    cities.map(() => 0) as number[],
+    `gccDirectoryMeta:${country.code}:cityCounts`
   );
   const totalProviders = cityCounts.reduce((sum, n) => sum + n, 0);
   const base = getBaseUrl();
@@ -418,7 +420,11 @@ export async function generateGccCityMetadata(
   const city = getCityBySlug(params.city);
   if (!city || !cityBelongsToCountry(params.city, country.code)) return {};
 
-  const count = await getProviderCountByCity(city.slug);
+  const count = await safe(
+    getProviderCountByCity(city.slug),
+    0,
+    `gccCityMeta:${country.code}:${city.slug}:count`
+  );
   const year = new Date().getFullYear();
   const base = getBaseUrl();
   const url = `${base}${countryDirectoryUrl(country.code, city.slug)}`;
@@ -818,11 +824,15 @@ export async function generateGccSegmentsMetadata(
 
   switch (resolved.type) {
     case "city-category": {
-      const { total } = await getProviders({
-        citySlug: city.slug,
-        categorySlug: resolved.category.slug,
-        limit: 1,
-      });
+      const { total } = await safe(
+        getProviders({
+          citySlug: city.slug,
+          categorySlug: resolved.category.slug,
+          limit: 1,
+        }),
+        { providers: [], total: 0, page: 1, totalPages: 0 },
+        `gccSegmentsMeta:${country.code}:${city.slug}:${resolved.category.slug}`
+      );
       const year = new Date().getFullYear();
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.category.slug)}`;
       return {
@@ -859,11 +869,15 @@ export async function generateGccSegmentsMetadata(
       };
     }
     case "city-area": {
-      const { total } = await getProviders({
-        citySlug: city.slug,
-        areaSlug: resolved.area.slug,
-        limit: 1,
-      });
+      const { total } = await safe(
+        getProviders({
+          citySlug: city.slug,
+          areaSlug: resolved.area.slug,
+          limit: 1,
+        }),
+        { providers: [], total: 0, page: 1, totalPages: 0 },
+        `gccSegmentsMeta:${country.code}:${city.slug}:${resolved.area.slug}`
+      );
       const year = new Date().getFullYear();
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.area.slug)}`;
       return {
@@ -886,12 +900,16 @@ export async function generateGccSegmentsMetadata(
       };
     }
     case "area-category": {
-      const { total } = await getProviders({
-        citySlug: city.slug,
-        areaSlug: resolved.area.slug,
-        categorySlug: resolved.category.slug,
-        limit: 1,
-      });
+      const { total } = await safe(
+        getProviders({
+          citySlug: city.slug,
+          areaSlug: resolved.area.slug,
+          categorySlug: resolved.category.slug,
+          limit: 1,
+        }),
+        { providers: [], total: 0, page: 1, totalPages: 0 },
+        `gccSegmentsMeta:${country.code}:${city.slug}:${resolved.area.slug}:${resolved.category.slug}`
+      );
       const year = new Date().getFullYear();
       const url = `${base}${countryDirectoryUrl(country.code, city.slug, resolved.area.slug, resolved.category.slug)}`;
       return {
@@ -938,7 +956,7 @@ export async function generateGccSegmentsMetadata(
       const hasReviewSignal =
         Boolean(prov.googleRating && Number(prov.googleRating) > 0) ||
         Boolean(prov.googleReviewCount && prov.googleReviewCount > 0);
-      const intentLabel = hasReviewSignal ? "Reviews" : "Details";
+      const intentLabel = hasReviewSignal ? "Reviews" : resolved.category.name;
       const reviewBit = prov.googleReviewCount && prov.googleReviewCount > 0
         ? `${prov.googleReviewCount.toLocaleString()} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
         : intentLabel;
@@ -1141,17 +1159,8 @@ export async function GccSegmentsPage({
             </>
           }
           providers={providers.map((p) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            citySlug: p.citySlug,
-            categorySlug: p.categorySlug,
+            ...p,
             categoryName: category.name,
-            address: p.address ?? null,
-            googleRating: p.googleRating,
-            googleReviewCount: p.googleReviewCount,
-            isClaimed: p.isClaimed,
-            isVerified: p.isVerified,
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
@@ -1337,17 +1346,8 @@ export async function GccSegmentsPage({
             </>
           }
           providers={providers.map((p) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            citySlug: p.citySlug,
-            categorySlug: p.categorySlug,
+            ...p,
             categoryName: categoryNameBySlug[p.categorySlug] ?? null,
-            address: p.address ?? null,
-            googleRating: p.googleRating,
-            googleReviewCount: p.googleReviewCount,
-            isClaimed: p.isClaimed,
-            isVerified: p.isVerified,
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
@@ -1485,17 +1485,8 @@ export async function GccSegmentsPage({
             </>
           }
           providers={providers.map((p) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            citySlug: p.citySlug,
-            categorySlug: p.categorySlug,
+            ...p,
             categoryName: category.name,
-            address: p.address ?? null,
-            googleRating: p.googleRating,
-            googleReviewCount: p.googleReviewCount,
-            isClaimed: p.isClaimed,
-            isVerified: p.isVerified,
             photos: p.photos ?? [],
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
@@ -1544,15 +1535,23 @@ export async function GccSegmentsPage({
       ? getAreaBySlug(city.slug, provider.areaSlug)
       : null;
     const nearbyProviders = (
-      await getTopRatedProviders(city.slug, 4)
+      await safe(
+        getTopRatedProviders(city.slug, 4),
+        [] as Awaited<ReturnType<typeof getTopRatedProviders>>,
+        `gccListing:${country.code}:${city.slug}:${provider.slug}:nearby`
+      )
     ).filter((p) => p.id !== provider.id);
-    const sameCategoryResult = await getProviders({
-      citySlug: city.slug,
-      categorySlug: category.slug,
-      areaSlug: area?.slug,
-      limit: 7,
-      sort: "rating",
-    });
+    const sameCategoryResult = await safe(
+      getProviders({
+        citySlug: city.slug,
+        categorySlug: category.slug,
+        areaSlug: area?.slug,
+        limit: 7,
+        sort: "rating",
+      }),
+      { providers: [], total: 0, page: 1, totalPages: 0 },
+      `gccListing:${country.code}:${city.slug}:${provider.slug}:sameCategory`
+    );
     const sameCategoryProviders = sameCategoryResult.providers
       .filter((p) => p.id !== provider.id)
       .slice(0, 6);
@@ -2298,10 +2297,15 @@ export async function GccSegmentsPage({
                           {sp.name}
                         </p>
                         {Number(sp.googleRating) > 0 && (
-                          <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
-                            {sp.googleRating}/5 ★ &middot;{" "}
-                            {sp.googleReviewCount?.toLocaleString()} reviews
-                          </p>
+                          <>
+                            <p className="font-['Geist',sans-serif] text-xs text-black/30 mt-0.5">
+                              {sp.googleRating}/5 ★ &middot;{" "}
+                              {sp.googleReviewCount?.toLocaleString()} reviews
+                            </p>
+                            <p className="font-['Geist',sans-serif] text-xs text-black/25 mt-0.5">
+                              {sp.name} reviews
+                            </p>
+                          </>
                         )}
                         {sp.areaSlug && (
                           <p className="font-['Geist',sans-serif] text-xs text-black/25 mt-0.5">

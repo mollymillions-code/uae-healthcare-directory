@@ -5,7 +5,7 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Pagination } from "@/components/shared/Pagination";
 import {
-  getCityBySlug, getCities, getCategories,
+  getCityBySlug, getCities, getCategories, getCategoryBySlug,
   getInsuranceProviders, getProvidersByInsurance, getProviderCountByInsurance,
 } from "@/lib/data";
 import {
@@ -252,17 +252,8 @@ export default async function InsuranceProviderPage(props: Props) {
       aeoAnswer={answerParagraph}
       total={count}
       providers={pagedProviders.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
-        categoryName: null,
-        address: p.address,
-        googleRating: p.googleRating,
-        googleReviewCount: p.googleReviewCount,
-        isClaimed: p.isClaimed,
-        isVerified: p.isVerified,
+        ...p,
+        categoryName: getCategoryBySlug(p.categorySlug)?.name ?? null,
         photos: p.photos ?? null,
         coverImageUrl: p.coverImageUrl ?? null,
       }))}

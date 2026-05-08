@@ -114,11 +114,7 @@ export default async function LanguageProviderPage(props: Props) {
       }
       total={count}
       providers={capped.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
+        ...p,
         categoryName: null,
         address: p.address,
         googleRating: p.googleRating,

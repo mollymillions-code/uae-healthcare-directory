@@ -202,6 +202,7 @@ export function SearchBar({
           </label>
           <select
             id="search-condition"
+            data-zavis-search-condition="true"
             value={condition}
             onChange={(e) => setCondition(e.target.value)}
             className="input-tc cursor-pointer"

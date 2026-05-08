@@ -243,17 +243,8 @@ export default async function ConditionPage(props: Props) {
       }
       total={count}
       providers={displayProviders.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
-        categoryName: null,
-        address: p.address,
-        googleRating: p.googleRating,
-        googleReviewCount: p.googleReviewCount,
-        isClaimed: p.isClaimed,
-        isVerified: p.isVerified,
+        ...p,
+        categoryName: getCategoryBySlug(p.categorySlug)?.name ?? null,
         photos: p.photos ?? null,
         coverImageUrl: p.coverImageUrl ?? null,
       }))}

@@ -67,6 +67,7 @@ function toTitleCase(s: string): string {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const base = getBaseUrl();
   const specialtyName = resolveSpecialtyName(params.specialty);
   const { total } = await safe(
@@ -75,16 +76,20 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     "specialty:metadataCount",
   );
   const year = new Date().getFullYear();
+  const pageRaw = Number(searchParams?.page ?? "1");
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
+  const pageSuffix = page > 1 ? `?page=${page}` : "";
+  const pageTitleSuffix = page > 1 ? ` — Page ${page}` : "";
   const rawTitle =
     total > 0
-      ? `${total}+ ${specialtyName} Doctors in Dubai [${year}] | Zavis`
-      : `${specialtyName} Doctors in Dubai | Zavis`;
+      ? `${total}+ ${specialtyName} Doctors in Dubai [${year}]${pageTitleSuffix} | Zavis`
+      : `${specialtyName} Doctors in Dubai${pageTitleSuffix} | Zavis`;
   const rawDescription =
     total > 0
       ? `Browse ${total} UAE-licensed (Dubai) ${specialtyName} doctors in Dubai, sourced from the official Sheryan register. Facility, license type, and specialty details verified monthly.`
       : `${specialtyName} doctors in Dubai, sourced from the official DHA Sheryan register.`;
 
-  const canonical = `${base}/find-a-doctor/${params.specialty}`;
+  const canonical = `${base}/find-a-doctor/${params.specialty}${pageSuffix}`;
   return {
     title: truncateTitle(rawTitle),
     description: truncateDescription(rawDescription),

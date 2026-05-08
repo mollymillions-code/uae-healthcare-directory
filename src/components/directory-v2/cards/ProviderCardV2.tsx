@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BadgeCheck, Star } from "lucide-react";
+import { Accessibility, BadgeCheck, Star } from "lucide-react";
 import { PhotoCarousel } from "./PhotoCarousel";
 import { HeartButton } from "./HeartButton";
 import { cn } from "../shared/cn";
@@ -22,7 +22,19 @@ export interface ProviderCardV2Props {
   isClaimed?: boolean | null;
   isVerified?: boolean | null;
   photos?: string[] | null;
+  galleryPhotos?: Array<{ url?: string | null } | string> | null;
+  logoUrl?: string | null;
   coverImageUrl?: string | null;
+  insurance?: string[] | null;
+  languages?: string[] | null;
+  services?: string[] | null;
+  operatingHours?: Record<string, { open: string; close: string }> | null;
+  accessibilityOptions?: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  } | null;
   basePath?: string;
   ribbon?: string | null;
   priority?: boolean;
@@ -39,6 +51,21 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
   const href = `${base}/${p.citySlug}/${p.categorySlug}/${p.slug}`;
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
+  const topInsurance = (p.insurance ?? []).filter(Boolean).slice(0, 2);
+  const insuranceRemainder = Math.max(0, (p.insurance ?? []).length - topInsurance.length);
+  const topLanguages = (p.languages ?? []).filter(Boolean).slice(0, 2);
+  const topServices = (p.services ?? []).filter(Boolean).slice(0, 2);
+  const wheelchair = Boolean(
+    p.accessibilityOptions?.wheelchairAccessibleEntrance ||
+      p.accessibilityOptions?.wheelchairAccessibleParking ||
+      p.accessibilityOptions?.wheelchairAccessibleRestroom ||
+      p.accessibilityOptions?.wheelchairAccessibleSeating
+  );
+  const hasHours = Boolean(
+    p.operatingHours &&
+      typeof p.operatingHours === "object" &&
+      Object.keys(p.operatingHours).length > 0
+  );
 
   const photos = collectProviderImageUrls(p);
   if (photos.length === 0) photos.push("/images/placeholder-provider.svg");
@@ -119,6 +146,51 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
               <BadgeCheck className="h-3 w-3 text-accent-dark" strokeWidth={2.5} />
               Claimed by provider
             </span>
+          </p>
+        )}
+        {(topInsurance.length > 0 || topLanguages.length > 0 || wheelchair || hasHours) && (
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Provider decision signals">
+            {hasHours ? (
+              <span className="inline-flex items-center rounded-z-pill bg-ink/5 px-2 py-0.5 font-sans text-z-micro font-medium text-ink-muted">
+                Hours listed
+              </span>
+            ) : null}
+            {topInsurance.map((insurance) => (
+              <span
+                key={insurance}
+                title={insurance}
+                className="inline-flex max-w-[96px] items-center truncate rounded-z-pill bg-accent-muted px-2 py-0.5 font-sans text-z-micro font-medium text-accent-dark"
+              >
+                {insurance}
+              </span>
+            ))}
+            {insuranceRemainder > 0 && (
+              <span className="inline-flex items-center rounded-z-pill bg-ink/5 px-2 py-0.5 font-sans text-z-micro font-medium text-ink-muted">
+                +{insuranceRemainder} plans
+              </span>
+            )}
+            {topLanguages.map((language) => (
+              <span
+                key={language}
+                className="inline-flex items-center rounded-z-pill bg-ink/5 px-2 py-0.5 font-sans text-z-micro font-medium text-ink-soft"
+              >
+                {language}
+              </span>
+            ))}
+            {wheelchair && (
+              <span
+                className="inline-flex items-center gap-1 rounded-z-pill bg-ink/5 px-2 py-0.5 font-sans text-z-micro font-medium text-ink-soft"
+                aria-label="Wheelchair-accessible signals listed"
+              >
+                <Accessibility className="h-3 w-3" aria-hidden="true" />
+                Accessible
+              </span>
+            )}
+          </div>
+        )}
+        {topServices.length > 0 && (
+          <p className="mt-1.5 font-sans text-z-caption text-ink-muted line-clamp-1">
+            {topServices.join(" · ")}
           </p>
         )}
       </div>

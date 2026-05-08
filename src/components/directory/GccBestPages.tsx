@@ -31,8 +31,15 @@ import {
   countryBestUrl,
   COUNTRY_LOCALES,
 } from "@/lib/country-directory-utils";
+import { safe } from "@/lib/safeData";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
+
+type ProviderResult = Awaited<ReturnType<typeof getProviders>>;
+
+function emptyProviderResult(): ProviderResult {
+  return { providers: [], total: 0, page: 1, totalPages: 0 };
+}
 
 function titleCase(s: string): string {
   return s
@@ -91,12 +98,16 @@ async function getTopRatedForCategory(
   citySlug: string,
   categorySlug: string
 ): Promise<LocalProvider | undefined> {
-  const { providers } = await getProviders({
-    citySlug,
-    categorySlug,
-    sort: "rating",
-    limit: 10,
-  });
+  const { providers } = await safe(
+    getProviders({
+      citySlug,
+      categorySlug,
+      sort: "rating",
+      limit: 10,
+    }),
+    emptyProviderResult(),
+    `gccBest:topRated:${citySlug}:${categorySlug}`
+  );
   return providers
     .filter((p) => Number(p.googleRating) > 0)
     .sort((a, b) => {
@@ -154,8 +165,10 @@ export async function generateGccBestIndexMetadata(
   if (!country) return {};
 
   const cities = getCitiesByCountry(country.code);
-  const cityCounts = await Promise.all(
-    cities.map((c) => getProviderCountByCity(c.slug))
+  const cityCounts = await safe(
+    Promise.all(cities.map((c) => getProviderCountByCity(c.slug))),
+    cities.map(() => 0),
+    `gccBestIndexMeta:${country.code}:cityCounts`
   );
   const totalProviders = cityCounts.reduce((sum, n) => sum + n, 0);
   const base = getBaseUrl();
@@ -205,11 +218,15 @@ export async function GccBestIndexPage({
   const cityDataRaw = await Promise.all(
     cities.map(async (city) => {
       const [count, catCounts] = await Promise.all([
-        getProviderCountByCity(city.slug),
-        Promise.all(
-          categories.map((cat) =>
-            getProviderCountByCategoryAndCity(cat.slug, city.slug)
-          )
+        safe(getProviderCountByCity(city.slug), 0, `gccBestIndex:${city.slug}:count`),
+        safe(
+          Promise.all(
+            categories.map((cat) =>
+              getProviderCountByCategoryAndCity(cat.slug, city.slug)
+            )
+          ),
+          categories.map(() => 0),
+          `gccBestIndex:${city.slug}:catCounts`
         ),
       ]);
       const catCount = catCounts.filter((c) => c > 0).length;
@@ -442,7 +459,11 @@ export async function generateGccBestCityMetadata(
   const city = getCityBySlug(params.city);
   if (!city || !cityBelongsToCountry(params.city, country.code)) return {};
 
-  const totalCount = await getProviderCountByCity(city.slug);
+  const totalCount = await safe(
+    getProviderCountByCity(city.slug),
+    0,
+    `gccBestCityMeta:${city.slug}:count`
+  );
   const base = getBaseUrl();
   const url = `${base}${countryBestUrl(country.code, city.slug)}`;
   const year = new Date().getFullYear();
@@ -490,14 +511,19 @@ export async function GccBestCityPage({
 
   const base = getBaseUrl();
   const regulatorStr = country.regulators.join(", ");
-  const totalCount = await getProviderCountByCity(city.slug);
+  const totalCount = await safe(
+    getProviderCountByCity(city.slug),
+    0,
+    `gccBestCity:${city.slug}:count`
+  );
   const categories = getCategories();
 
   const categoryDataRaw = await Promise.all(
     categories.map(async (cat) => {
-      const count = await getProviderCountByCategoryAndCity(
-        cat.slug,
-        city.slug
+      const count = await safe(
+        getProviderCountByCategoryAndCity(cat.slug, city.slug),
+        0,
+        `gccBestCity:${city.slug}:${cat.slug}:count`
       );
       if (count === 0) return null;
       const topProvider = await getTopRatedForCategory(city.slug, cat.slug);
@@ -519,7 +545,11 @@ export async function GccBestCityPage({
       .filter((c) => c.slug !== city.slug)
       .map(async (c) => ({
         ...c,
-        totalProviders: await getProviderCountByCity(c.slug),
+        totalProviders: await safe(
+          getProviderCountByCity(c.slug),
+          0,
+          `gccBestCity:${city.slug}:other:${c.slug}`
+        ),
       }))
   );
   const otherCities = otherCitiesRaw
@@ -744,19 +774,24 @@ export async function generateGccBestCategoryMetadata(
   const category = getCategoryBySlug(params.category);
   if (!category) return {};
 
-  const count = await getProviderCountByCategoryAndCity(
-    category.slug,
-    city.slug
+  const count = await safe(
+    getProviderCountByCategoryAndCity(category.slug, city.slug),
+    0,
+    `gccBestCategoryMeta:${city.slug}:${category.slug}:count`
   );
   const base = getBaseUrl();
   const url = `${base}${countryBestUrl(country.code, city.slug, category.slug)}`;
 
-  const { providers } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: category.slug,
-    sort: "rating",
-    limit: 1,
-  });
+  const { providers } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      sort: "rating",
+      limit: 1,
+    }),
+    emptyProviderResult(),
+    `gccBestCategoryMeta:${city.slug}:${category.slug}:top`
+  );
   const topProvider = providers.find((p) => Number(p.googleRating) > 0);
 
   const currentYear = new Date().getFullYear();
@@ -767,11 +802,15 @@ export async function generateGccBestCategoryMetadata(
     : `Compare ${count} ${category.name.toLowerCase()} in ${city.name}, ${country.name}. Ranked by Google rating. Updated ${currentMonth} ${currentYear}.`;
 
   // noindex if fewer than 3 rated providers
-  const { providers: allForCount } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: category.slug,
-    limit: 99999,
-  });
+  const { providers: allForCount } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      limit: 99999,
+    }),
+    emptyProviderResult(),
+    `gccBestCategoryMeta:${city.slug}:${category.slug}:rated`
+  );
   const ratedCount = allForCount.filter(
     (p) => Number(p.googleRating) > 0
   ).length;
@@ -817,16 +856,21 @@ export async function GccBestCategoryPage({
 
   const base = getBaseUrl();
   const regulatorStr = country.regulators.join(", ");
-  const totalCount = await getProviderCountByCategoryAndCity(
-    category.slug,
-    city.slug
+  const totalCount = await safe(
+    getProviderCountByCategoryAndCity(category.slug, city.slug),
+    0,
+    `gccBestCategory:${city.slug}:${category.slug}:count`
   );
 
-  const { providers: allProviders } = await getProviders({
-    citySlug: city.slug,
-    categorySlug: category.slug,
-    limit: 99999,
-  });
+  const { providers: allProviders } = await safe(
+    getProviders({
+      citySlug: city.slug,
+      categorySlug: category.slug,
+      limit: 99999,
+    }),
+    emptyProviderResult(),
+    `gccBestCategory:${city.slug}:${category.slug}:providers`
+  );
   const ranked = rankProviders(allProviders);
 
   if (ranked.length === 0) notFound();
@@ -848,7 +892,11 @@ export async function GccBestCategoryPage({
       .filter((c) => c.slug !== city.slug)
       .map(async (c) => ({
         ...c,
-        count: await getProviderCountByCategoryAndCity(category.slug, c.slug),
+        count: await safe(
+          getProviderCountByCategoryAndCity(category.slug, c.slug),
+          0,
+          `gccBestCategory:${city.slug}:${category.slug}:otherCity:${c.slug}`
+        ),
       }))
   );
   const otherCities = otherCitiesRaw
@@ -861,7 +909,11 @@ export async function GccBestCategoryPage({
       .filter((c) => c.slug !== category.slug)
       .map(async (c) => ({
         ...c,
-        count: await getProviderCountByCategoryAndCity(c.slug, city.slug),
+        count: await safe(
+          getProviderCountByCategoryAndCity(c.slug, city.slug),
+          0,
+          `gccBestCategory:${city.slug}:${category.slug}:otherCategory:${c.slug}`
+        ),
       }))
   );
   const otherCategories = otherCategoriesRaw

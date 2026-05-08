@@ -22,7 +22,19 @@ export interface ListingsTemplateProvider {
   isClaimed?: boolean | null;
   isVerified?: boolean | null;
   photos?: string[] | null;
+  galleryPhotos?: Array<{ url?: string | null } | string> | null;
+  logoUrl?: string | null;
   coverImageUrl?: string | null;
+  insurance?: string[] | null;
+  languages?: string[] | null;
+  services?: string[] | null;
+  operatingHours?: Record<string, { open: string; close: string }> | null;
+  accessibilityOptions?: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  } | null;
 }
 
 interface ListingsTemplateProps {
@@ -82,6 +94,11 @@ export function ListingsTemplate({
   schemas,
   arabicHref,
 }: ListingsTemplateProps) {
+  const providerBase = providerBasePath ?? "/directory";
+  const reviewedProviders = providers
+    .filter((p) => Number(p.googleRating) > 0 || (p.googleReviewCount ?? 0) > 0)
+    .slice(0, 8);
+
   return (
     <>
       {schemas}
@@ -202,13 +219,48 @@ export function ListingsTemplate({
                   isClaimed={p.isClaimed}
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
+                  galleryPhotos={p.galleryPhotos ?? null}
+                  logoUrl={p.logoUrl ?? null}
                   coverImageUrl={p.coverImageUrl ?? null}
+                  insurance={p.insurance ?? null}
+                  languages={p.languages ?? null}
+                  services={p.services ?? null}
+                  operatingHours={p.operatingHours ?? null}
+                  accessibilityOptions={p.accessibilityOptions ?? null}
                   basePath={providerBasePath}
                   priority={i < 4}
                 />
               ))}
             </div>
             {pagination && <div className="mt-10">{pagination}</div>}
+            {reviewedProviders.length >= 3 && (
+              <section className="mt-12 border-t border-ink-line pt-8" aria-labelledby="provider-review-links">
+                <h2 id="provider-review-links" className="font-display font-semibold text-ink text-z-h2 mb-4">
+                  Provider review pages
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {reviewedProviders.map((p) => {
+                    const rating = Number(p.googleRating) || 0;
+                    const href = `${providerBase}/${p.citySlug}/${p.categorySlug}/${p.slug}`;
+                    return (
+                      <Link
+                        key={`review-link-${p.id}`}
+                        href={href}
+                        className="group rounded-z-md border border-ink-line bg-white px-4 py-3 hover:border-ink transition-colors"
+                      >
+                        <span className="block font-sans text-z-body-sm font-semibold text-ink group-hover:underline underline-offset-2">
+                          {p.name} reviews
+                        </span>
+                        <span className="mt-1 block font-sans text-z-caption text-ink-muted">
+                          {rating > 0 ? `${rating.toFixed(1)}/5` : "Review profile"}
+                          {p.googleReviewCount ? ` · ${p.googleReviewCount.toLocaleString()} reviews` : ""}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </>
         )}
       </section>

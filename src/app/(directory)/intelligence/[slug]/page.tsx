@@ -209,6 +209,35 @@ export default async function ArticlePage(props: PageProps) {
             </div>
             <div className="mb-8" />
 
+            <section className="mb-8 rounded-2xl border border-black/[0.06] bg-[#f8f8f6] p-5" aria-labelledby="article-trust-links">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 id="article-trust-links" className="font-['Bricolage_Grotesque',sans-serif] text-base font-semibold tracking-tight text-[#1c1c1c]">
+                    How Zavis verifies this coverage
+                  </h2>
+                  <p className="mt-1 font-['Geist',sans-serif] text-xs leading-relaxed text-black/45">
+                    Editorial standards, source rules, methodology, and review provenance are public.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Editorial policy", href: "/editorial-policy" },
+                    { label: "Data sources", href: "/data-sources" },
+                    { label: "Methodology", href: "/methodology" },
+                    { label: "Verified reviews", href: "/verified-reviews" },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="inline-flex rounded-full border border-black/[0.08] bg-white px-3 py-1.5 font-['Geist',sans-serif] text-xs font-semibold text-black/55 transition-colors hover:border-[#006828]/40 hover:text-[#006828]"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+
             {/* Article body */}
             <ArticleBody html={fullArticle.body} />
 

@@ -418,17 +418,8 @@ export default async function BestCategoryInCityPage(props: Props) {
       }
       total={totalCount}
       providers={top15.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
+        ...p,
         categoryName: category.name,
-        address: p.address,
-        googleRating: p.googleRating,
-        googleReviewCount: p.googleReviewCount,
-        isClaimed: p.isClaimed,
-        isVerified: p.isVerified,
         photos: p.photos ?? null,
         coverImageUrl: p.coverImageUrl ?? null,
       }))}

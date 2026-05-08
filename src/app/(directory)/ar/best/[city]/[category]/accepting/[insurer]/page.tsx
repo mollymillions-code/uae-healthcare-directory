@@ -277,11 +277,7 @@ export default async function BestAcceptingPageAr(props: Props) {
           </p>
         }
         providers={topN.map((p) => ({
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: categoryNameAr,
           address: p.address,
           googleRating: p.googleRating,

@@ -93,7 +93,7 @@ export function SearchPillModal({
                 onSelect={(v) => {
                   onChange({ ...state, [active]: v });
                   // Auto-advance to next segment for guided flow
-                  const order: SearchSegment[] = ["specialty", "city", "date", "insurance"];
+                  const order: SearchSegment[] = ["specialty", "city", "condition", "insurance"];
                   const idx = order.indexOf(active);
                   if (idx < order.length - 1) setActive(order[idx + 1]);
                 }}

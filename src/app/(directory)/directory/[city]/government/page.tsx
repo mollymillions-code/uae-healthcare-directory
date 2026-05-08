@@ -147,11 +147,7 @@ export default async function GovernmentPage(props: Props) {
       providers={sorted.map((p) => {
         const cat = categories.find((c) => c.slug === p.categorySlug);
         return {
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: cat?.name ?? null,
           address: p.address,
           googleRating: p.googleRating,

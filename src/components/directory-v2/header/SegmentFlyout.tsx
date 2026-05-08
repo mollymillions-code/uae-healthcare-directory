@@ -5,6 +5,7 @@ import { Check, Search as SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { CONDITIONS } from "@/lib/constants/conditions";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { scaleIn } from "../shared/motion";
 import { cn } from "../shared/cn";
@@ -27,6 +28,9 @@ export function SegmentFlyout({ segment, value, onSelect }: SegmentFlyoutProps) 
     if (segment === "city") {
       return CITIES.filter((c) => c.country === "ae").map((c) => ({ value: c.slug, label: c.name }));
     }
+    if (segment === "condition") {
+      return CONDITIONS.map((c) => ({ value: c.slug, label: c.name }));
+    }
     if (segment === "insurance") {
       return INSURANCE_PROVIDERS.map((p) => ({ value: p.slug, label: p.name }));
     }
@@ -36,10 +40,6 @@ export function SegmentFlyout({ segment, value, onSelect }: SegmentFlyoutProps) 
   const filtered = query
     ? items.filter((it) => it.label.toLowerCase().includes(query.toLowerCase()))
     : items;
-
-  if (segment === "date") {
-    return <DateFlyout value={value} onSelect={onSelect} />;
-  }
 
   return (
     <motion.div
@@ -87,50 +87,6 @@ export function SegmentFlyout({ segment, value, onSelect }: SegmentFlyoutProps) 
             })}
           </ul>
         )}
-      </div>
-    </motion.div>
-  );
-}
-
-function DateFlyout({ value, onSelect }: { value: string; onSelect: (v: string, l: string) => void }) {
-  const presets = [
-    { v: "today", l: "Today" },
-    { v: "tomorrow", l: "Tomorrow" },
-    { v: "this-week", l: "This week" },
-    { v: "this-weekend", l: "This weekend" },
-    { v: "next-week", l: "Next week" },
-    { v: "flexible", l: "I'm flexible" },
-  ];
-  return (
-    <motion.div
-      variants={scaleIn}
-      initial="hidden"
-      animate="show"
-      exit="exit"
-      className="w-[min(calc(100vw-2rem),360px)] bg-white rounded-z-lg shadow-z-float border border-ink-line p-5"
-    >
-      <p className="font-sans text-z-micro text-ink-muted uppercase tracking-[0.04em] mb-3">
-        When do you need care?
-      </p>
-      <div className="grid grid-cols-2 gap-2">
-        {presets.map((p) => {
-          const isSelected = value === p.v || value === p.l;
-          return (
-            <button
-              key={p.v}
-              type="button"
-              onClick={() => onSelect(p.v, p.l)}
-              className={cn(
-                "px-3 py-3 rounded-z-md border transition-colors duration-z-fast font-sans text-z-body-sm text-left",
-                isSelected
-                  ? "border-ink bg-ink text-white"
-                  : "border-ink-line text-ink hover:border-ink hover:bg-surface-cream"
-              )}
-            >
-              {p.l}
-            </button>
-          );
-        })}
       </div>
     </motion.div>
   );

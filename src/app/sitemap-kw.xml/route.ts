@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { providers } from "@/lib/db/schema";
-import { eq, and, or, gt, isNotNull, sql } from "drizzle-orm";
+import { eq, and, gt, sql } from "drizzle-orm";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { getBaseUrl } from "@/lib/helpers";
+import { isEnrichedForSitemap } from "@/lib/sitemap-gating";
 
 export const revalidate = 86400; // daily
 
@@ -116,21 +117,28 @@ export async function GET() {
 
     // --- Best pages (DB-backed: only combos with >= 3 rated providers) ---
 
-    const ratedCombos = await db
-      .select({
-        citySlug: providers.citySlug,
-        categorySlug: providers.categorySlug,
-        cnt: sql<number>`count(*)`.as("cnt"),
-      })
-      .from(providers)
-      .where(
-        and(
-          eq(providers.status, "active"),
-          eq(providers.country, COUNTRY_CODE),
-          gt(providers.googleRating, "0")
-        )
-      )
-      .groupBy(providers.citySlug, providers.categorySlug);
+    const ratedCombos = await (async () => {
+      try {
+        return await db
+          .select({
+            citySlug: providers.citySlug,
+            categorySlug: providers.categorySlug,
+            cnt: sql<number>`count(*)`.as("cnt"),
+          })
+          .from(providers)
+          .where(
+            and(
+              eq(providers.status, "active"),
+              eq(providers.country, COUNTRY_CODE),
+              gt(providers.googleRating, "0")
+            )
+          )
+          .groupBy(providers.citySlug, providers.categorySlug);
+      } catch (error) {
+        console.warn(`[sitemap-${COUNTRY_CODE}] Skipping DB-backed best URLs:`, error);
+        return [];
+      }
+    })();
 
     // Collect structural best paths for deduplication
     const structuralBestSet = new Set<string>();
@@ -204,28 +212,37 @@ export async function GET() {
     // --- Individual provider pages from DB ---
 
     // Only include providers that pass richness check (exclude name-only stubs)
-    const rows = await db
-      .select({
-        slug: providers.slug,
-        citySlug: providers.citySlug,
-        categorySlug: providers.categorySlug,
-        updatedAt: providers.updatedAt,
-      })
-      .from(providers)
-      .where(
-        and(
-          eq(providers.status, "active"),
-          eq(providers.country, COUNTRY_CODE),
-          or(
-            gt(providers.googleRating, "0"),
-            isNotNull(providers.phone),
-            isNotNull(providers.website)
-          )
-        )
-      );
+    const rows = await (async () => {
+      try {
+        return await db
+          .select({
+            slug: providers.slug,
+            citySlug: providers.citySlug,
+            categorySlug: providers.categorySlug,
+            googleRating: providers.googleRating,
+            phone: providers.phone,
+            website: providers.website,
+            description: providers.description,
+            operatingHours: providers.operatingHours,
+            galleryPhotos: providers.galleryPhotos,
+            updatedAt: providers.updatedAt,
+          })
+          .from(providers)
+          .where(
+            and(
+              eq(providers.status, "active"),
+              eq(providers.country, COUNTRY_CODE)
+            )
+          );
+      } catch (error) {
+        console.warn(`[sitemap-${COUNTRY_CODE}] Skipping DB-backed provider URLs:`, error);
+        return [];
+      }
+    })();
 
     for (const row of rows) {
       if (!row.slug || !row.citySlug || !row.categorySlug) continue;
+      if (!isEnrichedForSitemap(row)) continue;
       const path = `/${COUNTRY_CODE}/directory/${row.citySlug}/${row.categorySlug}/${row.slug}`;
       const lastmod = (row.updatedAt ?? new Date())
         .toISOString()

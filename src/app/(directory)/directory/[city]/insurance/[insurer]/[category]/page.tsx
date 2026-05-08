@@ -298,17 +298,8 @@ export default async function InsuranceCategoryPage(props: Props) {
       }
       total={count}
       providers={pagedProviders.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
+        ...p,
         categoryName: category.name,
-        address: p.address,
-        googleRating: p.googleRating,
-        googleReviewCount: p.googleReviewCount,
-        isClaimed: p.isClaimed,
-        isVerified: p.isVerified,
         photos: p.photos ?? null,
         coverImageUrl: p.coverImageUrl ?? null,
       }))}

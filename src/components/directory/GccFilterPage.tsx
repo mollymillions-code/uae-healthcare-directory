@@ -300,17 +300,8 @@ export async function GccFilterPage({ countryCode, citySlug, filter }: Props) {
         }
         aeoAnswer={aeoAnswer}
         providers={sorted.map((p) => ({
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: categoryNameBySlug[p.categorySlug] ?? null,
-          address: p.address ?? null,
-          googleRating: p.googleRating,
-          googleReviewCount: p.googleReviewCount,
-          isClaimed: p.isClaimed,
-          isVerified: p.isVerified,
           photos: p.photos ?? [],
           coverImageUrl: p.coverImageUrl ?? null,
         }))}

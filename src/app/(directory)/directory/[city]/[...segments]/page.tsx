@@ -260,7 +260,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       const hasRating = prov.googleRating && Number(prov.googleRating) > 0;
       const ratingBit = hasRating ? `★${prov.googleRating}` : "";
       const hasReviewSignal = hasRating || Boolean(prov.googleReviewCount && prov.googleReviewCount > 0);
-      const intentLabel = hasReviewSignal ? "Reviews" : "Details";
+      const intentLabel = hasReviewSignal ? "Reviews" : resolved.category.name;
       const reviewBit = prov.googleReviewCount && prov.googleReviewCount > 0
         ? `${prov.googleReviewCount.toLocaleString()} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
         : intentLabel;
@@ -684,17 +684,8 @@ export default async function CatchAllPage(props: Props) {
           total={displayedTotal}
           totalLabel={displayedTotalLabel}
           providers={providers.map((p) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            citySlug: p.citySlug,
-            categorySlug: p.categorySlug,
+            ...p,
             categoryName: category.name,
-            address: p.address,
-            googleRating: p.googleRating,
-            googleReviewCount: p.googleReviewCount,
-            isClaimed: p.isClaimed,
-            isVerified: p.isVerified,
             photos: p.photos ?? null,
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
@@ -988,17 +979,8 @@ export default async function CatchAllPage(props: Props) {
           providers={providers.map((p) => {
             const cat = categories.find((c) => c.slug === p.categorySlug);
             return {
-              id: p.id,
-              name: p.name,
-              slug: p.slug,
-              citySlug: p.citySlug,
-              categorySlug: p.categorySlug,
+              ...p,
               categoryName: cat?.name ?? null,
-              address: p.address,
-              googleRating: p.googleRating,
-              googleReviewCount: p.googleReviewCount,
-              isClaimed: p.isClaimed,
-              isVerified: p.isVerified,
               photos: p.photos ?? null,
               coverImageUrl: p.coverImageUrl ?? null,
             };
@@ -1078,17 +1060,8 @@ export default async function CatchAllPage(props: Props) {
           }
           total={total}
           providers={providers.map((p) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            citySlug: p.citySlug,
-            categorySlug: p.categorySlug,
+            ...p,
             categoryName: category.name,
-            address: p.address,
-            googleRating: p.googleRating,
-            googleReviewCount: p.googleReviewCount,
-            isClaimed: p.isClaimed,
-            isVerified: p.isVerified,
             photos: p.photos ?? null,
             coverImageUrl: p.coverImageUrl ?? null,
           }))}
@@ -1595,13 +1568,18 @@ export default async function CatchAllPage(props: Props) {
                             {rp.name}
                           </p>
                           {rating > 0 && (
-                            <p className="font-sans text-z-caption text-ink-soft mt-1 inline-flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-ink text-ink" />
-                              {rating.toFixed(2)}
-                              {rp.googleReviewCount
-                                ? <span className="text-ink-muted"> ({rp.googleReviewCount})</span>
-                                : null}
-                            </p>
+                            <>
+                              <p className="font-sans text-z-caption text-ink-soft mt-1 inline-flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-ink text-ink" />
+                                {rating.toFixed(2)}
+                                {rp.googleReviewCount
+                                  ? <span className="text-ink-muted"> ({rp.googleReviewCount})</span>
+                                  : null}
+                              </p>
+                              <p className="font-sans text-z-caption text-ink-muted mt-0.5">
+                                {rp.name} reviews
+                              </p>
+                            </>
                           )}
                           {rp.address && (
                             <p className="font-sans text-z-caption text-ink-muted mt-0.5 line-clamp-1">
@@ -1648,17 +1626,8 @@ export default async function CatchAllPage(props: Props) {
         subtitle={`${total} ${total === 1 ? "provider" : "providers"} — a refined view of ${category.name.toLowerCase()} offering ${subcategory.name.toLowerCase()} in ${city.name}.`}
         total={total}
         providers={providers.map((p) => ({
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: category.name,
-          address: p.address,
-          googleRating: p.googleRating,
-          googleReviewCount: p.googleReviewCount,
-          isClaimed: p.isClaimed,
-          isVerified: p.isVerified,
           photos: p.photos ?? null,
           coverImageUrl: p.coverImageUrl ?? null,
         }))}
@@ -1808,11 +1777,7 @@ export default async function CatchAllPage(props: Props) {
           href: `/directory/${c.slug}/${proc.slug}`,
         }))}
         providers={providers.slice(0, 12).map((p) => ({
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          citySlug: p.citySlug,
-          categorySlug: p.categorySlug,
+          ...p,
           categoryName: categoryName,
           address: p.address ?? null,
           googleRating: p.googleRating,

@@ -210,11 +210,7 @@ export default async function AreaWalkInCategoryPage(props: Props) {
       }
       total={count}
       providers={sorted.map((p) => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        citySlug: p.citySlug,
-        categorySlug: p.categorySlug,
+        ...p,
         categoryName: cat.name,
         address: p.address,
         googleRating: p.googleRating,

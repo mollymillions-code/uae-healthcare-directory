@@ -151,13 +151,14 @@ export function ProviderDetailTemplate({
   const rating = p.googleRating ? Number(p.googleRating) : 0;
   const hasRating = rating > 0;
   const reviewCount = p.googleReviewCount ?? 0;
-  const hasReviews = hasRating || reviewCount > 0 || Boolean(p.reviewSummaryV2 || (p.reviewSummary && p.reviewSummary.length > 0));
+  const hasReviewSection = hasRating;
+  const hasLocationSection = Boolean(p.address || (p.latitude && p.longitude));
   const locationText = areaName && cityName ? `${areaName}, ${cityName}` : areaName || cityName || "";
   const profileSummaryLead = hasRating && reviewCount > 0
     ? `${p.name} has a ${rating.toFixed(1)}/5 Google rating from ${reviewCount.toLocaleString()} ${reviewCount === 1 ? "review" : "reviews"}.`
     : `${p.name}${locationText ? ` in ${locationText}` : ""}.`;
   const profileSummaryTopics = [
-    hasReviews ? "patient reviews" : null,
+    hasReviewSection ? "patient reviews" : null,
     p.address ? "address and directions" : null,
     p.operatingHours && Object.keys(p.operatingHours).length > 0 ? "opening hours" : null,
     p.insurance && p.insurance.length > 0 ? "accepted insurance" : null,
@@ -167,9 +168,9 @@ export function ProviderDetailTemplate({
     ? `${profileSummaryLead} Compare ${profileSummaryTopics.join(", ")}${locationText ? ` in ${locationText}` : ""}.`
     : profileSummaryLead;
   const profileJumpLinks = [
-    { href: "#reviews", label: "Reviews", show: hasReviews },
+    { href: "#reviews", label: "Reviews", show: hasReviewSection },
     { href: "#hours", label: "Hours", show: Boolean(p.operatingHours && Object.keys(p.operatingHours).length > 0) },
-    { href: "#location", label: "Address", show: Boolean(p.address || (p.latitude && p.longitude)) },
+    { href: "#location", label: "Address", show: hasLocationSection },
     { href: "#insurance", label: "Insurance", show: Boolean(p.insurance && p.insurance.length > 0) },
     { href: "#services", label: "Services", show: Boolean(p.services && p.services.length > 0) },
     { href: "#faq", label: "FAQ", show: Boolean(faqs && faqs.length > 0) },
@@ -506,16 +507,20 @@ export function ProviderDetailTemplate({
             )}
 
             {/* Location */}
-            {p.latitude && p.longitude && (
+            {hasLocationSection && (
               <section className="pb-8 border-b border-ink-line z-anchor" id="location">
                 <h2 className="font-display font-semibold text-ink text-z-h1 mb-5">Location</h2>
-                <p className="font-sans text-z-body text-ink-soft mb-4 inline-flex items-start gap-2">
-                  <MapPinIcon className="h-4 w-4 text-ink-muted flex-shrink-0 mt-0.5" />
-                  <span>{p.address}</span>
-                </p>
-                <div className="rounded-z-md overflow-hidden border border-ink-line">
-                  <GoogleMapEmbed query={`${p.name} ${p.address ?? ""}`} />
-                </div>
+                {p.address && (
+                  <p className="font-sans text-z-body text-ink-soft mb-4 inline-flex items-start gap-2">
+                    <MapPinIcon className="h-4 w-4 text-ink-muted flex-shrink-0 mt-0.5" />
+                    <span>{p.address}</span>
+                  </p>
+                )}
+                {p.latitude && p.longitude && (
+                  <div className="rounded-z-md overflow-hidden border border-ink-line">
+                    <GoogleMapEmbed query={`${p.name} ${p.address ?? ""}`} />
+                  </div>
+                )}
               </section>
             )}
 
