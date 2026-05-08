@@ -7,6 +7,26 @@ const FACILITY_ROUTE_PREFIXES = [
   "/ar/professionals/facility/",
 ] as const;
 const ROUTE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const INSURANCE_SLUG_ALIASES: Record<string, string> = {
+  "aetna-international": "aetna",
+  "allianz-care": "allianz",
+  "al-sagr-national-insurance": "al-sagr",
+  "bupa-global": "bupa",
+  "dar-al-takaful": "watania",
+  "dubai-insurance-company": "dic",
+  "dubai-national-insurance": "dnir",
+  "dubai-national-insurance-and-reinsurance": "dnir",
+  "emirates-insurance-company": "emirates-insurance",
+  "fidelity-united-insurance": "fidelity-united",
+  "nas-(nextcare)": "nas",
+  "nas-nextcare": "nas",
+  "national-general-insurance": "ngi",
+  "now-health-international": "now-health",
+  "orient-insurance": "orient",
+  "salama-islamic-insurance": "salama",
+  "sukoon": "oman-insurance",
+  "sukoon-oman-insurance": "oman-insurance",
+};
 
 function hasInvalidFacilityRouteSegment(pathname: string): boolean {
   const prefix = FACILITY_ROUTE_PREFIXES.find((value) =>
@@ -24,6 +44,52 @@ function hasInvalidFacilityRouteSegment(pathname: string): boolean {
       !ROUTE_SLUG_PATTERN.test(segment)
     );
   });
+}
+
+function decodePathSegment(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function maybeRedirectInsuranceSlugAlias(
+  request: NextRequest,
+  pathname: string,
+) {
+  const directoryMatch = pathname.match(
+    /^\/(ar\/)?directory\/([^/]+)\/insurance\/([^/]+)(\/.*)?$/,
+  );
+
+  if (directoryMatch) {
+    const [, locale = "", city, rawInsurer, rest = ""] = directoryMatch;
+    const canonical = INSURANCE_SLUG_ALIASES[
+      decodePathSegment(rawInsurer).toLowerCase()
+    ];
+
+    if (canonical) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${locale}directory/${city}/insurance/${canonical}${rest}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
+  const hubMatch = pathname.match(/^\/(ar\/)?insurance\/([^/]+)(\/.*)?$/);
+  if (hubMatch) {
+    const [, locale = "", rawInsurer, rest = ""] = hubMatch;
+    const canonical = INSURANCE_SLUG_ALIASES[
+      decodePathSegment(rawInsurer).toLowerCase()
+    ];
+
+    if (canonical) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${locale}insurance/${canonical}${rest}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -62,6 +128,9 @@ export function middleware(request: NextRequest) {
     url.pathname = pathname.slice(0, -1);
     return NextResponse.redirect(url, 301);
   }
+
+  const insuranceAliasRedirect = maybeRedirectInsuranceSlugAlias(request, pathname);
+  if (insuranceAliasRedirect) return insuranceAliasRedirect;
 
   // ── Legacy redirects ──────────────────────────────────────────────
   // /uae → /directory
