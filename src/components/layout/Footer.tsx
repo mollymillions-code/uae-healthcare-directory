@@ -46,6 +46,7 @@ export function Footer() {
   return (
     <VideoFooterShell
       compact
+      compactDensity="dense"
       brand={
         <div>
           <Link

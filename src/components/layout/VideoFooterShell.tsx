@@ -20,6 +20,7 @@ type VideoFooterShellProps = {
   discoveryRail?: ReactNode;
   bottom: ReactNode;
   compact?: boolean;
+  compactDensity?: "default" | "dense";
   className?: string;
 };
 
@@ -98,9 +99,21 @@ export function VideoFooterShell({
   discoveryRail,
   bottom,
   compact = false,
+  compactDensity = "default",
   className = "",
 }: VideoFooterShellProps) {
   if (compact) {
+    const isDense = compactDensity === "dense";
+    const compactMediaPositionClass = isDense ? "bottom-0 h-[42%]" : "top-[15%] h-full";
+    const compactPosterPositionClass = isDense ? "bg-bottom" : "bg-center";
+    const compactVideoObjectClass = isDense ? "object-bottom" : "object-center";
+    const compactGradientClass = isDense
+      ? "h-[76%] bg-gradient-to-b from-[#fbf7f2] from-[0%] via-[#fbf7f2] via-[88%] to-[#fbf7f2]/0"
+      : "h-[48%] bg-gradient-to-b from-[#fbf7f2] via-[#fbf7f2]/95 to-[#fbf7f2]/0";
+    const compactBottomClass = isDense
+      ? "mt-8 border-t border-black/15 bg-[#fbf7f2] pt-4"
+      : "mt-8 border-t border-black/15 pt-4";
+
     return (
       <footer
         role="contentinfo"
@@ -110,12 +123,12 @@ export function VideoFooterShell({
         <div className="relative mx-auto aspect-[16/9] min-h-[680px] w-full max-w-[1600px] overflow-hidden rounded-[18px] bg-[#fbf7f2] shadow-[0_24px_80px_rgba(0,0,0,0.22)] max-sm:aspect-auto max-sm:min-h-0">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-[15%] h-full bg-[url('/media/footer/zavis-footer-clinic-poster.jpg')] bg-cover bg-center max-sm:hidden"
+            className={`pointer-events-none absolute inset-x-0 ${compactMediaPositionClass} bg-[url('/media/footer/zavis-footer-clinic-poster.jpg')] bg-cover ${compactPosterPositionClass} max-sm:hidden`}
           />
-          <FooterVideo className="pointer-events-none absolute inset-x-0 top-[15%] h-full w-full object-cover object-center motion-reduce:hidden max-sm:hidden" />
+          <FooterVideo className={`pointer-events-none absolute inset-x-0 ${compactMediaPositionClass} w-full object-cover ${compactVideoObjectClass} motion-reduce:hidden max-sm:hidden`} />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-[48%] bg-gradient-to-b from-[#fbf7f2] via-[#fbf7f2]/95 to-[#fbf7f2]/0 max-sm:hidden"
+            className={`pointer-events-none absolute inset-x-0 top-0 ${compactGradientClass} max-sm:hidden`}
           />
           <div
             aria-hidden="true"
@@ -134,7 +147,7 @@ export function VideoFooterShell({
               <div className="lg:col-span-4">{children}</div>
             </div>
 
-            <div className="mt-8 border-t border-black/15 pt-4">{bottom}</div>
+            <div className={compactBottomClass}>{bottom}</div>
           </div>
           <div className="relative z-10 aspect-[16/9] overflow-hidden sm:hidden">
             <div
