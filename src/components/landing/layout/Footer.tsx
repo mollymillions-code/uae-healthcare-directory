@@ -1,12 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ZavisLogo } from "./Navbar";
-import {
-  VideoFooterShell,
-  videoFooterHeadingClass,
-  videoFooterLinkClass,
-} from "@/components/layout/VideoFooterShell";
+import { ArrowRight, ChevronDown, Globe2, Search, ShieldCheck, Users } from "lucide-react";
+import { VideoFooterShell } from "@/components/layout/VideoFooterShell";
 
 function InstagramIcon() {
   return (
@@ -34,114 +30,161 @@ function YouTubeIcon() {
 
 const footerLinks = [
   {
-    title: "Solutions",
+    title: "Directory",
     links: [
-      { label: "Dental", href: "/dental" },
-      { label: "Dermatology", href: "/dermatology" },
-      { label: "Optometry", href: "/optometry" },
-      { label: "Orthopedics", href: "/orthopedics" },
-      { label: "ENT", href: "/ent" },
-      { label: "Urgent Care", href: "/urgent-care" },
-      { label: "Mental Health", href: "/mental-health" },
-      { label: "Veterinary", href: "/veterinary" },
-      { label: "Homecare", href: "/homecare" },
-      { label: "Aesthetic", href: "/aesthetic" },
-      { label: "Longevity & Wellness", href: "/longevity-wellness" },
+      { label: "Find a Doctor", href: "/find-a-doctor" },
+      { label: "Top Rated", href: "/directory/dubai/top/hospitals" },
+      { label: "Hospitals", href: "/directory/dubai/hospitals" },
+      { label: "Clinics", href: "/directory/dubai/clinics" },
+      { label: "Labs & Diagnostics", href: "/labs" },
+      { label: "Insurance Navigator", href: "/insurance" },
+      { label: "Medical Pricing", href: "/pricing" },
+      { label: "Verified Reviews", href: "/verified-reviews" },
+      { label: "Get Listed / Edit Profile", href: "/provider-portal" },
+    ],
+  },
+  {
+    title: "Cities",
+    links: [
+      { label: "Dubai", href: "/directory/dubai" },
+      { label: "Abu Dhabi", href: "/directory/abu-dhabi" },
+      { label: "Sharjah", href: "/directory/sharjah" },
+      { label: "Ajman", href: "/directory/ajman" },
+      { label: "Ras Al Khaimah", href: "/directory/ras-al-khaimah" },
+      { label: "Al Ain", href: "/directory/al-ain" },
+      { label: "Fujairah", href: "/directory/fujairah" },
+      { label: "All Cities", href: "/directory" },
     ],
   },
   {
     title: "Platform",
     links: [
-      { label: "Omnichannel Inbox", href: "/chat" },
-      { label: "Voice", href: "/voice" },
+      { label: "For Patients", href: "/directory" },
+      { label: "For Providers", href: "/provider-portal" },
       { label: "AI Agents", href: "/ai-agents" },
       { label: "Bookings", href: "/bookings" },
-      { label: "EMR Integration", href: "/emr" },
       { label: "CRM", href: "/crm" },
+      { label: "EMR Integration", href: "/emr" },
       { label: "Analytics", href: "/analytics" },
       { label: "Automations", href: "/automations" },
-      { label: "Campaigns", href: "/campaigns" },
-      { label: "Payments", href: "/payments" },
+      { label: "Payments & Billing", href: "/payments" },
       { label: "Integrations", href: "/integrations" },
-      { label: "Widgets", href: "/widgets" },
-      { label: "Mobile App", href: "/mobile" },
     ],
   },
   {
-    title: "Resources",
+    title: "Trust",
     links: [
-      { label: "UAE Directory", href: "/directory" },
-      { label: "Intelligence", href: "/intelligence" },
-      { label: "Research", href: "/research" },
+      { label: "Editorial Policy", href: "/editorial-policy" },
+      { label: "Methodology", href: "/methodology" },
+      { label: "Data Sources", href: "/data-sources" },
+      { label: "Corrections Policy", href: "/about/corrections" },
+      { label: "Masthead", href: "/intelligence/author" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "/about" },
-      { label: "Book a Demo", href: "/book-a-demo" },
+      { label: "About Zavis", href: "/about" },
+      { label: "Intelligence Reports", href: "/intelligence/reports" },
+      { label: "Press Room", href: "/intelligence/press" },
+      { label: "Careers", href: "/jobs" },
+      { label: "Contact Us", href: "/contact" },
     ],
+  },
+];
+
+const footerProof = [
+  {
+    icon: Search,
+    text: "Find trusted doctors, clinics and hospitals across the GCC.",
+  },
+  {
+    icon: ShieldCheck,
+    text: "Verified data from official sources and Google Places.",
+  },
+  {
+    icon: Users,
+    text: "Built for patients. Designed for better care.",
   },
 ];
 
 export function Footer() {
   return (
     <VideoFooterShell
+      compact
       brand={
         <Link
           href="/"
-          className="inline-flex rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fbf7f2]"
+          className="inline-flex rounded font-['Bricolage_Grotesque',sans-serif] text-[66px] font-bold leading-none tracking-normal text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fbf7f2] max-sm:text-5xl"
         >
-          <ZavisLogo />
+          zavis<span className="text-[#00C853]">.</span>
         </Link>
       }
-      description="AI-native Patient Success Platform for healthcare organizations."
+      description="Healthcare directory and patient access intelligence."
       social={
-        <div className="flex items-center gap-3">
-          <a href="https://www.instagram.com/heyzavis" target="_blank" rel="noopener noreferrer" aria-label="Zavis on Instagram" className="text-black/40 transition-colors hover:text-[#006828]">
-            <InstagramIcon />
-          </a>
-          <a href="https://www.linkedin.com/company/zavisai/" target="_blank" rel="noopener noreferrer" aria-label="Zavis on LinkedIn" className="text-black/40 transition-colors hover:text-[#006828]">
-            <LinkedInIcon />
-          </a>
-          <a href="https://www.youtube.com/@zavis-ai" target="_blank" rel="noopener noreferrer" aria-label="Zavis on YouTube" className="text-black/40 transition-colors hover:text-[#006828]">
-            <YouTubeIcon />
-          </a>
+        <div>
+          <div className="h-0.5 w-12 bg-[#16823b]" />
+          <div className="mt-6 space-y-4">
+            {footerProof.map(({ icon: Icon, text }) => (
+              <div key={text} className="flex max-w-[300px] items-center gap-4 font-['Geist',sans-serif] text-[16px] leading-tight text-[#374151]">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#16823b]/45 text-[#16823b]">
+                  <Icon className="size-4" strokeWidth={1.8} />
+                </span>
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-7 flex items-center gap-5">
+            <a href="https://www.instagram.com/heyzavis" target="_blank" rel="noopener noreferrer" aria-label="Zavis on Instagram" className="text-[#16823b] transition-colors hover:text-[#006828]">
+              <InstagramIcon />
+            </a>
+            <a href="https://www.linkedin.com/company/zavisai/" target="_blank" rel="noopener noreferrer" aria-label="Zavis on LinkedIn" className="text-[#16823b] transition-colors hover:text-[#006828]">
+              <LinkedInIcon />
+            </a>
+            <a href="https://www.youtube.com/@zavis-ai" target="_blank" rel="noopener noreferrer" aria-label="Zavis on YouTube" className="text-[#16823b] transition-colors hover:text-[#006828]">
+              <YouTubeIcon />
+            </a>
+          </div>
         </div>
       }
       bottom={
-        <div className="flex flex-col gap-4 font-['Geist',sans-serif] text-sm text-black/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid gap-3 font-['Geist',sans-serif] text-sm text-[#374151] sm:grid-cols-3 sm:items-center">
           <span>&copy; 2026 Zavis. All rights reserved.</span>
-          <div className="flex gap-6">
-            <Link href="/privacy-policy" className="transition-colors hover:text-[#006828]">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="transition-colors hover:text-[#006828]">
-              Terms of Service
-            </Link>
+          <span className="text-center max-sm:text-left">
+            Free for all <span className="font-medium text-[#16823b]">UAE residents.</span>
+          </span>
+          <div className="flex items-center gap-2 sm:justify-end">
+            <Globe2 className="size-4" />
+            <span>English</span>
+            <ChevronDown className="size-4" />
           </div>
         </div>
       }
     >
-      <div className="z-no-scrollbar grid grid-flow-col auto-cols-[calc((100%_-_1.5rem)/2)] gap-6 overflow-x-auto pb-1 md:grid-flow-row md:grid-cols-4 md:overflow-visible md:pb-0 lg:gap-8">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-12">
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h4 className={videoFooterHeadingClass}>
+              <h4 className="mb-4 font-['Geist',sans-serif] text-[17px] font-semibold text-[#16823b]">
                 {section.title}
               </h4>
-              <ul className="space-y-1 font-['Geist',sans-serif]">
-                {section.links.map((link) => {
-                  const isExternal = link.href.startsWith("/directory") || link.href.startsWith("/intelligence") || link.href.startsWith("/research");
-                  return (
-                    <li key={link.href}>
-                      {isExternal ? (
-                        <a href={link.href} className={videoFooterLinkClass}>{link.label}</a>
-                      ) : (
-                        <Link href={link.href} className={videoFooterLinkClass}>{link.label}</Link>
-                      )}
-                    </li>
-                  );
-                })}
+              <ul className="space-y-3 font-['Geist',sans-serif]">
+                {section.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-[16px] leading-tight text-[#4b5563] transition-colors hover:text-[#16823b]">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+                {section.title === "Company" ? (
+                  <li className="pt-2">
+                    <Link href="/book-a-demo" className="inline-flex items-center gap-2 font-semibold text-[#16823b] transition-colors hover:text-[#006828]">
+                      Book a Demo <ArrowRight className="size-4" />
+                    </Link>
+                  </li>
+                ) : null}
               </ul>
             </div>
           ))}
