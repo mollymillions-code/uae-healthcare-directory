@@ -192,10 +192,13 @@ function isEnrichedForSitemap(row) {
   const description = row.description;
   const hours = row.operating_hours;
   const photos = row.gallery_photos;
+  const legacyPhotos = row.photos;
 
   const hasDescription =
     Boolean(description && String(description).trim().length > 80);
-  const hasPhotos = Array.isArray(photos) && photos.length > 0;
+  const hasPhotos =
+    (Array.isArray(photos) && photos.length > 0) ||
+    (Array.isArray(legacyPhotos) && legacyPhotos.length > 0);
   // Hard requirement: must have unique content (description or photos).
   // Structured data alone (rating, hours, phone) does not justify indexing.
   if (!hasDescription && !hasPhotos) return false;
@@ -355,6 +358,7 @@ async function main() {
          phone,
          website,
          description,
+         photos,
          gallery_photos,
          operating_hours
        FROM providers

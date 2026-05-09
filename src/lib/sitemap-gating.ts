@@ -41,13 +41,14 @@ export interface ProviderGatingInput {
   website?: string | null;
   description?: string | null;
   operatingHours?: Record<string, unknown> | null;
+  photos?: unknown[] | null;
   galleryPhotos?: unknown[] | null;
 }
 
 /**
  * A provider passes the sitemap/index gate when:
  *   (a) It has at least one form of unique content — either a real
- *       description (>80 chars) or at least one gallery photo. This is
+ *       description (>80 chars) or at least one provider photo. This is
  *       the primary "thin content" guard: structured data alone (rating,
  *       hours, phone) is not enough for Google to consider a page
  *       worthy of indexing without unique text or imagery, AND
@@ -61,6 +62,7 @@ export interface ProviderGatingInput {
  *   4. Description longer than 80 characters
  *   5. Non-empty operating hours object
  *
+ * Both `galleryPhotos` and the older `photos` field count as photo evidence.
  * Pages that fail (a) get noindex regardless of their other fields —
  * this ensures DHA-seeded providers with phone+rating but no actual
  * unique content do not contribute to "thin content" SEO penalties.
@@ -69,7 +71,8 @@ export function isEnrichedForSitemap(row: ProviderGatingInput): boolean {
   const hasDescription =
     Boolean(row.description && String(row.description).trim().length > 80);
   const hasPhotos =
-    Array.isArray(row.galleryPhotos) && row.galleryPhotos.length > 0;
+    (Array.isArray(row.galleryPhotos) && row.galleryPhotos.length > 0) ||
+    (Array.isArray(row.photos) && row.photos.length > 0);
   const hasUniqueContent = hasDescription || hasPhotos;
   if (!hasUniqueContent) return false;
 

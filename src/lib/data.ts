@@ -41,7 +41,8 @@ export {
 
 // ─── DB imports (only used when DATABASE_URL is set) ─────────────────────────
 
-let HAS_DB = !!process.env.DATABASE_URL;
+const HAS_DATABASE_URL = !!process.env.DATABASE_URL;
+let HAS_DB = HAS_DATABASE_URL;
 let _dbVerified = false;
 
 const verifiedProviderOverrides = new Set(
@@ -59,25 +60,36 @@ function hasVerifiedProviderOverride(row: Record<string, unknown>): boolean {
 }
 
 /**
- * Check if DB actually has providers. If not (empty table, connection error),
- * fall back to JSON. This handles the case where DATABASE_URL is set on EC2
- * but the providers table hasn't been seeded yet.
+ * Check if DB actually has providers.
+ *
+ * Important: when DATABASE_URL is configured, this must never fall back to the
+ * stale JSON provider snapshot. A transient DB probe failure used to flip the
+ * whole worker into JSON mode until restart, which made DB-only live listings
+ * intermittently 404 depending on which PM2 worker served the request.
  */
 async function verifyDbHasData(): Promise<boolean> {
   if (_dbVerified) return HAS_DB;
-  if (!HAS_DB) { _dbVerified = true; return false; }
+  if (!HAS_DATABASE_URL) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("[data.ts] DATABASE_URL is required in production");
+    }
+    HAS_DB = false;
+    _dbVerified = true;
+    return false;
+  }
 
   try {
     await ensureDbModules();
     const result = await _db!.select({ id: _providersTable!.id }).from(_providersTable!).limit(1);
     if (result.length === 0) {
-      console.warn("[data.ts] DB has no providers — falling back to JSON");
-      HAS_DB = false;
+      throw new Error("[data.ts] providers table is empty");
     }
   } catch (e) {
-    console.warn("[data.ts] DB connection failed — falling back to JSON:", e instanceof Error ? e.message : e);
-    HAS_DB = false;
+    _dbVerified = false;
+    HAS_DB = true;
+    throw e;
   }
+  HAS_DB = true;
   _dbVerified = true;
   return HAS_DB;
 }
