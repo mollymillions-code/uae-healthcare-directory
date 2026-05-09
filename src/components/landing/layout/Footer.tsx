@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { ZavisLogo } from "./Navbar";
+import {
+  VideoFooterShell,
+  videoFooterHeadingClass,
+  videoFooterLinkClass,
+} from "@/components/layout/VideoFooterShell";
 
 function InstagramIcon() {
   return (
@@ -81,42 +86,58 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-black text-white py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/">
-              <ZavisLogo color="white" />
+    <VideoFooterShell
+      brand={
+        <Link
+          href="/"
+          className="inline-flex rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fbf7f2]"
+        >
+          <ZavisLogo />
+        </Link>
+      }
+      description="AI-native Patient Success Platform for healthcare organizations."
+      social={
+        <div className="flex items-center gap-3">
+          <a href="https://www.instagram.com/heyzavis" target="_blank" rel="noopener noreferrer" aria-label="Zavis on Instagram" className="text-black/40 transition-colors hover:text-[#006828]">
+            <InstagramIcon />
+          </a>
+          <a href="https://www.linkedin.com/company/zavisai/" target="_blank" rel="noopener noreferrer" aria-label="Zavis on LinkedIn" className="text-black/40 transition-colors hover:text-[#006828]">
+            <LinkedInIcon />
+          </a>
+          <a href="https://www.youtube.com/@zavis-ai" target="_blank" rel="noopener noreferrer" aria-label="Zavis on YouTube" className="text-black/40 transition-colors hover:text-[#006828]">
+            <YouTubeIcon />
+          </a>
+        </div>
+      }
+      bottom={
+        <div className="flex flex-col gap-4 font-['Geist',sans-serif] text-sm text-black/45 sm:flex-row sm:items-center sm:justify-between">
+          <span>&copy; 2026 Zavis. All rights reserved.</span>
+          <div className="flex gap-6">
+            <Link href="/privacy-policy" className="transition-colors hover:text-[#006828]">
+              Privacy Policy
             </Link>
-            <p className="mt-4 text-white/60 font-['Geist',sans-serif] text-sm leading-relaxed">
-              AI-native Patient Success Platform for healthcare organizations.
-            </p>
-            <div className="flex items-center gap-3 mt-5">
-              <a href="https://www.instagram.com/heyzavis" target="_blank" rel="noopener noreferrer" aria-label="Zavis on Instagram" className="text-white/40 hover:text-white transition-colors">
-                <InstagramIcon />
-              </a>
-              <a href="https://www.linkedin.com/company/zavisai/" target="_blank" rel="noopener noreferrer" aria-label="Zavis on LinkedIn" className="text-white/40 hover:text-white transition-colors">
-                <LinkedInIcon />
-              </a>
-              <a href="https://www.youtube.com/@zavis-ai" target="_blank" rel="noopener noreferrer" aria-label="Zavis on YouTube" className="text-white/40 hover:text-white transition-colors">
-                <YouTubeIcon />
-              </a>
-            </div>
+            <Link href="/terms-of-service" className="transition-colors hover:text-[#006828]">
+              Terms of Service
+            </Link>
           </div>
+        </div>
+      }
+    >
+      <div className="z-no-scrollbar grid grid-flow-col auto-cols-[calc((100%_-_1.5rem)/2)] gap-6 overflow-x-auto pb-1 md:grid-flow-row md:grid-cols-4 md:overflow-visible md:pb-0 lg:gap-8">
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h4 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-white mb-4">
+              <h4 className={videoFooterHeadingClass}>
                 {section.title}
               </h4>
-              <ul className="space-y-2 text-white/60 font-['Geist',sans-serif] text-sm">
+              <ul className="space-y-1 font-['Geist',sans-serif]">
                 {section.links.map((link) => {
                   const isExternal = link.href.startsWith("/directory") || link.href.startsWith("/intelligence") || link.href.startsWith("/research");
                   return (
                     <li key={link.href}>
                       {isExternal ? (
-                        <a href={link.href} className="hover:text-white transition-colors">{link.label}</a>
+                        <a href={link.href} className={videoFooterLinkClass}>{link.label}</a>
                       ) : (
-                        <Link href={link.href} className="hover:text-white transition-colors">{link.label}</Link>
+                        <Link href={link.href} className={videoFooterLinkClass}>{link.label}</Link>
                       )}
                     </li>
                   );
@@ -124,19 +145,7 @@ export function Footer() {
               </ul>
             </div>
           ))}
-        </div>
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/40 font-['Geist',sans-serif] text-sm">
-          <span>&copy; 2026 Zavis. All rights reserved.</span>
-          <div className="flex gap-6">
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
       </div>
-    </footer>
+    </VideoFooterShell>
   );
 }
