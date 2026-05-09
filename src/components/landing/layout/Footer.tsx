@@ -151,12 +151,9 @@ export function Footer() {
         </div>
       }
       bottom={
-        <div className="grid gap-3 font-['Geist',sans-serif] text-sm text-[#374151] sm:grid-cols-3 sm:items-center">
+        <div className="flex flex-col gap-3 font-['Geist',sans-serif] text-sm text-[#374151] sm:flex-row sm:items-center sm:justify-between">
           <span>&copy; 2026 Zavis. All rights reserved.</span>
-          <span className="text-center max-sm:text-left">
-            Free for all <span className="font-medium text-[#16823b]">UAE residents.</span>
-          </span>
-          <div className="flex items-center gap-2 sm:justify-end">
+          <div className="flex items-center gap-2">
             <Globe2 className="size-4" />
             <span>English</span>
             <ChevronDown className="size-4" />

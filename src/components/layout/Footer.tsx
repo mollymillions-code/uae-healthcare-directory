@@ -39,9 +39,6 @@ export function Footer() {
   const copyrightName = countryCtx
     ? `${countryCtx.name} Open Healthcare Directory`
     : "UAE Open Healthcare Directory";
-  const residentsLabel = countryCtx
-    ? `Free for all ${countryCtx.name} residents.`
-    : "Free for all UAE residents.";
   const dataSources = countryCtx
     ? [...countryCtx.regulators, "Google Places"]
     : ["Official UAE healthcare licensing data", "Google Places"];
@@ -120,7 +117,7 @@ export function Footer() {
       bottom={
         <div className="flex flex-col gap-3 font-['Geist',sans-serif] text-xs text-black/45 sm:flex-row sm:items-center sm:justify-between">
           <span>
-            &copy; {new Date().getFullYear()} {copyrightName}. {residentsLabel}
+            &copy; {new Date().getFullYear()} {copyrightName}.
           </span>
           <span>
             by{" "}
