@@ -3,6 +3,8 @@ import { Footer } from "@/components/landing/layout/Footer";
 import LenisProvider from "@/components/landing/layout/LenisProvider";
 import WhatsAppBubble from "@/components/widgets/WhatsAppBubble";
 
+export const revalidate = 3600;
+
 export default function LandingLayout({
   children,
 }: {
