@@ -138,10 +138,14 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       ? "px-3 py-1.5 text-xs"
       : "px-4 py-2.5 text-sm";
 
-  async function handleInitialClick(event: React.MouseEvent) {
+  function handleInitialClick(event: React.MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    await recordConsumerEvent({
+    setSelectedRole(null);
+    setStep("role");
+    setConfirmOpen(true);
+
+    void recordConsumerEvent({
       action: `owner_${props.action}_cta_click`,
       surface: props.surface,
       providerId: props.providerId,
@@ -150,16 +154,16 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       entityName: props.doctorName || props.providerName,
       ctaLabel: label,
       metadata: { citySlug: props.citySlug, categorySlug: props.categorySlug },
-    });
-    setSelectedRole(null);
-    setStep("role");
-    setConfirmOpen(true);
+    }).catch(() => undefined);
   }
 
-  async function handleRoleContinue() {
+  function handleRoleContinue() {
     if (!selectedRole) return;
 
-    await recordConsumerEvent({
+    const role = selectedRole;
+    setStep("confirm");
+
+    void recordConsumerEvent({
       action: `owner_${props.action}_role_selected`,
       surface: props.surface,
       providerId: props.providerId,
@@ -170,14 +174,28 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       metadata: {
         citySlug: props.citySlug,
         categorySlug: props.categorySlug,
-        ownerRole: selectedRole,
+        ownerRole: role,
       },
-    });
-    setStep("confirm");
+    }).catch(() => undefined);
   }
 
-  async function handleConfirm() {
-    await recordConsumerEvent({
+  function handleConfirm() {
+    const role = selectedRole;
+    const text = encodeURIComponent(buildMessage(props, role));
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    const openedWindow = window.open(whatsappUrl, "_blank");
+
+    if (openedWindow) {
+      openedWindow.opener = null;
+    } else {
+      window.location.href = whatsappUrl;
+    }
+
+    setConfirmOpen(false);
+    setStep("role");
+    setSelectedRole(null);
+
+    void recordConsumerEvent({
       action: `owner_${props.action}_cta_confirmed`,
       surface: props.surface,
       providerId: props.providerId,
@@ -188,19 +206,19 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       metadata: {
         citySlug: props.citySlug,
         categorySlug: props.categorySlug,
-        ownerRole: selectedRole,
+        ownerRole: role,
       },
-    });
+    }).catch(() => undefined);
+  }
 
-    const text = encodeURIComponent(buildMessage(props, selectedRole));
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank", "noopener,noreferrer");
+  function handleCancel() {
+    const role = selectedRole;
+    const abandonedStep = step;
     setConfirmOpen(false);
     setStep("role");
     setSelectedRole(null);
-  }
 
-  async function handleCancel() {
-    await recordConsumerEvent({
+    void recordConsumerEvent({
       action: `owner_${props.action}_cta_cancelled`,
       surface: props.surface,
       providerId: props.providerId,
@@ -211,13 +229,10 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
       metadata: {
         citySlug: props.citySlug,
         categorySlug: props.categorySlug,
-        ownerRole: selectedRole,
-        abandonedStep: step,
+        ownerRole: role,
+        abandonedStep,
       },
-    });
-    setConfirmOpen(false);
-    setStep("role");
-    setSelectedRole(null);
+    }).catch(() => undefined);
   }
 
   return (
