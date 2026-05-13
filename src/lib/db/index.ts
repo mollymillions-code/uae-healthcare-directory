@@ -6,20 +6,21 @@ import * as schema from "./schema";
 // with "too many clients already" at 2026-04-11 10:21 UTC):
 //
 // - PostgreSQL on EC2 has max_connections = 100
-// - At rest we observed ~57 active+idle connections across everything
+// - At rest we observed ~40-60 active+idle connections across everything
 //   (PM2 runtime workers + psql sessions + background scripts)
-// - That leaves ~43 connections of headroom in steady state
+// - That leaves ~40-60 connections of headroom in steady state
 // - BUT `next build` spawns ~6-8 static-render workers in parallel, each
 //   importing this module and creating its own Pool. With `max: 30` each,
 //   that's ~240 potential slots — overwhelmingly over budget.
 //
 // Safe per-process cap during next build:
 //   max=12. Build phase: ~8 workers × 12 = 96 (safely under 100).
-// Runtime can run higher because PM2 steady state is two web workers. Keep it
-// tunable through DB_POOL_MAX so EC2 can absorb post-redesign Arabic traffic
-// without requiring a code change.
+// Runtime can run higher because PM2 steady state is two web workers. Crawlers
+// can burst over the old 25-connection cap per worker and trigger pg's pool
+// acquisition timeout even while PostgreSQL itself still has capacity, so keep
+// the runtime cap and wait timeout tunable from env.
 const BUILD_POOL_MAX = 12;
-const DEFAULT_RUNTIME_POOL_MAX = 25;
+const DEFAULT_RUNTIME_POOL_MAX = 40;
 
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
   if (!value) return fallback;
@@ -50,10 +51,9 @@ const pool = new Pool({
   // Short idleTimeoutMillis reclaims connections after 30s of idle so we
   // don't hold 12 open forever when traffic dips.
   idleTimeoutMillis: 30000,
-  // Fresh PM2 processes need a bit more grace on first DB handshake
-  // during JIT warmup. Still short enough to fail fast when the DB is
-  // actually unreachable.
-  connectionTimeoutMillis: 10000,
+  // Crawl bursts can briefly consume every runtime client. Queue longer before
+  // surfacing a 500, while still failing quickly when the DB is truly down.
+  connectionTimeoutMillis: parsePositiveInteger(process.env.DB_POOL_CONNECT_TIMEOUT_MS, 30000),
 });
 
 // Prevent unhandled pool errors from crashing the process.

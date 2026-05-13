@@ -7,6 +7,78 @@ const FACILITY_ROUTE_PREFIXES = [
   "/ar/professionals/facility/",
 ] as const;
 const ROUTE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const LANDING_SPECIALTY_SLUGS = new Set([
+  "dermatology",
+  "optometry",
+  "orthopedics",
+  "ent",
+  "urgent-care",
+  "mental-health",
+  "veterinary",
+  "homecare",
+  "aesthetic",
+  "longevity-wellness",
+]);
+const PUBLIC_TOP_LEVEL_ROUTES = new Set([
+  "accessibility",
+  "account",
+  "add-listing",
+  "ai-agents",
+  "analytics",
+  "ar",
+  "automations",
+  "best",
+  "book-a-demo",
+  "bookings",
+  "campaigns",
+  "captain",
+  "chat",
+  "claim",
+  "conditions",
+  "contact",
+  "crm",
+  "dashboard",
+  "dashboard-auth",
+  "data-sources",
+  "dental",
+  "directory",
+  "editorial-policy",
+  "emr",
+  "find-a-doctor",
+  "forgot-password",
+  "get-started",
+  "guides",
+  "insurance",
+  "integrations",
+  "intelligence",
+  "jobs",
+  "labs",
+  "list-your-practice",
+  "listing-request",
+  "login",
+  "medications",
+  "methodology",
+  "mobile",
+  "payments",
+  "pharmacy",
+  "pricing",
+  "privacy-policy",
+  "professionals",
+  "request-listing",
+  "research",
+  "reset-password",
+  "search",
+  "signup",
+  "specialties",
+  "terms",
+  "terms-of-service",
+  "tools",
+  "tr",
+  "verified-reviews",
+  "voice",
+  "widgets",
+  "workforce",
+]);
 const INSURANCE_SLUG_ALIASES: Record<string, string> = {
   "aetna-international": "aetna",
   "allianz-care": "allianz",
@@ -52,6 +124,16 @@ function decodePathSegment(value: string): string {
   } catch {
     return value;
   }
+}
+
+function isUnknownPublicTopLevelPath(pathname: string): boolean {
+  if (pathname === "/" || pathname.startsWith("/api/")) return false;
+  if (pathname.slice(1).includes("/") || pathname.includes(".")) return false;
+
+  const slug = decodePathSegment(pathname.slice(1)).toLowerCase();
+  if (!ROUTE_SLUG_PATTERN.test(slug)) return false;
+
+  return !PUBLIC_TOP_LEVEL_ROUTES.has(slug) && !LANDING_SPECIALTY_SLUGS.has(slug);
 }
 
 function maybeRedirectInsuranceSlugAlias(
@@ -147,6 +229,15 @@ export function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = newPath;
     return NextResponse.redirect(url, 301);
+  }
+
+  if (isUnknownPublicTopLevelPath(pathname)) {
+    return new NextResponse(null, {
+      status: 404,
+      headers: {
+        "X-Robots-Tag": "noindex, noarchive",
+      },
+    });
   }
 
   // ── Dashboard auth ────────────────────────────────────────────────

@@ -16,7 +16,10 @@ const SPECIALTY_SLUGS = [
   "longevity-wellness",
 ] as const;
 
-export const dynamicParams = false;
+// Let unknown one-segment URLs fall through the page's explicit notFound()
+// instead of Next's static fallback path. The static path logs NoFallbackError
+// under crawler noise, which makes production health look worse than it is.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return SPECIALTY_SLUGS.map((slug) => ({ specialty: slug }));
@@ -29,10 +32,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { specialty } = await params;
   const data = specialties[specialty];
-  const title = data
-    ? `${data.name} Patient Engagement Platform`
-    : "Specialty Not Found";
-  const description = data?.heroDescription ?? "";
+
+  if (!data) notFound();
+
+  const title = `${data.name} Patient Engagement Platform`;
+  const description = data.heroDescription;
 
   return {
     title,
