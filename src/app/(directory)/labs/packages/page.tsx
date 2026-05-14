@@ -137,13 +137,21 @@ export default function PackagesPage() {
         position: i + 1,
         item: {
           "@type": "Product",
+          "@id": `${base}/labs/packages#${pkg.labSlug}-${i + 1}`,
           name: pkg.name,
           description: pkg.targetAudience,
+          url: `${base}/labs/packages#${pkg.labSlug}-${i + 1}`,
+          image: `${base}/favicon.png`,
+          brand: {
+            "@type": "Brand",
+            name: lab?.name || pkg.labSlug,
+          },
           offers: {
             "@type": "Offer",
             price: pkg.discountedPrice || pkg.price,
             priceCurrency: "AED",
             availability: "https://schema.org/InStock",
+            url: `${base}/labs/packages#${pkg.labSlug}-${i + 1}`,
             seller: {
               "@type": "Organization",
               name: lab?.name || pkg.labSlug,

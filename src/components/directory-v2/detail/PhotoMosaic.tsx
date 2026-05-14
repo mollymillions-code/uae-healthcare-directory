@@ -50,6 +50,7 @@ export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/im
               alt={`${alt} photo 1`}
               fill
               priority={priorityCount > 0}
+              fetchPriority={priorityCount > 0 ? "high" : "auto"}
               sizes="(max-width: 768px) 100vw, 50vw"
               onError={() => setFailed((prev) => ({ ...prev, 0: true }))}
               className="object-cover group-hover:brightness-95 transition-all duration-z-base"

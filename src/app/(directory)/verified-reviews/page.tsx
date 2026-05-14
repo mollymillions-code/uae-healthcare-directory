@@ -116,7 +116,6 @@ export default function VerifiedReviewsPage() {
     },
     datePublished: "2026-04-11",
     dateModified: "2026-04-11",
-    mainEntity: faqPageSchema(FAQS),
   };
 
   const breadcrumbNode = breadcrumbSchema([

@@ -114,7 +114,6 @@ export default function VerifiedReviewsPageArabic() {
     },
     datePublished: "2026-04-11",
     dateModified: "2026-04-11",
-    mainEntity: faqPageSchema(FAQS_AR),
   };
 
   const breadcrumbNode = breadcrumbSchema([

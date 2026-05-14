@@ -241,38 +241,10 @@ export function medicalOrganizationSchema(
           },
         }
       : {}),
-    // schema.org Review array from the v2 partial-quote snippets. Each
-    // snippet is a half-sentence fragment with a real author and rating.
-    // This supplements aggregateRating with actual review text surface
-    // area for rich review snippets in SERP.
-    ...(provider.reviewSummaryV2?.snippets &&
-    provider.reviewSummaryV2.snippets.length > 0
-      ? {
-          review: provider.reviewSummaryV2.snippets
-            .filter(
-              (s) =>
-                s.text_fragment &&
-                s.author_display &&
-                s.rating >= 1 &&
-                s.rating <= 5
-            )
-            .map((s) => ({
-              "@type": "Review",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: s.rating,
-                bestRating: 5,
-                worstRating: 1,
-              },
-              author: {
-                "@type": "Person",
-                name: s.author_display,
-              },
-              reviewBody: s.text_fragment,
-              ...(s.relative_time ? { datePublished: s.relative_time } : {}),
-            })),
-        }
-      : {}),
+    // Individual Google review snippets are rendered on-page only. Emitting
+    // them as JSON-LD caused Search Console to classify them as standalone
+    // Review items unless every itemReviewed edge was perfect. The provider's
+    // AggregateRating above is the stable rich-result surface.
     ...((() => {
       // Prefer rich Google structured periods (openingHoursPeriods) when available.
       // Falls back to the legacy provider.operatingHours object.
@@ -359,10 +331,17 @@ export function medicalOrganizationSchema(
 }
 
 export function faqPageSchema(faqs: { question: string; answer: string }[]) {
+  const cleanFaqs = faqs.filter(
+    (faq) =>
+      faq.question &&
+      faq.answer &&
+      !/\b(undefined|null|NaN)\b/i.test(`${faq.question} ${faq.answer}`)
+  );
+
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
+    mainEntity: cleanFaqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
@@ -386,20 +365,24 @@ export function breadcrumbSchema(
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      ...(item.url
-        ? {
-            item: {
+    itemListElement: items
+      .filter((item) => item.name && !/\b(undefined|null|NaN)\b/i.test(item.name))
+      .map((item, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: item.name,
+        item: item.url
+          ? {
               "@type": "WebPage",
               "@id": item.url,
               name: item.name,
               url: item.url,
+            }
+          : {
+              "@type": "WebPage",
+              name: item.name,
             },
-          }
-        : { name: item.name }),
-    })),
+      })),
   };
 }
 
@@ -611,6 +594,7 @@ export function labTestProductSchema(
   const sortedPrices = [...prices].sort((a, b) => a.price - b.price);
   const lowPrice = sortedPrices[0]?.price ?? 0;
   const highPrice = sortedPrices[sortedPrices.length - 1]?.price ?? 0;
+  const productUrl = `${base}/labs/test/${test.slug}`;
 
   return {
     "@context": "https://schema.org",
@@ -619,7 +603,9 @@ export function labTestProductSchema(
     alternateName: test.shortName,
     description: test.description,
     category: "Medical Lab Test",
-    url: `${base}/labs/test/${test.slug}`,
+    "@id": `${productUrl}#product`,
+    url: productUrl,
+    image: `${base}/favicon.png`,
     brand: {
       "@type": "Organization",
       name: "UAE Diagnostic Laboratories",

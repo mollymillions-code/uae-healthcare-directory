@@ -64,6 +64,7 @@ export function PhotoCarousel({
         fill
         sizes={sizes}
         priority={priority && idx === 0}
+        fetchPriority={priority && idx === 0 ? "high" : "auto"}
         onError={() => setFailed((prev) => (prev[idx] ? prev : { ...prev, [idx]: true }))}
         className="object-cover transition-opacity duration-z-med ease-z-standard group-hover/carousel:scale-[1.03] transform-gpu"
         draggable={false}

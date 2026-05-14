@@ -184,12 +184,35 @@ function maybeRedirectInsuranceSlugAlias(
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
+  const { pathname } = request.nextUrl;
+
+  // Strip transient auth/login query markers from public pages. These are
+  // navigation state, not distinct indexable documents, and GSC was surfacing
+  // them as redirect/HTTPS examples.
+  const isRedirectAwareAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname.startsWith("/jobs/login") ||
+    pathname.startsWith("/jobs/signup") ||
+    pathname.startsWith("/provider-portal/login");
+  const hasDisposableRedirectParam =
+    request.nextUrl.searchParams.has("redirect") && !isRedirectAwareAuthPage;
+
+  if (request.nextUrl.searchParams.get("auth") === "login" || hasDisposableRedirectParam) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("auth");
+    if (hasDisposableRedirectParam) {
+      url.searchParams.delete("redirect");
+    }
+    if (url.search !== request.nextUrl.search) {
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
   // Redirect non-www to www (Nginx also does this — must match to avoid redirect loops)
   if (host === 'zavis.ai') {
     return NextResponse.redirect(`https://www.zavis.ai${request.nextUrl.pathname}${request.nextUrl.search}`, 301);
   }
-
-  const { pathname } = request.nextUrl;
 
   if (isRemovedProviderPath(pathname)) {
     return new NextResponse(null, {

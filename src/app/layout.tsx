@@ -44,6 +44,12 @@ const geist = localFont({
   display: "swap",
 });
 
+const geistMono = localFont({
+  src: "../app/fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  display: "swap",
+});
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
 
 export const metadata: Metadata = {
@@ -106,14 +112,17 @@ export default function RootLayout({
   // AR routes. Googlebot still picks up the correct attributes
   // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable} ${geistMono.variable}`}>
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev" />
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" />
+        <link rel="dns-prefetch" href="https://places.googleapis.com" />
       </head>
-      {/* Google Tag Manager — loads GA4 + Google Ads + all event tags */}
-      <Script id="gtm" strategy="afterInteractive">{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9N3FDMQ');`}</Script>
+      {/* Google Tag Manager — defer off the mobile critical path; the gtag shim queues events before GTM loads. */}
+      <Script id="gtm" strategy="lazyOnload">{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9N3FDMQ');`}</Script>
       {/* Minimal gtag shim — lets gtag_report_conversion() push to dataLayer for GTM.
           Recursion guard: drops gtag("event", X, ...) calls for event names that have
           GTM HTML tags re-pushing the same event, which would otherwise infinite-loop
@@ -123,8 +132,8 @@ export default function RootLayout({
       <Script id="clarity" strategy="lazyOnload">{`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","swpafowqk4");`}</Script>
       {/* LinkedIn Insight Tag — afterInteractive so conversions aren't missed */}
       <Script id="linkedin-insight" strategy="lazyOnload">{`_linkedin_partner_id = "8657833";window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];window._linkedin_data_partner_ids.push(_linkedin_partner_id);(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s);})(window.lintrk);`}</Script>
-      {/* Meta Pixel — afterInteractive so window.fbq exists for early PageView events */}
-      <Script id="meta-pixel" strategy="afterInteractive">{`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1045406841134462');fbq('track','PageView');`}</Script>
+      {/* Meta Pixel — lazy-load to reduce mobile main-thread pressure; conversion calls queue once fbq is installed. */}
+      <Script id="meta-pixel" strategy="lazyOnload">{`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1045406841134462');fbq('track','PageView');`}</Script>
       {/* Reb2b Visitor Identification */}
       <Script id="reb2b" strategy="lazyOnload">{`!function(key){if(window.reb2b)return;window.reb2b={loaded:true};var s=document.createElement("script");s.async=true;s.src="https://ddwl4m2hdecbv.cloudfront.net/b/"+key+"/"+key+".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s,document.getElementsByTagName("script")[0]);}("GOYPYHQZ9POX");`}</Script>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-white text-dark">

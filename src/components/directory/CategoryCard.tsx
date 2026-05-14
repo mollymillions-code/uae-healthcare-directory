@@ -10,6 +10,7 @@ interface CategoryCardProps {
   icon: string;
   citySlug?: string;
   providerCount?: number;
+  priority?: boolean;
   /** Override the default href (used for country-prefixed routes) */
   hrefOverride?: string;
 }
@@ -20,6 +21,7 @@ export function CategoryCard({
   icon,
   citySlug,
   providerCount,
+  priority = false,
   hrefOverride,
 }: CategoryCardProps) {
   const href = hrefOverride ?? (citySlug ? `/directory/${citySlug}/${slug}` : `/directory/dubai/${slug}`);
@@ -38,6 +40,8 @@ export function CategoryCard({
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+        priority={priority}
+        fetchPriority={priority ? "high" : "auto"}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
       <div className="relative z-10 flex items-end justify-between w-full p-3.5">

@@ -38,6 +38,7 @@ export function CityCard({ slug, name, href, providerCount, regulator, size = "m
         fill
         sizes={size === "lg" ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
         priority={priority}
+        fetchPriority={priority ? "high" : "auto"}
         className="object-cover group-hover:scale-[1.05] transition-transform duration-z-slow ease-z-standard"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
