@@ -391,7 +391,8 @@ function preparePublicProviders(
 
 const queryCache = new Map<string, { data: unknown; ts: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-const MAX_CACHE_SIZE = 500;
+const MAX_CACHE_SIZE = 150;
+const MAX_CACHE_ARRAY_LENGTH = 100;
 
 function getCached<T>(key: string): T | undefined {
   const entry = queryCache.get(key);
@@ -407,6 +408,14 @@ function getCached<T>(key: string): T | undefined {
 }
 
 function setCache(key: string, data: unknown): void {
+  // Do not pin large provider result sets in the worker heap. Bot crawls can
+  // touch thousands of facet URLs in minutes; caching full provider arrays for
+  // each facet was enough to push PM2 workers into max_memory_restart cycles.
+  // Small lists/counts still benefit from the short TTL cache.
+  if (Array.isArray(data) && data.length > MAX_CACHE_ARRAY_LENGTH) {
+    return;
+  }
+
   // If key already exists, delete first so re-insert moves it to end
   if (queryCache.has(key)) {
     queryCache.delete(key);

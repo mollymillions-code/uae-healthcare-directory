@@ -186,6 +186,26 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
   const { pathname } = request.nextUrl;
 
+  // Next.js App Router uses the `_rsc` query param for internal Flight data
+  // requests during client navigation. Crawlers and social/browser preview
+  // agents were discovering those URLs and requesting them as normal documents,
+  // which bypassed canonical page caching and forced expensive server renders.
+  // Let genuine RSC navigation through, but canonicalize direct/bot `_rsc`
+  // requests back to the clean URL.
+  if (request.nextUrl.searchParams.has("_rsc")) {
+    const isNextRscRequest =
+      request.headers.get("rsc") === "1" ||
+      request.headers.has("next-router-state-tree") ||
+      request.headers.has("next-router-prefetch") ||
+      request.headers.has("next-url");
+
+    if (!isNextRscRequest) {
+      const url = request.nextUrl.clone();
+      url.searchParams.delete("_rsc");
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
   // Strip transient auth/login query markers from public pages. These are
   // navigation state, not distinct indexable documents, and GSC was surfacing
   // them as redirect/HTTPS examples.
