@@ -192,7 +192,10 @@ export function middleware(request: NextRequest) {
   // which bypassed canonical page caching and forced expensive server renders.
   // Let genuine RSC navigation through, but canonicalize direct/bot `_rsc`
   // requests back to the clean URL.
-  if (request.nextUrl.searchParams.has("_rsc")) {
+  const hasRscQuery =
+    request.nextUrl.searchParams.has("_rsc") || request.url.includes("_rsc=");
+
+  if (hasRscQuery) {
     const isNextRscRequest =
       request.headers.get("rsc") === "1" ||
       request.headers.has("next-router-state-tree") ||
@@ -200,7 +203,7 @@ export function middleware(request: NextRequest) {
       request.headers.has("next-url");
 
     if (!isNextRscRequest) {
-      const url = request.nextUrl.clone();
+      const url = new URL(request.url);
       url.searchParams.delete("_rsc");
       return NextResponse.redirect(url, 301);
     }

@@ -23,17 +23,16 @@ export const revalidate = 43200;
 // ─── Top 10 insurers by network size (for generating matchups) ──────────────
 
 async function getTop10Insurers(): Promise<{ slug: string; name: string; networkSize: number }[]> {
-  try {
-    const { getAllInsurerNetworkStats } = await import("@/lib/insurance");
-    const allStats = await getAllInsurerNetworkStats();
-    return allStats
-      .map((s) => ({ slug: s.slug, name: s.name, networkSize: s.totalProviders }))
-      .sort((a, b) => b.networkSize - a.networkSize)
-      .slice(0, 10);
-  } catch (e) {
-    console.error("[insurance/compare] Failed to load insurer stats:", e instanceof Error ? e.message : e);
-    return INSURER_PROFILES.slice(0, 10).map((p) => ({ slug: p.slug, name: p.name, networkSize: 0 }));
-  }
+  // Cross-link generation must stay cheap. This runs on every matchup page; the
+  // previous implementation loaded full network stats for every insurer just to
+  // pick the top 10, causing slow SSR and worker memory spikes under crawler
+  // traffic. The comparison content still loads live stats for the two insurers
+  // on the current page.
+  return INSURER_PROFILES.slice(0, 10).map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    networkSize: 0,
+  }));
 }
 
 async function getAllMatchups(): Promise<{ slug: string; slugA: string; slugB: string }[]> {
