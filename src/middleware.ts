@@ -79,6 +79,8 @@ const PUBLIC_TOP_LEVEL_ROUTES = new Set([
   "widgets",
   "workforce",
 ]);
+const CRAWLER_USER_AGENT_PATTERN =
+  /\b(?:ahrefs|applebot|baiduspider|bingbot|bot|chatgpt-user|crawler|duckduckbot|facebookexternalhit|gptbot|googlebot|googleother|linkedinbot|oai-searchbot|petalbot|semrush|slurp|spider|yandex)\b/i;
 const INSURANCE_SLUG_ALIASES: Record<string, string> = {
   "aetna-international": "aetna",
   "allianz-care": "allianz",
@@ -174,6 +176,20 @@ function maybeRedirectInsuranceSlugAlias(
   return null;
 }
 
+function isCrawlerUserAgent(userAgent: string | null): boolean {
+  return Boolean(userAgent && CRAWLER_USER_AGENT_PATTERN.test(userAgent));
+}
+
+function isGenuineNextRscRequest(request: NextRequest): boolean {
+  const hasRscHeader = request.headers.get("rsc") === "1";
+  const hasRouterTree = request.headers.has("next-router-state-tree");
+
+  // Next.js client-side navigations include both headers. Partial/forged RSC
+  // requests can force expensive server Flight renders and have caused worker
+  // stalls under crawler traffic, so treat them as canonical page requests.
+  return hasRscHeader && hasRouterTree;
+}
+
 /**
  * Middleware for:
  * 1. Legacy URL redirects (/uae → /directory, /journal → /intelligence)
@@ -196,13 +212,9 @@ export function middleware(request: NextRequest) {
     request.nextUrl.searchParams.has("_rsc") || request.url.includes("_rsc=");
 
   if (hasRscQuery) {
-    const isNextRscRequest =
-      request.headers.get("rsc") === "1" ||
-      request.headers.has("next-router-state-tree") ||
-      request.headers.has("next-router-prefetch") ||
-      request.headers.has("next-url");
+    const isNextRscRequest = isGenuineNextRscRequest(request);
 
-    if (!isNextRscRequest) {
+    if (!isNextRscRequest || isCrawlerUserAgent(request.headers.get("user-agent"))) {
       const url = new URL(request.url);
       url.searchParams.delete("_rsc");
       return NextResponse.redirect(url, 301);
