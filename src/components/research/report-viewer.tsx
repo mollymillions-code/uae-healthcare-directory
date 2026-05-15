@@ -32,7 +32,7 @@ export function ReportViewer({ html, title, slug }: ReportViewerProps) {
     <>
       {/* Minimal floating back button */}
       <Link
-        href="/research"
+        href="/"
         style={{
           position: 'fixed',
           top: 16,

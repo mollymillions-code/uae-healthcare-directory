@@ -80,7 +80,7 @@ export default function ResearchPageClient({ reports }: { reports: ReportMeta[] 
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-[#f8f8f6]/95 backdrop-blur-sm border-b border-black/[0.06]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          <Link href="/research" className="flex items-baseline gap-1.5" onClick={() => setActiveCategory(null)}>
+          <Link href="/" className="flex items-baseline gap-1.5" aria-label="Go to Zavis landing page">
             <span className="font-['Bricolage_Grotesque',sans-serif] font-semibold text-[#1c1c1c] text-lg tracking-tight">ZAVIS</span>
             <span className="text-black/30 text-[13px] font-medium tracking-wide">RESEARCH</span>
           </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ChevronDown, Globe2, Search, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Bot, CalendarCheck, ChevronDown, Globe2, MessageCircle } from "lucide-react";
 import { VideoFooterShell } from "@/components/layout/VideoFooterShell";
 
 function InstagramIcon() {
@@ -30,84 +30,81 @@ function YouTubeIcon() {
 
 const footerLinks = [
   {
-    title: "Directory",
-    links: [
-      { label: "Find a Doctor", href: "/find-a-doctor" },
-      { label: "Top Rated", href: "/directory/dubai/top/hospitals" },
-      { label: "Hospitals", href: "/directory/dubai/hospitals" },
-      { label: "Clinics", href: "/directory/dubai/clinics" },
-      { label: "Labs & Diagnostics", href: "/labs" },
-      { label: "Insurance Navigator", href: "/insurance" },
-      { label: "Medical Pricing", href: "/pricing" },
-      { label: "Verified Reviews", href: "/verified-reviews" },
-      { label: "Get Listed / Edit Profile", href: "/provider-portal" },
-    ],
-  },
-  {
-    title: "Cities",
-    links: [
-      { label: "Dubai", href: "/directory/dubai" },
-      { label: "Abu Dhabi", href: "/directory/abu-dhabi" },
-      { label: "Sharjah", href: "/directory/sharjah" },
-      { label: "Ajman", href: "/directory/ajman" },
-      { label: "Ras Al Khaimah", href: "/directory/ras-al-khaimah" },
-      { label: "Al Ain", href: "/directory/al-ain" },
-      { label: "Fujairah", href: "/directory/fujairah" },
-      { label: "All Cities", href: "/directory" },
-    ],
-  },
-  {
     title: "Platform",
     links: [
-      { label: "For Patients", href: "/directory" },
-      { label: "For Providers", href: "/provider-portal" },
-      { label: "AI Agents", href: "/ai-agents" },
+      { label: "Zavis Agent Workflows", href: "/ai-agents" },
+      { label: "Patient Access CRM", href: "/crm" },
       { label: "Bookings", href: "/bookings" },
-      { label: "CRM", href: "/crm" },
-      { label: "EMR Integration", href: "/emr" },
       { label: "Analytics", href: "/analytics" },
       { label: "Automations", href: "/automations" },
       { label: "Payments & Billing", href: "/payments" },
+      { label: "EMR Integration", href: "/emr" },
       { label: "Integrations", href: "/integrations" },
     ],
   },
   {
-    title: "Trust",
+    title: "Workflows",
     links: [
+      { label: "Lead Response", href: "/automations" },
+      { label: "Appointment Reminders", href: "/bookings" },
+      { label: "No-show Recovery", href: "/automations" },
+      { label: "Recall Campaigns", href: "/crm" },
+      { label: "Patient Reactivation", href: "/crm" },
+      { label: "Insurance Follow-up", href: "/integrations" },
+      { label: "Reputation Management", href: "/analytics" },
+      { label: "Patient Support", href: "/ai-agents" },
+    ],
+  },
+  {
+    title: "Channels",
+    links: [
+      { label: "WhatsApp", href: "/integrations" },
+      { label: "AI Voice", href: "/ai-agents" },
+      { label: "SMS", href: "/automations" },
+      { label: "Instagram DMs", href: "/integrations" },
+      { label: "Google Business", href: "/integrations" },
+      { label: "Website Chat", href: "/ai-agents" },
+      { label: "Call Center", href: "/ai-agents" },
+      { label: "API & Webhooks", href: "/integrations" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Research", href: "/research" },
+      { label: "Intelligence Reports", href: "/intelligence/reports" },
+      { label: "Directory Data", href: "/directory" },
       { label: "Editorial Policy", href: "/editorial-policy" },
       { label: "Methodology", href: "/methodology" },
       { label: "Data Sources", href: "/data-sources" },
       { label: "Corrections Policy", href: "/about/corrections" },
-      { label: "Masthead", href: "/intelligence/author" },
-      { label: "Privacy Policy", href: "/privacy-policy" },
-      { label: "Terms of Service", href: "/terms-of-service" },
-      { label: "Accessibility", href: "/accessibility" },
     ],
   },
   {
     title: "Company",
     links: [
       { label: "About Zavis", href: "/about" },
-      { label: "Intelligence Reports", href: "/intelligence/reports" },
       { label: "Press Room", href: "/intelligence/press" },
       { label: "Careers", href: "/jobs" },
       { label: "Contact Us", href: "/contact" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
     ],
   },
 ];
 
 const footerProof = [
   {
-    icon: Search,
-    text: "Find trusted doctors, clinics and hospitals across the GCC.",
+    icon: MessageCircle,
+    text: "Capture patient demand across WhatsApp, calls, ads and web chat.",
   },
   {
-    icon: ShieldCheck,
-    text: "Verified data from official sources and Google Places.",
+    icon: CalendarCheck,
+    text: "Convert more enquiries into booked appointments and follow-ups.",
   },
   {
-    icon: Users,
-    text: "Built for patients. Designed for better care.",
+    icon: Bot,
+    text: "Run healthcare-native AI workflows with human oversight.",
   },
 ];
 
@@ -123,7 +120,7 @@ export function Footer() {
           zavis<span className="text-[#00C853]">.</span>
         </Link>
       }
-      description="Healthcare directory and patient access intelligence."
+      description="AI workflows for healthcare revenue, access and patient operations."
       social={
         <div>
           <div className="h-0.5 w-12 bg-[#16823b]" />
