@@ -619,6 +619,41 @@ export const providerPortalSessions = pgTable(
   })
 );
 
+export const providerPortalLoginTokens = pgTable(
+  "provider_portal_login_tokens",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    tokenHash: text("token_hash").notNull(),
+    source: text("source").notNull().default("magic_link"),
+    redirectTo: text("redirect_to").notNull().default("/provider-portal"),
+    providerId: text("provider_id").references(() => providers.id, {
+      onDelete: "set null",
+    }),
+    organizationId: text("organization_id").references(() => clinicOrganizations.id, {
+      onDelete: "cascade",
+    }),
+    inviteId: text("invite_id").references(() => clinicInvites.id, {
+      onDelete: "set null",
+    }),
+    role: text("role").notNull().default("manager"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenHashUnique: uniqueIndex("uq_provider_portal_login_tokens_hash").on(
+      table.tokenHash
+    ),
+    emailIdx: index("idx_provider_portal_login_tokens_email").on(table.email),
+    providerIdx: index("idx_provider_portal_login_tokens_provider").on(table.providerId),
+    orgIdx: index("idx_provider_portal_login_tokens_org").on(table.organizationId),
+    inviteIdx: index("idx_provider_portal_login_tokens_invite").on(table.inviteId),
+    expiresAtIdx: index("idx_provider_portal_login_tokens_expires_at").on(table.expiresAt),
+  })
+);
+
 export const providerPortalAuditLogs = pgTable(
   "provider_portal_audit_logs",
   {

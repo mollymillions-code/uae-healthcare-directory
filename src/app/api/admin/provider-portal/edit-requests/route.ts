@@ -7,12 +7,12 @@ import {
   providerEditRequests,
   providers,
 } from "@/lib/db/schema";
-import { validateAdminAuth } from "@/lib/admin-auth";
+import { validateProviderPortalAdminAuth } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const authError = validateAdminAuth(request);
+  const authError = await validateProviderPortalAdminAuth(request);
   if (authError) return authError;
 
   const status = request.nextUrl.searchParams.get("status");

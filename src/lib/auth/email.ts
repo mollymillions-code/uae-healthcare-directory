@@ -101,3 +101,42 @@ export async function sendProviderPortalInviteEmail({
     fallbackUrl: activationUrl,
   });
 }
+
+type ProviderPortalMagicLinkEmail = {
+  to: string;
+  magicLinkUrl: string;
+  expiresAt: Date;
+  providerName?: string | null;
+};
+
+export async function sendProviderPortalMagicLinkEmail({
+  to,
+  magicLinkUrl,
+  expiresAt,
+  providerName,
+}: ProviderPortalMagicLinkEmail): Promise<void> {
+  const expiry = expiresAt.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+  const providerLine = providerName
+    ? `<p>This signs you into the portal for <strong>${providerName}</strong>.</p>`
+    : "";
+  const html = `
+    <p>Hi there,</p>
+    <p>Use this secure link to sign in to the Zavis provider portal:</p>
+    ${providerLine}
+    <p><a href="${magicLinkUrl}">Sign in to provider portal</a></p>
+    <p>This link expires at ${expiry}. If you did not request this, you can ignore this email.</p>
+    <p>— Zavis Directory</p>
+  `;
+
+  await dispatchEmail({
+    to,
+    subject: "Sign in to your Zavis provider portal",
+    html,
+    fallbackLogPrefix: "[provider-portal-magic-link]",
+    fallbackUrl: magicLinkUrl,
+  });
+}

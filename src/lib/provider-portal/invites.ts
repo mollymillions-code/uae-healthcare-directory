@@ -4,12 +4,13 @@ import {
   clinicInvites,
   clinicOrganizations,
   providerOwnerships,
+  providerPortalLoginTokens,
   providerPortalAuditLogs,
   providers,
 } from "@/lib/db/schema";
 import { createId } from "@/lib/id";
 import { createPlainToken, hashToken } from "@/lib/auth/tokens";
-import { sendProviderPortalInviteEmail } from "@/lib/auth/email";
+import { sendProviderPortalMagicLinkEmail } from "@/lib/auth/email";
 import { normalizePortalEmail, type ProviderPortalRole } from "@/lib/provider-portal/auth";
 
 function slugify(value: string): string {
@@ -78,7 +79,7 @@ export async function createProviderPortalInvite(input: {
       name: orgName,
       slug: `${slugify(orgName)}-${organizationId.slice(-5)}`,
       primaryEmail: email,
-      phone: input.contactPhone || provider.phone || null,
+      phone: provider.phone || null,
       website: provider.website || null,
       source: input.source || "claim",
     });
@@ -102,7 +103,6 @@ export async function createProviderPortalInvite(input: {
           .returning({ id: providerOwnerships.id, organizationId: providerOwnerships.organizationId })
       )[0];
 
-  const plainToken = createPlainToken(32);
   const inviteId = createId("inv");
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 
@@ -112,7 +112,7 @@ export async function createProviderPortalInvite(input: {
     providerId: provider.id,
     email,
     role: input.role || "manager",
-    tokenHash: hashToken(plainToken),
+    tokenHash: hashToken(createPlainToken(32)),
     expiresAt,
     createdBy: input.createdBy || null,
   });
@@ -132,30 +132,50 @@ export async function createProviderPortalInvite(input: {
     },
   });
 
-  const activationUrl = `${getBaseUrl()}/provider-portal/activate?token=${encodeURIComponent(
-    plainToken
+  const accessUrl = `${getBaseUrl()}/provider-portal/login?email=${encodeURIComponent(
+    email
+  )}&redirect=${encodeURIComponent(`/provider-portal/listings/${provider.id}`)}`;
+  const magicToken = createPlainToken(32);
+  const magicExpiresAt = new Date(Date.now() + 1000 * 60 * 15);
+
+  await db.insert(providerPortalLoginTokens).values({
+    id: createId("plt"),
+    email,
+    tokenHash: hashToken(magicToken),
+    source: "invite_magic_link",
+    redirectTo: `/provider-portal/listings/${provider.id}`,
+    providerId: provider.id,
+    organizationId,
+    inviteId,
+    role: input.role || "manager",
+    expiresAt: magicExpiresAt,
+    metadata: {},
+  });
+
+  const magicLinkUrl = `${getBaseUrl()}/api/provider-portal/magic-link/consume?token=${encodeURIComponent(
+    magicToken
   )}`;
 
   // Email is best-effort: degrades to a console warning if no provider is
-  // configured. Admin always still gets the activationUrl in the API response
+  // configured. Admin always still gets the accessUrl in the API response
   // and can forward it manually as a fallback.
   try {
-    await sendProviderPortalInviteEmail({
+    await sendProviderPortalMagicLinkEmail({
       to: email,
-      contactName: input.contactName ?? null,
       providerName: provider.name,
-      activationUrl,
-      expiresAt,
+      magicLinkUrl,
+      expiresAt: magicExpiresAt,
     });
   } catch (err) {
-    console.error("[provider-portal-invite] email dispatch failed:", err);
+    console.error("[provider-portal-invite] magic link email dispatch failed:", err);
   }
 
   return {
     inviteId,
     organizationId,
     providerId: provider.id,
-    activationUrl,
+    accessUrl,
+    activationUrl: accessUrl,
     expiresAt,
   };
 }

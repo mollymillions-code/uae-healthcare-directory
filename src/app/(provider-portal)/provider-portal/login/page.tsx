@@ -3,9 +3,20 @@ import { redirect } from "next/navigation";
 import { ProviderPortalLoginForm } from "@/components/provider-portal/ProviderPortalLoginForm";
 import { getCurrentProviderPortalContext } from "@/lib/provider-portal/current-user";
 
-export default async function ProviderPortalLoginPage() {
+function normalizeRedirect(value: string | undefined): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/provider-portal";
+  return value;
+}
+
+export default async function ProviderPortalLoginPage(
+  props: {
+    searchParams: Promise<{ redirect?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const redirectTo = normalizeRedirect(searchParams.redirect);
   const context = await getCurrentProviderPortalContext();
-  if (context) redirect("/provider-portal");
+  if (context) redirect(redirectTo);
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">

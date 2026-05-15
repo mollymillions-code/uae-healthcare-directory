@@ -7,7 +7,7 @@ import {
   providerPortalAuditLogs,
   providers,
 } from "@/lib/db/schema";
-import { validateAdminAuth } from "@/lib/admin-auth";
+import { validateProviderPortalAdminAuth } from "@/lib/admin-auth";
 import { createId } from "@/lib/id";
 import {
   buildProviderUpdateFromPortalPayload,
@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const authError = validateAdminAuth(request);
+  const authError = await validateProviderPortalAdminAuth(request);
   if (authError) return authError;
 
   try {

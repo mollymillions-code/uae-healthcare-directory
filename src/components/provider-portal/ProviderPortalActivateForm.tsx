@@ -9,7 +9,6 @@ function ActivateFormInner() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +22,7 @@ function ActivateFormInner() {
     const res = await fetch("/api/provider-portal/activate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, name, phone, password }),
+      body: JSON.stringify({ token, name, password }),
     });
 
     if (!res.ok) {
@@ -71,18 +70,6 @@ function ActivateFormInner() {
           onChange={(event) => setName(event.target.value)}
           autoComplete="name"
           required
-          className="mt-1 w-full rounded-xl border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]"
-        />
-      </label>
-
-      <label className="block">
-        <span className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c]">
-          WhatsApp or phone
-        </span>
-        <input
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          autoComplete="tel"
           className="mt-1 w-full rounded-xl border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]"
         />
       </label>

@@ -1,39 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 function LoginFormInner() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/provider-portal";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") || "");
   const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setSent(false);
 
-    const res = await fetch("/api/provider-portal/login", {
+    const res = await fetch("/api/provider-portal/magic-link/request", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, redirect }),
+      body: JSON.stringify({ email, redirect }),
     });
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error || "Email or password is incorrect.");
+      setError(data.error || "Could not send sign-in link.");
       setLoading(false);
       return;
     }
 
-    const data = await res.json().catch(() => ({}));
-    router.push(data.redirectTo || redirect);
-    router.refresh();
+    setSent(true);
+    setLoading(false);
   }
 
   return (
@@ -52,33 +51,24 @@ function LoginFormInner() {
         />
       </label>
 
-      <label className="block">
-        <span className="font-['Geist',sans-serif] text-sm font-medium text-[#1c1c1c]">
-          Password
-        </span>
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="current-password"
-          required
-          className="mt-1 w-full rounded-xl border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]"
-        />
-      </label>
-
       {error && <p className="font-['Geist',sans-serif] text-sm text-red-600">{error}</p>}
+      {sent && (
+        <p className="rounded-xl border border-[#006828]/15 bg-[#006828]/[0.04] px-4 py-3 font-['Geist',sans-serif] text-sm text-[#006828]">
+          If Zavis has granted this email access, a secure sign-in link has been sent.
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={loading}
         className="w-full rounded-full bg-[#006828] px-5 py-3 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c] disabled:cursor-wait disabled:opacity-70"
       >
-        {loading ? "Logging in..." : "Log in"}
+        {loading ? "Sending link..." : "Send secure sign-in link"}
       </button>
 
       <p className="font-['Geist',sans-serif] text-xs leading-relaxed text-black/40">
-        Clinic teams can log in after activation. Zavis staff can use their
-        @zavis.ai account for provider QA.
+        Clinic teams can sign in only after Zavis grants access. Zavis staff can
+        use their @zavis.ai email for provider QA.
       </p>
 
       <Link href="/claim" className="block font-['Geist',sans-serif] text-sm font-medium text-[#006828] hover:underline">

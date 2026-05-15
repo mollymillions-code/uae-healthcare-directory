@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { providers } from "@/lib/db/schema";
-import { validateAdminAuth } from "@/lib/admin-auth";
+import { validateProviderPortalAdminAuth } from "@/lib/admin-auth";
 import { createProviderPortalInvite } from "@/lib/provider-portal/invites";
 import { isProviderPortalRole } from "@/lib/provider-portal/auth";
 import { readJsonObject } from "@/lib/http/read-json";
@@ -10,7 +10,7 @@ import { readJsonObject } from "@/lib/http/read-json";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const authError = validateAdminAuth(request);
+  const authError = await validateProviderPortalAdminAuth(request);
   if (authError) return authError;
 
   try {
@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
       providerId,
       email,
       contactName: body.contactName ? String(body.contactName) : null,
-      contactPhone: body.contactPhone ? String(body.contactPhone) : null,
       role,
       createdBy: "admin",
       source: "admin_grant",

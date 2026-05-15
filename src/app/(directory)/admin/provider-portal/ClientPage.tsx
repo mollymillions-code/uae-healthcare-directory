@@ -16,10 +16,6 @@ type EditRequest = {
   createdAt: string;
 };
 
-function getAdminKey(): string {
-  return sessionStorage.getItem("admin_key") || "";
-}
-
 export default function ProviderPortalAdminPage() {
   const [requests, setRequests] = useState<EditRequest[]>([]);
   const [status, setStatus] = useState("pending");
@@ -30,7 +26,6 @@ export default function ProviderPortalAdminPage() {
     providerId: "",
     email: "",
     contactName: "",
-    contactPhone: "",
     organizationName: "",
     role: "manager",
   });
@@ -41,8 +36,7 @@ export default function ProviderPortalAdminPage() {
     setLoading(true);
     setError("");
     try {
-      const key = getAdminKey();
-      const res = await fetch(`/api/admin/provider-portal/edit-requests?status=${status}&key=${encodeURIComponent(key)}`);
+      const res = await fetch(`/api/admin/provider-portal/edit-requests?status=${status}`);
       if (!res.ok) throw new Error("Could not load edit requests");
       const data = await res.json();
       setRequests(data.editRequests || []);
@@ -65,10 +59,9 @@ export default function ProviderPortalAdminPage() {
     setActioningId(id);
     setError("");
     try {
-      const key = getAdminKey();
       const res = await fetch(`/api/admin/provider-portal/edit-requests/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, rejectionReason, reviewerName: "admin" }),
       });
       if (!res.ok) {
@@ -89,15 +82,14 @@ export default function ProviderPortalAdminPage() {
     setInviteUrl("");
     setError("");
     try {
-      const key = getAdminKey();
       const res = await fetch("/api/admin/provider-portal/invites", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-dashboard-key": key },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(inviteForm),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Invite failed");
-      setInviteUrl(data.invite.activationUrl);
+      setInviteUrl(data.invite.accessUrl || data.invite.activationUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invite failed");
     } finally {
@@ -117,7 +109,7 @@ export default function ProviderPortalAdminPage() {
             Provider Portal
           </h1>
           <p className="font-['Geist',sans-serif] text-sm text-black/40">
-            Generate clinic-owner access and review submitted listing edits.
+            Grant clinic-owner access by email and review submitted listing edits.
           </p>
         </div>
         <button
@@ -138,7 +130,7 @@ export default function ProviderPortalAdminPage() {
 
       <section className="mb-6 rounded-xl border border-black/[0.06] bg-white p-5">
         <h2 className="font-['Bricolage_Grotesque',sans-serif] text-xl font-medium text-[#1c1c1c]">
-          Create clinic portal invite
+          Grant clinic portal access
         </h2>
         <form onSubmit={createInvite} className="mt-4 grid gap-3 lg:grid-cols-6">
           <input
@@ -172,25 +164,19 @@ export default function ProviderPortalAdminPage() {
             disabled={inviteLoading}
             className="rounded-lg bg-[#006828] px-4 py-2 text-sm font-semibold text-white hover:bg-[#004d1c] disabled:opacity-60"
           >
-            {inviteLoading ? "Creating..." : "Create"}
+            {inviteLoading ? "Creating..." : "Grant access"}
           </button>
           <input
             value={inviteForm.contactName}
             onChange={(event) => updateInvite("contactName", event.target.value)}
             placeholder="Contact name"
-            className="rounded-lg border border-black/[0.08] px-3 py-2 text-sm lg:col-span-2"
-          />
-          <input
-            value={inviteForm.contactPhone}
-            onChange={(event) => updateInvite("contactPhone", event.target.value)}
-            placeholder="Contact phone"
-            className="rounded-lg border border-black/[0.08] px-3 py-2 text-sm lg:col-span-2"
+            className="rounded-lg border border-black/[0.08] px-3 py-2 text-sm lg:col-span-3"
           />
           <input
             value={inviteForm.organizationName}
             onChange={(event) => updateInvite("organizationName", event.target.value)}
             placeholder="Organization name override"
-            className="rounded-lg border border-black/[0.08] px-3 py-2 text-sm lg:col-span-2"
+            className="rounded-lg border border-black/[0.08] px-3 py-2 text-sm lg:col-span-3"
           />
         </form>
         {inviteUrl && (
@@ -202,7 +188,7 @@ export default function ProviderPortalAdminPage() {
               className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-[#006828]"
             >
               <Copy className="h-3.5 w-3.5" />
-              Copy
+              Copy access URL
             </button>
           </div>
         )}

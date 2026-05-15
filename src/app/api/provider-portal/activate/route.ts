@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
     const token = String(body.token || "");
     const password = String(body.password || "");
     const name = String(body.name || "").trim() || null;
-    const phone = String(body.phone || "").trim() || null;
 
     if (!token) {
       return NextResponse.json({ error: "Activation token is required." }, { status: 400 });
@@ -72,7 +71,6 @@ export async function POST(request: NextRequest) {
         .update(clinicUsers)
         .set({
           name: name || user.name,
-          phone: phone || user.phone,
           passwordHash,
           status: "active",
           updatedAt: now,
@@ -83,7 +81,7 @@ export async function POST(request: NextRequest) {
         id: createId("clu"),
         email,
         name,
-        phone,
+        phone: null,
         passwordHash,
         status: "active",
         lastLoginAt: null,
