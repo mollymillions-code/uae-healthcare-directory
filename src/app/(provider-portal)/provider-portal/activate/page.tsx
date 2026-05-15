@@ -15,7 +15,7 @@ export default function ProviderPortalActivatePage() {
           Set up your listing manager
         </h1>
         <p className="mt-2 font-['Geist',sans-serif] text-sm leading-relaxed text-black/50">
-          This account is scoped to approved clinic listings only. Edits you submit are reviewed by Zavis before they go live.
+          This account is scoped to approved clinic listings only. Saved changes update the public listing directly.
         </p>
         <div className="mt-6">
           <ProviderPortalActivateForm />
