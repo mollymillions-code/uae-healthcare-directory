@@ -29,6 +29,11 @@ export type ProviderPortalContext = {
     name: string;
     status: string;
   };
+  staff?: {
+    isZavisStaff: true;
+    providerId?: string | null;
+    consumerUserId?: string | null;
+  };
 };
 
 export type ProviderPortalEmbedTokenPayload = {
@@ -64,6 +69,31 @@ export function canManageProviderListing(role: ProviderPortalRole): boolean {
 
 export function normalizePortalEmail(email: string): string {
   return normalizeEmail(email);
+}
+
+export function isZavisStaffEmail(email: string): boolean {
+  return normalizePortalEmail(email).endsWith("@zavis.ai");
+}
+
+function isZavisStaffSession(
+  session: typeof providerPortalSessions.$inferSelect,
+  userEmail: string
+): boolean {
+  return session.source === "zavis_staff" && isZavisStaffEmail(userEmail);
+}
+
+function getStaffMetadata(session: typeof providerPortalSessions.$inferSelect) {
+  const metadata = session.metadata || {};
+  return {
+    providerId:
+      typeof metadata.providerId === "string" && metadata.providerId.trim()
+        ? metadata.providerId.trim()
+        : null,
+    consumerUserId:
+      typeof metadata.consumerUserId === "string" && metadata.consumerUserId.trim()
+        ? metadata.consumerUserId.trim()
+        : null,
+  };
 }
 
 export function signProviderPortalEmbedToken(
@@ -208,6 +238,62 @@ export async function validateProviderPortalSessionToken(
   )[0];
 
   if (!session) return null;
+
+  const staffRow = (
+    await db
+      .select({
+        sessionId: providerPortalSessions.id,
+        userId: clinicUsers.id,
+        userEmail: clinicUsers.email,
+        userName: clinicUsers.name,
+        userStatus: clinicUsers.status,
+        organizationId: clinicOrganizations.id,
+        organizationName: clinicOrganizations.name,
+        organizationStatus: clinicOrganizations.status,
+      })
+      .from(providerPortalSessions)
+      .innerJoin(clinicUsers, eq(providerPortalSessions.userId, clinicUsers.id))
+      .innerJoin(
+        clinicOrganizations,
+        eq(providerPortalSessions.organizationId, clinicOrganizations.id)
+      )
+      .where(eq(providerPortalSessions.id, session.id))
+      .limit(1)
+  )[0];
+
+  if (
+    staffRow &&
+    staffRow.userStatus === "active" &&
+    staffRow.organizationStatus === "active" &&
+    isZavisStaffSession(session, staffRow.userEmail)
+  ) {
+    const staff = getStaffMetadata(session);
+
+    await db
+      .update(providerPortalSessions)
+      .set({ lastSeenAt: new Date() })
+      .where(eq(providerPortalSessions.id, session.id));
+
+    return {
+      sessionId: staffRow.sessionId,
+      user: {
+        id: staffRow.userId,
+        email: staffRow.userEmail,
+        name: staffRow.userName,
+        role: "owner",
+      },
+      organization: {
+        id: staffRow.organizationId,
+        name: staffRow.organizationName,
+        status: staffRow.organizationStatus,
+      },
+      staff: {
+        isZavisStaff: true,
+        providerId: staff.providerId,
+        consumerUserId: staff.consumerUserId,
+      },
+    };
+  }
 
   const row = (
     await db

@@ -152,14 +152,14 @@ export function ProviderListingEditForm({ provider }: { provider: ProviderEditor
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setError(data.error || "Could not submit listing edits.");
+      setError(data.error || "Could not save listing changes.");
       setSaving(false);
       return;
     }
 
-    setMessage("Edits submitted for Zavis review.");
+    setMessage(data.message || "Listing updated.");
     window.parent?.postMessage(
-      { type: "zavis_provider_portal_edit_submitted", providerId: provider.id },
+      { type: "zavis_provider_portal_listing_updated", providerId: provider.id },
       "*"
     );
     setSaving(false);
@@ -320,7 +320,7 @@ export function ProviderListingEditForm({ provider }: { provider: ProviderEditor
           className="inline-flex items-center gap-2 rounded-full bg-[#006828] px-5 py-3 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c] disabled:cursor-wait disabled:opacity-70"
         >
           <Save className="h-4 w-4" />
-          {saving ? "Submitting..." : "Submit for review"}
+          {saving ? "Saving..." : "Save changes"}
         </button>
       </div>
     </form>

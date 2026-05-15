@@ -21,7 +21,7 @@ function LoginFormInner() {
     const res = await fetch("/api/provider-portal/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, redirect }),
     });
 
     if (!res.ok) {
@@ -31,7 +31,8 @@ function LoginFormInner() {
       return;
     }
 
-    router.push(redirect);
+    const data = await res.json().catch(() => ({}));
+    router.push(data.redirectTo || redirect);
     router.refresh();
   }
 
@@ -76,8 +77,8 @@ function LoginFormInner() {
       </button>
 
       <p className="font-['Geist',sans-serif] text-xs leading-relaxed text-black/40">
-        Access is only available after Zavis approves your listing claim or your team
-        grants you access from the B2B app.
+        Clinic teams can log in after activation. Zavis staff can use their
+        @zavis.ai account for provider QA.
       </p>
 
       <Link href="/claim" className="block font-['Geist',sans-serif] text-sm font-medium text-[#006828] hover:underline">

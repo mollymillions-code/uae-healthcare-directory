@@ -62,7 +62,7 @@ export default async function ProviderPortalListingPage(
             )}
           </div>
           <p className="mt-1 font-['Geist',sans-serif] text-sm text-black/45">
-            Submit profile changes for Zavis review.
+            Save profile changes directly to the public listing.
           </p>
         </div>
         {!embedded && <ProviderPortalLogoutButton />}
@@ -80,7 +80,7 @@ export default async function ProviderPortalListingPage(
             </h2>
             {editRequests.length === 0 ? (
               <p className="mt-3 font-['Geist',sans-serif] text-sm text-black/45">
-                No edit requests yet.
+                No previous portal edit history.
               </p>
             ) : (
               <div className="mt-4 space-y-3">

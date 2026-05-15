@@ -27,7 +27,6 @@ export default async function ProviderPortalPage(
     listOwnedProviders(context),
     listProviderEditRequests(context),
   ]);
-  const pendingCount = editRequests.filter((request) => request.status === "pending").length;
   const embedded = searchParams.embed === "1";
 
   return (
@@ -58,9 +57,9 @@ export default async function ProviderPortalPage(
         <div className="rounded-2xl border border-black/[0.06] bg-white p-5">
           <Clock3 className="h-5 w-5 text-amber-600" />
           <p className="mt-3 font-['Bricolage_Grotesque',sans-serif] text-3xl font-medium text-[#1c1c1c]">
-            {pendingCount}
+            {editRequests.length}
           </p>
-          <p className="font-['Geist',sans-serif] text-sm text-black/45">pending edits</p>
+          <p className="font-['Geist',sans-serif] text-sm text-black/45">portal edit history</p>
         </div>
         <div className="rounded-2xl border border-black/[0.06] bg-white p-5">
           <BadgeCheck className="h-5 w-5 text-[#006828]" />
@@ -77,14 +76,16 @@ export default async function ProviderPortalPage(
             Listings
           </h2>
           <p className="mt-1 font-['Geist',sans-serif] text-sm text-black/45">
-            Edit requests are reviewed by Zavis before they update public pages.
+            Changes saved here update the public listing directly.
           </p>
         </div>
 
         {listings.length === 0 ? (
           <div className="p-8 text-center">
             <p className="font-['Geist',sans-serif] text-sm text-black/45">
-              No listings are attached to this clinic account yet.
+              {context.staff?.isZavisStaff
+                ? "Open a provider-specific portal URL to QA that clinic's listing manager."
+                : "No listings are attached to this clinic account yet."}
             </p>
           </div>
         ) : (
