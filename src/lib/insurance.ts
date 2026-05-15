@@ -11,8 +11,8 @@ import {
   type InsurerProfile,
 } from "./constants/insurance-plans";
 import {
-  getProvidersByInsurance,
   getProviderCountByInsurance,
+  getProviderCountByInsuranceCategory,
   getCities,
   getCategories,
 } from "./data";
@@ -51,6 +51,19 @@ export interface PlanRecommendation {
 
 const networkStatsCache = new Map<string, InsurerNetworkStats>();
 
+async function mapInBatches<T, R>(
+  items: T[],
+  batchSize: number,
+  mapper: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    results.push(...(await Promise.all(batch.map(mapper))));
+  }
+  return results;
+}
+
 export async function getInsurerNetworkStats(insurerSlug: string): Promise<InsurerNetworkStats | undefined> {
   const cached = networkStatsCache.get(insurerSlug);
   if (cached) return cached;
@@ -61,8 +74,10 @@ export async function getInsurerNetworkStats(insurerSlug: string): Promise<Insur
   const cities = getCities();
   const categories = getCategories();
 
-  const cityCounts = await Promise.all(
-    cities.map((city) => getProviderCountByInsurance(insurerSlug, city.slug))
+  const cityCounts = await mapInBatches(
+    cities,
+    4,
+    (city) => getProviderCountByInsurance(insurerSlug, city.slug)
   );
 
   const byCity: NetworkBreakdown[] = cities
@@ -74,27 +89,25 @@ export async function getInsurerNetworkStats(insurerSlug: string): Promise<Insur
     .filter((c) => c.providerCount > 0)
     .sort((a, b) => b.providerCount - a.providerCount);
 
-  const allProviders = await getProvidersByInsurance(insurerSlug);
-
-  // Count by category
-  const catMap = new Map<string, number>();
-  for (const p of allProviders) {
-    catMap.set(p.categorySlug, (catMap.get(p.categorySlug) || 0) + 1);
-  }
+  const categoryCounts = await mapInBatches(
+    categories,
+    4,
+    (category) => getProviderCountByInsuranceCategory(insurerSlug, undefined, category.slug)
+  );
 
   const byCategory: CategoryBreakdown[] = categories
-    .filter((cat) => catMap.has(cat.slug))
-    .map((cat) => ({
+    .map((cat, i) => ({
       categorySlug: cat.slug,
       categoryName: cat.name,
-      providerCount: catMap.get(cat.slug)!,
+      providerCount: categoryCounts[i],
     }))
+    .filter((cat) => cat.providerCount > 0)
     .sort((a, b) => b.providerCount - a.providerCount);
 
   const stats: InsurerNetworkStats = {
     slug: profile.slug,
     name: profile.name,
-    totalProviders: allProviders.length,
+    totalProviders: cityCounts.reduce((sum, count) => sum + count, 0),
     byCity,
     byCategory,
   };
@@ -104,11 +117,11 @@ export async function getInsurerNetworkStats(insurerSlug: string): Promise<Insur
 }
 
 export async function getAllInsurerNetworkStats(): Promise<InsurerNetworkStats[]> {
-  // Process insurers in batches of 4 to avoid overwhelming the DB pool.
-  // Each insurer stat makes ~9 queries (8 cities + 1 full scan), so
-  // 4 × 9 = 36 concurrent queries is safe for a pool of 12 connections.
+  // Process insurers conservatively. Each insurer stat is count-only now, but
+  // still fans out across cities/categories; keep concurrent DB work bounded
+  // under crawler traffic.
   const results: (InsurerNetworkStats | undefined)[] = [];
-  const batchSize = 4;
+  const batchSize = 2;
   for (let i = 0; i < INSURER_PROFILES.length; i += batchSize) {
     const batch = INSURER_PROFILES.slice(i, i + batchSize);
     const batchResults = await Promise.all(batch.map((p) => getInsurerNetworkStats(p.slug)));
@@ -213,7 +226,7 @@ export async function recommendPlans(answers: QuizAnswers): Promise<PlanRecommen
     // Network size in preferred city
     const networkSize = answers.preferredCity
       ? await getProviderCountByInsurance(plan.insurerSlug, answers.preferredCity)
-      : (await getProvidersByInsurance(plan.insurerSlug)).length;
+      : await getProviderCountByInsurance(plan.insurerSlug);
 
     if (networkSize > 500) {
       score += 10;

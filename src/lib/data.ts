@@ -1800,19 +1800,20 @@ export async function getProvidersByInsurance(insurerSlug: string, citySlug?: st
   return result;
 }
 
-export async function getProviderCountByInsurance(insurerSlug: string, citySlug: string): Promise<number> {
+export async function getProviderCountByInsurance(insurerSlug: string, citySlug?: string): Promise<number> {
   if (!HAS_DB) {
     loadFallback();
     const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
     if (!insurer) return 0;
     const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
-    const source = fallbackByCity!.get(citySlug) || [];
+    const source = citySlug ? (fallbackByCity!.get(citySlug) || []) : FALLBACK_ALL_PROVIDERS!;
     return source.filter((p) =>
+      (!citySlug || getProviderCountry(p) === "ae") &&
       p.insurance.some((ins) => matchTerms.some((term) => ins.toLowerCase().includes(term)))
     ).length;
   }
 
-  const cacheKey = `count:ins:${insurerSlug}:${citySlug}`;
+  const cacheKey = `count:ins:${insurerSlug}:${citySlug || "all"}`;
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
@@ -1824,7 +1825,7 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
   await ensureDbModules();
   const t = _providersTable!;
   const conditions = [
-    _eq!(t.citySlug, citySlug),
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
     jsonbTextArrayContainsAny(t.insurance, matchTerms, "contains"),
   ].filter(Boolean);
   if (REMOVED_PROVIDER_SLUGS.length > 0) {
@@ -1841,7 +1842,7 @@ export async function getProviderCountByInsurance(insurerSlug: string, citySlug:
 
 export async function getProviderCountByInsuranceCategory(
   insurerSlug: string,
-  citySlug: string,
+  citySlug: string | undefined,
   categorySlug: string
 ): Promise<number> {
   if (!HAS_DB) {
@@ -1849,9 +1850,10 @@ export async function getProviderCountByInsuranceCategory(
     const insurer = INSURANCE_PROVIDERS.find((i) => i.slug === insurerSlug);
     if (!insurer) return 0;
     const matchTerms = [insurer.slug, insurer.name.toLowerCase()];
-    const source = fallbackByCity!.get(citySlug) || [];
+    const source = citySlug ? (fallbackByCity!.get(citySlug) || []) : FALLBACK_ALL_PROVIDERS!;
     return source.filter(
       (p) =>
+        (!citySlug || getProviderCountry(p) === "ae") &&
         p.categorySlug === categorySlug &&
         p.insurance.some((ins) =>
           matchTerms.some((term) => ins.toLowerCase().includes(term))
@@ -1859,7 +1861,7 @@ export async function getProviderCountByInsuranceCategory(
     ).length;
   }
 
-  const cacheKey = `count:ins-cat:${insurerSlug}:${citySlug}:${categorySlug}`;
+  const cacheKey = `count:ins-cat:${insurerSlug}:${citySlug || "all"}:${categorySlug}`;
   const cached = getCached<number>(cacheKey);
   if (cached !== undefined) return cached;
 
@@ -1878,7 +1880,7 @@ export async function getProviderCountByInsuranceCategory(
     .join(" OR ");
 
   const conditions = [
-    _eq!(t.citySlug, citySlug),
+    citySlug ? _eq!(t.citySlug, citySlug) : _eq!(t.country, "ae"),
     categoryWhereCondition(t, categorySlug),
     _sql!`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${t.insurance}) elem WHERE ${_sql!.raw(orClauses)})`,
   ];

@@ -5,7 +5,8 @@ const nextConfig = {
   // Disable in-memory ISR/fetch cache. Workers were bloating from 150MB
   // to 3GB over 24h as cached pages accumulated in the Node.js heap.
   // With this set to 0, Next.js uses the file-system cache (.next/cache/)
-  // instead. PM2 max_memory_restart at 2G acts as a safety net.
+  // instead. PM2 max_memory_restart at 6G acts as the crawl-spike safety net
+  // on the 30GB Lightsail host.
   cacheMaxMemorySize: 0,
   experimental: {
     optimizePackageImports: ["lucide-react"],
@@ -64,7 +65,39 @@ const nextConfig = {
     return redirects;
   },
   async headers() {
+    const publicSeoPageHeaders = [
+      { key: "Cache-Control", value: "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400" },
+      { key: "CDN-Cache-Control", value: "public, max-age=3600, stale-while-revalidate=86400" },
+      { key: "X-Zavis-SEO-Cache", value: "public-html" },
+    ];
+
+    const publicSeoRoutes = [
+      "/directory/:path*",
+      "/ar/directory/:path*",
+      "/tr/directory/:path*",
+      "/find-a-doctor/:path*",
+      "/ar/find-a-doctor/:path*",
+      "/professionals/:path*",
+      "/ar/professionals/:path*",
+      "/insurance/:path*",
+      "/ar/insurance/:path*",
+      "/pricing/:path*",
+      "/ar/pricing/:path*",
+      "/labs/:path*",
+      "/ar/labs/:path*",
+      "/specialties/:path*",
+      "/ar/specialties/:path*",
+      "/medications/:path*",
+      "/ar/medications/:path*",
+      "/best/:path*",
+      "/ar/best/:path*",
+    ];
+
     return [
+      ...publicSeoRoutes.map((source) => ({
+        source,
+        headers: publicSeoPageHeaders,
+      })),
       {
         source: "/(.*)",
         headers: [
