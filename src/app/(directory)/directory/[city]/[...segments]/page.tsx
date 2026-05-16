@@ -288,8 +288,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       }
 
       // --- SEO description: CTR-optimized, max ~155 chars ---
-      // Lead with rating (eye-catching), then insurance names (matches
-      // insurance-intent queries), then services, end with CTA.
+      // Lead with regulatory trust label (unique differentiator vs Google Maps /
+      // generic directories), then rating, insurance, services.
+      const regulatorLabel = prov.id.startsWith("dha_")
+        ? "DHA-licensed"
+        : prov.id.startsWith("doh_")
+          ? "DOH-licensed"
+          : "MOHAP-licensed";
       const descParts: string[] = [];
       if (hasRating && prov.googleReviewCount) {
         descParts.push(`Rated ${prov.googleRating}/5 from ${prov.googleReviewCount.toLocaleString()} patient reviews`);
@@ -302,13 +307,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       }
       let seoDesc: string;
       if (descParts.length > 0) {
-        seoDesc = truncateDescription(`${providerDisplay}: ${descParts.join(". ")}. View hours, directions & contact.`);
+        seoDesc = truncateDescription(`${regulatorLabel} · ${descParts.join(". ")}.`);
       } else if (prov.shortDescription) {
-        seoDesc = truncateDescription(`${providerDisplay}: ${prov.shortDescription}. View hours, directions & contact.`);
+        seoDesc = truncateDescription(`${regulatorLabel} · ${prov.shortDescription}`);
       } else {
         const areaBit = resolved.area?.name ? `${resolved.area.name}, ` : "";
         seoDesc = truncateDescription(
-          `${prov.name} is a ${resolved.category.name.toLowerCase()} in ${areaBit}${city.name}, UAE. Address, hours & directions on the UAE Open Healthcare Directory by Zavis.`
+          `${regulatorLabel} ${resolved.category.name.toLowerCase()} in ${areaBit}${city.name}, UAE. Verified hours, address & contact on the UAE Open Healthcare Directory.`
         );
       }
       const providerOgImage =

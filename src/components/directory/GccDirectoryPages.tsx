@@ -985,32 +985,36 @@ export async function generateGccSegmentsMetadata(
         seoTitle = `${trimmedName}${tail}`;
       }
 
+      const gccRegulatorLabel: Record<string, string> = {
+        kw: "Kuwait MOH licensed",
+        sa: "Saudi MOH licensed",
+        qa: "Qatar MOH licensed",
+        bh: "Bahrain MOH licensed",
+      };
+      const regulatorLabel = gccRegulatorLabel[country.code] ?? "MOH-licensed";
       const descParts: string[] = [];
       if (prov.googleRating && Number(prov.googleRating) > 0) {
         const reviewBit = prov.googleReviewCount
-          ? ` (${prov.googleReviewCount} reviews)`
+          ? ` from ${prov.googleReviewCount} reviews`
           : "";
-        descParts.push(`\u2605 ${prov.googleRating}/5${reviewBit}`);
-      }
-      if (prov.services && prov.services.length > 0) {
-        descParts.push(
-          `Services: ${prov.services.slice(0, 3).join(", ")}`
-        );
+        descParts.push(`Rated ${prov.googleRating}/5${reviewBit}`);
       }
       if (prov.insurance && prov.insurance.length > 0) {
         descParts.push(
-          `Insurance: ${prov.insurance.slice(0, 3).join(", ")}`
+          `Accepts ${prov.insurance.slice(0, 3).join(", ")}`
         );
       }
-      if (prov.phone) {
-        descParts.push("\u260E Contact info available");
+      if (prov.services && prov.services.length > 0) {
+        descParts.push(prov.services.slice(0, 3).join(", "));
       }
       const descBody =
         descParts.length > 0
           ? descParts.join(". ") + "."
           : prov.shortDescription || "";
       const seoDesc = truncateDescription(
-        `${prov.name}: ${descBody} Hours & directions on Zavis.`
+        descBody
+          ? `${regulatorLabel} \u00B7 ${descBody}`
+          : `${regulatorLabel} ${resolved.category.name.toLowerCase()} in ${city.name}, ${country.name}. Verified hours & contact on Zavis.`
       );
 
       const isRichEnough = Boolean(
