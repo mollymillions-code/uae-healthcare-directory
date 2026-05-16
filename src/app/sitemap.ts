@@ -663,12 +663,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: LAST_CONTENT_UPDATE,
     changeFrequency: "weekly",
     priority: 0.6,
-    alternates: {
-      languages: {
-        en: `${baseUrl}/intelligence/author`,
-        ar: `${baseUrl}/ar/intelligence/author`,
-      },
-    },
   });
   for (const slug of AUTHOR_SLUGS_ACTIVE) {
     entries.push({
@@ -676,12 +670,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: LAST_CONTENT_UPDATE,
       changeFrequency: "monthly",
       priority: 0.55,
-      alternates: {
-        languages: {
-          en: `${baseUrl}/intelligence/author/${slug}`,
-          ar: `${baseUrl}/ar/intelligence/author/${slug}`,
-        },
-      },
     });
   }
   for (const slug of REVIEWER_SLUGS_ACTIVE) {
@@ -690,12 +678,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: LAST_CONTENT_UPDATE,
       changeFrequency: "monthly",
       priority: 0.55,
-      alternates: {
-        languages: {
-          en: `${baseUrl}/intelligence/reviewer/${slug}`,
-          ar: `${baseUrl}/ar/intelligence/reviewer/${slug}`,
-        },
-      },
     });
   }
   // Trust + transparency pages — bilingual
@@ -1141,7 +1123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // ─── Landing / Product Pages ──────────────────────────────────────────────────
   const LANDING_PRODUCT_SLUGS = [
-    "contact", "book-a-demo", "captain", "payments", "emr", "chat", "bookings",
+    "book-a-demo", "captain", "payments", "emr", "chat", "bookings",
     "ai-agents", "crm", "integrations", "voice", "mobile", "automations",
     "campaigns", "dental", "widgets", "analytics",
   ];
@@ -1259,11 +1241,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // the Arabic search page is `robots: { index: false }` and `/search` is in
   // the robots.txt disallow list. Submitting it here would be a contradiction.
 
-  // Arabic — intelligence
-  entries.push({
-    url: `${baseUrl}/ar/intelligence`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "daily", priority: 0.7,
-    alternates: { languages: { en: `${baseUrl}/intelligence`, ar: `${baseUrl}/ar/intelligence` } },
-  });
+  // `/ar/intelligence` is an intentional redirect until the Arabic hub exists,
+  // so it is not emitted here. Keep Arabic category/report pages that render 200.
 
   // Arabic — insurance
   entries.push({

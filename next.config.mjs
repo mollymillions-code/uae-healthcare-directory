@@ -47,7 +47,35 @@ const nextConfig = {
       { from: "uaq", to: "umm-al-quwain" },
       { from: "rak", to: "ras-al-khaimah" },
     ];
-    const redirects = [];
+    const redirects = [
+      {
+        source: "/contact",
+        destination: "/book-a-demo",
+        permanent: true,
+      },
+      // Arabic intelligence mirrors are incomplete; keep these as real HTTP
+      // redirects instead of App Router meta-refresh redirects.
+      {
+        source: "/ar/intelligence",
+        destination: "/intelligence",
+        permanent: false,
+      },
+      {
+        source: "/ar/intelligence/author",
+        destination: "/intelligence/author",
+        permanent: false,
+      },
+      {
+        source: "/ar/intelligence/author/:slug",
+        destination: "/intelligence/author/:slug",
+        permanent: false,
+      },
+      {
+        source: "/ar/intelligence/reviewer/:slug",
+        destination: "/intelligence/reviewer/:slug",
+        permanent: false,
+      },
+    ];
     for (const { from, to } of cityAliases) {
       redirects.push({
         source: `/directory/${from}/:path*`,
