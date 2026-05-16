@@ -12,14 +12,12 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   images: {
-    // Disable the built-in image optimizer. All images are served as
-    // direct static URLs (R2 CDN, /public/, WebP/PNG assets) with standard
-    // <img>-equivalent delivery — no runtime proxy, no /_next/image
-    // transformation. This removes the per-request CPU + memory cost of
-    // re-encoding and lets Cloudflare cache every asset at the edge
-    // directly off the origin URL. `formats` + `remotePatterns` become
-    // no-ops when unoptimized=true but stay for documentation.
-    unoptimized: true,
+    // Provider photos are often large source JPEGs from R2. Keep the Next image
+    // optimizer on so mobile directory pages receive right-sized AVIF/WebP
+    // variants instead of full source files. Cloudflare should cache /_next/image
+    // responses at the edge, while Next keeps generated variants on disk.
+    minimumCacheTTL: 604800,
+    deviceSizes: [390, 640, 828, 1080],
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "cdn.who.int" },
