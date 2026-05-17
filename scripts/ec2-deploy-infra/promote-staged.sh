@@ -19,6 +19,8 @@ SITEMAP_GEN="/home/ubuntu/zavis-deploy/sitemap-gen/generate-provider-sitemaps.mj
 SITEMAP_LOG="/home/ubuntu/logs/sitemap-generation.log"
 TUNNEL_PM2="zavis-stage-tunnel"
 MIGRATIONS_DIR="scripts/db/migrations"
+ACTIVE_WORKER_FLOOR=4
+STANDBY_WORKER_FLOOR=2
 
 mkdir -p /home/ubuntu/logs
 
@@ -138,8 +140,8 @@ log "===== PROMOTE STAGED SLOT ====="
 log "promoting slot=$slot port=$port commit=$commit previous_slot=$previous_slot"
 
 target_workers=$(count_online "$pm2")
-if [ "$target_workers" != "1" ]; then
-  fail "staged target $pm2 must have exactly 1 online worker before promotion; found $target_workers"
+if [ "$target_workers" -lt 1 ]; then
+  fail "staged target $pm2 must have at least 1 online worker before promotion; found $target_workers"
 fi
 
 HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$port/" || echo "000")
@@ -202,23 +204,26 @@ log "post-swap: edge health OK (HTTP $FINAL_HTTP)"
 echo "$slot" > "$ACTIVE_FILE"
 log "active-slot: updated to $slot"
 
-log "--- drain: stopping old live $previous_pm2 ---"
-pm2 stop "$previous_pm2" 2>&1 | tail -3 | tee -a "$DEPLOY_LOG" || true
-sleep 2
-
+log "--- standby: keep previous slot $previous_pm2 hot at >=${STANDBY_WORKER_FLOOR} workers ---"
 old_workers=$(count_online "$previous_pm2")
-if [ "$old_workers" != "0" ]; then
-  fail "drain: $previous_pm2 still has $old_workers workers online after stop"
+if [ "$old_workers" -lt "$STANDBY_WORKER_FLOOR" ]; then
+  log "standby: $previous_pm2 has $old_workers workers; scaling to $STANDBY_WORKER_FLOOR"
+  pm2 scale "$previous_pm2" "$STANDBY_WORKER_FLOOR" 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
+  sleep 3
+  old_workers=$(count_online "$previous_pm2")
 fi
-log "drain: $previous_pm2 has 0 workers online"
+if [ "$old_workers" -lt "$STANDBY_WORKER_FLOOR" ]; then
+  fail "standby: expected at least $STANDBY_WORKER_FLOOR workers for $previous_pm2, got $old_workers"
+fi
+log "standby: $previous_pm2 has $old_workers workers online"
 
-log "--- ramp: scale $pm2 to 2 ---"
-pm2 scale "$pm2" 2 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
+log "--- ramp: scale $pm2 to active floor ${ACTIVE_WORKER_FLOOR} ---"
+pm2 scale "$pm2" "$ACTIVE_WORKER_FLOOR" 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
 sleep 3
 
 new_workers=$(count_online "$pm2")
-if [ "$new_workers" != "2" ]; then
-  fail "ramp: expected 2 workers for $pm2, got $new_workers"
+if [ "$new_workers" -lt "$ACTIVE_WORKER_FLOOR" ]; then
+  fail "ramp: expected at least $ACTIVE_WORKER_FLOOR workers for $pm2, got $new_workers"
 fi
 log "ramp: $pm2 has $new_workers workers online"
 

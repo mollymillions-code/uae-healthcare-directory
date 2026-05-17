@@ -6,18 +6,18 @@
 # Implements the state machine from docs/ops/blue-green-deploy-oom-runbook.md
 # section 6:
 #
-#   Steady (pre):   live=2, idle=0
-#   Build:          live=2, idle=0      (idle PM2 stopped during build)
-#   Start new:      live=2, new=1       (ZAVIS_PM2_INSTANCES=1 override)
-#   Swap:           live=2, new=1       (Nginx upstream + symlink)
-#   Edge health:    live=2, new=1       (with Host: www.zavis.ai)
-#   Write active:   live=2, new=1       (ONLY after edge health passes)
-#   Drain:          live=0, new=1       (old slot stopped)
-#   Ramp:           live=0, new=2       (pm2 scale new 2)
-#   Save:           live=0, new=2
-#   Sitemap hook:   live=0, new=2       (non-blocking post-success)
+#   Steady (pre):   active>=4, standby>=2
+#   Build:          active>=4, target=0  (target PM2 stopped during build)
+#   Start new:      active>=4, new=1     (ZAVIS_PM2_INSTANCES=1 override)
+#   Swap:           active>=4, new=1     (Nginx upstream + symlink)
+#   Edge health:    active>=4, new=1     (with Host: www.zavis.ai)
+#   Write active:   active>=4, new=1     (ONLY after edge health passes)
+#   Standby:        standby>=2, new=1    (old slot remains hot)
+#   Ramp:           standby>=2, active>=4
+#   Save:           standby>=2, active>=4
+#   Sitemap hook:   standby>=2, active>=4 (non-blocking post-success)
 #
-# Peak overlap is "2 old + 1 new" = 3 workers, never "2 + 2" = 4.
+# Baseline after successful swap is at least 6 workers: 4 active + 2 standby.
 #
 # Co-operates with the static provider sitemap generator at
 # /home/ubuntu/zavis-deploy/sitemap-gen/generate-provider-sitemaps.mjs —
@@ -321,30 +321,35 @@ log "post-swap: edge health OK (HTTP $FINAL_HTTP)"
 echo "$TARGET_SLOT" > "$ACTIVE_FILE"
 log "active-slot: updated to $TARGET_SLOT"
 
-# ───── Drain phase: stop old live slot ──────────────────────────────────
-log "--- drain: stopping old live $LIVE_PM2 ---"
-pm2 stop "$LIVE_PM2" 2>&1 | tail -3 | tee -a "$DEPLOY_LOG" || true
-sleep 2
+# ───── Standby phase: keep previous live slot hot ───────────────────────
+ACTIVE_WORKER_FLOOR=4
+STANDBY_WORKER_FLOOR=2
 
+log "--- standby: keep previous slot $LIVE_PM2 hot at >=${STANDBY_WORKER_FLOOR} workers ---"
 old_workers=$(count_online "$LIVE_PM2")
-if [ "$old_workers" != "0" ]; then
-  # Per runbook §11.2 this is a required failure condition
-  fail "drain: $LIVE_PM2 still has $old_workers workers online after stop — bounded-overlap violated"
+if [ "$old_workers" -lt "$STANDBY_WORKER_FLOOR" ]; then
+  log "standby: $LIVE_PM2 has $old_workers workers; scaling to $STANDBY_WORKER_FLOOR"
+  pm2 scale "$LIVE_PM2" "$STANDBY_WORKER_FLOOR" 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
+  sleep 3
+  old_workers=$(count_online "$LIVE_PM2")
 fi
-log "drain: $LIVE_PM2 has 0 workers online"
+if [ "$old_workers" -lt "$STANDBY_WORKER_FLOOR" ]; then
+  fail "standby: expected at least $STANDBY_WORKER_FLOOR workers for $LIVE_PM2, got $old_workers"
+fi
+log "standby: $LIVE_PM2 has $old_workers workers online"
 
-# ───── Ramp phase: scale new live from 1 to 2 ───────────────────────────
-log "--- ramp: scale $TARGET_PM2 to 2 ---"
-pm2 scale "$TARGET_PM2" 2 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
+# ───── Ramp phase: scale new live to active floor ───────────────────────
+log "--- ramp: scale $TARGET_PM2 to active floor ${ACTIVE_WORKER_FLOOR} ---"
+pm2 scale "$TARGET_PM2" "$ACTIVE_WORKER_FLOOR" 2>&1 | tail -5 | tee -a "$DEPLOY_LOG"
 sleep 3
 
 new_workers=$(count_online "$TARGET_PM2")
-if [ "$new_workers" != "2" ]; then
+if [ "$new_workers" -lt "$ACTIVE_WORKER_FLOOR" ]; then
   # Per runbook §11.2: "new live slot fails to scale to expected count"
   # Fail loudly — site is still serving from the 1 worker but steady state
   # is not reached.
-  log "ramp: CRITICAL expected 2 workers, got $new_workers"
-  fail "ramp: scale to 2 did not produce 2 online workers"
+  log "ramp: CRITICAL expected at least $ACTIVE_WORKER_FLOOR workers, got $new_workers"
+  fail "ramp: scale to $ACTIVE_WORKER_FLOOR did not produce $ACTIVE_WORKER_FLOOR online workers"
 fi
 log "ramp: $TARGET_PM2 has $new_workers workers online"
 
