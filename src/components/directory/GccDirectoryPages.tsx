@@ -973,7 +973,9 @@ export async function generateGccSegmentsMetadata(
       if (!seoTitle) {
         // Word-boundary trim on the provider name — never slice mid-word
         // (especially important for Arabic provider names).
-        const tail = ` — ${intentLabel}`;
+        const tail = ratingBit
+          ? ` — ${ratingBit} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
+          : ` — ${intentLabel}`;
         const nameBudget = maxTitleLen - tail.length;
         let trimmedName = providerDisplay;
         if (trimmedName.length > nameBudget) {
@@ -995,7 +997,7 @@ export async function generateGccSegmentsMetadata(
       const descParts: string[] = [];
       if (prov.googleRating && Number(prov.googleRating) > 0) {
         const reviewBit = prov.googleReviewCount
-          ? ` from ${prov.googleReviewCount} reviews`
+          ? ` from ${prov.googleReviewCount.toLocaleString()} reviews`
           : "";
         descParts.push(`Rated ${prov.googleRating}/5${reviewBit}`);
       }
