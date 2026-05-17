@@ -165,7 +165,8 @@ function collectUrlsFromRow(row) {
   }
   if (Array.isArray(row.photos)) {
     for (const value of row.photos) {
-      if (isConvertibleR2Url(value)) urls.add(value.trim());
+      const url = typeof value === "string" ? value : value?.url;
+      if (isConvertibleR2Url(url)) urls.add(url.trim());
     }
   }
   if (Array.isArray(row.gallery_photos)) {
@@ -186,7 +187,13 @@ function buildUpdatedMedia(row, replacements) {
   const coverImageUrl = replaceUrlsInValue(row.cover_image_url, replacements);
   const googlePhotoUrl = replaceUrlsInValue(row.google_photo_url, replacements);
   const photos = Array.isArray(row.photos)
-    ? row.photos.map((value) => replaceUrlsInValue(value, replacements))
+    ? row.photos.map((value) => {
+        if (typeof value === "string") return replaceUrlsInValue(value, replacements);
+        if (value && typeof value === "object" && typeof value.url === "string") {
+          return { ...value, url: replaceUrlsInValue(value.url, replacements), format: "webp" };
+        }
+        return value;
+      })
     : row.photos;
   const galleryPhotos = Array.isArray(row.gallery_photos)
     ? row.gallery_photos.map((value) => {
