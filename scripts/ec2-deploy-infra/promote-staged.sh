@@ -44,6 +44,16 @@ print(sum(1 for p in d if p['name']=='$name' and p['pm2_env']['status']=='online
 "
 }
 
+sync_next_static() {
+  local app_dir="$1"
+  if [ ! -d "$app_dir/.next/static" ]; then
+    fail "static sync: missing $app_dir/.next/static"
+  fi
+  mkdir -p "$SHARED_DIR/_next/static"
+  rsync -a "$app_dir/.next/static/" "$SHARED_DIR/_next/static/"
+  log "static sync: copied $app_dir/.next/static to $SHARED_DIR/_next/static"
+}
+
 apply_sql_migrations() {
   local app_dir="$1"
   local mig_dir="$app_dir/$MIGRATIONS_DIR"
@@ -160,6 +170,8 @@ HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$port/" || 
 if [ "$HTTP_CODE" != "200" ]; then
   fail "target health failed after env cleanup on port $port (HTTP $HTTP_CODE)"
 fi
+
+sync_next_static "$dir"
 
 log "--- swap: Nginx upstream to $slot (port $port) ---"
 cat > /tmp/zavis-upstream.conf <<UPSTREAM

@@ -65,6 +65,16 @@ kill_orphan_build_workers() {
   ps -eo pid,ppid,cmd 2>/dev/null | awk '$2==1 && /next.dist.compiled.jest-worker/' | wc -l
 }
 
+sync_next_static() {
+  local app_dir="$1"
+  if [ ! -d "$app_dir/.next/static" ]; then
+    fail "static sync: missing $app_dir/.next/static"
+  fi
+  mkdir -p "$SHARED_DIR/_next/static"
+  rsync -a "$app_dir/.next/static/" "$SHARED_DIR/_next/static/"
+  log "static sync: copied $app_dir/.next/static to $SHARED_DIR/_next/static"
+}
+
 checkout_ref() {
   local ref="$1"
   git fetch origin "+refs/heads/$ref:refs/remotes/origin/$ref" 2>/dev/null || git fetch origin
@@ -192,6 +202,8 @@ remaining_orphans=$(kill_orphan_build_workers)
 if [ "$remaining_orphans" -gt 0 ]; then
   fail "post-build: $remaining_orphans orphan jest-worker children still alive after cleanup"
 fi
+
+sync_next_static "$TARGET_DIR"
 
 log "--- start staged target $TARGET_PM2 on port $TARGET_PORT ---"
 ZAVIS_PM2_INSTANCES=1 ZAVIS_VERIFIED_PROVIDER_IDS="$VERIFIED_OVERRIDES" \

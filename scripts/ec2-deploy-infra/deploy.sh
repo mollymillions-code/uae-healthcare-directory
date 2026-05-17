@@ -98,6 +98,16 @@ kill_orphan_build_workers() {
   ps -eo pid,ppid,cmd 2>/dev/null | awk '$2==1 && /next.dist.compiled.jest-worker/' | wc -l
 }
 
+sync_next_static() {
+  local app_dir="$1"
+  if [ ! -d "$app_dir/.next/static" ]; then
+    fail "static sync: missing $app_dir/.next/static"
+  fi
+  mkdir -p "$SHARED_DIR/_next/static"
+  rsync -a "$app_dir/.next/static/" "$SHARED_DIR/_next/static/"
+  log "static sync: copied $app_dir/.next/static to $SHARED_DIR/_next/static"
+}
+
 # ───── Determine slots ──────────────────────────────────────────────────
 ACTIVE_SLOT=$(cat "$ACTIVE_FILE" 2>/dev/null || echo "blue")
 if [ "$ACTIVE_SLOT" = "blue" ]; then
@@ -216,6 +226,8 @@ remaining_orphans=$(kill_orphan_build_workers)
 if [ "$remaining_orphans" -gt 0 ]; then
   fail "post-build: $remaining_orphans orphan jest-worker children still alive after cleanup"
 fi
+
+sync_next_static "$TARGET_DIR"
 
 # Memory check before bringing target up
 mem_before_start=$(mem_available_mb)
