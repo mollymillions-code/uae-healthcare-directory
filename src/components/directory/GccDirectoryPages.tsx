@@ -963,9 +963,13 @@ export async function generateGccSegmentsMetadata(
       const ratingBit = prov.googleRating && Number(prov.googleRating) > 0
         ? `★${prov.googleRating}`
         : "";
+      const compactReviewBit = ratingBit
+        ? `${ratingBit} ${prov.googleReviewCount === 1 ? "Review" : "Reviews"}`
+        : intentLabel;
       const titleCandidates = [
         `${providerDisplay}, ${city.name} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
         `${providerDisplay} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerDisplay} — ${compactReviewBit}`,
         `${providerDisplay}, ${city.name} — ${intentLabel}`,
         `${providerDisplay} — ${intentLabel}`,
       ];

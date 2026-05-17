@@ -268,10 +268,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       // Build title for provider-name and provider-name-reviews SERPs.
       // "Reviews" must survive truncation on review-backed profiles because
       // Search Console shows those queries ranking in positions 3-9 with weak CTR.
+      const providerWithCity = providerDisplay.toLowerCase().includes(city.name.toLowerCase())
+        ? providerDisplay
+        : `${providerDisplay} ${city.name}`;
       const titleCandidates = [
-        `${providerDisplay} ${city.name} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
+        `${providerWithCity} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
         `${providerDisplay} — ${[ratingBit, reviewBit].filter(Boolean).join(" · ")}`,
-        `${providerDisplay} ${city.name} — ${intentLabel}`,
+        `${providerWithCity} — ${intentLabel}`,
         `${providerDisplay} — ${intentLabel}`,
       ].filter((title) => title.trim().length > 0);
 
