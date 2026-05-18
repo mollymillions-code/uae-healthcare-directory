@@ -250,7 +250,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       const cleanProviderName = (name: string): string =>
         name
           .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
-          .replace(/\s*[-–—]?\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
+          .replace(/\s*[-–—]?\s*L\.?\s*L\.?\s*C\.?\s*$/i, "")
           .replace(/\s*\bFZ[- ]?LLC\b\s*$/i, "")
           .replace(/\s*\bF[. ]?Z[. ]?E\.?\b\s*$/i, "")
           .replace(/\s+/g, " ")

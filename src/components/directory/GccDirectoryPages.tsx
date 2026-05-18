@@ -942,8 +942,8 @@ export async function generateGccSegmentsMetadata(
       const cleanName = (name: string): string =>
         name
           .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
-          .replace(/\s*[-–—]?\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
-          .replace(/\s*[-–—]?\s*\bW\.?\s*L\.?\s*L\.?\b\s*$/i, "")
+          .replace(/\s*[-–—]?\s*L\.?\s*L\.?\s*C\.?\s*$/i, "")
+          .replace(/\s*[-–—]?\s*W\.?\s*L\.?\s*L\.?\s*$/i, "")
           .replace(/\s*\bFZ[- ]?LLC\b\s*$/i, "")
           .replace(/\s*\bF[. ]?Z[. ]?E\.?\b\s*$/i, "")
           .replace(/\s+/g, " ")
