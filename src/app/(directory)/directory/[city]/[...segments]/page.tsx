@@ -250,7 +250,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       const cleanProviderName = (name: string): string =>
         name
           .replace(/\s*[-–—]\s*(Branch|Br\.?)\s*\d*\s*$/i, "")
-          .replace(/\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
+          .replace(/\s*[-–—]?\s*\bL\.?\s*L\.?\s*C\.?\b\s*$/i, "")
           .replace(/\s*\bFZ[- ]?LLC\b\s*$/i, "")
           .replace(/\s*\bF[. ]?Z[. ]?E\.?\b\s*$/i, "")
           .replace(/\s+/g, " ")
@@ -306,11 +306,20 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         descParts.push(`Accepts ${prov.insurance.slice(0, 3).join(", ")}${prov.insurance.length > 3 ? ` +${prov.insurance.length - 3} more` : ""}`);
       }
       if (prov.services && prov.services.length > 0) {
-        descParts.push(prov.services.slice(0, 3).join(", "));
+        descParts.push(prov.services.slice(0, 2).join(", "));
       }
       let seoDesc: string;
       if (descParts.length > 0) {
-        seoDesc = truncateDescription(`${regulatorLabel} · ${descParts.join(". ")}.`);
+        const acceptedParts: string[] = [];
+        for (const part of descParts) {
+          const candidate = `${regulatorLabel} · ${[...acceptedParts, part].join(". ")}.`;
+          if (candidate.length <= 155) {
+            acceptedParts.push(part);
+          }
+        }
+        seoDesc = acceptedParts.length > 0
+          ? `${regulatorLabel} · ${acceptedParts.join(". ")}.`
+          : truncateDescription(`${regulatorLabel} · ${descParts[0]}`);
       } else if (prov.shortDescription) {
         seoDesc = truncateDescription(`${regulatorLabel} · ${prov.shortDescription}`);
       } else {
