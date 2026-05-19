@@ -108,8 +108,8 @@ export function VideoFooterShell({
       ? "px-[5.4%] pb-4 pt-[4.4%] max-sm:px-5 max-sm:py-7"
       : "px-[5.4%] pb-5 pt-[4.7%] max-sm:px-5 max-sm:py-7";
     const mediaHeightClass = isDense
-      ? "h-[clamp(260px,23vw,390px)]"
-      : "h-[clamp(300px,28vw,460px)]";
+      ? "h-[300px] sm:h-[clamp(360px,32vw,520px)]"
+      : "h-[320px] sm:h-[clamp(390px,34vw,560px)]";
 
     return (
       <footer
@@ -146,7 +146,7 @@ export function VideoFooterShell({
             <FooterVideo className="pointer-events-none absolute inset-0 h-full w-full object-cover object-bottom motion-reduce:hidden" />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#fbf7f2] via-[#fbf7f2]/90 to-[#fbf7f2]/0"
+              className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#fbf7f2] via-[#fbf7f2]/65 to-[#fbf7f2]/0"
             />
           </div>
           <style jsx global>{`
