@@ -26,7 +26,6 @@
 import { useEffect, useState } from "react";
 import { Phone, MessageCircle, MapPin, Globe } from "lucide-react";
 import { trackProviderCta, type ProviderTrackingInfo } from "@/lib/provider-tracking";
-import { recordConsumerEvent } from "@/lib/consumer-intent-client";
 
 export interface StickyMobileCtaProps {
   providerName: string;
@@ -93,18 +92,6 @@ export function StickyMobileCta({
 
   function handleClick(type: "call" | "whatsapp" | "directions" | "website") {
     trackProviderCta(type, "sticky_mobile_cta", provider);
-    // Account prompt is triggered globally by recordConsumerEvent →
-    // PostActionAccountPrompt (mounted in src/app/layout.tsx).
-    recordConsumerEvent({
-      action: `provider_${type}_click`,
-      surface: "sticky_mobile_cta",
-      providerId,
-      entityType: "provider",
-      entitySlug: providerSlug,
-      entityName: providerName,
-      ctaLabel: type,
-      metadata: { citySlug, categorySlug, isClaimed },
-    }).catch(() => undefined);
   }
 
   return (

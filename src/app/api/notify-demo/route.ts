@@ -127,14 +127,28 @@ export async function POST(req: NextRequest) {
     if (process.env.PLUNK_SECRET_KEY) {
       try {
         const { sendEmail } = await import("@/lib/research/plunk");
-        await sendEmail({
+        const emailResults = await sendEmail({
           to: NOTIFY_EMAILS,
           subject: `New Demo Request: ${lead.name} — ${lead.company}`,
           body: emailBody,
           from: "demos@zavis.ai",
           name: "Zavis Demos",
         });
-        return NextResponse.json({ accepted: true, sent: true, provider: "plunk", internalLead });
+        const failed = emailResults.filter((result) => !result.success);
+        if (failed.length > 0) {
+          console.error(
+            "[notify-demo] Plunk recipient failures:",
+            failed.map((result) => ({ to: result.to, error: result.error }))
+          );
+          throw new Error(`Plunk failed for ${failed.length}/${emailResults.length} recipients`);
+        }
+        return NextResponse.json({
+          accepted: true,
+          sent: true,
+          provider: "plunk",
+          internalLead,
+          emailResults: { sent: emailResults.length },
+        });
       } catch (err) {
         console.error("[notify-demo] Plunk failed:", err);
       }

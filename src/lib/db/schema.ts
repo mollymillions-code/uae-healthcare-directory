@@ -771,6 +771,44 @@ export const consumerProviderEvents = pgTable(
   })
 );
 
+export const ownerLeadRequests = pgTable(
+  "owner_lead_requests",
+  {
+    id: text("id").primaryKey(),
+    consumerEventId: text("consumer_event_id").references(() => consumerProviderEvents.id, {
+      onDelete: "set null",
+    }),
+    providerId: text("provider_id").references(() => providers.id, {
+      onDelete: "set null",
+    }),
+    action: text("action").notNull(),
+    surface: text("surface").notNull(),
+    entityType: text("entity_type").notNull().default("provider"),
+    entitySlug: text("entity_slug"),
+    entityName: text("entity_name"),
+    pageUrl: text("page_url"),
+    ctaLabel: text("cta_label"),
+    ownerRole: text("owner_role"),
+    anonymousId: text("anonymous_id"),
+    contactName: text("contact_name"),
+    contactEmail: text("contact_email"),
+    contactPhone: text("contact_phone"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    status: text("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    consumerEventIdx: index("idx_owner_lead_requests_consumer_event").on(
+      table.consumerEventId
+    ),
+    providerIdx: index("idx_owner_lead_requests_provider").on(table.providerId),
+    actionIdx: index("idx_owner_lead_requests_action").on(table.action),
+    statusIdx: index("idx_owner_lead_requests_status").on(table.status),
+    createdAtIdx: index("idx_owner_lead_requests_created_at").on(table.createdAt),
+  })
+);
+
 // ─── Journal Articles ─────────────────────────────────────────────────────────
 
 export type ArticleCitation = {

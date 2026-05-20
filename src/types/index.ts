@@ -8,6 +8,7 @@ import type {
   providerCategories,
   googleReviews,
   claimRequests,
+  ownerLeadRequests,
   faqs,
 } from "@/lib/db/schema";
 
@@ -19,6 +20,7 @@ export type Provider = InferSelectModel<typeof providers>;
 export type ProviderCategory = InferSelectModel<typeof providerCategories>;
 export type GoogleReview = InferSelectModel<typeof googleReviews>;
 export type ClaimRequest = InferSelectModel<typeof claimRequests>;
+export type OwnerLeadRequest = InferSelectModel<typeof ownerLeadRequests>;
 export type FAQ = InferSelectModel<typeof faqs>;
 
 export interface ProviderWithRelations extends Provider {

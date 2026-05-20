@@ -17,10 +17,20 @@ export function gtag_report_conversion(transactionId?: string): void {
   }
 }
 
+const DIRECT_GA4_EVENTS = new Set([
+  "owner_get_listed_cta_confirmed",
+  "owner_claim_cta_confirmed",
+  "owner_edit_cta_confirmed",
+]);
+
 export function trackEvent(eventName: string, params?: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: eventName, ...params });
+
+  if (DIRECT_GA4_EVENTS.has(eventName) && typeof window.gtag === "function") {
+    window.gtag("event", eventName, params ?? {});
+  }
 }
 
 /** Generate a unique event ID for Meta pixel ↔ CAPI deduplication */
