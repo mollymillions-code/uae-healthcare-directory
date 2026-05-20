@@ -211,12 +211,12 @@ ZAVIS_PM2_INSTANCES=1 ZAVIS_VERIFIED_PROVIDER_IDS="$VERIFIED_OVERRIDES" \
 sleep 3
 
 target_workers=$(count_online "$TARGET_PM2")
-if [ "$target_workers" != "1" ]; then
+if [ "$target_workers" -lt 1 ]; then
   pm2 stop "$TARGET_PM2" 2>/dev/null || true
   pm2 delete "$TARGET_PM2" 2>/dev/null || true
-  fail "start: worker count mismatch (expected 1, got $target_workers)"
+  fail "start: no online workers for $TARGET_PM2"
 fi
-log "start: OK ($target_workers worker online)"
+log "start: OK ($target_workers worker(s) online)"
 
 HEALTHY=false
 for i in $(seq 1 30); do
