@@ -23,6 +23,7 @@ const PUBLIC_TOP_LEVEL_ROUTES = new Set([
   "accessibility",
   "account",
   "add-listing",
+  "about",
   "ai-agents",
   "analytics",
   "ar",
