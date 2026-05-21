@@ -6,6 +6,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { href: "/admin/providers", label: "Providers", icon: "M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5m-4 0h4" },
+  { href: "/admin/leads", label: "Owner Leads", icon: "M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.06 6.06 0 0 1 6 18.75m12 0A6.001 6.001 0 0 0 6 18.75m12 0v-.061A6.001 6.001 0 0 0 6 18.75m0 0v-.061a6.001 6.001 0 0 1 12 0M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" },
   { href: "/admin/claims", label: "Claims", icon: "M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" },
   { href: "/admin/provider-portal", label: "Provider Portal", icon: "M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h9a2.25 2.25 0 0 0 2.25-2.25V12M15.75 9H19.5L15.75 5.25V9Z" },
   { href: "/admin/medications", label: "Medications", icon: "M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" },

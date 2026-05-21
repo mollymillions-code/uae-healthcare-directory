@@ -249,7 +249,9 @@ export function ContactPageClient() {
                     </label>
                     <input
                       id="demo-name"
+                      name="name"
                       type="text"
+                      autoComplete="name"
                       required
                       value={formData.name}
                       onFocus={handleFormStart}
@@ -271,7 +273,9 @@ export function ContactPageClient() {
                     </label>
                     <input
                       id="demo-email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       required
                       value={formData.email}
                       onChange={(e) =>
@@ -296,7 +300,9 @@ export function ContactPageClient() {
                       </label>
                       <input
                         id="demo-company"
+                        name="company"
                         type="text"
+                        autoComplete="organization"
                         required
                         value={formData.company}
                         onChange={(e) =>
@@ -315,7 +321,9 @@ export function ContactPageClient() {
                       </label>
                       <input
                         id="demo-website"
+                        name="website"
                         type="url"
+                        autoComplete="url"
                         value={formData.website}
                         onChange={(e) =>
                           setFormData({ ...formData, website: e.target.value })
@@ -336,7 +344,9 @@ export function ContactPageClient() {
                     </label>
                     <input
                       id="demo-phone"
+                      name="phone"
                       type="tel"
+                      autoComplete="tel"
                       required
                       value={formData.phone}
                       onChange={(e) =>
@@ -360,6 +370,7 @@ export function ContactPageClient() {
                     </label>
                     <select
                       id="demo-team"
+                      name="team"
                       required
                       value={formData.team}
                       onChange={(e) =>
@@ -387,6 +398,7 @@ export function ContactPageClient() {
                   <div className="mb-6">
                     <label className="flex items-start gap-3 cursor-pointer group">
                       <input
+                        name="acceptedTerms"
                         type="checkbox"
                         checked={agreedToTerms}
                         onChange={(e) => {

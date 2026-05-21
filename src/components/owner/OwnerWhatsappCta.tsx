@@ -16,6 +16,12 @@ type OwnerRole =
   | "marketing_agency"
   | "other";
 
+type ContactDetails = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
 const OWNER_ROLE_OPTIONS: Array<{ value: OwnerRole; label: string; helper: string }> = [
   {
     value: "clinic_owner",
@@ -94,13 +100,20 @@ function defaultLabel(action: OwnerAction): string {
   return "Claim this clinic";
 }
 
-function buildMessage(props: OwnerWhatsappCtaProps, role: OwnerRole | null): string {
+function buildMessage(
+  props: OwnerWhatsappCtaProps,
+  role: OwnerRole | null,
+  contact: ContactDetails
+): string {
   const lines = [
     `Hi Zavis, I want to ${actionText(props.action)} on Zavis.`,
     "",
   ];
 
   lines.push(`My role: ${roleLabel(role)}`);
+  if (contact.name) lines.push(`My name: ${contact.name}`);
+  if (contact.email) lines.push(`Email: ${contact.email}`);
+  if (contact.phone) lines.push(`Phone/WhatsApp: ${contact.phone}`);
   if (props.providerName) lines.push(`Clinic: ${props.providerName}`);
   if (props.providerId) lines.push(`Listing ID: ${props.providerId}`);
   if (props.doctorName) lines.push(`Doctor page: ${props.doctorName}`);
@@ -116,8 +129,10 @@ function buildMessage(props: OwnerWhatsappCtaProps, role: OwnerRole | null): str
 
 export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [step, setStep] = useState<"role" | "confirm">("role");
+  const [step, setStep] = useState<"role" | "contact" | "confirm">("role");
   const [selectedRole, setSelectedRole] = useState<OwnerRole | null>(null);
+  const [contact, setContact] = useState<ContactDetails>({ name: "", email: "", phone: "" });
+  const [contactError, setContactError] = useState("");
   const [mounted, setMounted] = useState(false);
   const label = props.label || defaultLabel(props.action);
 
@@ -142,6 +157,8 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
     event.preventDefault();
     event.stopPropagation();
     setSelectedRole(null);
+    setContact({ name: "", email: "", phone: "" });
+    setContactError("");
     setStep("role");
     setConfirmOpen(true);
 
@@ -161,7 +178,7 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
     if (!selectedRole) return;
 
     const role = selectedRole;
-    setStep("confirm");
+    setStep("contact");
 
     void recordConsumerEvent({
       action: `owner_${props.action}_role_selected`,
@@ -179,9 +196,59 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
     }).catch(() => undefined);
   }
 
+  function handleContactContinue() {
+    const nextContact = {
+      name: contact.name.trim(),
+      email: contact.email.trim(),
+      phone: contact.phone.trim(),
+    };
+    const hasEmail = nextContact.email.length > 0;
+    const hasPhone = nextContact.phone.length > 0;
+
+    if (!nextContact.name) {
+      setContactError("Please add your name so the Zavis team knows who to contact.");
+      return;
+    }
+    if (!hasEmail && !hasPhone) {
+      setContactError("Please add either your email or WhatsApp number.");
+      return;
+    }
+    if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextContact.email)) {
+      setContactError("Please add a valid email address or leave it blank.");
+      return;
+    }
+
+    setContact(nextContact);
+    setContactError("");
+    setStep("confirm");
+
+    void recordConsumerEvent({
+      action: `owner_${props.action}_contact_entered`,
+      surface: props.surface,
+      providerId: props.providerId,
+      entityType: props.doctorSlug ? "doctor" : props.providerId ? "provider" : "directory",
+      entitySlug: props.doctorSlug || props.providerSlug,
+      entityName: props.doctorName || props.providerName,
+      ctaLabel: label,
+      metadata: {
+        citySlug: props.citySlug,
+        categorySlug: props.categorySlug,
+        ownerRole: selectedRole,
+        hasContactName: true,
+        hasContactEmail: hasEmail,
+        hasContactPhone: hasPhone,
+      },
+    }).catch(() => undefined);
+  }
+
   function handleConfirm() {
     const role = selectedRole;
-    const text = encodeURIComponent(buildMessage(props, role));
+    const nextContact = {
+      name: contact.name.trim(),
+      email: contact.email.trim(),
+      phone: contact.phone.trim(),
+    };
+    const text = encodeURIComponent(buildMessage(props, role, nextContact));
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
     const openedWindow = window.open(whatsappUrl, "_blank");
 
@@ -194,6 +261,8 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
     setConfirmOpen(false);
     setStep("role");
     setSelectedRole(null);
+    setContact({ name: "", email: "", phone: "" });
+    setContactError("");
 
     void recordConsumerEvent({
       action: `owner_${props.action}_cta_confirmed`,
@@ -207,6 +276,9 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
         citySlug: props.citySlug,
         categorySlug: props.categorySlug,
         ownerRole: role,
+        contactName: nextContact.name,
+        contactEmail: nextContact.email || undefined,
+        contactPhone: nextContact.phone || undefined,
       },
     }).catch(() => undefined);
   }
@@ -217,6 +289,8 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
     setConfirmOpen(false);
     setStep("role");
     setSelectedRole(null);
+    setContact({ name: "", email: "", phone: "" });
+    setContactError("");
 
     void recordConsumerEvent({
       action: `owner_${props.action}_cta_cancelled`,
@@ -231,6 +305,9 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
         categorySlug: props.categorySlug,
         ownerRole: role,
         abandonedStep,
+        hadContactName: Boolean(contact.name.trim()),
+        hadContactEmail: Boolean(contact.email.trim()),
+        hadContactPhone: Boolean(contact.phone.trim()),
       },
     }).catch(() => undefined);
   }
@@ -254,11 +331,17 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="font-['Bricolage_Grotesque',sans-serif] text-2xl font-medium tracking-tight text-[#1c1c1c]">
-                  {step === "role" ? "What is your role?" : "Are you sure you are authorized?"}
+                  {step === "role"
+                    ? "What is your role?"
+                    : step === "contact"
+                    ? "Where should we follow up?"
+                    : "Are you sure you are authorized?"}
                 </h2>
                 <p className="mt-2 font-['Geist',sans-serif] text-sm leading-relaxed text-black/55">
                   {step === "role"
                     ? "Choose the option that best describes you. We will include this in the WhatsApp message so the team can verify your request faster."
+                    : step === "contact"
+                    ? "Add one contact method before WhatsApp opens. This keeps your request traceable even if the chat does not send."
                     : "Continue only if you own the clinic or are authorized to manage this listing. We will open WhatsApp with the page details included."}
                 </p>
               </div>
@@ -300,14 +383,93 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
               </div>
             )}
 
+            {step === "contact" && (
+              <div className="mt-5 grid gap-3">
+                <div>
+                  <label
+                    htmlFor="owner-contact-name"
+                    className="mb-1.5 block font-['Geist',sans-serif] text-xs font-semibold text-[#1c1c1c]"
+                  >
+                    Your name *
+                  </label>
+                  <input
+                    id="owner-contact-name"
+                    name="ownerContactName"
+                    type="text"
+                    autoComplete="name"
+                    value={contact.name}
+                    onChange={(event) => setContact({ ...contact, name: event.target.value })}
+                    className="w-full rounded-xl border border-black/[0.10] px-3 py-2.5 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]/50 focus:ring-2 focus:ring-[#006828]/10"
+                    placeholder="Full name"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="owner-contact-email"
+                    className="mb-1.5 block font-['Geist',sans-serif] text-xs font-semibold text-[#1c1c1c]"
+                  >
+                    Business email
+                  </label>
+                  <input
+                    id="owner-contact-email"
+                    name="ownerContactEmail"
+                    type="email"
+                    autoComplete="email"
+                    value={contact.email}
+                    onChange={(event) => setContact({ ...contact, email: event.target.value })}
+                    className="w-full rounded-xl border border-black/[0.10] px-3 py-2.5 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]/50 focus:ring-2 focus:ring-[#006828]/10"
+                    placeholder="name@clinic.com"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="owner-contact-phone"
+                    className="mb-1.5 block font-['Geist',sans-serif] text-xs font-semibold text-[#1c1c1c]"
+                  >
+                    WhatsApp or phone
+                  </label>
+                  <input
+                    id="owner-contact-phone"
+                    name="ownerContactPhone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={contact.phone}
+                    onChange={(event) => setContact({ ...contact, phone: event.target.value })}
+                    className="w-full rounded-xl border border-black/[0.10] px-3 py-2.5 font-['Geist',sans-serif] text-sm outline-none transition-colors focus:border-[#006828]/50 focus:ring-2 focus:ring-[#006828]/10"
+                    placeholder="+971..."
+                  />
+                </div>
+                {contactError && (
+                  <p className="rounded-lg bg-red-50 px-3 py-2 font-['Geist',sans-serif] text-xs font-medium text-red-700">
+                    {contactError}
+                  </p>
+                )}
+              </div>
+            )}
+
             {step === "confirm" && (
-              <div className="mt-5 rounded-xl border border-[#006828]/15 bg-[#006828]/[0.04] px-4 py-3">
-                <p className="font-['Geist',sans-serif] text-xs font-semibold uppercase tracking-wide text-[#006828]">
-                  Selected role
+              <div className="mt-5 rounded-xl border border-[#006828]/15 bg-[#006828]/[0.04] px-4 py-3 font-['Geist',sans-serif]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#006828]">
+                  Request summary
                 </p>
-                <p className="mt-1 font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c]">
-                  {roleLabel(selectedRole)}
-                </p>
+                <dl className="mt-2 grid gap-1 text-sm text-[#1c1c1c]">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-black/45">Role</dt>
+                    <dd className="font-semibold text-right">{roleLabel(selectedRole)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-black/45">Name</dt>
+                    <dd className="font-semibold text-right">{contact.name}</dd>
+                  </div>
+                  {(contact.email || contact.phone) && (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-black/45">Contact</dt>
+                      <dd className="font-semibold text-right">
+                        {contact.email || contact.phone}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
               </div>
             )}
 
@@ -318,6 +480,14 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
                   onClick={handleRoleContinue}
                   disabled={!selectedRole}
                   className="inline-flex flex-1 items-center justify-center rounded-full bg-[#006828] px-4 py-3 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c] disabled:cursor-not-allowed disabled:bg-black/20"
+                >
+                  Continue
+                </button>
+              ) : step === "contact" ? (
+                <button
+                  type="button"
+                  onClick={handleContactContinue}
+                  className="inline-flex flex-1 items-center justify-center rounded-full bg-[#006828] px-4 py-3 font-['Geist',sans-serif] text-sm font-semibold text-white transition-colors hover:bg-[#004d1c]"
                 >
                   Continue
                 </button>
@@ -332,10 +502,10 @@ export function OwnerWhatsappCta(props: OwnerWhatsappCtaProps) {
               )}
               <button
                 type="button"
-                onClick={step === "role" ? handleCancel : () => setStep("role")}
+                onClick={step === "role" ? handleCancel : () => setStep(step === "contact" ? "role" : "contact")}
                 className="inline-flex flex-1 items-center justify-center rounded-full border border-black/[0.10] px-4 py-3 font-['Geist',sans-serif] text-sm font-semibold text-[#1c1c1c] transition-colors hover:border-[#006828]/30 hover:text-[#006828]"
               >
-                {step === "role" ? "Cancel" : "Change role"}
+                {step === "role" ? "Cancel" : "Back"}
               </button>
             </div>
           </div>
