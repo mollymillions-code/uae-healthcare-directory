@@ -28,7 +28,6 @@ export default function robots(): MetadataRoute.Robots {
       `${getBaseUrl()}/sitemap-sa.xml`,
       `${getBaseUrl()}/sitemap-bh.xml`,
       `${getBaseUrl()}/sitemap-kw.xml`,
-      `${getBaseUrl()}/sitemap-tr.xml`,
     ],
   };
 }

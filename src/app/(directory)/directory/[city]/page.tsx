@@ -35,17 +35,17 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const city = getCityBySlug(params.city);
   if (!city) return {};
   const count = await safe(getProviderCountByCity(city.slug), 0, "metaCount");
-  const regShort =
+  const regLabel =
     city.slug === "dubai"
-      ? "UAE-licensed (Dubai)"
+      ? "DHA"
       : city.slug === "abu-dhabi" || city.slug === "al-ain"
-      ? "UAE-licensed (Abu Dhabi)"
-      : "UAE-licensed";
+      ? "DOH"
+      : "MOHAP";
   const year = new Date().getFullYear();
   return {
-    title: truncateTitle(`${count}+ Healthcare Providers in ${city.name} — Compare [${year}]`),
+    title: truncateTitle(`${count}+ ${regLabel}-Licensed Providers in ${city.name} [${year}]`),
     description: truncateDescription(
-      `Find & compare ${count}+ ${regShort} hospitals, clinics, dentists & specialists in ${city.name}. Ratings, reviews, insurance, hours & directions. Free directory.`
+      `Compare ${count}+ ${regLabel}-licensed hospitals, clinics & specialists in ${city.name}. Verified ratings, insurance accepted, hours & contact. Free on Zavis.`
     ),
     alternates: {
       canonical: `${getBaseUrl()}/directory/${city.slug}`,
@@ -68,14 +68,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 function getRegulatorName(city: string): string {
-  if (city === "Dubai") return "the UAE healthcare regulator (Dubai)";
-  if (city === "Abu Dhabi" || city === "Al Ain") return "the UAE healthcare regulator (Abu Dhabi)";
-  return "the UAE healthcare regulator";
+  if (city === "Dubai") return "Dubai Health Authority (DHA)";
+  if (city === "Abu Dhabi" || city === "Al Ain") return "Department of Health Abu Dhabi (DOH)";
+  return "Ministry of Health and Prevention (MOHAP)";
 }
 function getRegulatorShort(slug: string): string {
-  if (slug === "dubai") return "UAE-licensed (Dubai)";
-  if (slug === "abu-dhabi" || slug === "al-ain") return "UAE-licensed (Abu Dhabi)";
-  return "UAE-licensed";
+  if (slug === "dubai") return "DHA-licensed";
+  if (slug === "abu-dhabi" || slug === "al-ain") return "DOH-licensed";
+  return "MOHAP-licensed";
 }
 function getEditorialBlurb(cityName: string, total: number, regulator: string): string {
   if (cityName === "Dubai")

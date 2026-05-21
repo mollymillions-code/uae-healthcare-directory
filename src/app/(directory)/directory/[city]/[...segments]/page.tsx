@@ -119,6 +119,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         ? resolved.category.name
         : `${resolved.category.name} Doctors`;
       const year = new Date().getFullYear();
+      const cityRegLabel =
+        city.slug === "dubai" ? "DHA" :
+        city.slug === "abu-dhabi" || city.slug === "al-ain" ? "DOH" : "MOHAP";
       const baseCategoryUrl = `${base}/directory/${city.slug}/${resolved.category.slug}`;
       const canonicalUrl = `${baseCategoryUrl}${pageSuffix}`;
       const arCanonicalUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}${pageSuffix}`;
@@ -127,9 +130,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         title: truncateTitle(`${displayCount} Best ${resultLabel} in ${city.name} [${year}]${pageTitleSuffix}`),
         description: truncateDescription(
           total > 0
-            ? `Compare ${total} ${resolved.category.name.toLowerCase()} in ${city.name}, UAE. Ratings, reviews, insurance accepted, hours & directions. UAE-licensed. Free directory.`
+            ? `Compare ${total} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} in ${city.name}. Verified ratings, insurance accepted & hours. Free on Zavis.`
             : doctorCount > 0
-            ? `Browse ${doctorCount} licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}, UAE. Facility listings for this specialty are being expanded.`
+            ? `Browse ${doctorCount} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}. Facility listings for this specialty are being expanded.`
             : `No facility-level ${resolved.category.name.toLowerCase()} listings are available in ${city.name} yet. Browse all clinics in ${city.name} instead.`
         ),
         alternates: {

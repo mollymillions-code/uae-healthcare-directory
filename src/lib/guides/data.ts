@@ -739,38 +739,38 @@ export const GUIDES: GuideDefinition[] = [
 
   {
     slug: "dha-license-verification",
-    title: "Regulator License Verification — How to Check a Doctor's License in Dubai",
-    h1: "Regulator License Verification: Check Any Doctor or Facility in Dubai",
+    title: "DHA License Verification — How to Check a Doctor's License in Dubai",
+    h1: "DHA License Verification: Check Any Doctor or Facility in Dubai",
     targetQuery: "dha license verification",
-    metaDescription: "How to verify a doctor's regulator license in Dubai. Step-by-step guide to using the UAE healthcare regulator (Dubai) license verification portal. Check any healthcare professional or facility. Updated April 2026.",
+    metaDescription: "How to verify a doctor's DHA license in Dubai. Step-by-step guide to the Dubai Health Authority (DHA) Sheryan license verification portal. Check any healthcare professional or facility. Updated April 2026.",
     templateType: "system-guide",
-    heroText: "The UAE healthcare regulator (Dubai) maintains a public register of all licensed healthcare professionals and facilities in Dubai. Any patient can verify a doctor's credentials, license status, and specialisation online through the DHA Sheryan portal. This is the single most important step you can take before visiting any healthcare provider in Dubai.",
+    heroText: "The Dubai Health Authority (DHA) maintains a public register of all licensed healthcare professionals and facilities in Dubai. Any patient can verify a doctor's credentials, DHA license status, and specialisation online through the DHA Sheryan portal. This is the single most important step you can take before visiting any healthcare provider in Dubai.",
     relatedCategories: [],
     relatedCities: ["dubai"],
     priceRanges: [],
     sections: [
       {
-        heading: "How to Verify a Regulator License Online",
+        heading: "How to Verify a DHA License Online",
         content: "Go to the DHA Sheryan portal (sheryan.dha.gov.ae) and click on 'Search Health Professional' or 'Search Health Facility'. You can search by the professional's name, license number, or specialisation. The results show: full name, nationality, primary qualification, specialisation, license type (Specialist, Consultant, General Practitioner), license status (Active, Suspended, Revoked), the facility they are registered with, and the license expiry date. If a professional's license shows as anything other than 'Active', do not proceed with treatment."
       },
       {
-        heading: "What the Regulator License Means",
-        content: "A regulator license confirms that the healthcare professional has: passed the UAE healthcare regulator prometric exam or qualified for exam exemption, had their credentials verified (primary degree, specialisation, internship), completed a good standing certificate from their previous country of practice, and been approved to practice a specific specialty in Dubai. The license does not guarantee quality of care, but it confirms the minimum regulatory requirements have been met. regulator licenses must be renewed annually, so check that the license is current."
+        heading: "What a DHA License Means",
+        content: "A DHA license confirms that the healthcare professional has: passed the DHA prometric exam or qualified for exam exemption, had their credentials verified (primary degree, specialisation, internship), completed a good standing certificate from their previous country of practice, and been approved to practice a specific specialty in Dubai. The license does not guarantee quality of care, but it confirms the minimum DHA requirements have been met. DHA licenses must be renewed annually, so check that the license is current."
       },
       {
-        heading: "Facility License Verification",
-        content: "You can also verify any healthcare facility's regulator license through the same portal. Search by facility name to see: license type (hospital, clinic, pharmacy, diagnostic centre), license status, address, and the facility's the UAE healthcare regulator registration number. Every legitimate healthcare facility in Dubai must display their regulator license prominently on their premises."
+        heading: "Facility DHA License Verification",
+        content: "You can also verify any healthcare facility's DHA license through the same portal. Search by facility name to see: license type (hospital, clinic, pharmacy, diagnostic centre), license status, address, and the facility's DHA registration number. Every legitimate healthcare facility in Dubai must display their DHA license prominently on their premises."
       },
       {
         heading: "Abu Dhabi and Northern Emirates",
-        content: "For Abu Dhabi: Use the UAE healthcare regulator (Department of Health) portal at doh.gov.ae to verify professionals licensed in Abu Dhabi, Al Ain, and the Al Dhafra region. For Sharjah, Ajman, Fujairah, RAK, and UAQ: Use the UAE healthcare regulator (the UAE healthcare regulator) portal at mohap.gov.ae. Each authority maintains its own register, and a license from one authority does not automatically apply in another emirate."
+        content: "For Abu Dhabi: Use the DOH (Department of Health Abu Dhabi) portal at doh.gov.ae to verify professionals licensed in Abu Dhabi, Al Ain, and the Al Dhafra region. For Sharjah, Ajman, Fujairah, RAK, and UAQ: Use the MOHAP (Ministry of Health and Prevention) portal at mohap.gov.ae. Each authority maintains its own register, and a DHA license does not automatically apply in another emirate."
       },
     ],
     faqs: [
-      { question: "How do I check if a doctor is licensed in Dubai?", answer: "Go to sheryan.dha.gov.ae, click 'Search Health Professional', and enter the doctor's name or license number. The results show their specialisation, license status, and registered facility. Only visit doctors whose license status shows as 'Active'." },
-      { question: "Is a regulator license the same as a regulator license?", answer: "No. regulator licenses apply only in Dubai. regulator licenses apply in Abu Dhabi. regulator licenses apply in the Northern Emirates. A doctor licensed by the UAE healthcare regulator cannot practice in Abu Dhabi without a separate regulator license, and vice versa." },
-      { question: "Can I verify a pharmacist's or nurse's license?", answer: "Yes. The DHA Sheryan portal covers all healthcare professionals: doctors, dentists, nurses, pharmacists, physiotherapists, optometrists, and allied health professionals. The search function works the same way for all categories." },
-      { question: "What should I do if a doctor's license is expired or suspended?", answer: "Do not proceed with treatment. You can report concerns to the UAE healthcare regulator Health Regulation Sector via their complaint portal or by calling the UAE healthcare regulator hotline at 800-the UAE healthcare regulator (800-342). Practicing without a valid license is a criminal offence in the UAE." },
+      { question: "How do I check if a doctor is DHA-licensed in Dubai?", answer: "Go to sheryan.dha.gov.ae, click 'Search Health Professional', and enter the doctor's name or license number. The results show their specialisation, DHA license status, and registered facility. Only visit doctors whose license status shows as 'Active'." },
+      { question: "Is a DHA license the same as a DOH license?", answer: "No. DHA licenses apply only in Dubai. DOH licenses apply in Abu Dhabi and Al Ain. MOHAP licenses apply in Sharjah, Ajman, RAK, Fujairah, and UAQ. A doctor licensed by DHA cannot practice in Abu Dhabi without a separate DOH license, and vice versa." },
+      { question: "Can I verify a pharmacist's or nurse's DHA license?", answer: "Yes. The DHA Sheryan portal covers all healthcare professionals: doctors, dentists, nurses, pharmacists, physiotherapists, optometrists, and allied health professionals. The search function works the same way for all categories." },
+      { question: "What should I do if a doctor's DHA license is expired or suspended?", answer: "Do not proceed with treatment. You can report concerns to the DHA Health Regulation Sector via their complaint portal or by calling the DHA hotline at 800-342. Practicing without a valid DHA license is a criminal offence in the UAE." },
     ],
     directoryLinks: [
       { label: "All Clinics in Dubai", href: "/directory/dubai/clinics" },
@@ -871,28 +871,28 @@ export const GUIDES: GuideDefinition[] = [
 
   {
     slug: "mohap-license-check",
-    title: "Regulator License Verification — Check Healthcare Professionals in Northern Emirates",
-    h1: "Regulator License Verification: Sharjah, Ajman, RAK, Fujairah & UAQ",
+    title: "MOHAP License Verification — Check Healthcare Professionals in Northern Emirates",
+    h1: "MOHAP License Verification: Sharjah, Ajman, RAK, Fujairah & UAQ",
     targetQuery: "mohap license verification",
-    metaDescription: "How to verify a doctor's regulator license in Sharjah, Ajman, RAK, Fujairah, and UAQ. Step-by-step guide to the Ministry of Health license check portal. Updated April 2026.",
+    metaDescription: "How to verify a doctor's MOHAP license in Sharjah, Ajman, RAK, Fujairah, and UAQ. Step-by-step guide to the Ministry of Health and Prevention license check portal. Updated April 2026.",
     templateType: "system-guide",
-    heroText: "The UAE healthcare regulator regulates healthcare in the Northern Emirates: Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. All healthcare professionals in these emirates must hold a valid regulator license. You can verify any doctor, dentist, nurse, or pharmacist's license through the UAE healthcare regulator online portal.",
+    heroText: "The Ministry of Health and Prevention (MOHAP) regulates healthcare in the Northern Emirates: Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain. All healthcare professionals in these emirates must hold a valid MOHAP license. You can verify any doctor, dentist, nurse, or pharmacist's MOHAP license through the official MOHAP online portal.",
     relatedCategories: [],
     relatedCities: ["sharjah", "ajman", "ras-al-khaimah", "fujairah", "umm-al-quwain"],
     priceRanges: [],
     sections: [
       {
-        heading: "How to Verify a Regulator License",
-        content: "Visit mohap.gov.ae and navigate to the 'Smart Services' section. Select 'Verify Health Professional License'. Enter the professional's name, license number, or Emirates ID. The portal shows: full name, nationality, specialty, license type, license status (Active, Inactive, Suspended), registered facility, and license expiry date. Only accept treatment from professionals with an 'Active' license status."
+        heading: "How to Verify a MOHAP License",
+        content: "Visit mohap.gov.ae and navigate to the 'Smart Services' section. Select 'Verify Health Professional License'. Enter the professional's name, license number, or Emirates ID. The portal shows: full name, nationality, specialty, license type, license status (Active, Inactive, Suspended), registered facility, and license expiry date. Only accept treatment from professionals with an 'Active' MOHAP license status."
       },
       {
-        heading: "The UAE healthcare regulator vs the UAE healthcare regulator vs the UAE healthcare regulator",
-        content: "Each UAE health authority regulates its own jurisdiction: the UAE healthcare regulator covers Sharjah, Ajman, RAK, Fujairah, and UAQ. The UAE healthcare regulator covers Dubai only. The UAE healthcare regulator covers Abu Dhabi and Al Ain. A regulator license is not valid in Dubai (you need a regulator license) and vice versa. Some doctors hold multiple licenses and practice in more than one emirate."
+        heading: "MOHAP vs DHA vs DOH",
+        content: "Each UAE health authority regulates its own jurisdiction: MOHAP covers Sharjah, Ajman, RAK, Fujairah, and UAQ. DHA (Dubai Health Authority) covers Dubai only. DOH (Department of Health Abu Dhabi) covers Abu Dhabi and Al Ain. A MOHAP license is not valid in Dubai (you need a DHA license) and vice versa. Some doctors hold multiple licenses and practice in more than one emirate."
       },
     ],
     faqs: [
-      { question: "How do I check a doctor's license in Sharjah?", answer: "Go to mohap.gov.ae, navigate to Smart Services, select Verify Health Professional License, and enter the doctor's name or license number. The portal will show their specialty, license status, and registered facility." },
-      { question: "Is a regulator license valid in Dubai?", answer: "No. A regulator license is only valid in the Northern Emirates (Sharjah, Ajman, RAK, Fujairah, UAQ). To practice in Dubai, a doctor needs a regulator license. To practice in Abu Dhabi, they need a regulator license." },
+      { question: "How do I check a doctor's MOHAP license in Sharjah?", answer: "Go to mohap.gov.ae, navigate to Smart Services, select Verify Health Professional License, and enter the doctor's name or license number. The portal will show their specialty, MOHAP license status, and registered facility." },
+      { question: "Is a MOHAP license valid in Dubai?", answer: "No. A MOHAP license is only valid in the Northern Emirates (Sharjah, Ajman, RAK, Fujairah, UAQ). To practice in Dubai, a doctor needs a DHA license. To practice in Abu Dhabi, they need a DOH license." },
     ],
     directoryLinks: [
       { label: "Clinics in Sharjah", href: "/directory/sharjah/clinics" },
