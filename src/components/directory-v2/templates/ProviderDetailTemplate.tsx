@@ -305,6 +305,76 @@ export function ProviderDetailTemplate({
           </div>
         </header>
 
+        {/* Mobile-first contact panel keeps conversion actions above the gallery
+            and prevents the photo mosaic from becoming the initial LCP target. */}
+        <section
+          className="lg:hidden mb-6 rounded-z-md border border-ink-line bg-white p-4 shadow-z-card"
+          aria-label={`Quick actions for ${p.name}`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-sans text-z-micro uppercase tracking-[0.04em] text-ink-muted">
+                Contact this provider
+              </p>
+              {hasRating && (
+                <p className="mt-1 inline-flex items-center gap-1 font-sans text-z-body-sm font-semibold text-ink">
+                  <Star className="h-3.5 w-3.5 fill-ink text-ink" />
+                  {rating.toFixed(2)}
+                  {reviewCount > 0 && (
+                    <span className="font-normal text-ink-muted">
+                      · {reviewCount.toLocaleString()} {reviewCount === 1 ? "review" : "reviews"}
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+            {p.isVerified && (
+              <span className="shrink-0 rounded-z-pill bg-accent-soft px-2.5 py-1 font-sans text-z-caption font-semibold text-accent-deep">
+                Verified
+              </span>
+            )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-2">
+            <Link
+              href={primaryCtaHref}
+              target={primaryCtaHref.startsWith("http") ? "_blank" : undefined}
+              rel={primaryCtaHref.startsWith("http") ? "noopener" : undefined}
+              className="flex min-h-12 items-center justify-center rounded-z-md bg-accent-deep px-4 py-3 font-sans text-z-body-sm font-semibold text-white transition-colors hover:bg-ink"
+            >
+              {primaryCtaLabel}
+            </Link>
+            <div className="grid grid-cols-2 gap-2">
+              {(p.googleMapsUri || p.address) && (
+                <a
+                  href={p.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name} ${p.address ?? ""}`)}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
+                >
+                  Directions
+                </a>
+              )}
+              {p.website && (
+                <a
+                  href={p.website}
+                  target="_blank"
+                  rel="noopener"
+                  className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
+                >
+                  Website
+                </a>
+              )}
+            </div>
+          </div>
+
+          {p.address && (
+            <p className="mt-3 line-clamp-2 font-sans text-z-body-sm leading-snug text-ink-soft">
+              {p.address}
+            </p>
+          )}
+        </section>
+
         {/* Photo mosaic */}
         <PhotoMosaic
           photos={uniqPhotos}
