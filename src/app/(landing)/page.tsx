@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 export default function LandingHomePage() {
   return (
     <>
+      <HomePageClient />
       <JsonLd data={organizationSchema()} />
       <JsonLd data={websiteWithSearchSchema()} />
-      <HomePageClient />
     </>
   );
 }

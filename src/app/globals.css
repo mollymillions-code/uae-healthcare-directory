@@ -259,6 +259,16 @@
     @apply mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8;
   }
 
+  .z-content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 720px;
+  }
+
+  .z-content-auto-short {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 360px;
+  }
+
   /* TC-style category badge */
   .badge {
     @apply inline-block bg-accent text-white text-[11px] font-bold uppercase tracking-wide px-2 py-0.5;

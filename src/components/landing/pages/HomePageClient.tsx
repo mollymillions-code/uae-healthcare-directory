@@ -213,7 +213,7 @@ export function HomePageClient() {
       ) : null}
 
       {/* Dashboard Preview */}
-      <AnimatedSection className="px-4 sm:px-6 lg:px-8 pb-16 lg:pb-28">
+      <AnimatedSection className="z-content-auto-short px-4 sm:px-6 lg:px-8 pb-16 lg:pb-28">
         <div className="max-w-[1100px] mx-auto">
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-b from-black/20 to-black/5 rounded-3xl sm:rounded-[28px] blur-sm" />
@@ -239,7 +239,7 @@ export function HomePageClient() {
       </AnimatedSection>
 
       {/* Value Props - replaces generic "Chat | Voice | AI" */}
-      <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+      <section className="z-content-auto py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-12 lg:mb-16">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight mb-5 max-w-3xl mx-auto leading-[1.1]">
@@ -279,7 +279,7 @@ export function HomePageClient() {
       </section>
 
       {/* Platform Pillars */}
-      <section className="py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <section className="z-content-auto py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection className="text-center mb-10 lg:mb-14">
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-black tracking-tight leading-[1.1]">
@@ -311,7 +311,7 @@ export function HomePageClient() {
       </section>
 
       {/* Tabs - Platform Deep Dive */}
-      <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+      <section className="z-content-auto py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto">
           <AnimatedSection>
             <h2 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] text-center text-black tracking-tight mb-4 max-w-3xl mx-auto leading-[1.1]">
@@ -390,7 +390,7 @@ export function HomePageClient() {
       </section>
 
       {/* Before / After */}
-      <section className="py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <section className="z-content-auto-short py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="max-w-[900px] mx-auto">
           <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/[0.06]">
             <div className="grid md:grid-cols-2">
@@ -432,7 +432,7 @@ export function HomePageClient() {
       </section>
 
       {/* List your clinic on Zavis directory */}
-      <section className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+      <section className="z-content-auto py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="max-w-[1200px] mx-auto">
           <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#006828] via-[#0a7a32] to-[#04461c] p-8 sm:p-12 lg:p-16">
             <div
@@ -530,7 +530,9 @@ export function HomePageClient() {
         </AnimatedSection>
       </section>
 
-      <Timeline />
+      <div className="z-content-auto">
+        <Timeline />
+      </div>
     </div>
   );
 }

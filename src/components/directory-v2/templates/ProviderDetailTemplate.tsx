@@ -380,7 +380,7 @@ export function ProviderDetailTemplate({
         {p.isVerified && <VerifiedClinicTrustStrip className="mt-6 hidden sm:block" />}
 
         {/* Two-column layout */}
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16" id="detail-grid">
+        <div className="z-content-auto mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16" id="detail-grid">
           {/* Left column */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-8">
             {/* Hero block — type + licence strip */}

@@ -240,7 +240,7 @@ export default async function CityPage(props: Props) {
       )}
 
       {/* ─── Specialties grid (for SEO depth) ─── */}
-      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+      <section className="z-content-auto max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
         <header className="flex items-end justify-between gap-6 mb-6">
           <div>
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
@@ -274,7 +274,7 @@ export default async function CityPage(props: Props) {
 
       {/* ─── Neighborhoods ─── */}
       {areasWithCounts.length > 0 && (
-        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="z-content-auto max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <header className="flex items-end justify-between gap-6 mb-6">
             <div>
               <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
@@ -308,7 +308,7 @@ export default async function CityPage(props: Props) {
       )}
 
       {/* ─── Filter shortcuts ─── */}
-      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+      <section className="z-content-auto max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
         <header className="flex items-end justify-between gap-6 mb-6">
           <div>
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
@@ -340,7 +340,7 @@ export default async function CityPage(props: Props) {
       </section>
 
       {/* ─── AEO answer block ─── */}
-      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+      <section className="z-content-auto-short max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
         <div className="answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
           <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
             According to the UAE Open Healthcare Directory, {city.name} has{" "}
@@ -357,7 +357,7 @@ export default async function CityPage(props: Props) {
 
       {/* ─── Featured providers ─── */}
       {featured.length > 0 && (
-        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="z-content-auto max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <header className="flex items-end justify-between gap-6 mb-6">
             <div>
               <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
@@ -396,7 +396,7 @@ export default async function CityPage(props: Props) {
 
       {/* ─── More providers (flat A-Z link index for crawl-budget efficiency) ─── */}
       {indexLinks.length > 0 && (
-        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="z-content-auto max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <header className="mb-6">
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
               More providers in {city.name}
@@ -430,7 +430,7 @@ export default async function CityPage(props: Props) {
 
       {/* ─── Latest news ─── */}
       {latestArticles.length > 0 && (
-        <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="z-content-auto-short max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <header className="mb-6">
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
               From Zavis Intelligence
@@ -460,7 +460,7 @@ export default async function CityPage(props: Props) {
       )}
 
       {/* ─── FAQ ─── */}
-      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24">
+      <section className="z-content-auto-short max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24">
         <header className="mb-6">
           <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
             Questions
