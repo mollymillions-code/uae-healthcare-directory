@@ -209,7 +209,7 @@ export function ProviderDetailTemplate({
               return (
                 <span key={i} className="inline-flex items-center gap-1.5">
                   {b.href && !isLast ? (
-                    <Link href={b.href} className="hover:text-ink transition-colors">
+                    <Link href={b.href} prefetch={false} className="hover:text-ink transition-colors">
                       {b.label}
                     </Link>
                   ) : (
@@ -248,7 +248,7 @@ export function ProviderDetailTemplate({
                 {categoryName && (
                   <>
                     <span>·</span>
-                    <Link href={`/directory/${p.citySlug}/${p.categorySlug}`} className="underline decoration-1 underline-offset-2 hover:text-ink">
+                    <Link href={`/directory/${p.citySlug}/${p.categorySlug}`} prefetch={false} className="underline decoration-1 underline-offset-2 hover:text-ink">
                       {categoryName}
                     </Link>
                   </>
@@ -264,6 +264,7 @@ export function ProviderDetailTemplate({
                 <div className="mt-3">
                   <Link
                     href={arabicHref}
+                    prefetch={false}
                     lang="ar"
                     hrefLang="ar-AE"
                     dir="rtl"
@@ -339,6 +340,7 @@ export function ProviderDetailTemplate({
             <div className="mt-4 grid grid-cols-1 gap-2">
               <Link
                 href={primaryCtaHref}
+                prefetch={false}
                 target={primaryCtaHref.startsWith("http") ? "_blank" : undefined}
                 rel={primaryCtaHref.startsWith("http") ? "noopener" : undefined}
                 className="flex min-h-12 items-center justify-center rounded-z-md bg-accent-deep px-4 py-3 font-sans text-z-body-sm font-semibold text-white transition-colors hover:bg-ink"
@@ -490,6 +492,7 @@ export function ProviderDetailTemplate({
                     <li key={ins}>
                       <Link
                         href={insuranceHref(p.citySlug, ins)}
+                        prefetch={false}
                         className="inline-flex items-center rounded-z-pill bg-surface-cream border border-ink-line px-3 py-1.5 font-sans text-z-body-sm text-ink hover:border-ink transition-colors"
                       >
                         {ins}
