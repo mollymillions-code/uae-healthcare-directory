@@ -272,11 +272,11 @@ export function ProviderDetailTemplate({
                 </Link>
               </div>
             )}
-            <p className="mt-4 max-w-3xl font-sans text-z-body text-ink-soft leading-relaxed">
+            <p className="mt-4 hidden max-w-3xl font-sans text-z-body text-ink-soft leading-relaxed sm:block">
               {profileSummary}
             </p>
             {profileJumpLinks.length > 0 && (
-              <nav className="mt-4 flex flex-wrap gap-2" aria-label={`${p.name} profile sections`}>
+              <nav className="mt-4 hidden flex-wrap gap-2 sm:flex" aria-label={`${p.name} profile sections`}>
                 {profileJumpLinks.map((link) => (
                   <a
                     key={link.href}
@@ -379,7 +379,7 @@ export function ProviderDetailTemplate({
         <PhotoMosaic
           photos={uniqPhotos}
           alt={p.name}
-          priorityCount={1}
+          priorityCount={0}
           fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
         />
 
