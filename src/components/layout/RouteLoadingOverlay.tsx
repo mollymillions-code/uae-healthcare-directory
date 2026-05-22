@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const NAVIGATION_EVENT = "zavis:navigation-start";
 const CHUNK_RELOAD_KEY = "zavis:chunk-reload-attempted";
@@ -38,7 +38,6 @@ export function dispatchRouteLoadingStart() {
 
 export function RouteLoadingOverlay() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const clearTimerRef = useRef<number | null>(null);
 
@@ -48,7 +47,7 @@ export function RouteLoadingOverlay() {
     return () => {
       if (clearTimerRef.current) window.clearTimeout(clearTimerRef.current);
     };
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   useEffect(() => {
     const start = () => {
