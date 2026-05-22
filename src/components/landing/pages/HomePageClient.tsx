@@ -107,7 +107,7 @@ export function HomePageClient() {
                   AI front desk for growing clinics
                 </span>
               </div>
-              <h1 className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[34px] sm:text-[46px] lg:text-[60px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em] mb-6">
+              <h1 className="font-display font-medium text-[34px] sm:text-[46px] lg:text-[60px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em] mb-6">
                 Keep your schedule full with{" "}
                 <span className="text-[#006828]">AI patient operations</span>
               </h1>
