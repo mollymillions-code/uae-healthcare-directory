@@ -49,6 +49,10 @@
     --ease-standard:  cubic-bezier(0.2, 0, 0, 1);
     --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
     --ease-overshoot: cubic-bezier(0.17, 0.67, 0.3, 1.33);
+    --font-space-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --font-lora: Georgia, "Times New Roman", serif;
+    --font-geist: var(--font-dm-sans), system-ui, sans-serif;
+    --font-geist-mono: var(--font-space-mono);
   }
 
   /* Smooth scroll with reduced-motion respect */

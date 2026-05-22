@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { DM_Sans, Space_Mono, Lora, Bricolage_Grotesque } from "next/font/google";
-import localFont from "next/font/local";
+import { DM_Sans, Bricolage_Grotesque } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
 import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
+import { DeferredMarketingTags } from "@/components/analytics/DeferredMarketingTags";
 import { NextAuthProvider } from "@/components/auth/NextAuthProvider";
 import { RouteLoadingOverlay } from "@/components/layout/RouteLoadingOverlay";
 import { PostActionAccountPrompt } from "@/components/account/PostActionAccountPrompt";
@@ -13,41 +13,16 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
   display: "swap",
+  preload: false,
   weight: ["400", "500", "600", "700"],
-});
-
-const spaceMono = Space_Mono({
-  subsets: ["latin"],
-  variable: "--font-space-mono",
-  display: "swap",
-  weight: ["400", "700"],
-});
-
-const lora = Lora({
-  subsets: ["latin"],
-  variable: "--font-lora",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
 });
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-bricolage",
   display: "swap",
+  preload: true,
   weight: ["400", "500", "600", "700"],
-});
-
-const geist = localFont({
-  src: "../app/fonts/GeistVF.woff",
-  variable: "--font-geist",
-  display: "swap",
-});
-
-const geistMono = localFont({
-  src: "../app/fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  display: "swap",
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
@@ -112,30 +87,12 @@ export default function RootLayout({
   // AR routes. Googlebot still picks up the correct attributes
   // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${spaceMono.variable} ${lora.variable} ${bricolage.variable} ${geist.variable} ${geistMono.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable}`}>
       <head>
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev" />
-        <link rel="preconnect" href="https://lh3.googleusercontent.com" />
         <link rel="dns-prefetch" href="https://places.googleapis.com" />
       </head>
-      {/* Google Tag Manager — defer off the mobile critical path; the gtag shim queues events before GTM loads. */}
-      <Script id="gtm" strategy="lazyOnload">{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T9N3FDMQ');`}</Script>
-      {/* Minimal gtag shim — lets gtag_report_conversion() push to dataLayer for GTM.
-          Recursion guard: drops gtag("event", X, ...) calls for event names that have
-          GTM HTML tags re-pushing the same event, which would otherwise infinite-loop
-          and crash the browser. Incident 2026-04-10: GTM tags 68/71/72/73. */}
-      <Script id="gtag-shim" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){var a=arguments;if(a[0]==="event"){var n=a[1];if(n==="engaged_session"||n==="scroll_milestone"||n==="outbound_click"||n==="contact_click")return;}dataLayer.push(a);}window.gtag=gtag;`}</Script>
-      {/* Microsoft Clarity */}
-      <Script id="clarity" strategy="lazyOnload">{`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","swpafowqk4");`}</Script>
-      {/* LinkedIn Insight Tag — afterInteractive so conversions aren't missed */}
-      <Script id="linkedin-insight" strategy="lazyOnload">{`_linkedin_partner_id = "8657833";window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];window._linkedin_data_partner_ids.push(_linkedin_partner_id);(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s);})(window.lintrk);`}</Script>
-      {/* Meta Pixel — lazy-load to reduce mobile main-thread pressure; conversion calls queue once fbq is installed. */}
-      <Script id="meta-pixel" strategy="lazyOnload">{`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1045406841134462');fbq('track','PageView');`}</Script>
-      {/* Reb2b Visitor Identification */}
-      <Script id="reb2b" strategy="lazyOnload">{`!function(key){if(window.reb2b)return;window.reb2b={loaded:true};var s=document.createElement("script");s.async=true;s.src="https://ddwl4m2hdecbv.cloudfront.net/b/"+key+"/"+key+".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s,document.getElementsByTagName("script")[0]);}("GOYPYHQZ9POX");`}</Script>
+      {/* Lightweight tracking shims. Heavy marketing tags load after interaction or an 8s timeout in DeferredMarketingTags. */}
+      <Script id="tracking-shims" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){var a=arguments;if(a[0]==="event"){var n=a[1];if(n==="engaged_session"||n==="scroll_milestone"||n==="outbound_click"||n==="contact_click")return;}dataLayer.push(a);}window.gtag=gtag;if(!window.fbq){window.fbq=function(){window.fbq.queue=window.fbq.queue||[];window.fbq.queue.push(arguments)};window.fbq.queue=[];}if(!window.lintrk){window.lintrk=function(){window.lintrk.q=window.lintrk.q||[];window.lintrk.q.push(arguments)};window.lintrk.q=[];}if(!window.clarity){window.clarity=function(){window.clarity.q=window.clarity.q||[];window.clarity.q.push(arguments)};window.clarity.q=[];}`}</Script>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-white text-dark">
         {/* GTM noscript */}
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9N3FDMQ" height="0" width="0" style={{display:'none',visibility:'hidden'}} title="google-tag-manager"></iframe></noscript>
@@ -143,6 +100,7 @@ export default function RootLayout({
         <noscript><img height="1" width="1" style={{display:'none'}} alt="" src="https://px.ads.linkedin.com/collect/?pid=8657833&fmt=gif" /></noscript>
         {/* Meta Pixel noscript */}
         <noscript><img height="1" width="1" style={{display:'none'}} src="https://www.facebook.com/tr?id=1045406841134462&ev=PageView&noscript=1" alt="facebook-pixel" /></noscript>
+        <DeferredMarketingTags />
         <RouteChangeTracker />
         <Suspense fallback={null}>
           <RouteLoadingOverlay />

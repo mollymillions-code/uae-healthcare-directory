@@ -43,6 +43,7 @@ export function MobileNav({
         <div className="border-b border-black/5">
           <Link
             href="/directory"
+            prefetch={false}
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
@@ -53,6 +54,7 @@ export function MobileNav({
         <div className="border-b border-black/5">
           <Link
             href="/intelligence"
+            prefetch={false}
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
@@ -63,6 +65,7 @@ export function MobileNav({
         <div className="border-b border-black/5">
           <Link
             href="/research"
+            prefetch={false}
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
           >
@@ -74,6 +77,7 @@ export function MobileNav({
           {sessionStatus === "authenticated" ? (
             <Link
               href="/account"
+              prefetch={false}
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
             >
@@ -83,6 +87,7 @@ export function MobileNav({
           ) : (
             <Link
               href="/login"
+              prefetch={false}
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
             >
@@ -94,6 +99,7 @@ export function MobileNav({
         <div className="mt-6">
           <ShimmerLink
             href="/book-a-demo"
+            prefetch={false}
             onClick={() => setMobileOpen(false)}
             className="w-full py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium shadow-[0_0_20px_rgba(0,104,40,0.4)]"
           >

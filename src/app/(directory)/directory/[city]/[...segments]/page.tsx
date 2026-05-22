@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { unstable_noStore as noStore } from "next/cache";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
@@ -12,7 +11,6 @@ import { Pagination } from "@/components/shared/Pagination";
 import {
   getCityBySlug, getCategories, getCategoryBySlug,
   getAreaBySlug,
-  getSubcategoriesByCategory,
   getProviders,
   getInsuranceProviders,
   getNeighborhoodsByCity,
@@ -77,31 +75,13 @@ function parsePage(raw: string | undefined): number {
 // No generateStaticParams — pages render on-demand via ISR.
 // Google discovers them via sitemap.xml and internal links.
 
-function isPotentialListingRoute(citySlug: string, segments: string[]): boolean {
-  const [seg1, seg2, seg3] = segments;
-
-  if (segments.length === 2) {
-    const category = getCategoryBySlug(seg1);
-    if (!category) return false;
-    return !getSubcategoriesByCategory(category.slug).some((sub) => sub.slug === seg2);
-  }
-
-  if (segments.length === 3) {
-    return Boolean(seg3 && getAreaBySlug(citySlug, seg1) && getCategoryBySlug(seg2));
-  }
-
-  return false;
-}
-
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const searchParams = await props.searchParams;
   const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) return {};
-  if (resolved.type === "listing") noStore();
   const base = getBaseUrl();
   const page = parsePage(searchParams?.page);
   const pageSuffix = page > 1 ? `?page=${page}` : "";
@@ -409,12 +389,10 @@ export default async function CatchAllPage(props: Props) {
   const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) notFound();
-  if (isPotentialListingRoute(city.slug, params.segments)) noStore();
 
   const resolved = await resolveSegments(city.slug, params.segments);
   if (!resolved) notFound();
   if (resolved.type === "listing") {
-    noStore();
     // Canonical-slug redirect: if the user reached this page via a slug alias
     // (e.g. /clinics/dental-hub matched "Dental Hub Clinic" via stem-suffix
     // stripping), 301 to the canonical URL so search engines collapse aliases.

@@ -5,8 +5,8 @@ import { FaqSection } from "@/components/seo/FaqSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   getCityBySlug, getCities, getCategories, getAreasByCity,
-  getTopRatedProviders, getProviderCountByCategoryAndCity,
-  getProviderCountByCity, getProviderCountByAreaAndCity, getFaqs,
+  getTopRatedProviders, getProviderCountsByCategoryAndCity,
+  getProviderCountByCity, getProviderCountsByAreaAndCity, getFaqs,
 } from "@/lib/data";
 import { getLatestArticles } from "@/lib/intelligence/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema, truncateTitle, truncateDescription } from "@/lib/seo";
@@ -120,16 +120,16 @@ export default async function CityPage(props: Props) {
   const [topProviders, total, catCounts, areaCounts] = await Promise.all([
     safe(getTopRatedProviders(city.slug, 60), [] as Awaited<ReturnType<typeof getTopRatedProviders>>, "topProviders"),
     safe(getProviderCountByCity(city.slug), 0, "total"),
-    safe(Promise.all(categories.map((cat) => getProviderCountByCategoryAndCity(cat.slug, city.slug))), categories.map(() => 0) as number[], "catCounts"),
-    safe(Promise.all(areas.map((a) => getProviderCountByAreaAndCity(a.slug, city.slug))), areas.map(() => 0) as number[], "areaCounts"),
+    safe(getProviderCountsByCategoryAndCity(city.slug, categories.map((cat) => cat.slug)), {} as Record<string, number>, "catCounts"),
+    safe(getProviderCountsByAreaAndCity(city.slug, areas.map((a) => a.slug)), {} as Record<string, number>, "areaCounts"),
   ]);
   const faqs = getFaqs("city", city.slug);
   const latestArticles = getLatestArticles(3);
 
   const catsWithCounts = categories
-    .map((cat, i) => ({ ...cat, count: catCounts[i] }))
+    .map((cat) => ({ ...cat, count: catCounts[cat.slug] ?? 0 }))
     .filter((cat) => (cat.count ?? 0) > 0 || total === 0);
-  const areasWithCounts = areas.map((area, i) => ({ ...area, count: areaCounts[i] }));
+  const areasWithCounts = areas.map((area) => ({ ...area, count: areaCounts[area.slug] ?? 0 }));
 
   const rated = topProviders.filter((p) => Number(p.googleRating) > 0);
   const featured = rated.length > 0 ? rated.slice(0, 8) : topProviders.slice(0, 8);
@@ -183,9 +183,9 @@ export default async function CityPage(props: Props) {
         <div className="relative max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-6 sm:pb-10">
           {/* Breadcrumb */}
           <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-ink transition-colors">UAE</Link>
+            <Link href="/" prefetch={false} className="hover:text-ink transition-colors">UAE</Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <Link href="/directory" className="hover:text-ink transition-colors">Directory</Link>
+            <Link href="/directory" prefetch={false} className="hover:text-ink transition-colors">Directory</Link>
             <ChevronRight className="h-3.5 w-3.5" />
             <span className="text-ink font-medium">{city.name}</span>
           </nav>
@@ -199,12 +199,18 @@ export default async function CityPage(props: Props) {
               <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
                 Healthcare in {city.name}.
               </h1>
-              <p className="font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
+              <p className="font-sans text-[15px] text-ink-soft mt-4 max-w-2xl leading-relaxed sm:hidden">
+                {city.name} has {total.toLocaleString()}+ licensed providers across{" "}
+                {catsWithCounts.length || categories.length} specialties, with
+                ratings, insurance, hours, contact details, and directions.
+              </p>
+              <p className="hidden sm:block font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
                 {getEditorialBlurb(city.name, total, regulator)}
               </p>
               <div className="mt-5 flex items-center gap-3">
                 <Link
                   href={`/ar/directory/${city.slug}`}
+                  prefetch={false}
                   lang="ar"
                   hrefLang="ar-AE"
                   dir="rtl"
@@ -232,19 +238,6 @@ export default async function CityPage(props: Props) {
             </div>
           </div>
 
-          {/* AEO answer block */}
-          <div className="mt-8 answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
-            <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
-              According to the UAE Open Healthcare Directory, {city.name} has{" "}
-              <span className="font-semibold text-ink">{total}+</span> registered healthcare providers listed across {categories.length} medical specialties and {areas.length} neighborhoods.
-              {city.name === "Dubai" && " Healthcare in Dubai is regulated by the UAE healthcare regulator (Dubai)."}
-              {city.name === "Abu Dhabi" && " Healthcare in Abu Dhabi is regulated by the UAE healthcare regulator (Abu Dhabi)."}
-              {city.name === "Al Ain" && " Healthcare in Al Ain falls under the UAE healthcare regulator (Abu Dhabi)."}
-              {!["Dubai", "Abu Dhabi", "Al Ain"].includes(city.name) &&
-                ` Healthcare in ${city.name} is regulated by the UAE healthcare regulator.`}
-              {" "}All listings include verified contact details, Google ratings, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -278,7 +271,7 @@ export default async function CityPage(props: Props) {
                 name={cat.name}
                 href={`/directory/${city.slug}/${cat.slug}`}
                 providerCount={cat.count}
-                useImage
+                icon={iconFor(cat.slug)}
               />
             ))}
           </div>
@@ -357,6 +350,22 @@ export default async function CityPage(props: Props) {
         </div>
       </section>
 
+      {/* ─── AEO answer block ─── */}
+      <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <div className="answer-block rounded-z-md bg-white border border-ink-line p-5 sm:p-6 max-w-4xl" data-answer-block="true">
+          <p className="font-sans text-z-body-sm text-ink-soft leading-[1.75]">
+            According to the UAE Open Healthcare Directory, {city.name} has{" "}
+            <span className="font-semibold text-ink">{total}+</span> registered healthcare providers listed across {categories.length} medical specialties and {areas.length} neighborhoods.
+            {city.name === "Dubai" && " Healthcare in Dubai is regulated by the UAE healthcare regulator (Dubai)."}
+            {city.name === "Abu Dhabi" && " Healthcare in Abu Dhabi is regulated by the UAE healthcare regulator (Abu Dhabi)."}
+            {city.name === "Al Ain" && " Healthcare in Al Ain falls under the UAE healthcare regulator (Abu Dhabi)."}
+            {!["Dubai", "Abu Dhabi", "Al Ain"].includes(city.name) &&
+              ` Healthcare in ${city.name} is regulated by the UAE healthcare regulator.`}
+            {" "}All listings include verified contact details, Google ratings, accepted insurance plans, operating hours, and directions. Data sourced from official government licensed facility registers.
+          </p>
+        </div>
+      </section>
+
       {/* ─── Featured providers ─── */}
       {featured.length > 0 && (
         <section className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
@@ -371,7 +380,7 @@ export default async function CityPage(props: Props) {
             </div>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">
-            {featured.map((p, i) => {
+            {featured.map((p) => {
               const cat = categories.find((c) => c.slug === p.categorySlug);
               return (
                 <ProviderCardV2
@@ -389,7 +398,7 @@ export default async function CityPage(props: Props) {
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
-                  priority={i < 4}
+                  priority={false}
                 />
               );
             })}

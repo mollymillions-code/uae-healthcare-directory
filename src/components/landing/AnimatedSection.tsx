@@ -1,11 +1,4 @@
-"use client";
-
-import { useRef, useEffect, type ReactNode } from "react";
-
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
+import type { ReactNode } from "react";
 
 interface AnimatedSectionProps {
   children: ReactNode;
@@ -20,56 +13,10 @@ export function AnimatedSection({
   delay = 0,
   direction = "up",
 }: AnimatedSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (prefersReducedMotion() || !el) return;
-
-    // Immediately hide so GSAP can animate in — only when JS is available
-    el.style.opacity = "0";
-
-    let tween: gsap.core.Tween | undefined;
-
-    (async () => {
-      const { default: gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      const directionMap = {
-        up: { y: 48, x: 0 },
-        left: { y: 0, x: -48 },
-        right: { y: 0, x: 48 },
-        none: { y: 0, x: 0 },
-      };
-
-      const offset = directionMap[direction];
-
-      gsap.set(el, { opacity: 0, ...offset });
-
-      tween = gsap.to(el, {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        duration: 0.9,
-        delay,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 88%",
-          toggleActions: "play none none none",
-        },
-      });
-    })();
-
-    return () => {
-      tween?.scrollTrigger?.kill();
-      tween?.kill();
-    };
-  }, [delay, direction]);
-
+  const shouldAnimate = direction !== "none";
+  const delayStyle = delay > 0 ? { animationDelay: `${delay}s` } : undefined;
   return (
-    <div ref={ref} className={className}>
+    <div className={`${shouldAnimate ? "animate-fade-up" : ""} ${className}`.trim()} style={delayStyle}>
       {children}
     </div>
   );
@@ -82,49 +29,8 @@ export function StaggerContainer({
   children: ReactNode;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = ref.current;
-    if (prefersReducedMotion() || !container) return;
-
-    // Immediately hide children so GSAP can stagger them in — only when JS is available
-    const items = container.querySelectorAll("[data-stagger-item]");
-    items.forEach((item) => ((item as HTMLElement).style.opacity = "0"));
-
-    let tween: gsap.core.Tween | undefined;
-
-    (async () => {
-      const { default: gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      if (!items.length) return;
-
-      gsap.set(items, { opacity: 0, y: 28 });
-
-      tween = gsap.to(items, {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        stagger: 0.06,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: container,
-          start: "top 88%",
-          toggleActions: "play none none none",
-        },
-      });
-    })();
-
-    return () => {
-      tween?.scrollTrigger?.kill();
-      tween?.kill();
-    };
-  }, []);
-
   return (
-    <div ref={ref} className={className}>
+    <div className={`z-stagger ${className}`.trim()}>
       {children}
     </div>
   );

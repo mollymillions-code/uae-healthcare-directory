@@ -63,6 +63,7 @@ export function PhotoCarousel({
         alt={`${alt}${safePhotos.length > 1 ? ` (${idx + 1} of ${safePhotos.length})` : ""}`}
         fill
         sizes={sizes}
+        quality={65}
         priority={priority && idx === 0}
         fetchPriority={priority && idx === 0 ? "high" : "auto"}
         onError={() => setFailed((prev) => (prev[idx] ? prev : { ...prev, [idx]: true }))}

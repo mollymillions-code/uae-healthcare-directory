@@ -394,7 +394,7 @@ export function ProcedurePricingTemplate({
                 isVerified={p.isVerified}
                 photos={p.photos ?? []}
                 coverImageUrl={p.coverImageUrl ?? null}
-                priority={i < 4}
+                priority={i === 0}
               />
             ))}
           </div>

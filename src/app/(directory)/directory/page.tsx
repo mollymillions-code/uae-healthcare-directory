@@ -226,7 +226,7 @@ export default async function DirectoryHomePage() {
                   providerCount={cityCountMap[city.slug] ?? 0}
                   regulator={regulator}
                   size={isLarge ? "lg" : "md"}
-                  priority={idx < 2}
+                  priority={false}
                 />
               </div>
             );
@@ -248,7 +248,7 @@ export default async function DirectoryHomePage() {
             </div>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">
-            {featured.map((p, i) => {
+            {featured.map((p) => {
               const cat = categories.find((c) => c.slug === p.categorySlug);
               return (
                 <ProviderCardV2
@@ -266,7 +266,7 @@ export default async function DirectoryHomePage() {
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
-                  priority={i < 4}
+                  priority={false}
                 />
               );
             })}

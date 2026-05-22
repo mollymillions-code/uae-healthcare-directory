@@ -72,18 +72,21 @@ export function DesktopNav({
         ))}
         <Link
           href="/directory"
+          prefetch={false}
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           UAE Healthcare Directory
         </Link>
         <Link
           href="/intelligence"
+          prefetch={false}
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           Intelligence
         </Link>
         <Link
           href="/research"
+          prefetch={false}
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
         >
           Research
@@ -95,6 +98,7 @@ export function DesktopNav({
         {sessionStatus === "authenticated" ? (
           <Link
             href="/account"
+            prefetch={false}
             className="inline-flex items-center gap-1.5 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg px-2 py-2"
           >
             <User className="h-4 w-4" strokeWidth={2} />
@@ -103,6 +107,7 @@ export function DesktopNav({
         ) : (
           <Link
             href="/login"
+            prefetch={false}
             className="font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg px-2 py-2"
           >
             Sign in
@@ -110,6 +115,7 @@ export function DesktopNav({
         )}
         <Link
           href="/book-a-demo"
+          prefetch={false}
           className="group relative z-0 inline-flex items-center justify-center overflow-hidden rounded-full bg-[#0a0a0a] px-6 py-2.5 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-white transition-all duration-500 hover:text-[#004a1c] hover:shadow-[0_0_32px_rgba(0,104,40,0.45)]"
           style={{
             "--spread": "90deg",

@@ -1558,6 +1558,54 @@ export async function getProviderCountByCategoryAndCity(categorySlug: string, ci
   return count;
 }
 
+export async function getProviderCountsByCategoryAndCity(
+  citySlug: string,
+  categorySlugs: string[]
+): Promise<Record<string, number>> {
+  const canonicalSlugs = Array.from(new Set(categorySlugs.map(canonicalizeCategorySlug)));
+  const zeroes = Object.fromEntries(canonicalSlugs.map((slug) => [slug, 0]));
+
+  if (!HAS_DB) {
+    loadFallback();
+    return Object.fromEntries(
+      canonicalSlugs.map((slug) => [
+        slug,
+        (fallbackByCityCategory!.get(`${citySlug}:${slug}`) || []).length,
+      ])
+    );
+  }
+
+  const cacheKey = `counts:cat-city:${citySlug}:${canonicalSlugs.join(",")}`;
+  const cached = getCached<Record<string, number>>(cacheKey);
+  if (cached) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const sql = _sql!;
+  const conditions = [_eq!(t.citySlug, citySlug)];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const rows = await _db!
+    .select({
+      categorySlug: t.categorySlug,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(t)
+    .where(_and!(...conditions))
+    .groupBy(t.categorySlug);
+
+  const counts: Record<string, number> = { ...zeroes };
+  for (const row of rows) {
+    const slug = canonicalizeCategorySlug(row.categorySlug);
+    if (slug in counts) counts[slug] += Number(row.count ?? 0);
+  }
+
+  setCache(cacheKey, counts);
+  return counts;
+}
+
 export async function getProviderCountByCategory(categorySlug: string): Promise<number> {
   const canonicalCategorySlug = canonicalizeCategorySlug(categorySlug);
   if (!HAS_DB) {
@@ -1593,6 +1641,54 @@ export async function getProviderCountByAreaAndCity(areaSlug: string, citySlug: 
   const count = await dbCountProviders({ areaSlug, citySlug });
   setCache(cacheKey, count);
   return count;
+}
+
+export async function getProviderCountsByAreaAndCity(
+  citySlug: string,
+  areaSlugs: string[]
+): Promise<Record<string, number>> {
+  const slugs = Array.from(new Set(areaSlugs.filter(Boolean)));
+  const zeroes = Object.fromEntries(slugs.map((slug) => [slug, 0]));
+
+  if (!HAS_DB) {
+    loadFallback();
+    return Object.fromEntries(
+      slugs.map((slug) => [
+        slug,
+        (fallbackByCityArea!.get(`${citySlug}:${slug}`) || []).length,
+      ])
+    );
+  }
+
+  const cacheKey = `counts:area-city:${citySlug}:${slugs.join(",")}`;
+  const cached = getCached<Record<string, number>>(cacheKey);
+  if (cached) return cached;
+
+  await ensureDbModules();
+  const t = _providersTable!;
+  const sql = _sql!;
+  const conditions = [_eq!(t.citySlug, citySlug)];
+  if (REMOVED_PROVIDER_SLUGS.length > 0) {
+    conditions.push(_notInArray!(t.slug, REMOVED_PROVIDER_SLUGS));
+  }
+
+  const rows = await _db!
+    .select({
+      areaSlug: t.areaSlug,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(t)
+    .where(_and!(...conditions))
+    .groupBy(t.areaSlug);
+
+  const counts: Record<string, number> = { ...zeroes };
+  for (const row of rows) {
+    const slug = row.areaSlug;
+    if (slug && slug in counts) counts[slug] += Number(row.count ?? 0);
+  }
+
+  setCache(cacheKey, counts);
+  return counts;
 }
 
 export async function getTopRatedProviders(citySlug?: string, limit = 5): Promise<LocalProvider[]> {

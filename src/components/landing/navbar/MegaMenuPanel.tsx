@@ -31,6 +31,7 @@ export function MegaMenuPanel({
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     onClick={onClose}
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors ${
                       active
@@ -56,6 +57,7 @@ export function MegaMenuPanel({
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     onClick={onClose}
                     className={`block px-3 py-2.5 rounded-lg transition-colors ${
                       active ? "bg-[#006828]/10" : "hover:bg-[#006828]/5"
@@ -103,6 +105,7 @@ export function MegaMenuPanel({
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     onClick={onClose}
                     className={`block px-4 py-4 rounded-xl border transition-colors ${
                       active
@@ -157,6 +160,7 @@ export function MegaMenuPanel({
                   <Link
                     key={link.label}
                     href={link.href}
+                    prefetch={false}
                     onClick={onClose}
                     className="block px-3 py-2.5 rounded-lg hover:bg-[#006828]/5 transition-colors"
                   >

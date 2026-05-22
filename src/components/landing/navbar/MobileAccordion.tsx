@@ -97,6 +97,7 @@ export function MobileAccordion({
                 ) : item.href ? (
                   <Link
                     href={item.href}
+                    prefetch={false}
                     onClick={onClose}
                     className={`block py-2 px-3 rounded-lg font-['Geist',sans-serif] font-medium text-sm ${
                       pathname === item.href

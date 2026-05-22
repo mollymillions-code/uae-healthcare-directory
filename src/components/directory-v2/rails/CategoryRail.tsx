@@ -196,6 +196,7 @@ export function CategoryRail({ items, activeSlug, className, onSelect }: Categor
             <Link
               key={item.slug}
               href={item.href}
+              prefetch={false}
               className={chipClass}
               style={{ scrollSnapAlign: "start" }}
               aria-current={isActive ? "page" : undefined}

@@ -199,6 +199,7 @@ export function ProviderCardV2(p: ProviderCardV2Props) {
           remain clickable. aria-label provides the accessible name. */}
       <Link
         href={href}
+        prefetch={false}
         aria-label={`View ${p.name}`}
         className="absolute inset-0 z-10 rounded-z-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-deep focus:outline-none"
       >

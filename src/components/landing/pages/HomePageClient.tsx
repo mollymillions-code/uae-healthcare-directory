@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { ImageWithFallback } from "@/components/landing/ImageWithFallback";
+import Image from "next/image";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/landing/AnimatedSection";
 import { Timeline } from "@/components/landing/Timeline";
 import { LogoBar } from "@/components/landing/LogoBar";
@@ -13,11 +13,63 @@ import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { trackEvent } from "@/lib/gtag";
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setMatches(media.matches);
+
+    update();
+    media.addEventListener("change", update);
+
+    return () => media.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+}
+
+function useNearViewport<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    if (shouldLoad) return;
+
+    const node = ref.current;
+    if (!node) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldLoad(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [shouldLoad]);
+
+  return [ref, shouldLoad] as const;
+}
+
 export function HomePageClient() {
   const [activeTab, setActiveTab] = useState(0);
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const marqueeContainerRef = useRef<HTMLDivElement>(null);
-  const tweenRef = useRef<{ kill: () => void; pause: () => void; play: () => void } | null>(null);
+  const [dashboardRef, shouldLoadDashboard] = useNearViewport<HTMLDivElement>();
+  const [tabImageRef, shouldLoadTabImage] = useNearViewport<HTMLDivElement>();
+  const shouldRenderClientLogos = useMediaQuery("(min-width: 640px)");
+  const shouldRenderDesktopHero = useMediaQuery("(min-width: 1024px)");
+  const shouldRenderNonCriticalMedia = useMediaQuery("(min-width: 640px)");
+  const tickerStyle = { "--ticker-duration": "35s" } as CSSProperties;
 
   const clientLogos = useMemo(() => {
     const base = [
@@ -38,31 +90,6 @@ export function HomePageClient() {
     []
   );
 
-  useEffect(() => {
-    if (!marqueeRef.current) return;
-    const container = marqueeContainerRef.current;
-    const handleMouseEnter = () => tweenRef.current?.pause();
-    const handleMouseLeave = () => tweenRef.current?.play();
-
-    (async () => {
-      const { default: gsap } = await import("gsap");
-      tweenRef.current = gsap.to(marqueeRef.current, {
-        xPercent: -50,
-        duration: 35,
-        ease: "none",
-        repeat: -1,
-      });
-      container?.addEventListener("mouseenter", handleMouseEnter);
-      container?.addEventListener("mouseleave", handleMouseLeave);
-    })();
-
-    return () => {
-      tweenRef.current?.kill();
-      container?.removeEventListener("mouseenter", handleMouseEnter);
-      container?.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
   return (
     <div className="bg-[#f8f8f6] min-h-screen overflow-hidden">
       {/* Hero */}
@@ -73,7 +100,7 @@ export function HomePageClient() {
 
         <div className="max-w-[1400px] mx-auto relative">
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-            <AnimatedSection className="flex-1 text-center lg:text-left z-10" direction="left">
+            <AnimatedSection className="flex-1 text-center lg:text-left z-10" direction="none">
               <div className="inline-flex items-center gap-2 bg-[#006828]/[0.08] rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#006828]" />
                 <span className="font-['Geist',sans-serif] font-medium text-[#006828] text-sm">
@@ -84,7 +111,11 @@ export function HomePageClient() {
                 Keep your schedule full with{" "}
                 <span className="text-[#006828]">AI patient operations</span>
               </h1>
-              <p className="font-['Geist',sans-serif] font-medium text-base sm:text-lg text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
+              <p className="font-['Geist',sans-serif] font-medium text-base text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 sm:hidden">
+                Zavis helps UAE clinics respond faster, book more visits,
+                recover missed calls, and bring patients back for follow-up.
+              </p>
+              <p className="hidden sm:block font-['Geist',sans-serif] font-medium text-lg text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
                 Zavis helps UAE clinics respond faster, book more visits,
                 recover missed calls, send reminders, collect payments, and
                 bring patients back for follow-up. Your team gets one place
@@ -105,22 +136,32 @@ export function HomePageClient() {
               </div>
             </AnimatedSection>
 
-            <AnimatedSection className="flex-1 relative" direction="right">
-              <div className="relative">
+            <AnimatedSection className="hidden lg:block flex-1 relative min-h-[420px]" direction="none">
+              <div className="relative min-h-[420px]">
                 <div className="absolute -inset-4 bg-gradient-to-br from-[#006828]/10 via-transparent to-[#006828]/5 rounded-[40px] blur-xl" />
-                <div className="relative rounded-2xl lg:rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-black/10">
-                  <ImageWithFallback
-                    src="/assets/hero-platform-graphic.webp"
-                    alt="Doctor in clinic reviewing Zavis patient inbox on laptop with floating chat and notification UI elements"
-                    className="w-full h-auto object-cover aspect-[4/3]"
-                    loading="eager"
-                  />
-                </div>
+                {shouldRenderDesktopHero ? (
+                  <div className="relative rounded-2xl lg:rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-black/10">
+                    <Image
+                      src="/assets/hero-platform-graphic.webp"
+                      alt="Doctor in clinic reviewing Zavis patient inbox on laptop with floating chat and notification UI elements"
+                      width={1600}
+                      height={873}
+                      className="w-full h-auto object-cover"
+                      sizes="680px"
+                      quality={65}
+                      loading="eager"
+                      fetchPriority="high"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative h-[420px] rounded-[32px] bg-white/70 ring-1 ring-black/10 shadow-2xl" aria-hidden="true" />
+                )}
               </div>
             </AnimatedSection>
           </div>
 
           {/* Client Logo Ticker */}
+          {shouldRenderClientLogos ? (
           <div className="mt-16 lg:mt-24 bg-white/60 rounded-2xl sm:rounded-3xl border border-black/[0.06] py-8 sm:py-10 px-6">
             <p className="text-center font-['Bricolage_Grotesque',sans-serif] font-medium text-sm sm:text-base text-[#1c1c1c] tracking-tight mb-2">
               Built for UAE private healthcare teams
@@ -129,26 +170,32 @@ export function HomePageClient() {
               Dental, dermatology, aesthetics, wellness, and multi-specialty clinics
             </p>
             <div
-              ref={marqueeContainerRef}
               className="relative overflow-hidden max-w-[760px] mx-auto"
               style={{
                 maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
                 WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
               }}
             >
-              <div ref={marqueeRef} className="flex items-center gap-12 sm:gap-16 w-max">
+              <div className="flex items-center gap-12 sm:gap-16 w-max animate-ticker" style={tickerStyle}>
                 {clientLogos.map((logo) => (
-                  <img
+                  <Image
                     key={logo.key}
                     src={logo.src}
                     alt={logo.name}
+                    width={120}
+                    height={48}
+                    sizes="(max-width: 640px) 80px, 120px"
                     className="h-9 sm:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
                     draggable={false}
+                    loading="lazy"
+                    fetchPriority="low"
+                    quality={65}
                   />
                 ))}
               </div>
             </div>
           </div>
+          ) : null}
         </div>
       </section>
 
@@ -168,12 +215,22 @@ export function HomePageClient() {
         <div className="max-w-[1100px] mx-auto">
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-b from-black/20 to-black/5 rounded-3xl sm:rounded-[28px] blur-sm" />
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden ring-1 ring-black/10 shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.25)]">
-              <ImageWithFallback
-                src="/assets/home-dashboard-preview.webp"
-                alt="Clinic manager viewing Zavis healthcare analytics dashboard with patient metrics on monitor"
-                className="w-full h-auto object-cover"
-              />
+            <div
+              ref={dashboardRef}
+              className="relative aspect-[1600/873] rounded-2xl sm:rounded-3xl overflow-hidden ring-1 ring-black/10 shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.25)] bg-[#eef3ee]"
+            >
+              {shouldRenderNonCriticalMedia && shouldLoadDashboard ? (
+                <Image
+                  src="/assets/home-dashboard-preview.webp"
+                  alt="Clinic manager viewing Zavis healthcare analytics dashboard with patient metrics on monitor"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 1100px"
+                  quality={65}
+                  loading="lazy"
+                  fetchPriority="low"
+                />
+              ) : null}
             </div>
           </div>
         </div>
@@ -306,12 +363,24 @@ export function HomePageClient() {
                   ))}
                 </div>
               </div>
-              <div className="lg:w-[50%] bg-gradient-to-br from-[#f8f9f4] to-[#f0f2ec] overflow-hidden border-t lg:border-t-0 lg:border-l border-black/[0.06] flex items-center justify-center">
-                <ImageWithFallback
-                  src={homeTabContent[activeTab].image}
-                  alt={homeTabContent[activeTab].imageAlt}
-                  className="w-full h-full object-cover min-h-[240px] sm:min-h-[300px]"
-                />
+              <div
+                ref={tabImageRef}
+                className="lg:w-[50%] bg-gradient-to-br from-[#f8f9f4] to-[#f0f2ec] overflow-hidden border-t lg:border-t-0 lg:border-l border-black/[0.06] flex items-center justify-center"
+              >
+                <div className="relative w-full min-h-[240px] sm:min-h-[300px]">
+                  {shouldRenderNonCriticalMedia && shouldLoadTabImage ? (
+                    <Image
+                      src={homeTabContent[activeTab].image}
+                      alt={homeTabContent[activeTab].imageAlt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 600px"
+                      loading="lazy"
+                      fetchPriority="low"
+                      quality={65}
+                      className="object-cover"
+                    />
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>

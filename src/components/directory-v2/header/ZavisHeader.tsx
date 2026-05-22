@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CITIES } from "@/lib/constants/cities";
 import { COUNTRIES } from "@/lib/constants/countries";
 import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
 import { SearchPillModal } from "./SearchPillModal";
-import { fade, tStandard } from "../shared/motion";
 import { cn } from "../shared/cn";
 import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
 
@@ -109,11 +107,17 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
 
   // Sticky pill visibility: if hero has its own pill, show header pill only
   // after user scrolls past the hero. Otherwise, always show the compact pill.
-  const { scrollY } = useScroll();
   const [pillVisible, setPillVisible] = useState(!heroHasPill);
-  useMotionValueEvent(scrollY, "change", (y) => {
-    setPillVisible(heroHasPill ? y > 280 : true);
-  });
+  useEffect(() => {
+    if (!heroHasPill) {
+      setPillVisible(true);
+      return;
+    }
+    const update = () => setPillVisible(window.scrollY > 280);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, [heroHasPill]);
 
   // Search state shared between header pill and modal
   const [searchState, setSearchState] = useState<SearchPillState>({
@@ -171,7 +175,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
             {/* Left — Brand. Both pieces are text so they share the same
                 font baseline (the previous SVG-image + text combination
                 had a visible vertical-alignment mismatch). */}
-            <Link href={directoryHome} className="flex items-baseline gap-2.5 flex-shrink-0">
+            <Link href={directoryHome} prefetch={false} className="flex items-baseline gap-2.5 flex-shrink-0">
               <span
                 aria-label="Zavis"
                 className="font-['Bricolage_Grotesque',sans-serif] text-[24px] font-semibold tracking-[-0.02em] text-ink leading-none"
@@ -185,27 +189,18 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
 
             {/* Center — compact SearchPill (desktop) */}
             <div className="hidden md:flex flex-1 justify-center">
-              <AnimatePresence mode="wait">
-                {pillVisible ? (
-                  <motion.div
-                    key="pill"
-                    variants={fade}
-                    initial="hidden"
-                    animate="show"
-                    exit="exit"
-                    transition={tStandard}
-                  >
-                    <SearchPill
-                      variant="compact"
-                      state={searchState}
-                      onSegmentClick={(seg) => handleSearchIntent(seg)}
-                      onSubmit={() => handleSearchIntent("query")}
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div key="pill-spacer" className="h-12" />
-                )}
-              </AnimatePresence>
+              {pillVisible ? (
+                <div key="pill" className="animate-fade-up">
+                  <SearchPill
+                    variant="compact"
+                    state={searchState}
+                    onSegmentClick={(seg) => handleSearchIntent(seg)}
+                    onSubmit={() => handleSearchIntent("query")}
+                  />
+                </div>
+              ) : (
+                <div key="pill-spacer" className="h-12" />
+              )}
             </div>
 
             {/* Right — CTAs */}
@@ -213,6 +208,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               {arabicHref && (
                 <Link
                   href={arabicHref}
+                  prefetch={false}
                   className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast"
                 >
                   {pathname.startsWith("/ar") ? "EN" : "عربي"}
@@ -220,18 +216,21 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               )}
               <Link
                 href="/tools"
+                prefetch={false}
                 className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
               >
                 Free tools
               </Link>
               <Link
                 href="/jobs"
+                prefetch={false}
                 className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
               >
                 Jobs
               </Link>
               <Link
                 href="/claim"
+                prefetch={false}
                 className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
               >
                 Claim your listing
@@ -239,6 +238,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               {sessionStatus === "authenticated" ? (
                 <Link
                   href="/account"
+                  prefetch={false}
                   className="inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
                 >
                   <User className="h-4 w-4" strokeWidth={2} />
@@ -247,6 +247,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               ) : (
                 <Link
                   href={`${pathname}?auth=login`}
+                  prefetch={false}
                   scroll={false}
                   replace
                   className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
@@ -295,6 +296,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                     <Link
                       key={link.href}
                       href={link.href}
+                      prefetch={false}
                       className={cn(
                         "px-3 py-1.5 font-sans text-z-body-sm whitespace-nowrap transition-colors duration-z-fast",
                         isActive ? "text-ink font-semibold" : "text-ink-soft hover:text-ink"
@@ -312,6 +314,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                     <Link
                       key={link.href}
                       href={link.href}
+                      prefetch={false}
                       className={cn(
                         "px-3 py-1.5 font-sans text-z-body-sm whitespace-nowrap transition-colors duration-z-fast",
                         isActive ? "text-ink font-semibold" : "text-ink-soft hover:text-ink"
@@ -338,24 +341,15 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
       />
 
       {/* Mobile nav drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-sm"
-            variants={fade}
-            initial="hidden"
-            animate="show"
-            exit="exit"
-            onClick={() => setMobileOpen(false)}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        >
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-0 top-0 h-full w-[min(86vw,380px)] bg-white shadow-z-float flex flex-col"
           >
-            <motion.aside
-              onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 top-0 h-full w-[min(86vw,380px)] bg-white shadow-z-float flex flex-col"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={tStandard}
-            >
               <div className="flex items-center justify-between px-6 py-5 border-b border-ink-line">
                 <span className="font-display font-semibold text-ink text-z-h3">Menu</span>
                 <button
@@ -377,6 +371,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                       <Link
                         key={city.slug}
                         href={countryCtx ? `/${countryCtx.code}/directory/${city.slug}` : `/directory/${city.slug}`}
+                        prefetch={false}
                         className="font-sans text-z-body text-ink py-1.5"
                       >
                         {city.name}
@@ -393,20 +388,22 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                       <Link
                         key={link.href}
                         href={link.href}
+                        prefetch={false}
                         className="font-sans text-z-body text-ink py-2"
                       >
                         {link.label}
                       </Link>
                     ))}
-                    <Link href="/pharmacy" className="font-sans text-z-body text-ink py-2">Pharmacy</Link>
-                    <Link href="/conditions" className="font-sans text-z-body text-ink py-2">Conditions</Link>
-                    <Link href="/verified-reviews" className="font-sans text-z-body text-ink py-2">Verified Reviews</Link>
+                    <Link href="/pharmacy" prefetch={false} className="font-sans text-z-body text-ink py-2">Pharmacy</Link>
+                    <Link href="/conditions" prefetch={false} className="font-sans text-z-body text-ink py-2">Conditions</Link>
+                    <Link href="/verified-reviews" prefetch={false} className="font-sans text-z-body text-ink py-2">Verified Reviews</Link>
                   </div>
                 </section>
               </nav>
               <div className="border-t border-ink-line px-6 py-5 space-y-3">
                 <Link
                   href="/claim"
+                  prefetch={false}
                   className="block text-center bg-accent hover:bg-accent-dark text-white font-sans font-semibold text-z-body-sm py-3 rounded-z-pill transition-colors"
                 >
                   Claim your listing
@@ -414,6 +411,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 {sessionStatus === "authenticated" ? (
                   <Link
                     href="/account"
+                    prefetch={false}
                     className="flex items-center justify-center gap-2 font-sans font-medium text-ink-soft hover:text-ink py-2"
                   >
                     <User className="h-4 w-4" strokeWidth={2} />
@@ -422,6 +420,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 ) : (
                   <Link
                     href={`${pathname}?auth=login`}
+                    prefetch={false}
                     scroll={false}
                     replace
                     onClick={() => setMobileOpen(false)}
@@ -433,16 +432,16 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 {arabicHref && (
                   <Link
                     href={arabicHref}
+                    prefetch={false}
                     className="block text-center font-sans font-medium text-ink-soft py-2"
                   >
                     {pathname.startsWith("/ar") ? "Switch to English" : "Switch to عربي"}
                   </Link>
                 )}
               </div>
-            </motion.aside>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </aside>
+        </div>
+      )}
     </>
   );
 }

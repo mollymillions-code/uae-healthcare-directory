@@ -307,7 +307,7 @@ export async function GccDirectoryHome({
                   providerCount={count}
                   regulator={`${regulatorShort} Verified`}
                   size={isLarge ? "lg" : "md"}
-                  priority={idx < 2}
+                  priority={idx === 0}
                 />
               </div>
             );
@@ -776,7 +776,7 @@ export async function GccCityPage({
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
                   basePath={countryDirectoryBasePath(country.code)}
-                  priority={i < 4}
+                  priority={i === 0}
                 />
               );
             })}

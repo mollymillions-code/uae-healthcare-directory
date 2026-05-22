@@ -123,14 +123,26 @@ ShimmerButton.displayName = "ShimmerButton";
 
 export type ShimmerLinkProps = ShimmerSharedProps & {
   href: string;
+  prefetch?: boolean;
   className?: string;
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 export const ShimmerLink = React.forwardRef<HTMLAnchorElement, ShimmerLinkProps>(
-  ({ shimmerColor, shimmerSize, borderRadius, shimmerDuration, background, className, children, ...props }, ref) => (
+  ({
+    shimmerColor,
+    shimmerSize,
+    borderRadius,
+    shimmerDuration,
+    background,
+    className,
+    children,
+    prefetch = false,
+    ...props
+  }, ref) => (
     <Link
+      prefetch={prefetch}
       style={shimmerVars({ shimmerColor, shimmerSize, borderRadius, shimmerDuration, background })}
       className={cn(shimmerClass, "text-white px-6 py-3", className)}
       ref={ref}

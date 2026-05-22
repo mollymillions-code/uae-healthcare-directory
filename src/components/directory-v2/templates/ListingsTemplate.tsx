@@ -228,7 +228,7 @@ export function ListingsTemplate({
                   operatingHours={p.operatingHours ?? null}
                   accessibilityOptions={p.accessibilityOptions ?? null}
                   basePath={providerBasePath}
-                  priority={i < 4}
+                  priority={i === 0}
                 />
               ))}
             </div>

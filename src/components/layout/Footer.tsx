@@ -51,6 +51,7 @@ export function Footer() {
         <div>
           <Link
             href={countryCtx ? `/${countryCtx.code}/directory` : "/directory"}
+            prefetch={false}
             className="inline-flex rounded font-['Bricolage_Grotesque',sans-serif] text-3xl font-semibold text-[#1c1c1c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fbf7f2]"
           >
             zavis<span className="text-[#006828]">.</span>
@@ -86,7 +87,7 @@ export function Footer() {
             <ul className="space-y-1 font-['Geist',sans-serif]">
               {footerCities.map((city) => (
                 <li key={city.slug}>
-                  <Link href={`${cityLinkPrefix}/${city.slug}`} className={videoFooterLinkClass}>
+                  <Link href={`${cityLinkPrefix}/${city.slug}`} prefetch={false} className={videoFooterLinkClass}>
                     {city.name}
                   </Link>
                 </li>
@@ -96,22 +97,22 @@ export function Footer() {
           <nav aria-labelledby="footer-services-heading">
             <h3 id="footer-services-heading" className={videoFooterHeadingClass}>Services</h3>
             <ul className="space-y-1 font-['Geist',sans-serif]">
-              <li><Link href="/professionals" className={videoFooterLinkClass}>Healthcare Professionals</Link></li>
-              <li><Link href="/find-a-doctor" className={videoFooterLinkClass}>Find a Doctor</Link></li>
-              <li><Link href="/best/doctors" className={videoFooterLinkClass}>Best Doctors</Link></li>
-              <li><Link href="/workforce" className={videoFooterLinkClass}>Workforce Intelligence</Link></li>
-              <li><Link href="/labs" className={videoFooterLinkClass}>Labs &amp; Diagnostics</Link></li>
-              <li><Link href="/insurance" className={videoFooterLinkClass}>Insurance Navigator</Link></li>
-              <li><Link href="/pricing" className={videoFooterLinkClass}>Medical Pricing</Link></li>
-              <li><Link href="/ar" hrefLang="ar" lang="ar" className={videoFooterLinkClass}>النسخة العربية</Link></li>
+              <li><Link href="/professionals" prefetch={false} className={videoFooterLinkClass}>Healthcare Professionals</Link></li>
+              <li><Link href="/find-a-doctor" prefetch={false} className={videoFooterLinkClass}>Find a Doctor</Link></li>
+              <li><Link href="/best/doctors" prefetch={false} className={videoFooterLinkClass}>Best Doctors</Link></li>
+              <li><Link href="/workforce" prefetch={false} className={videoFooterLinkClass}>Workforce Intelligence</Link></li>
+              <li><Link href="/labs" prefetch={false} className={videoFooterLinkClass}>Labs &amp; Diagnostics</Link></li>
+              <li><Link href="/insurance" prefetch={false} className={videoFooterLinkClass}>Insurance Navigator</Link></li>
+              <li><Link href="/pricing" prefetch={false} className={videoFooterLinkClass}>Medical Pricing</Link></li>
+              <li><Link href="/ar" prefetch={false} hrefLang="ar" lang="ar" className={videoFooterLinkClass}>النسخة العربية</Link></li>
             </ul>
           </nav>
           <nav aria-labelledby="footer-directory-heading">
             <h3 id="footer-directory-heading" className={videoFooterHeadingClass}>Directory</h3>
             <ul className="space-y-1 font-['Geist',sans-serif]">
-              <li><Link href="/find-a-doctor" className={videoFooterLinkClass}>Find a Doctor</Link></li>
-              <li><Link href="/directory/dubai/top/hospitals" className={videoFooterLinkClass}>Top Rated</Link></li>
-              <li><Link href="/tools" className={videoFooterLinkClass}>Free Tools for Clinics</Link></li>
+              <li><Link href="/find-a-doctor" prefetch={false} className={videoFooterLinkClass}>Find a Doctor</Link></li>
+              <li><Link href="/directory/dubai/top/hospitals" prefetch={false} className={videoFooterLinkClass}>Top Rated</Link></li>
+              <li><Link href="/tools" prefetch={false} className={videoFooterLinkClass}>Free Tools for Clinics</Link></li>
               <li>
                 <OwnerWhatsappCta
                   action="get_listed"
@@ -121,11 +122,11 @@ export function Footer() {
                   className="!text-black/55 hover:!text-[#006828] text-sm"
                 />
               </li>
-              <li><Link href="/verified-reviews" className={videoFooterLinkClass}>Verified Reviews</Link></li>
-              <li><Link href="/about" className={videoFooterLinkClass}>About</Link></li>
-              <li><Link href="/accessibility" className={videoFooterLinkClass}>Accessibility</Link></li>
-              <li><Link href="/privacy-policy" className={videoFooterLinkClass}>Privacy Policy</Link></li>
-              <li><Link href="/terms" className={videoFooterLinkClass}>Terms of Service</Link></li>
+              <li><Link href="/verified-reviews" prefetch={false} className={videoFooterLinkClass}>Verified Reviews</Link></li>
+              <li><Link href="/about" prefetch={false} className={videoFooterLinkClass}>About</Link></li>
+              <li><Link href="/accessibility" prefetch={false} className={videoFooterLinkClass}>Accessibility</Link></li>
+              <li><Link href="/privacy-policy" prefetch={false} className={videoFooterLinkClass}>Privacy Policy</Link></li>
+              <li><Link href="/terms" prefetch={false} className={videoFooterLinkClass}>Terms of Service</Link></li>
             </ul>
           </nav>
           <section aria-labelledby="footer-sources-heading">
@@ -139,13 +140,13 @@ export function Footer() {
           <nav aria-labelledby="footer-insights-heading">
             <h3 id="footer-insights-heading" className={videoFooterHeadingClass}>Insights</h3>
             <ul className="space-y-1 font-['Geist',sans-serif]">
-              <li><Link href="/intelligence" className={videoFooterLinkClass}>Industry Insights</Link></li>
-              <li><Link href="/intelligence/reports" className={videoFooterLinkClass}>Intelligence Reports</Link></li>
-              <li><Link href="/intelligence/press" className={videoFooterLinkClass}>Press Room</Link></li>
-              <li><Link href="/intelligence/author" className={videoFooterLinkClass}>Masthead</Link></li>
-              <li><Link href="/research" className={videoFooterLinkClass}>Research Reports</Link></li>
+              <li><Link href="/intelligence" prefetch={false} className={videoFooterLinkClass}>Industry Insights</Link></li>
+              <li><Link href="/intelligence/reports" prefetch={false} className={videoFooterLinkClass}>Intelligence Reports</Link></li>
+              <li><Link href="/intelligence/press" prefetch={false} className={videoFooterLinkClass}>Press Room</Link></li>
+              <li><Link href="/intelligence/author" prefetch={false} className={videoFooterLinkClass}>Masthead</Link></li>
+              <li><Link href="/research" prefetch={false} className={videoFooterLinkClass}>Research Reports</Link></li>
               <li><span className={videoFooterMutedClass}>Newsletter</span></li>
-              <li><Link href="/intelligence/feed.xml" className={videoFooterLinkClass}>RSS Feed</Link></li>
+              <li><Link href="/intelligence/feed.xml" prefetch={false} className={videoFooterLinkClass}>RSS Feed</Link></li>
             </ul>
           </nav>
         </div>
@@ -155,19 +156,19 @@ export function Footer() {
             Editorial Trust &amp; Transparency
           </h3>
           <div className="flex flex-wrap gap-x-5 gap-y-2 font-['Geist',sans-serif]">
-            <Link href="/editorial-policy" className={videoFooterLinkClass}>
+            <Link href="/editorial-policy" prefetch={false} className={videoFooterLinkClass}>
               Editorial Policy
             </Link>
-            <Link href="/methodology" className={videoFooterLinkClass}>
+            <Link href="/methodology" prefetch={false} className={videoFooterLinkClass}>
               Methodology
             </Link>
-            <Link href="/data-sources" className={videoFooterLinkClass}>
+            <Link href="/data-sources" prefetch={false} className={videoFooterLinkClass}>
               Data Sources
             </Link>
-            <Link href="/about/corrections" className={videoFooterLinkClass}>
+            <Link href="/about/corrections" prefetch={false} className={videoFooterLinkClass}>
               Corrections Policy
             </Link>
-            <Link href="/intelligence/author" className={videoFooterLinkClass}>
+            <Link href="/intelligence/author" prefetch={false} className={videoFooterLinkClass}>
               Masthead
             </Link>
           </div>
@@ -178,22 +179,22 @@ export function Footer() {
             Healthcare Directories Across the GCC &amp; Turkey
           </h3>
           <div className="flex flex-wrap gap-x-5 gap-y-2 font-['Geist',sans-serif]">
-            <Link href="/directory" className={videoFooterLinkClass}>
+            <Link href="/directory" prefetch={false} className={videoFooterLinkClass}>
               UAE Healthcare Directory
             </Link>
-            <Link href="/sa/directory" className={videoFooterLinkClass}>
+            <Link href="/sa/directory" prefetch={false} className={videoFooterLinkClass}>
               Saudi Arabia Healthcare Directory
             </Link>
-            <Link href="/qa/directory" className={videoFooterLinkClass}>
+            <Link href="/qa/directory" prefetch={false} className={videoFooterLinkClass}>
               Qatar Healthcare Directory
             </Link>
-            <Link href="/bh/directory" className={videoFooterLinkClass}>
+            <Link href="/bh/directory" prefetch={false} className={videoFooterLinkClass}>
               Bahrain Healthcare Directory
             </Link>
-            <Link href="/kw/directory" className={videoFooterLinkClass}>
+            <Link href="/kw/directory" prefetch={false} className={videoFooterLinkClass}>
               Kuwait Healthcare Directory
             </Link>
-            <Link href="/tr/directory" className={videoFooterLinkClass}>
+            <Link href="/tr/directory" prefetch={false} className={videoFooterLinkClass}>
               Turkey Healthcare Directory
             </Link>
           </div>

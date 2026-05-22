@@ -20,6 +20,7 @@ export function SpecialtyTile({ slug, name, href, providerCount, icon, useImage 
   return (
     <Link
       href={href}
+      prefetch={false}
       className={cn(
         "group relative block w-full rounded-z-md overflow-hidden bg-white border border-ink-line",
         "hover:shadow-z-card transition-shadow duration-z-base"
@@ -31,6 +32,7 @@ export function SpecialtyTile({ slug, name, href, providerCount, icon, useImage 
             src={`/images/categories/${slug}.webp`}
             alt={name}
             fill
+            quality={65}
             sizes="(max-width: 640px) 50vw, 25vw"
             className="object-cover group-hover:scale-[1.04] transition-transform duration-z-med ease-z-standard"
           />

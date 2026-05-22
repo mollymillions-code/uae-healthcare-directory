@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export const videoFooterHeadingClass =
   "mb-2 font-['Geist',sans-serif] text-[11px] font-semibold uppercase text-[#006828]";
@@ -26,6 +26,7 @@ type VideoFooterShellProps = {
 
 function FooterVideo({ className }: { className: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -47,6 +48,9 @@ function FooterVideo({ className }: { className: string }) {
     };
 
     const playVideo = () => {
+      if (!shouldLoad) {
+        return;
+      }
       prepareVideo();
       void video.play().catch(() => {
         // iOS can defer autoplay in low-power or constrained browser modes.
@@ -54,7 +58,17 @@ function FooterVideo({ className }: { className: string }) {
     };
 
     prepareVideo();
-    playVideo();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+    observer.observe(video);
 
     video.addEventListener("loadeddata", playVideo);
     video.addEventListener("canplay", playVideo);
@@ -62,31 +76,53 @@ function FooterVideo({ className }: { className: string }) {
     document.addEventListener("visibilitychange", playVideo);
 
     return () => {
+      observer.disconnect();
       video.removeEventListener("loadeddata", playVideo);
       video.removeEventListener("canplay", playVideo);
       window.removeEventListener("pageshow", playVideo);
       document.removeEventListener("visibilitychange", playVideo);
     };
-  }, []);
+  }, [shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldLoad) return;
+    video.load();
+    void video.play().catch(() => {
+      // iOS can defer autoplay in low-power or constrained browser modes.
+    });
+  }, [shouldLoad]);
 
   return (
-    <video
-      ref={videoRef}
-      aria-hidden="true"
-      className={`zavis-footer-video ${className}`}
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-      controls={false}
-      disablePictureInPicture
-      poster="/media/footer/zavis-footer-clinic-poster.jpg"
-      tabIndex={-1}
-    >
-      <source src="/media/footer/zavis-footer-clinic-loop.mp4" type="video/mp4" />
-      <source src="/media/footer/zavis-footer-clinic-loop.webm" type="video/webm" />
-    </video>
+    <>
+      {shouldLoad ? (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[url('/media/footer/zavis-footer-clinic-poster.jpg')] bg-cover bg-bottom"
+        />
+      ) : null}
+      <video
+        ref={videoRef}
+        aria-hidden="true"
+        className={`zavis-footer-video ${className}`}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload={shouldLoad ? "metadata" : "none"}
+        controls={false}
+        disablePictureInPicture
+        poster={shouldLoad ? "/media/footer/zavis-footer-clinic-poster.jpg" : undefined}
+        tabIndex={-1}
+      >
+        {shouldLoad ? (
+          <>
+            <source src="/media/footer/zavis-footer-clinic-loop.mp4" type="video/mp4" />
+            <source src="/media/footer/zavis-footer-clinic-loop.webm" type="video/webm" />
+          </>
+        ) : null}
+      </video>
+    </>
   );
 }
 
@@ -139,10 +175,6 @@ export function VideoFooterShell({
           />
 
           <div className={`relative -mt-16 overflow-hidden ${mediaHeightClass}`}>
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-[url('/media/footer/zavis-footer-clinic-poster.jpg')] bg-cover bg-bottom"
-            />
             <FooterVideo className="pointer-events-none absolute inset-0 h-full w-full object-cover object-bottom motion-reduce:hidden" />
             <div
               aria-hidden="true"
@@ -186,10 +218,6 @@ export function VideoFooterShell({
           <div className="mt-6 border-t border-black/10 pt-5">{bottom}</div>
         </div>
         <div className="relative min-h-[132px] flex-1 overflow-hidden border-t border-black/10 sm:min-h-[300px] lg:min-h-[360px]">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[url('/media/footer/zavis-footer-clinic-poster.jpg')] bg-cover bg-bottom"
-          />
           <FooterVideo className="pointer-events-none absolute inset-0 h-full w-full object-cover object-bottom motion-reduce:hidden" />
         </div>
       </div>

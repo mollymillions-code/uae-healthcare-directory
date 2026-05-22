@@ -1,13 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Check, Search as SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CITIES } from "@/lib/constants/cities";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { CONDITIONS } from "@/lib/constants/conditions";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
-import { scaleIn } from "../shared/motion";
 import { cn } from "../shared/cn";
 import type { SearchSegment } from "./SearchPill";
 
@@ -42,13 +40,7 @@ export function SegmentFlyout({ segment, value, onSelect }: SegmentFlyoutProps) 
     : items;
 
   return (
-    <motion.div
-      variants={scaleIn}
-      initial="hidden"
-      animate="show"
-      exit="exit"
-      className="w-[min(calc(100vw-2rem),420px)] max-h-[min(calc(100vh-12rem),460px)] bg-white rounded-z-lg shadow-z-float border border-ink-line overflow-hidden"
-    >
+    <div className="w-[min(calc(100vw-2rem),420px)] max-h-[min(calc(100vh-12rem),460px)] bg-white rounded-z-lg shadow-z-float border border-ink-line overflow-hidden animate-fade-up">
       <div className="p-3 border-b border-ink-line sticky top-0 bg-white z-10">
         <div className="flex items-center gap-2 bg-surface-cream rounded-z-pill px-4 py-2.5">
           <SearchIcon className="h-4 w-4 text-ink-muted" />
@@ -88,6 +80,6 @@ export function SegmentFlyout({ segment, value, onSelect }: SegmentFlyoutProps) 
           </ul>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

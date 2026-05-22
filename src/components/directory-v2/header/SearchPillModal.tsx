@@ -1,8 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fade, scaleIn } from "../shared/motion";
 import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
 import { SegmentFlyout } from "./SegmentFlyout";
 
@@ -43,67 +41,56 @@ export function SearchPillModal({
 
   // Local mirror of activeSegment lets us swap between segments without remount
   const [active, setActive] = useReactive(initialSegment ?? "specialty", open);
+  if (!open) return null;
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          key="search-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Search providers"
-          className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4"
-          variants={fade}
-          initial="hidden"
-          animate="show"
-          exit="exit"
-        >
-          {/* Scrim */}
-          <motion.button
-            type="button"
-            aria-label="Close search"
-            onClick={onClose}
-            className="absolute inset-0 bg-black/25 backdrop-blur-[6px]"
-            variants={fade}
+    <div
+      key="search-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search providers"
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4"
+    >
+      {/* Scrim */}
+      <button
+        type="button"
+        aria-label="Close search"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/25 backdrop-blur-[6px]"
+      />
+
+      {/* Content stack */}
+      <div className="relative flex w-full max-w-[calc(100vw-2rem)] flex-col items-center gap-4 sm:w-auto sm:max-w-none animate-fade-up">
+        <SearchPill
+          variant="expanded"
+          state={state}
+          activeSegment={active}
+          onSegmentClick={(seg) => setActive(seg)}
+          onSubmit={() => {
+            onSubmit();
+            onClose();
+          }}
+        />
+
+        {/* Flyout anchored below active segment — simple centered placement
+           works for desktop and avoids per-segment position math. */}
+        <div className="mt-1">
+          <SegmentFlyout
+            key={active}
+            segment={active}
+            value={state[active]}
+            onSelect={(v) => {
+              onChange({ ...state, [active]: v });
+              // Auto-advance to next segment for guided flow
+              const order: SearchSegment[] = ["specialty", "city", "condition", "insurance"];
+              const idx = order.indexOf(active);
+              if (idx < order.length - 1) setActive(order[idx + 1]);
+            }}
+            onClose={onClose}
           />
-
-          {/* Content stack */}
-          <motion.div
-            className="relative flex w-full max-w-[calc(100vw-2rem)] flex-col items-center gap-4 sm:w-auto sm:max-w-none"
-            variants={scaleIn}
-          >
-            <SearchPill
-              variant="expanded"
-              state={state}
-              activeSegment={active}
-              onSegmentClick={(seg) => setActive(seg)}
-              onSubmit={() => {
-                onSubmit();
-                onClose();
-              }}
-            />
-
-            {/* Flyout anchored below active segment — simple centered placement
-               works for desktop and avoids per-segment position math. */}
-            <div className="mt-1">
-              <SegmentFlyout
-                key={active}
-                segment={active}
-                value={state[active]}
-                onSelect={(v) => {
-                  onChange({ ...state, [active]: v });
-                  // Auto-advance to next segment for guided flow
-                  const order: SearchSegment[] = ["specialty", "city", "condition", "insurance"];
-                  const idx = order.indexOf(active);
-                  if (idx < order.length - 1) setActive(order[idx + 1]);
-                }}
-                onClose={onClose}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+      </div>
+    </div>
   );
 }
 
