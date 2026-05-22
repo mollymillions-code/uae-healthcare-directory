@@ -375,13 +375,15 @@ export function ProviderDetailTemplate({
           )}
         </section>
 
-        {/* Photo mosaic */}
-        <PhotoMosaic
-          photos={uniqPhotos}
-          alt={p.name}
-          priorityCount={0}
-          fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
-        />
+        {/* Photo mosaic: keep media out of the mobile critical paint path. */}
+        <div className="hidden sm:block">
+          <PhotoMosaic
+            photos={uniqPhotos}
+            alt={p.name}
+            priorityCount={0}
+            fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
+          />
+        </div>
 
         {p.isVerified && <VerifiedClinicTrustStrip className="mt-6" />}
 
@@ -429,6 +431,17 @@ export function ProviderDetailTemplate({
                 <p className="font-sans text-z-body text-ink leading-relaxed whitespace-pre-line">
                   {p.description || p.shortDescription}
                 </p>
+              </section>
+            )}
+
+            {uniqPhotos.length > 0 && (
+              <section className="pb-8 border-b border-ink-line sm:hidden" aria-label={`${p.name} photos`}>
+                <PhotoMosaic
+                  photos={uniqPhotos}
+                  alt={p.name}
+                  priorityCount={0}
+                  fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
+                />
               </section>
             )}
 
