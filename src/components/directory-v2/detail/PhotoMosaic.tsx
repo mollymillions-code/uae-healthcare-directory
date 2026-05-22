@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Grid3x3 } from "lucide-react";
 import { cn } from "../shared/cn";
 import { PhotoViewer } from "./PhotoViewer";
@@ -12,28 +12,66 @@ interface PhotoMosaicProps {
   priorityCount?: number;
   /** Fallback image when a photo fails to load (e.g. expired CDN URL). */
   fallbackSrc?: string;
+  /** Avoid creating image requests until the gallery is close to the viewport. */
+  deferUntilVisible?: boolean;
 }
 
 /**
  * 1 big + 4 small mosaic (2/3 + 2×2). Rounded corners on outer edges only,
  * 8px gutters. Click any tile → PhotoViewer modal with shared-element transition.
  */
-export function PhotoMosaic({ photos, alt, priorityCount = 1, fallbackSrc = "/images/placeholder-provider.svg" }: PhotoMosaicProps) {
+export function PhotoMosaic({
+  photos,
+  alt,
+  priorityCount = 1,
+  fallbackSrc = "/images/placeholder-provider.svg",
+  deferUntilVisible = false,
+}: PhotoMosaicProps) {
   const safe = photos.length > 0 ? photos.slice(0, 5) : [fallbackSrc];
   const hasRealPhotos = photos.length > 0;
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [shouldRenderImages, setShouldRenderImages] = useState(!deferUntilVisible);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [failed, setFailed] = useState<Record<number, boolean>>({});
   const [viewerStart, setViewerStart] = useState(0);
+
+  useEffect(() => {
+    if (!deferUntilVisible || shouldRenderImages) return;
+    const node = rootRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setShouldRenderImages(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldRenderImages(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "160px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [deferUntilVisible, shouldRenderImages]);
 
   const openAt = (i: number) => {
     setViewerStart(i);
     setViewerOpen(true);
   };
 
+  if (!shouldRenderImages) {
+    return (
+      <div ref={rootRef} className="relative w-full">
+        <div className="rounded-z-lg border border-ink-line bg-white/70 aspect-[5/3] md:aspect-[2/1]" />
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="relative w-full">
+      <div ref={rootRef} className="relative w-full">
         <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2 rounded-z-lg overflow-hidden aspect-[5/3] md:aspect-[2/1]">
           {/* Tile 0 — big */}
           <button

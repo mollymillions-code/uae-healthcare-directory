@@ -382,7 +382,7 @@ export function ProviderDetailTemplate({
           {/* Left column */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-8">
             {/* Hero block — type + licence strip */}
-            <section className="pb-8 border-b border-ink-line">
+            <section className="hidden pb-8 border-b border-ink-line sm:block">
               <h2 className="font-display font-semibold text-ink text-z-h1">
                 {categoryName ? `${categoryName} · ` : ""}
                 {cityName && `in ${cityName}`}
@@ -431,6 +431,7 @@ export function ProviderDetailTemplate({
                   alt={p.name}
                   priorityCount={0}
                   fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
+                  deferUntilVisible
                 />
               </section>
             )}
