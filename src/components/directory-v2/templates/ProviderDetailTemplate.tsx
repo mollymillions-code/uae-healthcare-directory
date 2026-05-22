@@ -6,7 +6,6 @@ import { DeferredStickyBottomBar } from "../detail/DeferredStickyBottomBar";
 import { HostCard } from "../detail/HostCard";
 import { AmenityGrid } from "../detail/AmenityGrid";
 import { ReviewDistribution } from "../detail/ReviewDistribution";
-import { DeferredProviderHeaderActions } from "../detail/DeferredProviderHeaderActions";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
@@ -292,16 +291,6 @@ export function ProviderDetailTemplate({
                   ))}
                 </nav>
               )}
-            </div>
-            <div className="hidden sm:block">
-              <DeferredProviderHeaderActions
-                providerId={p.id}
-                providerName={p.name}
-                providerSlug={p.slug}
-                citySlug={p.citySlug}
-                categorySlug={p.categorySlug}
-                cityName={cityName}
-              />
             </div>
           </header>
 

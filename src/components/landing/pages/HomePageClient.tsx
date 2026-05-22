@@ -9,7 +9,6 @@ import { LogoBar } from "@/components/landing/LogoBar";
 import { homeTabs, homeTabContent, platformPillars } from "@/data/landing/home";
 import { emrPartners, channelPartners } from "@/data/landing/brand-partners";
 import { ArrowRight, CheckCircle2, BadgeCheck, Users, ShieldCheck } from "lucide-react";
-import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import { trackEvent } from "@/lib/gtag";
 
@@ -67,7 +66,6 @@ export function HomePageClient() {
   const [dashboardRef, shouldLoadDashboard] = useNearViewport<HTMLDivElement>();
   const [tabImageRef, shouldLoadTabImage] = useNearViewport<HTMLDivElement>();
   const shouldRenderClientLogos = useMediaQuery("(min-width: 640px)");
-  const shouldRenderDesktopHero = useMediaQuery("(min-width: 1024px)");
   const shouldRenderNonCriticalMedia = useMediaQuery("(min-width: 640px)");
   const tickerStyle = { "--ticker-duration": "35s" } as CSSProperties;
 
@@ -92,112 +90,46 @@ export function HomePageClient() {
 
   return (
     <div className="bg-[#f8f8f6] min-h-screen overflow-hidden">
-      {/* Hero */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-16 lg:pb-28 overflow-hidden">
-        {/* Subtle decorative gradient */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#006828]/[0.04] via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-[#006828]/[0.03] via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-[1400px] mx-auto relative">
-          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-            <AnimatedSection className="flex-1 text-center lg:text-left z-10" direction="none">
-              <div className="inline-flex items-center gap-2 bg-[#006828]/[0.08] rounded-full px-4 py-1.5 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#006828]" />
-                <span className="font-['Geist',sans-serif] font-medium text-[#006828] text-sm">
-                  AI front desk for growing clinics
-                </span>
-              </div>
-              <h1 className="font-[system-ui,sans-serif] sm:font-display font-medium text-[34px] sm:text-[46px] lg:text-[60px] leading-[1.05] text-[#1c1c1c] tracking-[-0.04em] mb-6">
-                Keep your schedule full with{" "}
-                <span className="text-[#006828]">AI patient operations</span>
-              </h1>
-              <p className="font-['Geist',sans-serif] font-medium text-base text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 sm:hidden">
-                Zavis helps UAE clinics respond faster, book more visits,
-                recover missed calls, and bring patients back for follow-up.
+      {/* Client Logo Ticker */}
+      {shouldRenderClientLogos ? (
+        <section className="px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-[1400px] mx-auto">
+            <div className="mt-16 lg:mt-24 bg-white/60 rounded-2xl sm:rounded-3xl border border-black/[0.06] py-8 sm:py-10 px-6">
+              <p className="text-center font-['Bricolage_Grotesque',sans-serif] font-medium text-sm sm:text-base text-[#1c1c1c] tracking-tight mb-2">
+                Built for UAE private healthcare teams
               </p>
-              <p className="hidden sm:block font-['Geist',sans-serif] font-medium text-lg text-black/50 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
-                Zavis helps UAE clinics respond faster, book more visits,
-                recover missed calls, send reminders, collect payments, and
-                bring patients back for follow-up. Your team gets one place
-                to manage the work around every appointment.
+              <p className="text-center font-['Geist',sans-serif] text-xs text-black/40 mb-8">
+                Dental, dermatology, aesthetics, wellness, and multi-specialty clinics
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                <ShimmerLink
-                  href="/book-a-demo"
-                  className="px-8 sm:px-10 py-3.5 font-['Bricolage_Grotesque',sans-serif] font-medium gap-2 shadow-[0_0_24px_rgba(0,104,40,0.45)]"
-                  onClick={() => trackEvent("cta_click", { location: "hero" })}
-                >
-                  Book a Demo
-                  <ArrowRight className="w-4 h-4" />
-                </ShimmerLink>
-                <span className="font-['Geist',sans-serif] text-sm text-black/40">
-                  First workflow live in days, not months
-                </span>
-              </div>
-            </AnimatedSection>
-
-            <AnimatedSection className="hidden lg:block flex-1 relative min-h-[420px]" direction="none">
-              <div className="relative min-h-[420px]">
-                <div className="absolute -inset-4 bg-gradient-to-br from-[#006828]/10 via-transparent to-[#006828]/5 rounded-[40px] blur-xl" />
-                {shouldRenderDesktopHero ? (
-                  <div className="relative rounded-2xl lg:rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-black/10">
+              <div
+                className="relative overflow-hidden max-w-[760px] mx-auto"
+                style={{
+                  maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+                  WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+                }}
+              >
+                <div className="flex items-center gap-12 sm:gap-16 w-max animate-ticker" style={tickerStyle}>
+                  {clientLogos.map((logo) => (
                     <Image
-                      src="/assets/hero-platform-graphic.webp"
-                      alt="Doctor in clinic reviewing Zavis patient inbox on laptop with floating chat and notification UI elements"
-                      width={1600}
-                      height={873}
-                      className="w-full h-auto object-cover"
-                      sizes="680px"
+                      key={logo.key}
+                      src={logo.src}
+                      alt={logo.name}
+                      width={120}
+                      height={48}
+                      sizes="(max-width: 640px) 80px, 120px"
+                      className="h-9 sm:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
+                      draggable={false}
+                      loading="lazy"
+                      fetchPriority="low"
                       quality={65}
-                      loading="eager"
-                      fetchPriority="high"
                     />
-                  </div>
-                ) : (
-                  <div className="relative h-[420px] rounded-[32px] bg-white/70 ring-1 ring-black/10 shadow-2xl" aria-hidden="true" />
-                )}
-              </div>
-            </AnimatedSection>
-          </div>
-
-          {/* Client Logo Ticker */}
-          {shouldRenderClientLogos ? (
-          <div className="mt-16 lg:mt-24 bg-white/60 rounded-2xl sm:rounded-3xl border border-black/[0.06] py-8 sm:py-10 px-6">
-            <p className="text-center font-['Bricolage_Grotesque',sans-serif] font-medium text-sm sm:text-base text-[#1c1c1c] tracking-tight mb-2">
-              Built for UAE private healthcare teams
-            </p>
-            <p className="text-center font-['Geist',sans-serif] text-xs text-black/40 mb-8">
-              Dental, dermatology, aesthetics, wellness, and multi-specialty clinics
-            </p>
-            <div
-              className="relative overflow-hidden max-w-[760px] mx-auto"
-              style={{
-                maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-                WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-              }}
-            >
-              <div className="flex items-center gap-12 sm:gap-16 w-max animate-ticker" style={tickerStyle}>
-                {clientLogos.map((logo) => (
-                  <Image
-                    key={logo.key}
-                    src={logo.src}
-                    alt={logo.name}
-                    width={120}
-                    height={48}
-                    sizes="(max-width: 640px) 80px, 120px"
-                    className="h-9 sm:h-12 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
-                    draggable={false}
-                    loading="lazy"
-                    fetchPriority="low"
-                    quality={65}
-                  />
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-          ) : null}
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Integration Logo Bar */}
       {shouldRenderNonCriticalMedia ? (

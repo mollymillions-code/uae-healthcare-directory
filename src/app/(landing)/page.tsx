@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { HomePageClient } from "@/components/landing/pages/HomePageClient";
+import { HomePageHero } from "@/components/landing/pages/HomePageHero";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationSchema, websiteWithSearchSchema } from "@/lib/seo";
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function LandingHomePage() {
   return (
     <>
+      <HomePageHero />
       <HomePageClient />
       <JsonLd data={organizationSchema()} />
       <JsonLd data={websiteWithSearchSchema()} />
