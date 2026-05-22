@@ -87,7 +87,7 @@ export default function RootLayout({
   // AR routes. Googlebot still picks up the correct attributes
   // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable} ${bricolage.className}`}>
       <head>
         <link rel="dns-prefetch" href="https://places.googleapis.com" />
       </head>
