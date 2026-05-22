@@ -375,17 +375,7 @@ export function ProviderDetailTemplate({
           )}
         </section>
 
-        {/* Photo mosaic: keep media out of the mobile critical paint path. */}
-        <div className="hidden sm:block">
-          <PhotoMosaic
-            photos={uniqPhotos}
-            alt={p.name}
-            priorityCount={0}
-            fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
-          />
-        </div>
-
-        {p.isVerified && <VerifiedClinicTrustStrip className="mt-6" />}
+        {p.isVerified && <VerifiedClinicTrustStrip className="mt-6 hidden sm:block" />}
 
         {/* Two-column layout */}
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16" id="detail-grid">
@@ -435,7 +425,7 @@ export function ProviderDetailTemplate({
             )}
 
             {uniqPhotos.length > 0 && (
-              <section className="pb-8 border-b border-ink-line sm:hidden" aria-label={`${p.name} photos`}>
+              <section className="pb-8 border-b border-ink-line" aria-label={`${p.name} photos`}>
                 <PhotoMosaic
                   photos={uniqPhotos}
                   alt={p.name}
