@@ -223,11 +223,16 @@ export function ProviderDetailTemplate({
           {/* Title row */}
           <header className="flex items-start justify-between gap-6 mb-5">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                 <h1 className="font-[system-ui,sans-serif] sm:font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
                   {p.name}
                 </h1>
-                {p.isVerified && <VerifiedClinicBadge variant="hero" />}
+                {p.isVerified && (
+                  <>
+                    <VerifiedClinicBadge variant="inline" className="sm:hidden" />
+                    <VerifiedClinicBadge variant="hero" className="hidden sm:inline-flex" />
+                  </>
+                )}
               </div>
               <div className="mt-2 flex items-center gap-2 flex-wrap font-sans text-z-body-sm text-ink-soft">
                 {hasRating && (
@@ -290,14 +295,16 @@ export function ProviderDetailTemplate({
                 </nav>
               )}
             </div>
-            <DeferredProviderHeaderActions
-              providerId={p.id}
-              providerName={p.name}
-              providerSlug={p.slug}
-              citySlug={p.citySlug}
-              categorySlug={p.categorySlug}
-              cityName={cityName}
-            />
+            <div className="hidden sm:block">
+              <DeferredProviderHeaderActions
+                providerId={p.id}
+                providerName={p.name}
+                providerSlug={p.slug}
+                citySlug={p.citySlug}
+                categorySlug={p.categorySlug}
+                cityName={cityName}
+              />
+            </div>
           </header>
 
           {/* Mobile-first contact panel keeps conversion actions in the first viewport
