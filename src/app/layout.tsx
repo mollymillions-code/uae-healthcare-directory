@@ -21,7 +21,7 @@ const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-bricolage",
   display: "optional",
-  preload: true,
+  preload: false,
   weight: ["400", "500", "600", "700"],
 });
 
@@ -87,7 +87,7 @@ export default function RootLayout({
   // AR routes. Googlebot still picks up the correct attributes
   // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable} ${bricolage.className}`}>
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable}`}>
       <head>
         <link rel="dns-prefetch" href="https://places.googleapis.com" />
       </head>
