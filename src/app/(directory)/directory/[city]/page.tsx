@@ -164,14 +164,6 @@ export default async function CityPage(props: Props) {
 
   return (
     <>
-      <JsonLd data={breadcrumbSchema([
-        { name: "UAE", url: base },
-        { name: city.name, url: `${base}/directory/${city.slug}` },
-      ])} />
-      <JsonLd data={itemListSchema(`Top Healthcare Providers in ${city.name}`, featured, city.name, base)} />
-      <JsonLd data={speakableSchema([".answer-block"])} />
-      <JsonLd data={faqPageSchema(faqs)} />
-
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden bg-surface-cream">
         <div className="pointer-events-none absolute inset-0">
@@ -481,6 +473,14 @@ export default async function CityPage(props: Props) {
           <FaqSection faqs={faqs} />
         </div>
       </section>
+
+      <JsonLd data={breadcrumbSchema([
+        { name: "UAE", url: base },
+        { name: city.name, url: `${base}/directory/${city.slug}` },
+      ])} />
+      <JsonLd data={itemListSchema(`Top Healthcare Providers in ${city.name}`, featured, city.name, base)} />
+      <JsonLd data={speakableSchema([".answer-block"])} />
+      <JsonLd data={faqPageSchema(faqs)} />
     </>
   );
 }

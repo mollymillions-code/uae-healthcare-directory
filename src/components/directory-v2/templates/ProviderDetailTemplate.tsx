@@ -196,8 +196,6 @@ export function ProviderDetailTemplate({
 
   return (
     <>
-      {schemas}
-
       {/* Outer container — tight on mobile, generous on desktop */}
       <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         <div className="max-lg:flex max-lg:min-h-[calc(100svh-112px)] max-lg:flex-col max-lg:pb-6">
@@ -664,6 +662,8 @@ export function ProviderDetailTemplate({
         ctaHref={primaryCtaHref}
         ctaType={p.phone ? "call" : p.whatsapp ? "whatsapp" : p.website ? "website" : "claim_listing"}
       />
+
+      {schemas}
     </>
   );
 }
