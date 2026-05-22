@@ -225,7 +225,7 @@ export function ProviderDetailTemplate({
           <header className="flex items-start justify-between gap-6 mb-5">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
+                <h1 className="font-[system-ui,sans-serif] sm:font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
                   {p.name}
                 </h1>
                 {p.isVerified && <VerifiedClinicBadge variant="hero" />}

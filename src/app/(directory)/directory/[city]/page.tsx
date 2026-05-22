@@ -196,7 +196,7 @@ export default async function CityPage(props: Props) {
                 <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
                 {regulatorShort}
               </p>
-              <h1 className="font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
+              <h1 className="font-[system-ui,sans-serif] sm:font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
                 Healthcare in {city.name}.
               </h1>
               <p className="font-sans text-[15px] text-ink-soft mt-4 max-w-2xl leading-relaxed sm:hidden">
