@@ -165,9 +165,9 @@ function SignupForm() {
 
           <p className="mt-12 max-w-[440px] font-['Geist',sans-serif] text-[12px] leading-relaxed text-black/40 lg:mt-10">
             By creating an account you agree to the{" "}
-            <Link href="/terms" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">terms</Link>
+            <Link href="/terms-of-service" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">terms</Link>
             {" "}and{" "}
-            <Link href="/privacy" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">privacy policy</Link>.
+            <Link href="/privacy-policy" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">privacy policy</Link>.
             Are you a clinic? Manage your listing through the Zavis platform — provider sign-up is not on this directory.
           </p>
         </main>

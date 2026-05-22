@@ -790,11 +790,11 @@ function Step7Account({
           />
           <span>
             I accept the{" "}
-            <Link href="/terms" target="_blank" className="font-medium text-[#006828] underline-offset-2 hover:underline">
+            <Link href="/terms-of-service" target="_blank" className="font-medium text-[#006828] underline-offset-2 hover:underline">
               Zavis Terms
             </Link>{" "}
             and the{" "}
-            <Link href="/privacy" target="_blank" className="font-medium text-[#006828] underline-offset-2 hover:underline">
+            <Link href="/privacy-policy" target="_blank" className="font-medium text-[#006828] underline-offset-2 hover:underline">
               Privacy Policy
             </Link>
             .

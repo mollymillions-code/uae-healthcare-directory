@@ -1171,7 +1171,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: { languages: { en: `${baseUrl}/verified-reviews`, ar: `${baseUrl}/ar/verified-reviews` } },
     },
     { url: `${baseUrl}/privacy-policy`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/terms-of-service`, lastModified: LAST_CONTENT_UPDATE, changeFrequency: "monthly", priority: 0.3 },
   );
 
   // ─── Arabic Mirrors ─────────────────────────────────────────────────────────

@@ -353,9 +353,9 @@ function SignupInner({ redirect, onSwitch }: { redirect: string; onSwitch: () =>
 
       <p className="mt-4 border-t border-black/[0.06] pt-4 font-['Geist',sans-serif] text-[11px] leading-relaxed text-black/40">
         By creating an account you agree to the{" "}
-        <Link href="/terms" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">terms</Link>
+        <Link href="/terms-of-service" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">terms</Link>
         {" "}and{" "}
-        <Link href="/privacy" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">privacy policy</Link>.
+        <Link href="/privacy-policy" className="text-black/55 underline decoration-black/15 underline-offset-2 hover:text-black/70">privacy policy</Link>.
       </p>
     </>
   );

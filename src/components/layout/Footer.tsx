@@ -95,7 +95,7 @@ export function Footer() {
               <li><Link href="/about" prefetch={false} className={videoFooterLinkClass}>About</Link></li>
               <li><Link href="/accessibility" prefetch={false} className={videoFooterLinkClass}>Accessibility</Link></li>
               <li><Link href="/privacy-policy" prefetch={false} className={videoFooterLinkClass}>Privacy Policy</Link></li>
-              <li><Link href="/terms" prefetch={false} className={videoFooterLinkClass}>Terms of Service</Link></li>
+              <li><Link href="/terms-of-service" prefetch={false} className={videoFooterLinkClass}>Terms of Service</Link></li>
             </ul>
           </nav>
           <section aria-labelledby="footer-sources-heading">
