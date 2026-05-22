@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Bookmark } from "lucide-react";
-import { useSession } from "next-auth/react";
 import {
   addLocalSavedProviderId,
   getLocalSavedProviderIds,
@@ -48,19 +47,27 @@ export function SaveProviderButton({
   className = "",
   compact = false,
 }: SaveProviderButtonProps) {
-  const { status } = useSession();
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated") {
-      loadSavedProviderIds()
-        .then((ids) => setSaved(ids.has(providerId)))
-        .catch(() => undefined);
-      return;
-    }
     setSaved(getLocalSavedProviderIds().includes(providerId));
-  }, [providerId, status]);
+
+    let cancelled = false;
+    const hydrate = () => {
+      loadSavedProviderIds()
+        .then((ids) => {
+          if (!cancelled && ids.size > 0) setSaved(ids.has(providerId));
+        })
+        .catch(() => undefined);
+    };
+    const timer = window.setTimeout(hydrate, 4000);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [providerId]);
 
   async function handleClick(event: React.MouseEvent) {
     event.preventDefault();
@@ -77,19 +84,21 @@ export function SaveProviderButton({
       ctaLabel: saved ? "Unsave provider" : "Save provider",
     });
 
-    if (status === "authenticated") {
-      if (saved) {
-        await fetch(`/api/account/saved-providers?providerId=${encodeURIComponent(providerId)}`, {
+    const response = saved
+      ? await fetch(`/api/account/saved-providers?providerId=${encodeURIComponent(providerId)}`, {
           method: "DELETE",
-        });
-        savedProviderIdsCache?.delete(providerId);
-        setSaved(false);
-      } else {
-        await fetch("/api/account/saved-providers", {
+        })
+      : await fetch("/api/account/saved-providers", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ providerId, source: surface }),
         });
+
+    if (response.ok) {
+      if (saved) {
+        savedProviderIdsCache?.delete(providerId);
+        setSaved(false);
+      } else {
         savedProviderIdsCache?.add(providerId);
         setSaved(true);
       }

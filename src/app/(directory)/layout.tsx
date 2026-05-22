@@ -4,7 +4,7 @@ import { SkipToContent } from "@/components/layout/SkipToContent";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationSchema } from "@/lib/seo";
 import { ZavisHeader } from "@/components/directory-v2/header/ZavisHeader";
-import { AuthModal } from "@/components/auth/AuthModal";
+import { DeferredAuthModal } from "@/components/auth/DeferredAuthModal";
 
 export default function DirectoryLayout({
   children,
@@ -24,7 +24,7 @@ export default function DirectoryLayout({
           the URL. Header "Sign in" link adds the param without navigating
           so the modal overlays the current page (Airbnb-style). */}
       <Suspense fallback={null}>
-        <AuthModal />
+        <DeferredAuthModal />
       </Suspense>
     </>
   );

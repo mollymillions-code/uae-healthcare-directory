@@ -12,8 +12,8 @@ import { getLatestArticles } from "@/lib/intelligence/data";
 import { breadcrumbSchema, speakableSchema, faqPageSchema, itemListSchema, truncateTitle, truncateDescription } from "@/lib/seo";
 import { getBaseUrl, getCityImagePath } from "@/lib/helpers";
 import { safe } from "@/lib/safeData";
-import { ProviderCardV2 } from "@/components/directory-v2/cards/ProviderCardV2";
-import { CategoryRail } from "@/components/directory-v2/rails/CategoryRail";
+import { ProviderCardStatic } from "@/components/directory-v2/cards/ProviderCardStatic";
+import { StaticCategoryRail } from "@/components/directory-v2/rails/StaticCategoryRail";
 import { SpecialtyTile } from "@/components/directory-v2/cards/SpecialtyTile";
 import { EmptyStateV2 } from "@/components/directory-v2/shared/EmptyStateV2";
 import { ChevronRight, ShieldCheck, Calendar, Languages as LanguagesIcon, Activity, DollarSign, MapPin, ArrowRight } from "lucide-react";
@@ -34,7 +34,6 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
   const city = getCityBySlug(params.city);
   if (!city) return {};
-  const count = await safe(getProviderCountByCity(city.slug), 0, "metaCount");
   const regLabel =
     city.slug === "dubai"
       ? "DHA"
@@ -43,9 +42,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       : "MOHAP";
   const year = new Date().getFullYear();
   return {
-    title: truncateTitle(`${count}+ ${regLabel}-Licensed Providers in ${city.name} [${year}]`),
+    title: truncateTitle(`${regLabel}-Licensed Healthcare Providers in ${city.name} [${year}]`),
     description: truncateDescription(
-      `Compare ${count}+ ${regLabel}-licensed hospitals, clinics & specialists in ${city.name}. Verified ratings, insurance accepted, hours & contact. Free on Zavis.`
+      `Compare ${regLabel}-licensed hospitals, clinics & specialists in ${city.name}. Verified ratings, insurance accepted, hours & contact. Free on Zavis.`
     ),
     alternates: {
       canonical: `${getBaseUrl()}/directory/${city.slug}`,
@@ -57,7 +56,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     },
     openGraph: {
       title: `Healthcare Providers in ${city.name}, UAE`,
-      description: `Find ${count}+ healthcare providers in ${city.name}. Browse hospitals, clinics, dentists, and specialists with ratings and reviews.`,
+      description: `Find healthcare providers in ${city.name}. Browse hospitals, clinics, dentists, and specialists with ratings and reviews.`,
       type: "website",
       locale: "en_AE",
       siteName: "UAE Open Healthcare Directory",
@@ -199,10 +198,8 @@ export default async function CityPage(props: Props) {
               <h1 className="font-[system-ui,sans-serif] sm:font-display font-semibold text-ink text-display-lg lg:text-[56px] leading-[1.02] tracking-[-0.028em]">
                 Healthcare in {city.name}.
               </h1>
-              <p className="font-sans text-[15px] text-ink-soft mt-4 max-w-2xl leading-relaxed sm:hidden">
-                {city.name} has {total.toLocaleString()}+ licensed providers across{" "}
-                {catsWithCounts.length || categories.length} specialties, with
-                ratings, insurance, hours, contact details, and directions.
+              <p className="font-sans text-z-body-sm text-ink-soft mt-3 max-w-[30rem] leading-snug sm:hidden">
+                Browse licensed providers by specialty, insurance, hours, contact details, and directions.
               </p>
               <p className="hidden sm:block font-sans text-z-body sm:text-[17px] text-ink-soft mt-4 max-w-2xl leading-relaxed">
                 {getEditorialBlurb(city.name, total, regulator)}
@@ -245,7 +242,7 @@ export default async function CityPage(props: Props) {
       {railItems.length > 0 && (
         <div className="sticky top-20 z-20 bg-surface-cream/90 backdrop-blur-md border-b border-ink-line">
           <div className="max-w-z-container mx-auto">
-            <CategoryRail items={railItems} />
+            <StaticCategoryRail items={railItems} />
           </div>
         </div>
       )}
@@ -257,7 +254,7 @@ export default async function CityPage(props: Props) {
             <p className="font-sans text-z-micro text-accent-dark uppercase tracking-[0.04em] mb-2">
               Medical specialties
             </p>
-            <h2 className="font-display font-semibold text-ink text-display-md tracking-[-0.018em]">
+            <h2 className="font-display font-semibold text-ink text-z-h2 sm:text-display-md tracking-[-0.018em]">
               What do you need in {city.name}?
             </h2>
           </div>
@@ -383,9 +380,8 @@ export default async function CityPage(props: Props) {
             {featured.map((p) => {
               const cat = categories.find((c) => c.slug === p.categorySlug);
               return (
-                <ProviderCardV2
+                <ProviderCardStatic
                   key={p.id}
-                  id={p.id}
                   name={p.name}
                   slug={p.slug}
                   citySlug={p.citySlug}

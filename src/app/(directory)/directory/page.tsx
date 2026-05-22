@@ -17,9 +17,9 @@ import {
   UserRound, ShieldCheck, Star, Sparkles, ArrowRight,
 } from "lucide-react";
 import { DirectoryHomeHero } from "./_components/DirectoryHomeHero";
-import { CategoryRail } from "@/components/directory-v2/rails/CategoryRail";
+import { StaticCategoryRail } from "@/components/directory-v2/rails/StaticCategoryRail";
 import { CityCard } from "@/components/directory-v2/cards/CityCard";
-import { ProviderCardV2 } from "@/components/directory-v2/cards/ProviderCardV2";
+import { ProviderCardStatic } from "@/components/directory-v2/cards/ProviderCardStatic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const year = new Date().getFullYear();
@@ -181,7 +181,7 @@ export default async function DirectoryHomePage() {
       {/* ───── Category rail (sticky below header on scroll) ───── */}
       <div className="sticky top-20 z-20 bg-surface-cream/90 backdrop-blur-md border-b border-ink-line">
         <div className="max-w-z-container mx-auto">
-          <CategoryRail items={railItems} />
+          <StaticCategoryRail items={railItems} />
         </div>
       </div>
 
@@ -251,9 +251,8 @@ export default async function DirectoryHomePage() {
             {featured.map((p) => {
               const cat = categories.find((c) => c.slug === p.categorySlug);
               return (
-                <ProviderCardV2
+                <ProviderCardStatic
                   key={p.id}
-                  id={p.id}
                   name={p.name}
                   slug={p.slug}
                   citySlug={p.citySlug}

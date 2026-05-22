@@ -56,13 +56,13 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        sans: ["var(--zavis-sans-stack)", "system-ui", "sans-serif"],
         serif: ["var(--font-lora)", "Georgia", "serif"],
         mono: ["var(--font-space-mono)", "monospace"],
         arabic: ["var(--font-noto-arabic)", "Noto Sans Arabic", "sans-serif"],
         degular: ["Degular Display Demo", "system-ui", "sans-serif"],
         inter: ["Inter", "system-ui", "sans-serif"],
-        display: ["var(--font-bricolage)", "system-ui", "sans-serif"],
+        display: ["var(--zavis-display-stack)", "system-ui", "sans-serif"],
       },
       fontSize: {
         // PRESERVED

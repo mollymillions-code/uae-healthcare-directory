@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Newspaper, BookOpen, User, LogIn } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { MapPin, Newspaper, BookOpen, LogIn } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
 import { megaMenus } from "./types";
 import { MobileAccordion } from "./MobileAccordion";
@@ -20,7 +19,6 @@ export function MobileNav({
   setMobileExpanded,
   setMobileOpen,
 }: MobileNavProps) {
-  const { status: sessionStatus } = useSession();
   return (
     <div
       className={`lg:hidden fixed inset-0 top-16 bg-[#f8f8f6] z-[60] transition-transform duration-300 ${
@@ -74,27 +72,15 @@ export function MobileNav({
           </Link>
         </div>
         <div className="border-b border-black/5">
-          {sessionStatus === "authenticated" ? (
-            <Link
-              href="/account"
-              prefetch={false}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
-            >
-              <User className="w-4 h-4 opacity-50" />
-              My account
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              prefetch={false}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
-            >
-              <LogIn className="w-4 h-4 opacity-50" />
-              Sign in
-            </Link>
-          )}
+          <Link
+            href="/login"
+            prefetch={false}
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
+          >
+            <LogIn className="w-4 h-4 opacity-50" />
+            Sign in
+          </Link>
         </div>
         <div className="mt-6">
           <ShimmerLink

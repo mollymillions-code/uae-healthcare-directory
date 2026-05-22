@@ -1,29 +1,11 @@
 import type { Metadata } from "next";
-import { DM_Sans, Bricolage_Grotesque } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
 import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
 import { DeferredMarketingTags } from "@/components/analytics/DeferredMarketingTags";
-import { NextAuthProvider } from "@/components/auth/NextAuthProvider";
 import { RouteLoadingOverlay } from "@/components/layout/RouteLoadingOverlay";
-import { PostActionAccountPrompt } from "@/components/account/PostActionAccountPrompt";
+import { DeferredPostActionAccountPrompt } from "@/components/account/DeferredPostActionAccountPrompt";
 import "./globals.css";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-  preload: false,
-  weight: ["400", "500", "600", "700"],
-});
-
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-bricolage",
-  display: "optional",
-  preload: false,
-  weight: ["400", "500", "600", "700"],
-});
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
 
@@ -87,7 +69,7 @@ export default function RootLayout({
   // AR routes. Googlebot still picks up the correct attributes
   // because it executes the SetArabicLang script before indexing.
   return (
-    <html lang="en" dir="ltr" className={`${dmSans.variable} ${bricolage.variable}`}>
+    <html lang="en" dir="ltr">
       <head>
         <link rel="dns-prefetch" href="https://places.googleapis.com" />
       </head>
@@ -105,10 +87,8 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <RouteLoadingOverlay />
         </Suspense>
-        <NextAuthProvider>
-          {children}
-          <PostActionAccountPrompt />
-        </NextAuthProvider>
+        {children}
+        <DeferredPostActionAccountPrompt />
       </body>
     </html>
   );

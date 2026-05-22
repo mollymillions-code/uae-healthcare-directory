@@ -51,8 +51,28 @@
     --ease-overshoot: cubic-bezier(0.17, 0.67, 0.3, 1.33);
     --font-space-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     --font-lora: Georgia, "Times New Roman", serif;
-    --font-geist: var(--font-dm-sans), system-ui, sans-serif;
+    --zavis-system-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-dm-sans: var(--zavis-system-sans);
+    --font-bricolage: var(--zavis-system-sans);
+    --zavis-sans-stack: var(--zavis-system-sans);
+    --zavis-display-stack: var(--zavis-system-sans);
+    --font-geist: var(--zavis-sans-stack);
     --font-geist-mono: var(--font-space-mono);
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --zavis-sans-stack: var(--font-dm-sans), var(--zavis-system-sans);
+      --zavis-display-stack: var(--font-bricolage), var(--zavis-system-sans);
+    }
+  }
+
+  .zavis-footer-video::-webkit-media-controls,
+  .zavis-footer-video::-webkit-media-controls-panel,
+  .zavis-footer-video::-webkit-media-controls-play-button,
+  .zavis-footer-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
   }
 
   /* Smooth scroll with reduced-motion respect */

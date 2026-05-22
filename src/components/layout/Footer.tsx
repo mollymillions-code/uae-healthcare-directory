@@ -1,10 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { useMemo } from "react";
-import { usePathname } from "next/navigation";
 import { CITIES } from "@/lib/constants/cities";
-import { COUNTRIES } from "@/lib/constants/countries";
 import { OwnerWhatsappCta } from "@/components/owner/OwnerWhatsappCta";
 import {
   VideoFooterShell,
@@ -13,36 +8,14 @@ import {
   videoFooterMutedClass,
 } from "@/components/layout/VideoFooterShell";
 
-function useFooterCountry(pathname: string) {
-  return useMemo(() => {
-    const match = pathname.match(/^\/(qa|sa|bh|kw|tr)(\/|$)/);
-    if (!match) return null;
-    const code = match[1];
-    const country = COUNTRIES.find((c) => c.code === code);
-    if (!country) return null;
-    const cities = CITIES.filter((c) => c.country === code);
-    return { code, name: country.name, cities, regulators: country.regulators };
-  }, [pathname]);
-}
+const footerCities = CITIES.filter((city) => city.country === "ae");
+const dataSources = [
+  "Official healthcare licensing data",
+  "Google Places",
+  "Provider websites",
+];
 
 export function Footer() {
-  const pathname = usePathname();
-  const countryCtx = useFooterCountry(pathname);
-
-  const directoryTitle = countryCtx
-    ? `${countryCtx.name} Open Healthcare Directory`
-    : "UAE Open Healthcare Directory";
-  const footerCities = countryCtx
-    ? countryCtx.cities
-    : CITIES.filter((c) => c.country === "ae");
-  const cityLinkPrefix = countryCtx ? `/${countryCtx.code}/directory` : "/directory";
-  const copyrightName = countryCtx
-    ? `${countryCtx.name} Open Healthcare Directory`
-    : "UAE Open Healthcare Directory";
-  const dataSources = countryCtx
-    ? [...countryCtx.regulators, "Google Places"]
-    : ["Official UAE healthcare licensing data", "Google Places"];
-
   return (
     <VideoFooterShell
       compact
@@ -50,26 +23,22 @@ export function Footer() {
       brand={
         <div>
           <Link
-            href={countryCtx ? `/${countryCtx.code}/directory` : "/directory"}
+            href="/directory"
             prefetch={false}
             className="inline-flex rounded font-['Bricolage_Grotesque',sans-serif] text-3xl font-semibold text-[#1c1c1c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006828] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fbf7f2]"
           >
             zavis<span className="text-[#006828]">.</span>
           </Link>
           <p className="mt-2 font-['Geist',sans-serif] text-xs font-semibold uppercase text-[#006828]">
-            {directoryTitle}
+            Healthcare Directory
           </p>
         </div>
       }
-      description={
-        countryCtx
-          ? `Open healthcare discovery for ${countryCtx.name}, built from regulator and location data.`
-          : "Open healthcare discovery for the UAE, built from regulator and location data."
-      }
+      description="Open healthcare discovery across the UAE, GCC and Turkey, built from regulator and location data."
       bottom={
         <div className="flex flex-col gap-3 font-['Geist',sans-serif] text-xs text-black/45 sm:flex-row sm:items-center sm:justify-between">
           <span>
-            &copy; {new Date().getFullYear()} {copyrightName}.
+            &copy; {new Date().getFullYear()} UAE Open Healthcare Directory.
           </span>
           <span>
             by{" "}
@@ -87,7 +56,7 @@ export function Footer() {
             <ul className="space-y-1 font-['Geist',sans-serif]">
               {footerCities.map((city) => (
                 <li key={city.slug}>
-                  <Link href={`${cityLinkPrefix}/${city.slug}`} prefetch={false} className={videoFooterLinkClass}>
+                  <Link href={`/directory/${city.slug}`} prefetch={false} className={videoFooterLinkClass}>
                     {city.name}
                   </Link>
                 </li>

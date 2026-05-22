@@ -1,16 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Menu, X, User } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { CITIES } from "@/lib/constants/cities";
+import { Menu, X } from "lucide-react";
 import { COUNTRIES } from "@/lib/constants/countries";
 import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
-import { SearchPillModal } from "./SearchPillModal";
+import { DeferredHeaderAccountLink } from "./DeferredHeaderAccountLink";
 import { cn } from "../shared/cn";
 import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
+
+const SearchPillModal = dynamic(
+  () => import("./SearchPillModal").then((mod) => mod.SearchPillModal),
+  { ssr: false, loading: () => null }
+);
 
 interface ZavisHeaderProps {
   /** When true, the hero will render its own expanded pill — header starts
@@ -37,18 +41,97 @@ const UAE_CITY_LINKS = [
   { label: "Al Ain", href: "/directory/al-ain" },
 ];
 
+type CountryCode = "qa" | "sa" | "bh" | "kw" | "tr";
+
+const CITY_LINKS_BY_COUNTRY: Record<CountryCode, Array<{ label: string; href: string }>> = {
+  qa: [
+    { label: "Doha", href: "/qa/directory/doha" },
+    { label: "Al Wakrah", href: "/qa/directory/al-wakrah" },
+    { label: "Al Khor", href: "/qa/directory/al-khor" },
+    { label: "Al Rayyan", href: "/qa/directory/al-rayyan" },
+    { label: "Umm Salal", href: "/qa/directory/umm-salal" },
+    { label: "Lusail", href: "/qa/directory/lusail" },
+    { label: "Al Jumailiya", href: "/qa/directory/al-jumailiya" },
+    { label: "Al Shahaniya", href: "/qa/directory/al-shahaniya" },
+    { label: "Dukhan", href: "/qa/directory/dukhan" },
+    { label: "Umm Bab", href: "/qa/directory/umm-bab" },
+  ],
+  sa: [
+    { label: "Riyadh", href: "/sa/directory/riyadh" },
+    { label: "Jeddah", href: "/sa/directory/jeddah" },
+    { label: "Mecca", href: "/sa/directory/mecca" },
+    { label: "Medina", href: "/sa/directory/medina" },
+    { label: "Dammam", href: "/sa/directory/dammam" },
+    { label: "Khobar", href: "/sa/directory/khobar" },
+    { label: "Dhahran", href: "/sa/directory/dhahran" },
+    { label: "Tabuk", href: "/sa/directory/tabuk" },
+    { label: "Abha", href: "/sa/directory/abha" },
+    { label: "Taif", href: "/sa/directory/taif" },
+    { label: "Buraidah", href: "/sa/directory/buraidah" },
+    { label: "Hail", href: "/sa/directory/hail" },
+    { label: "Jazan", href: "/sa/directory/jazan" },
+    { label: "Najran", href: "/sa/directory/najran" },
+    { label: "Al Ahsa", href: "/sa/directory/al-ahsa" },
+    { label: "Khamis Mushait", href: "/sa/directory/khamis-mushait" },
+    { label: "Al Kharj", href: "/sa/directory/al-kharj" },
+    { label: "Al Jubail", href: "/sa/directory/al-jubail" },
+    { label: "Jubail", href: "/sa/directory/jubail" },
+    { label: "Yanbu", href: "/sa/directory/yanbu" },
+    { label: "Qassim", href: "/sa/directory/qassim" },
+    { label: "Hafar Al Batin", href: "/sa/directory/hafar-al-batin" },
+    { label: "Al Lith", href: "/sa/directory/al-lith" },
+    { label: "Al Sulayyil", href: "/sa/directory/al-sulayyil" },
+    { label: "Dawadmi", href: "/sa/directory/dawadmi" },
+    { label: "Khafji", href: "/sa/directory/khafji" },
+    { label: "Neom", href: "/sa/directory/neom" },
+    { label: "Nuairiyah", href: "/sa/directory/nuairiyah" },
+    { label: "Wadi Al Dawasir", href: "/sa/directory/wadi-al-dawasir" },
+  ],
+  bh: [
+    { label: "Manama", href: "/bh/directory/manama" },
+    { label: "Muharraq", href: "/bh/directory/muharraq" },
+    { label: "Riffa", href: "/bh/directory/riffa" },
+    { label: "Isa Town", href: "/bh/directory/isa-town" },
+    { label: "Sitra", href: "/bh/directory/sitra" },
+    { label: "Hamad Town", href: "/bh/directory/hamad-town" },
+    { label: "Budaiya", href: "/bh/directory/budaiya" },
+    { label: "Aali", href: "/bh/directory/aali" },
+    { label: "Adliya", href: "/bh/directory/adliya" },
+    { label: "Al Seef", href: "/bh/directory/al-seef" },
+    { label: "Amwaj", href: "/bh/directory/amwaj" },
+    { label: "Arad", href: "/bh/directory/arad" },
+    { label: "Busaiteen", href: "/bh/directory/busaiteen" },
+    { label: "Hidd", href: "/bh/directory/hidd" },
+    { label: "Jid Hafs", href: "/bh/directory/jid-hafs" },
+    { label: "Saar", href: "/bh/directory/saar" },
+    { label: "Sanabis", href: "/bh/directory/sanabis" },
+    { label: "Sanad", href: "/bh/directory/sanad" },
+    { label: "Tubli", href: "/bh/directory/tubli" },
+    { label: "Zinj", href: "/bh/directory/zinj" },
+  ],
+  kw: [
+    { label: "Kuwait City", href: "/kw/directory/kuwait-city" },
+    { label: "Hawalli", href: "/kw/directory/hawalli" },
+    { label: "Salmiya", href: "/kw/directory/salmiya" },
+    { label: "Farwaniya", href: "/kw/directory/farwaniya" },
+    { label: "Jahra", href: "/kw/directory/jahra" },
+    { label: "Ahmadi", href: "/kw/directory/ahmadi" },
+    { label: "Mangaf", href: "/kw/directory/mangaf" },
+  ],
+  tr: [{ label: "Istanbul", href: "/tr/directory/istanbul" }],
+};
+
 function useCountryContext(pathname: string) {
   return useMemo(() => {
-    const match = pathname.match(/^\/(qa|sa|bh|kw)(\/|$)/);
+    const match = pathname.match(/^\/(qa|sa|bh|kw|tr)(\/|$)/);
     if (!match) return null;
-    const code = match[1];
+    const code = match[1] as CountryCode;
     const country = COUNTRIES.find((c) => c.code === code);
     if (!country) return null;
-    const cities = CITIES.filter((c) => c.country === code);
     return {
       code,
       name: country.name,
-      cityLinks: cities.map((c) => ({ label: c.name, href: `/${code}/directory/${c.slug}` })),
+      cityLinks: CITY_LINKS_BY_COUNTRY[code],
     };
   }, [pathname]);
 }
@@ -90,7 +173,6 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
   const pathname = usePathname();
   const router = useRouter();
   const countryCtx = useCountryContext(pathname);
-  const { status: sessionStatus } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [initialSegment, setInitialSegment] = useState<SearchSegment | null>(null);
@@ -142,9 +224,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
 
   const cityLinks = countryCtx?.cityLinks ?? UAE_CITY_LINKS;
   const directoryHome = countryCtx ? `/${countryCtx.code}/directory` : "/directory";
-  const mobileCities = countryCtx
-    ? CITIES.filter((c) => c.country === countryCtx.code)
-    : CITIES.filter((c) => c.country === "ae");
+  const mobileCities = cityLinks;
   const arabicHref = getArabicPath(pathname);
 
   const handleSubmit = useCallback(() => {
@@ -178,7 +258,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
             <Link href={directoryHome} prefetch={false} className="flex items-baseline gap-2.5 flex-shrink-0">
               <span
                 aria-label="Zavis"
-                className="font-['Bricolage_Grotesque',sans-serif] text-[24px] font-semibold tracking-[-0.02em] text-ink leading-none"
+                className="font-[system-ui,sans-serif] sm:font-display text-[24px] font-semibold tracking-[-0.02em] text-ink leading-none"
               >
                 zavis<span className="text-[#006828]">.</span>
               </span>
@@ -235,26 +315,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
               >
                 Claim your listing
               </Link>
-              {sessionStatus === "authenticated" ? (
-                <Link
-                  href="/account"
-                  prefetch={false}
-                  className="inline-flex items-center gap-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
-                >
-                  <User className="h-4 w-4" strokeWidth={2} />
-                  Account
-                </Link>
-              ) : (
-                <Link
-                  href={`${pathname}?auth=login`}
-                  prefetch={false}
-                  scroll={false}
-                  replace
-                  className="font-sans text-z-body-sm font-medium text-ink-soft hover:text-ink px-3 py-2 rounded-z-pill hover:bg-surface-cream transition-colors duration-z-fast whitespace-nowrap"
-                >
-                  Sign in
-                </Link>
-              )}
+              <DeferredHeaderAccountLink pathname={pathname} />
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
@@ -287,7 +348,7 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
           </div>
 
           {/* City strip (desktop, directory routes only) — subtle secondary nav */}
-          {pathname.startsWith("/directory") || pathname.startsWith("/qa") || pathname.startsWith("/sa") || pathname.startsWith("/bh") || pathname.startsWith("/kw") ? (
+          {pathname.startsWith("/directory") || pathname.startsWith("/qa") || pathname.startsWith("/sa") || pathname.startsWith("/bh") || pathname.startsWith("/kw") || pathname.startsWith("/tr") ? (
             <div className="hidden lg:flex items-center justify-between border-t border-ink-line py-2">
               <nav className="flex items-center gap-0 overflow-x-auto z-no-scrollbar">
                 {cityLinks.map((link) => {
@@ -331,14 +392,16 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
       </header>
 
       {/* Search modal (expanded pill + flyouts) */}
-      <SearchPillModal
-        open={modalOpen}
-        state={searchState}
-        onChange={setSearchState}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleSubmit}
-        initialSegment={initialSegment}
-      />
+      {modalOpen ? (
+        <SearchPillModal
+          open={modalOpen}
+          state={searchState}
+          onChange={setSearchState}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleSubmit}
+          initialSegment={initialSegment}
+        />
+      ) : null}
 
       {/* Mobile nav drawer */}
       {mobileOpen && (
@@ -369,12 +432,12 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                   <div className="grid grid-cols-2 gap-y-2">
                     {mobileCities.map((city) => (
                       <Link
-                        key={city.slug}
-                        href={countryCtx ? `/${countryCtx.code}/directory/${city.slug}` : `/directory/${city.slug}`}
+                        key={city.href}
+                        href={city.href}
                         prefetch={false}
                         className="font-sans text-z-body text-ink py-1.5"
                       >
-                        {city.name}
+                        {city.label}
                       </Link>
                     ))}
                   </div>
@@ -408,27 +471,11 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
                 >
                   Claim your listing
                 </Link>
-                {sessionStatus === "authenticated" ? (
-                  <Link
-                    href="/account"
-                    prefetch={false}
-                    className="flex items-center justify-center gap-2 font-sans font-medium text-ink-soft hover:text-ink py-2"
-                  >
-                    <User className="h-4 w-4" strokeWidth={2} />
-                    My account
-                  </Link>
-                ) : (
-                  <Link
-                    href={`${pathname}?auth=login`}
-                    prefetch={false}
-                    scroll={false}
-                    replace
-                    onClick={() => setMobileOpen(false)}
-                    className="block text-center font-sans font-medium text-ink-soft hover:text-ink py-2"
-                  >
-                    Sign in
-                  </Link>
-                )}
+                <DeferredHeaderAccountLink
+                  pathname={pathname}
+                  mobile
+                  onNavigate={() => setMobileOpen(false)}
+                />
                 {arabicHref && (
                   <Link
                     href={arabicHref}

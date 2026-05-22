@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { ChevronRight, Star, MapPin as MapPinIcon, BadgeCheck, Clock, Languages as LangIcon, ShieldCheck, Quote, Accessibility, Stethoscope } from "lucide-react";
-import { PhotoMosaic } from "../detail/PhotoMosaic";
-import { BookingCard } from "../detail/BookingCard";
-import { StickyBottomBar } from "../detail/StickyBottomBar";
+import { DeferredPhotoMosaic } from "../detail/DeferredPhotoMosaic";
+import { BookingCardStatic } from "../detail/BookingCardStatic";
+import { DeferredStickyBottomBar } from "../detail/DeferredStickyBottomBar";
 import { HostCard } from "../detail/HostCard";
 import { AmenityGrid } from "../detail/AmenityGrid";
 import { ReviewDistribution } from "../detail/ReviewDistribution";
-import { ShareButton } from "../detail/ShareButton";
-import { HeartButton } from "../cards/HeartButton";
+import { DeferredProviderHeaderActions } from "../detail/DeferredProviderHeaderActions";
 import { FaqSection } from "@/components/seo/FaqSection";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { collectProviderImageUrls } from "@/lib/media/provider-images";
@@ -291,20 +290,14 @@ export function ProviderDetailTemplate({
                 </nav>
               )}
             </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
-              <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
-                <HeartButton
-                  size="sm"
-                  ariaLabel={`Save ${p.name}`}
-                  providerId={p.id}
-                  providerName={p.name}
-                  surface="provider_detail"
-                  storageKey={p.id ? undefined : `zavis:saved:${p.slug}`}
-                />
-                <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>
-              </div>
-            </div>
+            <DeferredProviderHeaderActions
+              providerId={p.id}
+              providerName={p.name}
+              providerSlug={p.slug}
+              citySlug={p.citySlug}
+              categorySlug={p.categorySlug}
+              cityName={cityName}
+            />
           </header>
 
           {/* Mobile-first contact panel keeps conversion actions in the first viewport
@@ -430,12 +423,11 @@ export function ProviderDetailTemplate({
 
             {uniqPhotos.length > 0 && (
               <section className="pb-8 border-b border-ink-line" aria-label={`${p.name} photos`}>
-                <PhotoMosaic
+                <DeferredPhotoMosaic
                   photos={uniqPhotos}
                   alt={p.name}
                   priorityCount={0}
                   fallbackSrc={`/images/categories/${p.categorySlug}.webp`}
-                  deferUntilVisible
                 />
               </section>
             )}
@@ -628,12 +620,9 @@ export function ProviderDetailTemplate({
 
           {/* Right column — sticky booking card */}
           <div className="lg:col-span-5 xl:col-span-4" id="booking-rail">
-            <BookingCard
+            <BookingCardStatic
               providerName={p.name}
               providerId={p.id}
-              providerSlug={p.slug}
-              citySlug={p.citySlug}
-              categorySlug={p.categorySlug}
               googleRating={p.googleRating}
               googleReviewCount={p.googleReviewCount}
               phone={p.phone}
@@ -649,13 +638,12 @@ export function ProviderDetailTemplate({
               }
               primaryCtaLabel={primaryCtaLabel}
               primaryCtaHref={primaryCtaHref}
-              primaryCtaType={p.phone ? "call" : p.whatsapp ? "whatsapp" : p.website ? "website" : "claim_listing"}
             />
           </div>
         </div>
       </div>
 
-      <StickyBottomBar
+      <DeferredStickyBottomBar
         watchElementId="booking-rail"
         providerName={p.name}
         providerId={p.id}

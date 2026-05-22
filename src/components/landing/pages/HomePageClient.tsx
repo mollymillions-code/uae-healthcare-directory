@@ -200,15 +200,17 @@ export function HomePageClient() {
       </section>
 
       {/* Integration Logo Bar */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-[1200px] mx-auto">
-          <LogoBar
-            logos={integrationLogos}
-            title="Trusted integrations"
-            iconSize="h-10 w-28"
-          />
-        </div>
-      </section>
+      {shouldRenderNonCriticalMedia ? (
+        <section className="px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-[1200px] mx-auto">
+            <LogoBar
+              logos={integrationLogos}
+              title="Trusted integrations"
+              iconSize="h-10 w-28"
+            />
+          </div>
+        </section>
+      ) : null}
 
       {/* Dashboard Preview */}
       <AnimatedSection className="px-4 sm:px-6 lg:px-8 pb-16 lg:pb-28">

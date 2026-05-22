@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { X, Heart } from "lucide-react";
 import {
   POST_ACTION_EVENT,
@@ -39,12 +38,29 @@ const QUALIFYING_ACTIONS = new Set([
  * action — the click goes through, `tel:`/`https:` opens, and only then the
  * modal appears.
  *
- * Mount once near the root (already inside NextAuthProvider).
+ * Mount once near the root. It checks session state lazily so public pages do
+ * not load NextAuth during the first paint.
  */
 export function PostActionAccountPrompt() {
-  const { status } = useSession();
+  const [authenticated, setAuthenticated] = useState(false);
   const [open, setOpen] = useState(false);
   const [redirectPath, setRedirectPath] = useState("/account");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/auth/session", { credentials: "same-origin" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((session) => {
+        if (!cancelled) setAuthenticated(Boolean(session?.user));
+      })
+      .catch(() => {
+        if (!cancelled) setAuthenticated(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -52,7 +68,7 @@ export function PostActionAccountPrompt() {
     function handlePostAction(event: Event) {
       const detail = (event as CustomEvent<PostActionEventDetail>).detail;
       if (!detail || !QUALIFYING_ACTIONS.has(detail.action)) return;
-      if (status !== "unauthenticated") return;
+      if (authenticated) return;
 
       const lastSeen = Number(window.localStorage.getItem(SNOOZE_KEY) || 0);
       if (Date.now() - lastSeen < SNOOZE_24H_MS) return;
@@ -69,7 +85,7 @@ export function PostActionAccountPrompt() {
 
     window.addEventListener(POST_ACTION_EVENT, handlePostAction);
     return () => window.removeEventListener(POST_ACTION_EVENT, handlePostAction);
-  }, [status]);
+  }, [authenticated]);
 
   function dismiss(snoozeMs: number) {
     if (typeof window !== "undefined") {
@@ -79,7 +95,7 @@ export function PostActionAccountPrompt() {
     setOpen(false);
   }
 
-  if (!open || status === "authenticated") return null;
+  if (!open || authenticated) return null;
 
   const encodedRedirect = encodeURIComponent(redirectPath);
 

@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight, Bot, CalendarCheck, ChevronDown, Globe2, MessageCircle } from "lucide-react";
 import { VideoFooterShell } from "@/components/layout/VideoFooterShell";

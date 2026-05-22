@@ -2,7 +2,6 @@
 
 import { Heart } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import {
   addLocalSavedProviderId,
   getLocalSavedProviderIds,
@@ -73,7 +72,6 @@ export function HeartButton({
   providerName,
   surface = "heart_button",
 }: HeartButtonProps) {
-  const { status: sessionStatus } = useSession();
   const useConsumerAccount = Boolean(providerId);
   const normalizedStorageKey = useMemo(
     () => (useConsumerAccount ? null : storageKey?.replace(/[^a-zA-Z0-9:_-]/g, "-") ?? null),
@@ -83,19 +81,37 @@ export function HeartButton({
   const [animKey, setAnimKey] = useState(0);
   const [pending, setPending] = useState(false);
 
-  // Consumer-account mode: hydrate saved state from API or local.
+  // Consumer-account mode: render local state immediately. Authenticated saved
+  // state is hydrated lazily after the first paint so directory pages do not
+  // load NextAuth/session code on the critical path.
   useEffect(() => {
     if (!useConsumerAccount || !providerId) return;
-    if (sessionStatus === "authenticated") {
+    setSaved(getLocalSavedProviderIds().includes(providerId));
+
+    let cancelled = false;
+    const hydrate = () => {
       loadSavedProviderIds()
-        .then((ids) => setSaved(ids.has(providerId)))
+        .then((ids) => {
+          if (!cancelled && ids.size > 0) setSaved(ids.has(providerId));
+        })
         .catch(() => undefined);
-      return;
+    };
+    const timer = window.setTimeout(hydrate, 4000);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [providerId, useConsumerAccount]);
+
+  const persistLocalProvider = useCallback((next: boolean) => {
+    if (!providerId) return;
+    if (next) {
+      addLocalSavedProviderId(providerId);
+    } else {
+      removeLocalSavedProviderId(providerId);
     }
-    if (sessionStatus === "unauthenticated") {
-      setSaved(getLocalSavedProviderIds().includes(providerId));
-    }
-  }, [providerId, sessionStatus, useConsumerAccount]);
+  }, [providerId]);
 
   // Legacy local-storage mode.
   useEffect(() => {
@@ -125,30 +141,33 @@ export function HeartButton({
             ctaLabel: next ? "Save provider" : "Unsave provider",
           });
 
-          if (sessionStatus === "authenticated") {
-            if (next) {
-              await fetch("/api/account/saved-providers", {
+          const response = next
+            ? await fetch("/api/account/saved-providers", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ providerId, source: surface }),
-              });
-              savedProviderIdsCache?.add(providerId);
-            } else {
-              await fetch(
+              })
+            : await fetch(
                 `/api/account/saved-providers?providerId=${encodeURIComponent(providerId)}`,
                 { method: "DELETE" },
               );
-              savedProviderIdsCache?.delete(providerId);
-            }
-          } else {
+
+          if (response.ok) {
+            if (next) savedProviderIdsCache?.add(providerId);
+            else savedProviderIdsCache?.delete(providerId);
+          } else if (response.status === 401) {
             // Anonymous user — keep save in localStorage. The global
-            // PostActionAccountPrompt (mounted in src/app/layout.tsx) listens
-            // to the recordConsumerEvent above and will surface the warm
-            // "Enjoying Zavis?" modal subject to its 24h throttle.
+            // PostActionAccountPrompt listens to the event above and surfaces
+            // the warm account prompt after the primary action goes through.
+            persistLocalProvider(next);
+          } else {
+            // If account sync fails for a transient backend reason, retain a
+            // local save so the UI does not lose the user's intent.
+            persistLocalProvider(next);
             if (next) {
-              addLocalSavedProviderId(providerId);
+              savedProviderIdsCache?.add(providerId);
             } else {
-              removeLocalSavedProviderId(providerId);
+              savedProviderIdsCache?.delete(providerId);
             }
           }
         } finally {
@@ -165,10 +184,10 @@ export function HeartButton({
       normalizedStorageKey,
       onToggle,
       pending,
+      persistLocalProvider,
       providerId,
       providerName,
       saved,
-      sessionStatus,
       surface,
       useConsumerAccount,
     ]
