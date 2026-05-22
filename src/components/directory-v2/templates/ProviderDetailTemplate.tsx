@@ -370,7 +370,7 @@ export function ProviderDetailTemplate({
             </div>
 
             {p.address && (
-              <p className="mt-3 line-clamp-2 font-sans text-z-body-sm leading-snug text-ink-soft">
+              <p className="mt-3 hidden line-clamp-2 font-sans text-z-body-sm leading-snug text-ink-soft sm:block">
                 {p.address}
               </p>
             )}
