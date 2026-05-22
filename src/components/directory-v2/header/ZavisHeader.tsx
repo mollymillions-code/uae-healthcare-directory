@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter, usePathname } from "next/navigation";
@@ -275,16 +276,16 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-ink-line">
         <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
-            {/* Left — Brand. Both pieces are text so they share the same
-                font baseline (the previous SVG-image + text combination
-                had a visible vertical-alignment mismatch). */}
-            <Link href={directoryHome} prefetch={false} className="flex items-baseline gap-2.5 flex-shrink-0">
-              <span
-                aria-label="Zavis"
-                className="font-[system-ui,sans-serif] sm:font-display text-[24px] font-semibold tracking-[-0.02em] text-ink leading-none"
-              >
-                zavis<span className="text-[#006828]">.</span>
-              </span>
+            {/* Left — Brand */}
+            <Link href={directoryHome} prefetch={false} className="flex items-center gap-2.5 flex-shrink-0">
+              <Image
+                src="/zavis-logo-dark.svg"
+                alt="Zavis"
+                width={743}
+                height={263}
+                className="h-7 w-auto"
+                priority
+              />
               <span className="hidden sm:inline-block font-display font-semibold text-ink text-[15px] tracking-[-0.01em] whitespace-nowrap leading-none">
                 Healthcare Directory
               </span>
