@@ -20,7 +20,7 @@ const dmSans = DM_Sans({
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-bricolage",
-  display: "swap",
+  display: "optional",
   preload: true,
   weight: ["400", "500", "600", "700"],
 });
