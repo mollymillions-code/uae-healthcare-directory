@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Suspense } from "react";
-import { RouteChangeTracker } from "@/components/analytics/RouteChangeTracker";
-import { DeferredMarketingTags } from "@/components/analytics/DeferredMarketingTags";
-import { RouteLoadingOverlay } from "@/components/layout/RouteLoadingOverlay";
-import { DeferredPostActionAccountPrompt } from "@/components/account/DeferredPostActionAccountPrompt";
+import { DeferredRootClients } from "@/components/layout/DeferredRootClients";
 import "./globals.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.zavis.ai";
@@ -82,13 +78,8 @@ export default function RootLayout({
         <noscript><img height="1" width="1" style={{display:'none'}} alt="" src="https://px.ads.linkedin.com/collect/?pid=8657833&fmt=gif" /></noscript>
         {/* Meta Pixel noscript */}
         <noscript><img height="1" width="1" style={{display:'none'}} src="https://www.facebook.com/tr?id=1045406841134462&ev=PageView&noscript=1" alt="facebook-pixel" /></noscript>
-        <DeferredMarketingTags />
-        <RouteChangeTracker />
-        <Suspense fallback={null}>
-          <RouteLoadingOverlay />
-        </Suspense>
         {children}
-        <DeferredPostActionAccountPrompt />
+        <DeferredRootClients />
       </body>
     </html>
   );

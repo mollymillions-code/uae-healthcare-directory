@@ -13,7 +13,7 @@ import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { buildSearchUrl, normalizeHealthcareSearchQuery } from "@/lib/search/normalization";
 import { FilterDrawer } from "@/components/directory-v2/filters/FilterDrawer";
 import { cn } from "@/components/directory-v2/shared/cn";
-import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
+import { dispatchRouteLoadingStart } from "@/components/layout/navigation-events";
 
 interface Props {
   initialQuery: string;

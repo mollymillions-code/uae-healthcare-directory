@@ -13,7 +13,7 @@ export interface SearchPillState {
   insurance: string;
 }
 
-interface SearchPillProps {
+export interface SearchPillProps {
   variant: "expanded" | "compact";
   state: SearchPillState;
   activeSegment?: SearchSegment | null;

@@ -6,10 +6,18 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { COUNTRIES } from "@/lib/constants/countries";
-import { SearchPill, type SearchPillState, type SearchSegment } from "./SearchPill";
+import type { SearchPillProps, SearchPillState, SearchSegment } from "./SearchPill";
 import { DeferredHeaderAccountLink } from "./DeferredHeaderAccountLink";
 import { cn } from "../shared/cn";
-import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
+import { dispatchRouteLoadingStart } from "@/components/layout/navigation-events";
+
+const DesktopSearchPill = dynamic<SearchPillProps>(
+  () => import("./SearchPill").then((mod) => mod.SearchPill),
+  {
+    ssr: false,
+    loading: () => <div className="h-12 w-[min(48vw,560px)]" aria-hidden="true" />,
+  },
+);
 
 const SearchPillModal = dynamic(
   () => import("./SearchPillModal").then((mod) => mod.SearchPillModal),
@@ -169,10 +177,25 @@ function focusPageSearch(segment: SearchSegment | "query" = "query"): boolean {
   return true;
 }
 
+function useDesktopHeaderMedia() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsDesktop(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return isDesktop;
+}
+
 export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const countryCtx = useCountryContext(pathname);
+  const isDesktopHeader = useDesktopHeaderMedia();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [initialSegment, setInitialSegment] = useState<SearchSegment | null>(null);
@@ -271,12 +294,16 @@ export function ZavisHeader({ heroHasPill: heroHasPillProp }: ZavisHeaderProps) 
             <div className="hidden md:flex flex-1 justify-center">
               {pillVisible ? (
                 <div key="pill" className="animate-fade-up">
-                  <SearchPill
-                    variant="compact"
-                    state={searchState}
-                    onSegmentClick={(seg) => handleSearchIntent(seg)}
-                    onSubmit={() => handleSearchIntent("query")}
-                  />
+                  {isDesktopHeader ? (
+                    <DesktopSearchPill
+                      variant="compact"
+                      state={searchState}
+                      onSegmentClick={(seg) => handleSearchIntent(seg)}
+                      onSubmit={() => handleSearchIntent("query")}
+                    />
+                  ) : (
+                    <div className="h-12 w-[min(48vw,560px)]" aria-hidden="true" />
+                  )}
                 </div>
               ) : (
                 <div key="pill-spacer" className="h-12" />

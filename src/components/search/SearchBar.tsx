@@ -33,7 +33,7 @@ import { CONDITIONS } from "@/lib/constants/conditions";
 import { INSURANCE_PROVIDERS } from "@/lib/constants/insurance";
 import { LANGUAGES } from "@/lib/constants/languages";
 import type { HealthcareEntityType } from "@/lib/search/types";
-import { dispatchRouteLoadingStart } from "@/components/layout/RouteLoadingOverlay";
+import { dispatchRouteLoadingStart } from "@/components/layout/navigation-events";
 
 export interface SearchBarProps {
   defaultQuery?: string;

@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { NAVIGATION_EVENT } from "./navigation-events";
 
-const NAVIGATION_EVENT = "zavis:navigation-start";
 const CHUNK_RELOAD_KEY = "zavis:chunk-reload-attempted";
 
 function isModifiedClick(event: MouseEvent): boolean {
@@ -29,11 +29,6 @@ function isChunkLoadFailure(value: unknown): boolean {
         : String(value ?? "");
 
   return /ChunkLoadError|Loading chunk|webpackChunk|ERR_QUIC_PROTOCOL_ERROR/i.test(text);
-}
-
-export function dispatchRouteLoadingStart() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(NAVIGATION_EVENT));
 }
 
 export function RouteLoadingOverlay() {
