@@ -201,179 +201,181 @@ export function ProviderDetailTemplate({
 
       {/* Outer container — tight on mobile, generous on desktop */}
       <div className="max-w-z-container mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
-        {/* Breadcrumb */}
-        <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap" aria-label="Breadcrumb">
-          {breadcrumbs.map((b, i) => {
-            const isLast = i === breadcrumbs.length - 1;
-            return (
-              <span key={i} className="inline-flex items-center gap-1.5">
-                {b.href && !isLast ? (
-                  <Link href={b.href} className="hover:text-ink transition-colors">
-                    {b.label}
-                  </Link>
-                ) : (
-                  <span className={isLast ? "text-ink font-medium" : undefined}>{b.label}</span>
-                )}
-                {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
-              </span>
-            );
-          })}
-        </nav>
+        <div className="max-lg:flex max-lg:min-h-[calc(100svh-112px)] max-lg:flex-col max-lg:pb-6">
+          {/* Breadcrumb */}
+          <nav className="font-sans text-z-body-sm text-ink-muted flex items-center gap-1.5 mb-5 flex-wrap" aria-label="Breadcrumb">
+            {breadcrumbs.map((b, i) => {
+              const isLast = i === breadcrumbs.length - 1;
+              return (
+                <span key={i} className="inline-flex items-center gap-1.5">
+                  {b.href && !isLast ? (
+                    <Link href={b.href} className="hover:text-ink transition-colors">
+                      {b.label}
+                    </Link>
+                  ) : (
+                    <span className={isLast ? "text-ink font-medium" : undefined}>{b.label}</span>
+                  )}
+                  {!isLast && <ChevronRight className="h-3.5 w-3.5" />}
+                </span>
+              );
+            })}
+          </nav>
 
-        {/* Title row */}
-        <header className="flex items-start justify-between gap-6 mb-5">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
-                {p.name}
-              </h1>
-              {p.isVerified && <VerifiedClinicBadge variant="hero" />}
+          {/* Title row */}
+          <header className="flex items-start justify-between gap-6 mb-5">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="font-display font-semibold text-ink text-display-md sm:text-[36px] lg:text-[40px] tracking-[-0.02em] leading-[1.1]">
+                  {p.name}
+                </h1>
+                {p.isVerified && <VerifiedClinicBadge variant="hero" />}
+              </div>
+              <div className="mt-2 flex items-center gap-2 flex-wrap font-sans text-z-body-sm text-ink-soft">
+                {hasRating && (
+                  <span className="inline-flex items-center gap-1 text-ink font-semibold">
+                    <Star className="h-3.5 w-3.5 fill-ink text-ink" />
+                    {rating.toFixed(2)}
+                  </span>
+                )}
+                {p.googleReviewCount ? (
+                  <>
+                    <span>·</span>
+                    <a href="#reviews" className="underline decoration-1 underline-offset-2 hover:text-ink">
+                      {p.googleReviewCount.toLocaleString()} {p.googleReviewCount === 1 ? "review" : "reviews"}
+                    </a>
+                  </>
+                ) : null}
+                {categoryName && (
+                  <>
+                    <span>·</span>
+                    <Link href={`/directory/${p.citySlug}/${p.categorySlug}`} className="underline decoration-1 underline-offset-2 hover:text-ink">
+                      {categoryName}
+                    </Link>
+                  </>
+                )}
+                {(areaName || cityName) && (
+                  <>
+                    <span>·</span>
+                    <span>{areaName ? `${areaName}, ${cityName}` : cityName}</span>
+                  </>
+                )}
+              </div>
+              {arabicHref && (
+                <div className="mt-3">
+                  <Link
+                    href={arabicHref}
+                    lang="ar"
+                    hrefLang="ar-AE"
+                    dir="rtl"
+                    className="inline-flex items-center gap-1.5 font-sans text-z-caption font-medium text-ink-soft hover:text-ink"
+                  >
+                    اقرأ هذه الصفحة بالعربية
+                  </Link>
+                </div>
+              )}
+              <p className="mt-4 hidden max-w-3xl font-sans text-z-body text-ink-soft leading-relaxed sm:block">
+                {profileSummary}
+              </p>
+              {profileJumpLinks.length > 0 && (
+                <nav className="mt-4 hidden flex-wrap gap-2 sm:flex" aria-label={`${p.name} profile sections`}>
+                  {profileJumpLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="inline-flex min-h-9 items-center rounded-z-pill border border-ink-line bg-white px-3 py-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:border-ink hover:text-ink transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </nav>
+              )}
             </div>
-            <div className="mt-2 flex items-center gap-2 flex-wrap font-sans text-z-body-sm text-ink-soft">
-              {hasRating && (
-                <span className="inline-flex items-center gap-1 text-ink font-semibold">
-                  <Star className="h-3.5 w-3.5 fill-ink text-ink" />
-                  {rating.toFixed(2)}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
+              <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
+                <HeartButton
+                  size="sm"
+                  ariaLabel={`Save ${p.name}`}
+                  providerId={p.id}
+                  providerName={p.name}
+                  surface="provider_detail"
+                  storageKey={p.id ? undefined : `zavis:saved:${p.slug}`}
+                />
+                <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Mobile-first contact panel keeps conversion actions in the first viewport
+              and pushes long SEO copy below the initial LCP window. */}
+          <section
+            className="lg:hidden max-lg:mt-auto rounded-z-md border border-ink-line bg-white p-4 shadow-z-card"
+            aria-label={`Quick actions for ${p.name}`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-sans text-z-micro uppercase tracking-[0.04em] text-ink-muted">
+                  Contact this provider
+                </p>
+                {hasRating && (
+                  <p className="mt-1 inline-flex items-center gap-1 font-sans text-z-body-sm font-semibold text-ink">
+                    <Star className="h-3.5 w-3.5 fill-ink text-ink" />
+                    {rating.toFixed(2)}
+                    {reviewCount > 0 && (
+                      <span className="font-normal text-ink-muted">
+                        · {reviewCount.toLocaleString()} {reviewCount === 1 ? "review" : "reviews"}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+              {p.isVerified && (
+                <span className="shrink-0 rounded-z-pill bg-accent-soft px-2.5 py-1 font-sans text-z-caption font-semibold text-accent-deep">
+                  Verified
                 </span>
               )}
-              {p.googleReviewCount ? (
-                <>
-                  <span>·</span>
-                  <a href="#reviews" className="underline decoration-1 underline-offset-2 hover:text-ink">
-                    {p.googleReviewCount.toLocaleString()} {p.googleReviewCount === 1 ? "review" : "reviews"}
-                  </a>
-                </>
-              ) : null}
-              {categoryName && (
-                <>
-                  <span>·</span>
-                  <Link href={`/directory/${p.citySlug}/${p.categorySlug}`} className="underline decoration-1 underline-offset-2 hover:text-ink">
-                    {categoryName}
-                  </Link>
-                </>
-              )}
-              {(areaName || cityName) && (
-                <>
-                  <span>·</span>
-                  <span>{areaName ? `${areaName}, ${cityName}` : cityName}</span>
-                </>
-              )}
             </div>
-            {arabicHref && (
-              <div className="mt-3">
-                <Link
-                  href={arabicHref}
-                  lang="ar"
-                  hrefLang="ar-AE"
-                  dir="rtl"
-                  className="inline-flex items-center gap-1.5 font-sans text-z-caption font-medium text-ink-soft hover:text-ink"
-                >
-                  اقرأ هذه الصفحة بالعربية
-                </Link>
-              </div>
-            )}
-            <p className="mt-4 hidden max-w-3xl font-sans text-z-body text-ink-soft leading-relaxed sm:block">
-              {profileSummary}
-            </p>
-            {profileJumpLinks.length > 0 && (
-              <nav className="mt-4 hidden flex-wrap gap-2 sm:flex" aria-label={`${p.name} profile sections`}>
-                {profileJumpLinks.map((link) => (
+
+            <div className="mt-4 grid grid-cols-1 gap-2">
+              <Link
+                href={primaryCtaHref}
+                target={primaryCtaHref.startsWith("http") ? "_blank" : undefined}
+                rel={primaryCtaHref.startsWith("http") ? "noopener" : undefined}
+                className="flex min-h-12 items-center justify-center rounded-z-md bg-accent-deep px-4 py-3 font-sans text-z-body-sm font-semibold text-white transition-colors hover:bg-ink"
+              >
+                {primaryCtaLabel}
+              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                {(p.googleMapsUri || p.address) && (
                   <a
-                    key={link.href}
-                    href={link.href}
-                    className="inline-flex min-h-9 items-center rounded-z-pill border border-ink-line bg-white px-3 py-1.5 font-sans text-z-body-sm font-medium text-ink-soft hover:border-ink hover:text-ink transition-colors"
+                    href={p.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name} ${p.address ?? ""}`)}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
                   >
-                    {link.label}
+                    Directions
                   </a>
-                ))}
-              </nav>
-            )}
-          </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <ShareButton title={p.name} text={`${p.name}${cityName ? ` in ${cityName}` : ""}`} />
-            <div className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-z-pill hover:bg-surface-cream">
-              <HeartButton
-                size="sm"
-                ariaLabel={`Save ${p.name}`}
-                providerId={p.id}
-                providerName={p.name}
-                surface="provider_detail"
-                storageKey={p.id ? undefined : `zavis:saved:${p.slug}`}
-              />
-              <span className="hidden sm:inline font-sans text-z-body-sm text-ink">Save</span>
+                )}
+                {p.website && (
+                  <a
+                    href={p.website}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
+                  >
+                    Website
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        </header>
 
-        {/* Mobile-first contact panel keeps conversion actions above the gallery
-            and prevents the photo mosaic from becoming the initial LCP target. */}
-        <section
-          className="lg:hidden mb-6 rounded-z-md border border-ink-line bg-white p-4 shadow-z-card"
-          aria-label={`Quick actions for ${p.name}`}
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-sans text-z-micro uppercase tracking-[0.04em] text-ink-muted">
-                Contact this provider
+            {p.address && (
+              <p className="mt-3 line-clamp-2 font-sans text-z-body-sm leading-snug text-ink-soft">
+                {p.address}
               </p>
-              {hasRating && (
-                <p className="mt-1 inline-flex items-center gap-1 font-sans text-z-body-sm font-semibold text-ink">
-                  <Star className="h-3.5 w-3.5 fill-ink text-ink" />
-                  {rating.toFixed(2)}
-                  {reviewCount > 0 && (
-                    <span className="font-normal text-ink-muted">
-                      · {reviewCount.toLocaleString()} {reviewCount === 1 ? "review" : "reviews"}
-                    </span>
-                  )}
-                </p>
-              )}
-            </div>
-            {p.isVerified && (
-              <span className="shrink-0 rounded-z-pill bg-accent-soft px-2.5 py-1 font-sans text-z-caption font-semibold text-accent-deep">
-                Verified
-              </span>
             )}
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 gap-2">
-            <Link
-              href={primaryCtaHref}
-              target={primaryCtaHref.startsWith("http") ? "_blank" : undefined}
-              rel={primaryCtaHref.startsWith("http") ? "noopener" : undefined}
-              className="flex min-h-12 items-center justify-center rounded-z-md bg-accent-deep px-4 py-3 font-sans text-z-body-sm font-semibold text-white transition-colors hover:bg-ink"
-            >
-              {primaryCtaLabel}
-            </Link>
-            <div className="grid grid-cols-2 gap-2">
-              {(p.googleMapsUri || p.address) && (
-                <a
-                  href={p.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name} ${p.address ?? ""}`)}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
-                >
-                  Directions
-                </a>
-              )}
-              {p.website && (
-                <a
-                  href={p.website}
-                  target="_blank"
-                  rel="noopener"
-                  className="flex min-h-11 items-center justify-center rounded-z-md border border-ink-hairline bg-white px-3 py-2.5 font-sans text-z-body-sm font-medium text-ink transition-colors hover:border-ink"
-                >
-                  Website
-                </a>
-              )}
-            </div>
-          </div>
-
-          {p.address && (
-            <p className="mt-3 line-clamp-2 font-sans text-z-body-sm leading-snug text-ink-soft">
-              {p.address}
-            </p>
-          )}
-        </section>
+          </section>
+        </div>
 
         {p.isVerified && <VerifiedClinicTrustStrip className="mt-6 hidden sm:block" />}
 
