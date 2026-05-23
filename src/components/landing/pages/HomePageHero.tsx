@@ -58,8 +58,7 @@ export function HomePageHero() {
                   className="h-auto w-full object-cover"
                   sizes="680px"
                   quality={65}
-                  loading="lazy"
-                  fetchPriority="low"
+                  priority
                 />
               </div>
             </div>

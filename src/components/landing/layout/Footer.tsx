@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bot, CalendarCheck, ChevronDown, Globe2, MessageCircle } from "lucide-react";
+import { ArrowRight, Bot, CalendarCheck, MessageCircle } from "lucide-react";
 import { VideoFooterShell } from "@/components/layout/VideoFooterShell";
 
 function InstagramIcon() {
@@ -146,14 +146,7 @@ export function Footer() {
         </div>
       }
       bottom={
-        <div className="flex flex-col gap-3 font-['Geist',sans-serif] text-sm text-[#374151] sm:flex-row sm:items-center sm:justify-between">
-          <span>&copy; 2026 Zavis. All rights reserved.</span>
-          <div className="flex items-center gap-2">
-            <Globe2 className="size-4" />
-            <span>English</span>
-            <ChevronDown className="size-4" />
-          </div>
-        </div>
+        <span className="font-['Geist',sans-serif] text-sm text-[#374151]">&copy; 2026 Zavis. All rights reserved.</span>
       }
     >
       <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-12">

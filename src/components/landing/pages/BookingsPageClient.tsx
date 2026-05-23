@@ -54,7 +54,7 @@ export function BookingsPageClient() {
                 <ImageWithFallback
                   src="/assets/bookings-hero.webp"
                   alt="Reception coordinator at clinic front desk helping patient with booking checklist overlay on screen"
-                  className="w-full h-auto object-cover aspect-[4/3]"
+                  className="w-full object-cover aspect-[4/3]"
                   loading="eager"
                 />
               </div>
