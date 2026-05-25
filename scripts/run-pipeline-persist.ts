@@ -1,8 +1,10 @@
 /**
- * Full autonomous pipeline — runs on GitHub Actions every 2 hours.
- * Uses Claude CLI (installed on EC2) for article generation.
- * No Gemini. Full 3-pass quality (draft + review + anti-AI-tells).
- * OG images from sources. Persists to DB. Zero human intervention.
+ * Full autonomous pipeline — runs on EC2 via host cron, daily.
+ * Article generation: Claude CLI (installed on EC2).
+ * Image generation: Codex CLI (ChatGPT image-gen via ~/.codex/auth.json).
+ * No Gemini, no OpenRouter. Full 3-pass quality (draft + review + anti-AI-tells).
+ * OG images from sources first, Codex-generated fallback, category fallback last.
+ * Persists to DB. Zero human intervention.
  *
  * Usage: npx tsx scripts/run-pipeline-persist.ts
  */
@@ -202,61 +204,125 @@ Return the improved version as JSON with the same fields (slug, title, excerpt, 
   };
 }
 
-// ─── Image Generator via OpenRouter + Gemini 3.1 Flash Image Preview ────────────
+// ─── Image Generator via Codex CLI (ChatGPT image-gen, gpt-image) ──────────────
+// Codex CLI is authenticated via ~/.codex/auth.json on the EC2 box. It runs the
+// ChatGPT subscription's image generation tool and writes the PNG directly to
+// disk. We then read the file, upload to R2, and pass the public URL back.
+// Retries up to 3 times with 30s delay before giving up.
 
-async function generateImage(title: string, category: string): Promise<string | null> {
-  const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_KEY;
-  if (!apiKey) return null;
+import { existsSync, readFileSync, mkdirSync } from "fs";
+
+async function generateImage(title: string, category: string, slug: string): Promise<string | null> {
+  try {
+    execSync("which codex", { stdio: "pipe" });
+  } catch {
+    console.log("[ImageGen] codex CLI not found on PATH — falling back");
+    return null;
+  }
 
   const sceneHint: Record<string, string> = {
-    regulatory: "a formal government hearing room or courtroom with legal documents",
-    financial: "a modern trading floor, financial data screens, or corporate boardroom",
-    technology: "a doctor using a tablet with health data, or a modern lab with screens",
-    "new-openings": "a bright new hospital lobby with glass walls and sunlight",
-    "market-intelligence": "a data analyst studying charts on screens, business setting",
-    workforce: "a diverse group of healthcare workers in a hospital corridor",
-    events: "a large healthcare conference with stage and audience",
-    "thought-leadership": "a senior executive at a podium or in a corner office",
-    "social-pulse": "a smartphone showing social media, minimalist desk setting",
+    regulatory: "a formal UAE government hearing room or courtroom with legal documents on the desk",
+    financial: "a modern trading floor or boardroom in a Dubai financial tower, screens showing markets",
+    technology: "a clinician using a tablet showing health data, modern UAE hospital lab in background",
+    "new-openings": "a bright new UAE hospital lobby with floor-to-ceiling glass walls and morning sunlight",
+    "market-intelligence": "a data analyst at a curved monitor studying healthcare charts, Dubai skyline through window",
+    workforce: "a diverse group of healthcare workers walking through a bright UAE hospital corridor",
+    events: "a large healthcare conference hall in the UAE with stage lighting and an attentive audience",
+    "thought-leadership": "a senior healthcare executive presenting at a podium in a modern UAE auditorium",
+    "social-pulse": "a smartphone showing healthcare social media on a minimalist desk with coffee, soft daylight",
   };
-  const scene = sceneHint[category] || "a modern UAE hospital with clean architecture";
+  const scene = sceneHint[category] || "a modern UAE hospital with clean minimalist architecture and natural light";
 
-  const prompt = `Generate a photojournalistic image for a healthcare news article titled "${title}". The image should depict: ${scene}. Style: editorial, cinematic lighting, shallow depth of field. UAE/Middle East context. NO text, NO watermarks, NO logos. 16:9 landscape.`;
+  const imgDir = "/tmp/intel-img";
+  try { mkdirSync(imgDir, { recursive: true }); } catch { /* ignore */ }
 
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3.1-flash-image-preview",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 8192,
-      }),
-      signal: AbortSignal.timeout(60000),
-    });
+  const MAX_ATTEMPTS = 3;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const outPath = join(imgDir, `${slug}-${Date.now()}.png`);
+    const prompt = [
+      `Generate a photojournalistic editorial image for a UAE healthcare news article.`,
+      `Headline: "${title}"`,
+      `Scene to depict: ${scene}.`,
+      `Style: editorial photograph, cinematic lighting, shallow depth of field, natural colour grading.`,
+      `Crop: 16:9 landscape, high resolution.`,
+      `Strictly NO text, NO watermarks, NO logos, NO readable signage, NO identifiable real faces, NO flags.`,
+      ``,
+      `OUTPUT CONTRACT:`,
+      `- Generate exactly ONE image.`,
+      `- Save the final PNG to: ${outPath}`,
+      `- After saving, reply with exactly one line: SAVED ${outPath}`,
+    ].join("\n");
 
-    if (!response.ok) {
-      console.log(`[ImageGen] API returned ${response.status}`);
-      return null;
-    }
-
-    const data = await response.json();
-    const msg = data.choices?.[0]?.message;
-    // OpenRouter returns generated images in msg.images array
-    const images = msg?.images;
-    if (images && images.length > 0) {
-      const imageUrl = images[0]?.image_url?.url;
-      if (imageUrl && imageUrl.startsWith("data:image")) {
-        return imageUrl;
+    try {
+      execSync(
+        `codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access ${JSON.stringify(prompt)}`,
+        {
+          timeout: 6 * 60 * 1000,
+          stdio: "pipe",
+          maxBuffer: 10 * 1024 * 1024,
+          env: { ...process.env, PATH: process.env.PATH },
+        }
+      );
+    } catch (err) {
+      const errMsg = (err as { stderr?: Buffer; message?: string }).stderr?.toString() ||
+        (err as { message?: string }).message || "";
+      console.log(`[ImageGen] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${errMsg.slice(0, 200)}`);
+      if (attempt < MAX_ATTEMPTS) {
+        console.log(`[ImageGen] retrying in 30s...`);
+        await new Promise((r) => setTimeout(r, 30_000));
       }
+      continue;
     }
-    return null;
+
+    if (!existsSync(outPath)) {
+      console.log(`[ImageGen] attempt ${attempt}/${MAX_ATTEMPTS}: codex ok but no file at ${outPath}`);
+      if (attempt < MAX_ATTEMPTS) {
+        console.log(`[ImageGen] retrying in 30s...`);
+        await new Promise((r) => setTimeout(r, 30_000));
+      }
+      continue;
+    }
+
+    try {
+      const buf = readFileSync(outPath);
+      try { unlinkSync(outPath); } catch { /* ignore */ }
+      console.log(`[ImageGen] success on attempt ${attempt}`);
+      return `data:image/png;base64,${buf.toString("base64")}`;
+    } catch (err) {
+      console.log(`[ImageGen] read failed on attempt ${attempt}: ${String(err).slice(0, 100)}`);
+    }
+  }
+
+  console.log(`[ImageGen] all ${MAX_ATTEMPTS} attempts failed for ${slug}`);
+  return null;
+}
+
+// ─── Slack Notifier ─────────────────────────────────────────────────────────────
+// Supports webhook (SLACK_WEBHOOK_URL) or bot token (SLACK_BOT_TOKEN + SLACK_CHANNEL_ID).
+
+async function notifySlack(message: string): Promise<void> {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  const botToken = process.env.SLACK_BOT_TOKEN;
+  const channelId = process.env.SLACK_CHANNEL_ID;
+  if (!webhookUrl && !botToken) return;
+  try {
+    if (webhookUrl) {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: message }),
+        signal: AbortSignal.timeout(10_000),
+      });
+    } else {
+      await fetch("https://slack.com/api/chat.postMessage", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${botToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ channel: channelId, text: message, unfurl_links: false, unfurl_media: false }),
+        signal: AbortSignal.timeout(10_000),
+      });
+    }
   } catch (err) {
-    console.log(`[ImageGen] Error: ${String(err).slice(0, 100)}`);
-    return null;
+    console.log(`[Slack] notify failed: ${String(err).slice(0, 80)}`);
   }
 }
 
@@ -393,6 +459,7 @@ async function main() {
   if (qualified.length === 0) {
     console.log("Nothing qualified. Done.");
     await pool.end();
+    await notifySlack(`:newspaper: *Intelligence pipeline* — no new qualified items this run. DB total: ${dbRows.length} articles.`);
     return;
   }
 
@@ -412,8 +479,10 @@ async function main() {
   }
   console.log(`\nGenerated: ${articles.length}`);
 
-  // 6. Fetch images — OG from source, then category fallback
+  // 6. Fetch images — OG from source, Codex (with retries), then category fallback
   console.log("\nFetching images...");
+  let codexSuccesses = 0;
+  let codexFallbacks = 0;
   for (const article of articles) {
     let imageUrl: string | null = null;
 
@@ -425,24 +494,25 @@ async function main() {
       }
     }
 
-    // Try 2: Generate via Imagen 4.0
+    // Try 2: Generate via Codex CLI (ChatGPT image-gen, up to 3 retries)
     if (!imageUrl) {
-      const genImage = await generateImage(article.title, article.category);
+      const genImage = await generateImage(article.title, article.category, article.slug);
       if (genImage) {
-        // Upload to R2 instead of storing base64 in DB
         const r2Url = await uploadToR2(genImage, article.slug);
         if (r2Url) {
           imageUrl = r2Url;
-          console.log(`  [imagen] ${article.slug.slice(0, 40)}`);
+          codexSuccesses++;
+          console.log(`  [codex] ${article.slug.slice(0, 40)}`);
         }
       }
       await new Promise((r) => setTimeout(r, 2000));
     }
 
-    // Try 3: category-default R2 image
+    // Try 3: category-default R2 image (only if Codex exhausted all retries)
     if (!imageUrl) {
       imageUrl = CATEGORY_FALLBACK[article.category] ||
         `${R2_PUBLIC}/intelligence/uae-healthcare-market-to-reach-50-billion-by-2029.webp`;
+      codexFallbacks++;
       console.log(`  [fallback] ${article.slug.slice(0, 40)}`);
     }
 
@@ -472,6 +542,19 @@ async function main() {
   const finalCount = await sql`SELECT COUNT(*) FROM journal_articles`;
   console.log(`\n=== Done: ${persisted} new articles. Total in DB: ${finalCount[0].count} ===`);
   await pool.end();
+
+  const imageDetails = codexSuccesses > 0 || codexFallbacks > 0
+    ? ` | Images: ${codexSuccesses} Codex-generated${codexFallbacks > 0 ? `, ${codexFallbacks} used category fallback` : ""}`
+    : "";
+  await notifySlack(
+    persisted > 0
+      ? `:newspaper: *Intelligence pipeline* — published *${persisted}* new article${persisted === 1 ? "" : "s"}${imageDetails}. Total in DB: ${finalCount[0].count}. <https://www.zavis.ai/intelligence|View Intelligence>`
+      : `:warning: *Intelligence pipeline* — ran but published 0 articles (${articles.length} generated, 0 persisted — likely slug conflicts).${imageDetails}`
+  );
 }
 
-main().catch(console.error);
+main().catch(async (err) => {
+  console.error(err);
+  await notifySlack(`:red_circle: *Intelligence pipeline crashed*: ${String(err).slice(0, 200)}`);
+  process.exit(1);
+});
