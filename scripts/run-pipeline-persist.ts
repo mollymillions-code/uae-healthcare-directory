@@ -75,6 +75,7 @@ OUTPUT CONTRACT:
         timeout: timeoutMs,
         stdio: "pipe",
         maxBuffer: 10 * 1024 * 1024,
+        cwd: tmpdir(), // avoid getcwd() failures when Codex sandbox changes the mount namespace
         env: { ...process.env, PATH: process.env.PATH },
       }
     );
@@ -272,6 +273,7 @@ async function generateImage(title: string, category: string, slug: string): Pro
           timeout: 6 * 60 * 1000,
           stdio: "pipe",
           maxBuffer: 10 * 1024 * 1024,
+          cwd: tmpdir(), // avoid getcwd() failures when Codex sandbox changes the mount namespace
           env: { ...process.env, PATH: process.env.PATH },
         }
       );
