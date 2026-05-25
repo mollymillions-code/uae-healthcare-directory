@@ -1,8 +1,8 @@
 /**
- * Full autonomous pipeline — runs on EC2 via host cron, daily.
- * Article generation: Claude CLI (installed on EC2).
- * Image generation: Codex CLI (ChatGPT image-gen via ~/.codex/auth.json).
- * No Gemini, no OpenRouter. Full 3-pass quality (draft + review + anti-AI-tells).
+ * Full autonomous pipeline — runs on EC2 via host cron, twice daily.
+ * Article generation: Codex CLI (ChatGPT via ~/.codex/auth.json).
+ * Image generation: Codex CLI (same auth, gpt-image tool).
+ * No Gemini, no OpenRouter, no Claude CLI. 2-pass quality (draft + review).
  * OG images from sources first, Codex-generated fallback, category fallback last.
  * Persists to DB. Zero human intervention.
  *
@@ -52,39 +52,51 @@ const CATEGORY_FALLBACK: Record<string, string> = {
   "social-pulse": `${R2_PUBLIC}/intelligence/social-pulse-march-2026-week-2.webp`,
 };
 
-// ─── Claude CLI Runner ──────────────────────────────────────────────────────────
+// ─── Codex CLI Text Runner (article generation) ────────────────────────────────
+// Codex exec writes its JSON response to a temp file and replies "SAVED <path>".
+// Mirrors the image-gen contract so both paths share the same auth + tooling.
 
-import { writeFileSync, unlinkSync } from "fs";
+import { unlinkSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 
-function callClaude(prompt: string, timeoutMs = 5 * 60 * 1000): string {
-  // Write prompt to temp file to avoid shell argument length limits
-  const tmpFile = join(tmpdir(), `claude-prompt-${Date.now()}.txt`);
+function callCodexText(prompt: string, timeoutMs = 5 * 60 * 1000): string {
+  const outPath = join(tmpdir(), `codex-article-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
+  const fullPrompt = `${prompt}
+
+OUTPUT CONTRACT:
+- Write your complete response as a raw JSON object (no markdown fences, no extra text) to: ${outPath}
+- After writing the file successfully, reply with exactly one line: SAVED ${outPath}`;
+
   try {
-    writeFileSync(tmpFile, prompt, "utf-8");
-    const result = execSync(
-      `cat "${tmpFile}" | claude --print -p -`,
+    execSync(
+      `codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access ${JSON.stringify(fullPrompt)}`,
       {
         timeout: timeoutMs,
+        stdio: "pipe",
         maxBuffer: 10 * 1024 * 1024,
-        encoding: "utf-8",
-        env: {
-          ...process.env,
-          PATH: process.env.PATH,
-          // Pass OAuth token so Claude CLI can authenticate on headless EC2
-          CLAUDE_CODE_OAUTH_TOKEN: process.env.CLAUDE_CODE_OAUTH_TOKEN || "",
-        },
+        env: { ...process.env, PATH: process.env.PATH },
       }
     );
-    return result.trim();
   } catch (err) {
-    const error = err as { stderr?: string; message?: string };
-    const errMsg = error.stderr || error.message || "";
-    console.error(`[Claude CLI] Error: ${errMsg.slice(0, 200)}`);
+    const errMsg = (err as { stderr?: Buffer; message?: string }).stderr?.toString() ||
+      (err as { message?: string }).message || "";
+    console.error(`[Codex] text exec failed: ${errMsg.slice(0, 200)}`);
     return "";
-  } finally {
-    try { unlinkSync(tmpFile); } catch { /* ignore */ }
+  }
+
+  if (!existsSync(outPath)) {
+    console.error(`[Codex] ran OK but no output file at ${outPath}`);
+    return "";
+  }
+
+  try {
+    const content = readFileSync(outPath, "utf-8").trim();
+    try { unlinkSync(outPath); } catch { /* ignore */ }
+    return content;
+  } catch (err) {
+    console.error(`[Codex] read failed: ${String(err).slice(0, 100)}`);
+    return "";
   }
 }
 
@@ -102,7 +114,7 @@ function extractJson(output: string): Record<string, unknown> | null {
   return null;
 }
 
-// ─── Article Generation via Claude CLI ──────────────────────────────────────────
+// ─── Article Generation via Codex CLI ───────────────────────────────────────────
 
 interface GeneratedArticle {
   slug: string;
@@ -122,7 +134,7 @@ interface GeneratedArticle {
   imageUrl?: string | null;
 }
 
-function generateArticleViaClaude(item: RawFeedItem): GeneratedArticle | null {
+function generateArticleViaCodex(item: RawFeedItem): GeneratedArticle | null {
   const category = classifyCategory(item);
   const systemPrompt = getArticleSystemPrompt();
 
@@ -152,7 +164,7 @@ Generate a JSON object with these exact fields (JSON only, no markdown fences):
 The body must be ORIGINAL writing based on the source facts. Add UAE healthcare market context. Write like a human journalist with 10 years covering UAE healthcare. Return ONLY the JSON object.`;
 
   console.log(`  [Draft] Generating: ${item.title.slice(0, 60)}...`);
-  const draftOutput = callClaude(prompt);
+  const draftOutput = callCodexText(prompt);
   if (!draftOutput) return null;
 
   const parsed = extractJson(draftOutput);
@@ -161,7 +173,7 @@ The body must be ORIGINAL writing based on the source facts. Add UAE healthcare 
     return null;
   }
 
-  // Pass 2: Review and improve via Claude CLI
+  // Pass 2: Review and improve via Codex CLI
   const reviewPrompt = `${getReviewEditorSystemPrompt()}
 
 ---
@@ -181,7 +193,7 @@ CRITICAL FORMATTING REQUIREMENT — the body HTML must be visually rich:
 Return the improved version as JSON with the same fields (slug, title, excerpt, body, tags, readTimeMinutes). JSON only, no markdown fences. If the draft is already strong, make targeted improvements — don't rewrite from scratch. Return ONLY the JSON object.`;
 
   console.log(`  [Review] Editing: ${(parsed.title as string).slice(0, 60)}...`);
-  const reviewOutput = callClaude(reviewPrompt);
+  const reviewOutput = callCodexText(reviewPrompt);
   const improved = reviewOutput ? extractJson(reviewOutput) : null;
 
   const final = improved && improved.body ? improved : parsed;
@@ -399,12 +411,12 @@ async function fetchOgImage(url: string): Promise<string | null> {
 // ─── Main Pipeline ──────────────────────────────────────────────────────────────
 
 async function main() {
-  // Verify Claude CLI is available
+  // Verify Codex CLI is available
   try {
-    execSync("which claude", { stdio: "pipe" });
-    console.log("[Pipeline] Claude CLI: found");
+    execSync("which codex", { stdio: "pipe" });
+    console.log("[Pipeline] Codex CLI: found");
   } catch {
-    console.error("[Pipeline] FATAL: Claude CLI not installed. Cannot generate articles.");
+    console.error("[Pipeline] FATAL: Codex CLI not installed. Cannot generate articles.");
     process.exit(1);
   }
 
@@ -414,7 +426,7 @@ async function main() {
     idleTimeoutMillis: 10000,
   });
   const sql = createSql(pool);
-  console.log("=== Full Autonomous Pipeline (Claude CLI) ===\n");
+  console.log("=== Full Autonomous Pipeline (Codex CLI) ===\n");
 
   // 1. Fetch all feeds
   const feedItems = await fetchAllFeeds();
@@ -463,13 +475,13 @@ async function main() {
     return;
   }
 
-  // 5. Generate articles via Claude CLI (sequential — each article gets full attention)
+  // 5. Generate articles via Codex CLI (sequential — each article gets full attention)
   const toProcess = qualified.slice(0, MAX_ARTICLES_PER_RUN).map((s) => s.item);
-  console.log(`\nGenerating ${toProcess.length} articles via Claude CLI (2-pass: draft + review)...\n`);
+  console.log(`\nGenerating ${toProcess.length} articles via Codex CLI (2-pass: draft + review)...\n`);
 
   const articles: GeneratedArticle[] = [];
   for (const item of toProcess) {
-    const article = generateArticleViaClaude(item);
+    const article = generateArticleViaCodex(item);
     if (article) {
       articles.push(article);
       console.log(`  [ok] ${article.title.slice(0, 60)}`);
