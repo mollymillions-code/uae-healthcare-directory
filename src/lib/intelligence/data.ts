@@ -4,9 +4,11 @@ import type { JournalArticle, JournalCategory, JournalEvent, SocialPost } from "
 // Reads from Neon Postgres. Returns empty data if DB unavailable.
 
 let _dbArticles: JournalArticle[] | null = null;
+let _dbArticlesAt = 0;
+const DB_CACHE_TTL = 5 * 60 * 1000; // 5 minutes — pipeline publishes every 6-8h, this keeps articles fresh without hammering DB
 
 async function getDbArticles(): Promise<JournalArticle[]> {
-  if (_dbArticles !== null) return _dbArticles;
+  if (_dbArticles !== null && Date.now() - _dbArticlesAt < DB_CACHE_TTL) return _dbArticles;
 
   if (!process.env.DATABASE_URL) {
     _dbArticles = [];
@@ -152,11 +154,13 @@ async function getDbArticles(): Promise<JournalArticle[]> {
         : [],
     }));
 
+    _dbArticlesAt = Date.now();
     console.log(`[Journal] Loaded ${_dbArticles.length} articles from DB`);
     return _dbArticles;
   } catch (e: unknown) {
     console.error("[Journal] DB error:", e instanceof Error ? e.message : e);
     _dbArticles = [];
+    _dbArticlesAt = Date.now();
     return _dbArticles;
   }
 }
