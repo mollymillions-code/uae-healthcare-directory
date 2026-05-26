@@ -128,10 +128,10 @@ const GUIDES: Record<string, LabGuide> = {
 
   "pre-marital-screening": {
     slug: "pre-marital-screening",
-    title: "Pre-Marital Screening in the UAE — Required Tests, Cost & Labs",
+    title: "UAE Pre-Marital Screening 2026 — Mandatory Tests, AED 200–500 Cost & Certificate",
     h1: "Pre-Marital Blood Screening in the UAE: Required Tests, Cost & Where to Go",
     metaDescription:
-      "UAE pre-marital screening is mandatory by federal law since 2006. Full guide: required tests (blood group, CBC, sickle cell, thalassemia, HIV, hepatitis, syphilis, rubella), cost AED 200–500, certificate validity, and where to get tested. Updated March 2026.",
+      "UAE pre-marital screening is legally required for all couples marrying in the UAE. 9-test panel: sickle cell, thalassemia, HIV, hepatitis B/C, rubella & more. Cost: AED 200–500. Certificate valid 3 months. Compare DHA, DOH & private labs.",
     heroText:
       "Pre-marital screening is compulsory in the UAE under Federal Law No. 22 of 2006, later reinforced by the UAE healthcare regulator Circular 34/2006. All UAE nationals and residents planning to marry in the UAE must complete the screening at an approved government health centre or licensed private laboratory. The certificate is valid for 3 months and must be presented to the court or marriage registrar.",
     quickFacts: [

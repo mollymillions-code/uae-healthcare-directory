@@ -87,9 +87,9 @@ const GUIDE_ARTICLES: GuideArticle[] = [
   },
   {
     slug: "what-is-dha",
-    title: "What is DHA? Dubai Health Authority Explained",
+    title: "DHA License Verification — Check Any Dubai Healthcare Licence | Dubai Health Authority",
     metaDescription:
-      "Everything about the Dubai Health Authority (DHA) — what it regulates, how licensing works, its role in DHCC, and how it protects patients in Dubai.",
+      "How to verify a DHA licence for any doctor, clinic, or pharmacy in Dubai. Step-by-step guide to the DHA Professional Licensing Register, DHA app, and what DHA regulates across Dubai's healthcare sector.",
     body: [
       "The Dubai Health Authority (DHA) was established in 2007 as the government entity responsible for managing and overseeing the health sector in the Emirate of Dubai. DHA operates public hospitals and primary healthcare centres, licenses private healthcare facilities and professionals, and sets the regulatory framework for health insurance and patient safety standards across the emirate.",
       "DHA maintains the Dubai Licensed Facilities Register, a public database of all licensed hospitals, clinics, pharmacies, and other healthcare establishments. Every facility operating in <a href=\"/directory/dubai\" class=\"text-accent-dark hover:underline\">Dubai</a> must hold a valid DHA licence, and all healthcare professionals — physicians, nurses, pharmacists, and allied health workers — must be individually licensed through DHA's professional licensing system. DHA also enforces mandatory health insurance through Dubai Health Insurance Law No. 11 of 2013. The authority oversees Dubai Healthcare City (DHCC) through the Dubai Healthcare City Authority (DHCA).",

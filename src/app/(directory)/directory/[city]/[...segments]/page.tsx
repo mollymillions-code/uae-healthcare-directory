@@ -106,15 +106,27 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       const canonicalUrl = `${baseCategoryUrl}${pageSuffix}`;
       const arCanonicalUrl = `${base}/ar/directory/${city.slug}/${resolved.category.slug}${pageSuffix}`;
 
+      // Categories dominated by "near me" local intent — proximity framing converts better
+      const nearMeCategories = new Set(["pharmacy", "dental", "general-practice", "physiotherapy", "optical"]);
+      const isNearMe = nearMeCategories.has(resolved.category.slug) && total > 0 && page === 1;
+
+      const seoTitle = isNearMe
+        ? truncateTitle(`Find ${resultLabel} Near You in ${city.name} — ${displayCount} ${cityRegLabel}-Licensed${pageTitleSuffix}`)
+        : truncateTitle(`${displayCount} Best ${resultLabel} in ${city.name} [${year}]${pageTitleSuffix}`);
+
+      const seoDescription = isNearMe
+        ? truncateDescription(`Find open ${resolved.category.name.toLowerCase()} near you in ${city.name}. ${total} ${cityRegLabel}-licensed locations — browse by area, check hours, see insurance accepted. Free on Zavis.`)
+        : truncateDescription(
+            total > 0
+              ? `Compare ${total} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} in ${city.name}. Verified ratings, insurance accepted & hours. Free on Zavis.`
+              : doctorCount > 0
+              ? `Browse ${doctorCount} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}. Facility listings for this specialty are being expanded.`
+              : `No facility-level ${resolved.category.name.toLowerCase()} listings are available in ${city.name} yet. Browse all clinics in ${city.name} instead.`
+          );
+
       return {
-        title: truncateTitle(`${displayCount} Best ${resultLabel} in ${city.name} [${year}]${pageTitleSuffix}`),
-        description: truncateDescription(
-          total > 0
-            ? `Compare ${total} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} in ${city.name}. Verified ratings, insurance accepted & hours. Free on Zavis.`
-            : doctorCount > 0
-            ? `Browse ${doctorCount} ${cityRegLabel}-licensed ${resolved.category.name.toLowerCase()} doctors in ${city.name}. Facility listings for this specialty are being expanded.`
-            : `No facility-level ${resolved.category.name.toLowerCase()} listings are available in ${city.name} yet. Browse all clinics in ${city.name} instead.`
-        ),
+        title: seoTitle,
+        description: seoDescription,
         alternates: {
           canonical: canonicalUrl,
           languages: {
