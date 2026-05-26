@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Newspaper, BookOpen, LogIn } from "lucide-react";
+import { MapPin, Newspaper, BookOpen, LogIn, Wrench } from "lucide-react";
 import { ShimmerLink } from "@/components/landing/ui/shimmer-button";
 import { megaMenus } from "./types";
 import { MobileAccordion } from "./MobileAccordion";
@@ -58,6 +58,17 @@ export function MobileNav({
           >
             <Newspaper className="w-4 h-4 opacity-50" />
             Intelligence
+          </Link>
+        </div>
+        <div className="border-b border-black/5">
+          <Link
+            href="/tools"
+            prefetch={false}
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2.5 py-4 font-['Bricolage_Grotesque',sans-serif] font-medium text-black"
+          >
+            <Wrench className="w-4 h-4 opacity-50" />
+            Tools
           </Link>
         </div>
         <div className="border-b border-black/5">

@@ -83,6 +83,13 @@ export function DesktopNav({
           Intelligence
         </Link>
         <Link
+          href="/tools"
+          prefetch={false}
+          className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
+        >
+          Tools
+        </Link>
+        <Link
           href="/research"
           prefetch={false}
           className="flex items-center gap-1.5 px-4 py-2 font-['Bricolage_Grotesque',sans-serif] font-medium text-[16px] text-black hover:text-[#006828] transition-colors rounded-lg"
