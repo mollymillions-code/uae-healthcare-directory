@@ -289,7 +289,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Which Labs Accept Walk-Ins in the UAE",
         content:
-          "Almost all standalone diagnostic labs in the UAE accept walk-in patients for standard blood tests. The most walk-in friendly chains are: Medsol Diagnostics (Dubai, Sharjah, Abu Dhabi) — no appointment, no referral required, open 7 AM–10 PM Saturday to Thursday. Alpha Medical Laboratory (Dubai, Bur Dubai and Al Karama) — walk-in priority system, open 7:30 AM–9:30 PM. Al Borg Diagnostics (17 branches across UAE) — walk-ins accepted at all branches; appointment available via their app for shorter waits. Thumbay Labs (Dubai, Ajman, Sharjah, Fujairah) — walk-ins accepted 7:30 AM onwards. STAR Metropolis (Dubai, three branches) — walk-ins accepted; Saturdays are the busiest day.\n\nHospital-based labs (e.g., Rashid Hospital, Mediclinic, Cleveland Clinic Abu Dhabi) generally do NOT accept external walk-in patients without a doctor's referral from within that hospital system.",
+          "Almost all standalone diagnostic labs in the UAE accept walk-in patients for standard blood tests. The most walk-in friendly chains are: Medsol Diagnostics (Dubai, Sharjah, Abu Dhabi) — no appointment, no referral required, open 7 AM–10 PM Saturday to Thursday. Alpha Medical Laboratory (Dubai, Al Barsha Heights) — walk-in priority system, open 24/7. Al Borg Diagnostics (17 branches across UAE) — walk-ins accepted at all branches; appointment available via their app for shorter waits. Thumbay Labs (Dubai, Ajman, Sharjah, Fujairah) — walk-ins accepted 7:30 AM onwards. STAR Metropolis (Dubai, three branches) — walk-ins accepted; Saturdays are the busiest day.\n\nHospital-based labs (e.g., Rashid Hospital, Mediclinic, Cleveland Clinic Abu Dhabi) generally do NOT accept external walk-in patients without a doctor's referral from within that hospital system.",
       },
       {
         heading: "Walk-In vs Appointment: What's the Difference",
@@ -309,7 +309,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Walk-In Labs by Area — Dubai",
         content:
-          "Deira: Al Borg branch (near Gold Souk area) and Medsol Deira branch are both well-known walk-in labs serving the large expat population in Deira. Expect higher queues due to dense population. Al Borg Deira opens at 7 AM Saturday–Thursday.\n\nBur Dubai / Mankhool: Alpha Medical Laboratory operates two Bur Dubai walk-in branches with reputation for fast service and competitive pricing. Medsol also has a Bur Dubai branch.\n\nAl Karama: Multiple standalone labs accept walk-ins; Alpha Medical Karama branch and Thumbay Karama are popular with South Asian expat community due to competitive pricing.\n\nJumeirah / JBR / Marina: Al Borg JBR and Medsol JLT are the primary walk-in options in this corridor. Slightly more expensive than Deira/Bur Dubai branches but significantly shorter queues due to less density.\n\nDubai Healthcare City: Unilabs (premium, DHCC campus) and MenaLabs both accept walk-ins. Premium pricing, shorter queues, and specialised tests not available elsewhere.",
+          "Deira: Al Borg branch (near Gold Souk area) and Medsol Deira branch are both well-known walk-in labs serving the large expat population in Deira. Expect higher queues due to dense population. Al Borg Deira opens at 7 AM Saturday–Thursday.\n\nAl Barsha Heights: Alpha Medical Laboratory operates at Al Barsha Heights (Sheikh Zayed Road) with 24/7 service and free home collection.\n\nAl Karama: Multiple standalone labs accept walk-ins; Thumbay Karama is popular with the South Asian expat community.\n\nJumeirah / JBR / Marina: Al Borg JBR and Medsol JLT are the primary walk-in options in this corridor. Slightly more expensive than Deira/Bur Dubai branches but significantly shorter queues due to less density.\n\nDubai Healthcare City: Unilabs (premium, DHCC campus) and MenaLabs both accept walk-ins. Premium pricing, shorter queues, and specialised tests not available elsewhere.",
       },
     ],
     relatedTests: ["cbc", "vitamin-d", "lipid-profile", "hba1c", "tsh", "lft", "kft"],
@@ -338,7 +338,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "What is the cheapest walk-in blood test lab in the UAE?",
         answer:
-          "Medsol Diagnostics offers the lowest standard walk-in pricing: CBC  Vitamin D  lipid profile  and full basic health check . Alpha Medical Laboratory is comparably priced with free home collection in Dubai.",
+          "Medsol Diagnostics offers the lowest standard walk-in pricing: CBC  Vitamin D  lipid profile  and full basic health check . Alpha Medical Laboratory offers free home collection in Dubai.",
       },
     ],
   },
@@ -361,12 +361,12 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Friday Hours Across UAE Labs",
         content:
-          "The UAE working week runs Sunday through Thursday, with Friday being the Islamic holy day. Most standalone labs and health centres either close for the full morning or operate reduced hours. Here is a breakdown by lab:\n\nAl Borg Diagnostics: Friday 2:00 PM – 10:00 PM (some branches). Closed Friday morning.\nThumbay Labs: Friday 9:00 AM – 6:00 PM (unusual — one of the few chains open Friday morning). This is because Thumbay Labs primarily serves Ajman and Northern Emirates where competition requires extended hours.\nMedsol Diagnostics: Friday 2:00 PM – 10:00 PM.\nAlpha Medical Laboratory: Friday 9:00 AM – 5:00 PM (partial).\nUnilabs Dubai: Friday closed — not open.\nMenaLabs: Friday 9:00 AM – 5:00 PM.\nPureLab Abu Dhabi: Open 24/7 including Friday.\nDarDoc (home collection): Daily 7:00 AM – 11:00 PM including Fridays — book via the DarDoc app.\nHealthchecks360: Daily 7:00 AM – 10:00 PM including Fridays — book in advance.",
+          "The UAE working week runs Sunday through Thursday, with Friday being the Islamic holy day. Most standalone labs and health centres either close for the full morning or operate reduced hours. Here is a breakdown by lab:\n\nAl Borg Diagnostics: Friday 2:00 PM – 10:00 PM (some branches). Closed Friday morning.\nThumbay Labs: Friday 9:00 AM – 6:00 PM (unusual — one of the few chains open Friday morning). This is because Thumbay Labs primarily serves Ajman and Northern Emirates where competition requires extended hours.\nMedsol Diagnostics: Friday 2:00 PM – 10:00 PM.\nAlpha Medical Laboratory: Open 24/7 including Fridays.\nUnilabs Dubai: Friday closed — not open.\nMenaLabs: Friday 9:00 AM – 5:00 PM.\nPureLab Abu Dhabi: Open 24/7 including Friday.\nDarDoc (home collection): Daily 7:00 AM – 11:00 PM including Fridays — book via the DarDoc app.\nHealthchecks360: Daily 7:00 AM – 10:00 PM including Fridays — book in advance.",
       },
       {
         heading: "Saturday Hours — Full Working Day",
         content:
-          "Saturday is a full working day for virtually all UAE diagnostic labs. Expect the same hours as Sunday–Thursday at most chains:\n\nAl Borg Diagnostics: Saturday 7:00 AM – 10:00 PM. Note: Saturday mornings (especially 8–10 AM) are the single busiest time of the week as patients freed from workweek commitments come in for fasting tests. Arrive at 7 AM to beat the queue.\nThumbay Labs: Saturday 7:30 AM – 9:00 PM.\nMedsol Diagnostics: Saturday 7:00 AM – 10:00 PM.\nAlpha Medical Laboratory: Saturday 7:30 AM – 9:30 PM.\nUnilabs: Saturday 7:00 AM – 9:00 PM.\nMenaLabs: Saturday 7:30 AM – 8:00 PM.\nNational Reference Laboratory (NRL, Abu Dhabi): Saturday 8:00 AM – 4:00 PM. Note NRL is closed Sunday — different working week structure as a government-affiliated entity.\nPureLab (Abu Dhabi): 24/7 including Saturday.",
+          "Saturday is a full working day for virtually all UAE diagnostic labs. Expect the same hours as Sunday–Thursday at most chains:\n\nAl Borg Diagnostics: Saturday 7:00 AM – 10:00 PM. Note: Saturday mornings (especially 8–10 AM) are the single busiest time of the week as patients freed from workweek commitments come in for fasting tests. Arrive at 7 AM to beat the queue.\nThumbay Labs: Saturday 7:30 AM – 9:00 PM.\nMedsol Diagnostics: Saturday 7:00 AM – 10:00 PM.\nAlpha Medical Laboratory: Open 24/7 including Saturdays.\nUnilabs: Saturday 7:00 AM – 9:00 PM.\nMenaLabs: Saturday 7:30 AM – 8:00 PM.\nNational Reference Laboratory (NRL, Abu Dhabi): Saturday 8:00 AM – 4:00 PM. Note NRL is closed Sunday — different working week structure as a government-affiliated entity.\nPureLab (Abu Dhabi): 24/7 including Saturday.",
       },
       {
         heading: "24/7 Labs and Emergency Lab Access",
@@ -376,7 +376,7 @@ const GUIDES: Record<string, LabGuide> = {
       {
         heading: "Tips for Friday Fasting Tests",
         content:
-          "If you need a fasting test and can only go on a Friday, you have two primary options: (1) Go to a lab that opens Friday morning, such as Thumbay Labs (9 AM) or Alpha Medical (9 AM). These labs cover Dubai, Ajman, and Sharjah. (2) Book a home collection with DarDoc or Healthchecks360 — Friday morning home collection is available, and you remain fasting at home until the nurse arrives (typically 7–10 AM slot).\n\nFor labs that only open Friday afternoon (2 PM onwards), fasting tests become impractical — most patients cannot fast until 2 PM comfortably, especially in the UAE heat. If this is your situation, schedule your fasting test for a Saturday morning or use a home collection service.\n\nDuring Ramadan, Friday patterns shift significantly. Labs adjust hours to accommodate fasting Muslims — many open evening hours (8 PM–12 AM or later) when patients can come after breaking their fast. Blood draws during Ramadan fasting hours are technically possible for non-fasting patients; fasting Muslims typically wait until after iftar for non-mandatory tests.",
+          "If you need a fasting test and can only go on a Friday, you have two primary options: (1) Go to a lab open Friday morning, such as Thumbay Labs (9 AM) or Alpha Medical Laboratory (24/7, Al Barsha Heights Dubai). (2) Book a home collection with DarDoc or Healthchecks360 — Friday morning home collection is available, and you remain fasting at home until the nurse arrives (typically 7–10 AM slot).\n\nFor labs that only open Friday afternoon (2 PM onwards), fasting tests become impractical — most patients cannot fast until 2 PM comfortably, especially in the UAE heat. If this is your situation, schedule your fasting test for a Saturday morning or use a home collection service.\n\nDuring Ramadan, Friday patterns shift significantly. Labs adjust hours to accommodate fasting Muslims — many open evening hours (8 PM–12 AM or later) when patients can come after breaking their fast. Blood draws during Ramadan fasting hours are technically possible for non-fasting patients; fasting Muslims typically wait until after iftar for non-mandatory tests.",
       },
       {
         heading: "Public Holidays and Ramadan Hours",
@@ -390,17 +390,17 @@ const GUIDES: Record<string, LabGuide> = {
       {
         question: "Which labs are open on Friday mornings in the UAE?",
         answer:
-          "Thumbay Labs opens Friday at 9 AM (Dubai, Ajman, Sharjah branches). Alpha Medical Laboratory opens Friday at 9 AM in Dubai. MenaLabs opens Friday at 9 AM in Dubai and Abu Dhabi. PureLab in Abu Dhabi is open 24/7 including Friday mornings. DarDoc and Healthchecks360 offer home collection from 7 AM on Fridays.",
+          "Thumbay Labs opens Friday at 9 AM (Dubai, Ajman, Sharjah branches). Alpha Medical Laboratory is open 24/7 in Dubai (Al Barsha Heights). MenaLabs opens Friday at 9 AM in Dubai and Abu Dhabi. PureLab in Abu Dhabi is open 24/7 including Friday mornings. DarDoc and Healthchecks360 offer home collection from 7 AM on Fridays.",
       },
       {
         question: "Are blood test labs open on Saturday in the UAE?",
         answer:
-          "Yes. Saturday is a standard working day at virtually all UAE diagnostic labs. Al Borg, Thumbay, Medsol, Alpha Medical, Unilabs, and MenaLabs all operate full Saturday hours (typically 7–7:30 AM through 8–10 PM). Note that NRL in Abu Dhabi closes on Sunday instead.",
+          "Yes. Saturday is a standard working day at virtually all UAE diagnostic labs. Al Borg, Thumbay, Medsol, Unilabs, and MenaLabs all operate full Saturday hours (typically 7–7:30 AM through 8–10 PM). Alpha Medical Laboratory is open 24/7. Note that NRL in Abu Dhabi closes on Sunday instead.",
       },
       {
         question: "Can I get a fasting blood test on Friday in the UAE?",
         answer:
-          "Yes, but you need to either find a lab open Friday morning (Thumbay, Alpha Medical, MenaLabs) or book a home collection service (DarDoc, Healthchecks360) that operates Friday mornings from 7 AM. Labs that only open Friday afternoon (2 PM) make fasting tests impractical for most patients.",
+          "Yes, but you need to either find a lab open Friday morning (Thumbay, Alpha Medical — 24/7, MenaLabs) or book a home collection service (DarDoc, Healthchecks360) that operates Friday mornings from 7 AM. Labs that only open Friday afternoon (2 PM) make fasting tests impractical for most patients.",
       },
       {
         question: "Are any UAE labs open 24 hours?",
