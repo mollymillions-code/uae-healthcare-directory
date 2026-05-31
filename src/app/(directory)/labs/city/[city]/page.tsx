@@ -435,7 +435,6 @@ export default async function LabCityPage({
               lab={lab}
               testCount={prices.length}
               packageCount={packages.length}
-              cheapestFrom={cheapest}
             />
           );
         })}

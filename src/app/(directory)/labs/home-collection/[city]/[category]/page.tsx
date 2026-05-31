@@ -561,7 +561,6 @@ export default async function HomeCollectionCityCategoryPage(
                 lab={lab}
                 testCount={prices.length}
                 packageCount={packages.length}
-                cheapestFrom={cheapest}
               />
             );
           })}

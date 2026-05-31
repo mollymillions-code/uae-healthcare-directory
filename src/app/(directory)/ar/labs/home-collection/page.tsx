@@ -269,7 +269,6 @@ export default function ArabicHomeCollectionPage() {
               lab={lab}
               testCount={prices.length}
               packageCount={packages.length}
-              cheapestFrom={cheapest}
             />
           );
         })}

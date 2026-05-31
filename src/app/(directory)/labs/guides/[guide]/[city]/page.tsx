@@ -1013,7 +1013,6 @@ export default async function LabGuideCityPage({
                       key={lab.slug}
                       lab={lab}
                       testCount={matchCount}
-                      cheapestFrom={cheapest > 0 ? cheapest : undefined}
                     />
                   ))}
                 </div>

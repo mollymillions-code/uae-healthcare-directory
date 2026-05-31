@@ -448,7 +448,6 @@ export default async function ArabicHomeCollectionCityPage(
               lab={lab}
               testCount={prices.length}
               packageCount={packages.length}
-              cheapestFrom={cheapest}
             />
           );
         })}

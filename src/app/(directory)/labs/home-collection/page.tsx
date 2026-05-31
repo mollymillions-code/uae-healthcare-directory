@@ -276,7 +276,6 @@ export default function HomeCollectionPage() {
               lab={lab}
               testCount={prices.length}
               packageCount={packages.length}
-              cheapestFrom={cheapest}
             />
           );
         })}

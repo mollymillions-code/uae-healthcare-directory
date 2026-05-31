@@ -444,7 +444,6 @@ export default async function ArabicLabCityPage({
               lab={lab}
               testCount={prices.length}
               packageCount={packages.length}
-              cheapestFrom={cheapest}
             />
           );
         })}
