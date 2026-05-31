@@ -21,7 +21,7 @@ import {
   type LabList,
   type LabListItem,
 } from "@/lib/labs-lists";
-import { getLabTest, formatPrice } from "@/lib/labs";
+import { getLabTest } from "@/lib/labs";
 import { CITIES } from "@/lib/constants/cities";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -94,7 +94,7 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
 
   switch (list.listType) {
     case "cheapest-labs": {
-      const topPrice = top.price != null ? formatPrice(top.price) : null;
+      const topPrice = top.price != null ? "contact lab for pricing" : null;
       const prices = items.filter((i) => i.price != null).map((i) => i.price as number);
       const maxPrice = prices.length > 1 ? Math.max(...prices) : null;
       const minPrice = prices.length > 0 ? Math.min(...prices) : null;
@@ -117,7 +117,7 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
 
     case "cheapest-test": {
       if (!testName) break;
-      const topPrice = top.price != null ? formatPrice(top.price) : null;
+      const topPrice = top.price != null ? "contact lab for pricing" : null;
       const prices = items.filter((i) => i.price != null).map((i) => i.price as number);
       const maxPrice = prices.length > 1 ? Math.max(...prices) : null;
       const expensiveLab = maxPrice
@@ -128,7 +128,7 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
       let answer = `The cheapest ${testName} in ${cityName}`;
       if (topPrice) answer += ` costs ${topPrice} at ${top.name}`;
       if (expensiveLab && maxPrice) {
-        answer += `, compared to ${formatPrice(maxPrice)} at ${expensiveLab}`;
+        answer += `, compared to ${"contact lab for pricing"} at ${expensiveLab}`;
       }
       answer += `. By comparing ${items.length} labs`;
       if (savings && savings > 0) {
@@ -148,8 +148,8 @@ function buildAnswerBlock(list: LabList, items: LabListItem[]): string {
     }
 
     case "packages": {
-      const topPrice = top.price != null ? formatPrice(top.price) : null;
-      let answer = `Health check packages in ${cityName} start from ${topPrice ?? "AED 99"} at ${top.name}. `;
+      const topPrice = top.price != null ? "contact lab for pricing" : null;
+      let answer = `Health check packages in ${cityName} start from ${topPrice ?? "contact lab for current pricing"} at ${top.name}. `;
       answer += `Bundling multiple tests into a package typically saves 30–50% versus ordering tests individually. `;
       answer += `${items.length} packages are listed below, ranked by value. Prices verified March 2026.`;
       return answer;
@@ -182,7 +182,7 @@ function WhyItMattersSection({ list }: { list: LabList }) {
       case "cheapest-labs":
         return {
           heading: "Why Lab Price Comparison Matters",
-          body: `A routine blood test in ${cityName} can cost anywhere from AED 50 at a neighbourhood lab to AED 250 at a hospital-based facility — for the identical test. Over the course of a year, a family tracking cholesterol, diabetes markers, and vitamin D levels could easily overpay by AED 1,000–2,000 without comparing prices first. All major UAE labs — standalone chains, boutique diagnostics, and home-service providers — are licensed under the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator and must meet the same quality and accuracy standards. The price difference is driven by location, brand premium, and overhead, not by better results.`,
+          body: `A routine blood test in ${cityName} can cost anywhere competitively priced at a neighbourhood lab to contact lab for current pricing at a hospital-based facility — for the identical test. Over the course of a year, a family tracking cholesterol, diabetes markers, and vitamin D levels could easily overpay by contact lab for current pricing without comparing prices first. All major UAE labs — standalone chains, boutique diagnostics, and home-service providers — are licensed under the UAE healthcare regulator, the UAE healthcare regulator, or the UAE healthcare regulator and must meet the same quality and accuracy standards. The price difference is driven by location, brand premium, and overhead, not by better results.`,
         };
       case "cheapest-test": {
         const testName = list.testSlug
@@ -191,7 +191,7 @@ function WhyItMattersSection({ list }: { list: LabList }) {
         const testObj = list.testSlug ? getLabTest(list.testSlug) : null;
         return {
           heading: `Why It Pays to Compare ${testName} Prices`,
-          body: `${testName} prices vary significantly across UAE labs even though the methodology and equipment are largely standardised. ${testObj?.fastingRequired ? `Note: fasting for 9–12 hours is required before this test. ` : ""}The price gap between the cheapest and most expensive lab for the same test regularly exceeds AED 100. All accredited UAE labs use automated analysers calibrated to international standards, so accuracy is consistent regardless of price. The difference is lab overhead, location, and brand — not quality.`,
+          body: `${testName} prices vary significantly across UAE labs even though the methodology and equipment are largely standardised. ${testObj?.fastingRequired ? `Note: fasting for 9–12 hours is required before this test. ` : ""}The price gap between the cheapest and most expensive lab for the same test can be significant. All accredited UAE labs use automated analysers calibrated to international standards, so accuracy is consistent regardless of price. The difference is lab overhead, location, and brand — not quality.`,
         };
       }
       case "feature":
@@ -200,7 +200,7 @@ function WhyItMattersSection({ list }: { list: LabList }) {
           case "free-home-collection":
             return {
               heading: "Why Home Blood Collection Matters",
-              body: `Home blood collection saves 1–2 hours versus visiting a lab, eliminates fasting-while-driving risks, and is ideal for elderly patients, young children, and people with mobility limitations. In ${cityName}, UAE-licensed (Dubai) phlebotomists can reach most locations within 30–60 minutes. Many services now offer same-day results. The fee varies from free to AED 100 depending on the lab — with no compromise on accuracy, since the sample is processed at the same CLIA/CAP-accredited lab used for walk-in patients.`,
+              body: `Home blood collection saves 1–2 hours versus visiting a lab, eliminates fasting-while-driving risks, and is ideal for elderly patients, young children, and people with mobility limitations. In ${cityName}, UAE-licensed (Dubai) phlebotomists can reach most locations within 30–60 minutes. Many services now offer same-day results. The fee varies — contact lab directly depending on the lab — with no compromise on accuracy, since the sample is processed at the same CLIA/CAP-accredited lab used for walk-in patients.`,
             };
           case "cap-accredited":
             return {
@@ -216,7 +216,7 @@ function WhyItMattersSection({ list }: { list: LabList }) {
       case "packages":
         return {
           heading: "Package vs Individual Tests — Is It Worth It?",
-          body: `Ordering the same tests as part of a health package typically costs 30–50% less than booking them individually. A basic panel (CBC + lipid profile + glucose + liver + kidney function) ordered individually across most UAE labs costs AED 350–500. The same tests bundled into a package run AED 99–199. For annual health monitoring, packages offer superior value. The caveat: packages include specific tests you may not need, and some tests you do need may not be included — compare package contents carefully before choosing.`,
+          body: `Ordering the same tests as part of a health package typically costs 30–50% less than booking them individually. A basic panel (CBC + lipid profile + glucose + liver + kidney function) ordered individually across most UAE labs varies — contact the lab. The same tests bundled into a package run contact lab for current pricing. For annual health monitoring, packages offer superior value. The caveat: packages include specific tests you may not need, and some tests you do need may not be included — compare package contents carefully before choosing.`,
         };
       case "lab-type":
         return {
@@ -306,13 +306,13 @@ function buildFaqs(
         {
           question: `Which is the cheapest diagnostic lab in ${cityName}?`,
           answer: top
-            ? `According to the UAE Open Healthcare Directory, ${top.name} is the cheapest diagnostic lab in ${cityName}${top.price != null ? ` with tests starting from ${formatPrice(top.price)}` : ""}. ${top.subtitle ? top.subtitle + "." : ""} Always confirm current pricing directly with the lab before booking.`
+            ? `According to the UAE Open Healthcare Directory, ${top.name} is the cheapest diagnostic lab in ${cityName}${top.price != null ? ` with tests starting from ${"contact lab for pricing"}` : ""}. ${top.subtitle ? top.subtitle + "." : ""} Always confirm current pricing directly with the lab before booking.`
             : `Compare labs using the ranking above to find the cheapest option in ${cityName}.`,
         },
         {
           question: `How much does a blood test cost at ${top?.name ?? "the cheapest lab"}?`,
           answer: top
-            ? `${top.name} offers tests starting from ${top.price != null ? formatPrice(top.price) : "competitive prices"}. ${top.description ?? ""} Prices may vary by test type and branch location. Contact the lab directly for current pricing.`
+            ? `${top.name} offers tests starting from ${top.price != null ? "contact lab for pricing" : "competitive prices"}. ${top.description ?? ""} Prices may vary by test type and branch location. Contact the lab directly for current pricing.`
             : `Pricing varies by test. Use the comparison table above for current rates.`,
         },
         {
@@ -322,7 +322,7 @@ function buildFaqs(
         {
           question: `Does ${top?.name ?? "the cheapest lab"} offer home collection?`,
           answer: top
-            ? `${top.name}'s home collection availability is shown in the ranking card above. In ${cityName}, many diagnostic labs offer home blood collection — ${second ? `including ${second.name}` : "check individual lab listings for details"}. Home collection fees typically range from free to AED 100.`
+            ? `${top.name}'s home collection availability is shown in the ranking card above. In ${cityName}, many diagnostic labs offer home blood collection — ${second ? `including ${second.name}` : "check individual lab listings for details"}. Home collection fees typically range from free to contact lab for current pricing.`
             : `Check individual lab listings for home collection availability and fees.`,
         },
       ];
@@ -332,13 +332,13 @@ function buildFaqs(
         {
           question: `How much does ${testName} cost in ${cityName}?`,
           answer: top
-            ? `${testName} costs between ${top.price != null ? formatPrice(top.price) : "competitive prices"} (at ${top.name}) and ${items.filter((i) => i.price != null).length > 1 ? formatPrice(Math.max(...items.filter((i) => i.price != null).map((i) => i.price as number))) : "higher prices"} at other labs in ${cityName}. Compare all ${items.length} labs using the ranking above.`
-            : `Compare ${testName} prices across ${items.length} labs using the ranking above.`,
+            ? `${testName} is available at ${top.name} and ${items.length} other labs in ${cityName}. Contact each lab directly for current pricing. Compare all options using the ranking above.`
+            : `Compare ${testName} availability across ${items.length} labs using the ranking above.`,
         },
         {
           question: `Which lab has the cheapest ${testName} in ${cityName}?`,
           answer: top
-            ? `${top.name} offers the cheapest ${testName} in ${cityName}${top.price != null ? ` at ${formatPrice(top.price)}` : ""}. ${top.subtitle ? top.subtitle + "." : ""} Prices are based on publicly available data from lab websites and price lists. Confirm with the lab before booking.`
+            ? `${top.name} offers the cheapest ${testName} in ${cityName}${top.price != null ? ` at ${"contact lab for pricing"}` : ""}. ${top.subtitle ? top.subtitle + "." : ""} Prices are based on publicly available data from lab websites and price lists. Confirm with the lab before booking.`
             : `See the ranking above for the cheapest ${testName} in ${cityName}.`,
         },
         {
@@ -378,7 +378,7 @@ function buildFaqs(
             },
             {
               question: "How much does home blood collection cost in the UAE?",
-              answer: `Home collection fees in ${cityName} vary from free (${items.filter((i) => i.priceLabel?.includes("free") || i.badges?.includes("Free")).map((i) => i.name).slice(0, 2).join(", ") || "some labs"}) to AED 50–100 for others. The home collection fee is separate from the test price. Some labs waive the fee for orders above a minimum amount.`,
+              answer: `Home collection fees in ${cityName} vary from free (${items.filter((i) => i.priceLabel?.includes("free") || i.badges?.includes("Free")).map((i) => i.name).slice(0, 2).join(", ") || "some labs"}) to contact lab for current pricing for others. The home collection fee is separate from the test price. Some labs waive the fee for orders above a minimum amount.`,
             },
           ];
         default:
@@ -411,13 +411,13 @@ function buildFaqs(
         {
           question: `How much does a health check package cost in ${cityName}?`,
           answer: top
-            ? `Health check packages in ${cityName} start from ${top.price != null ? formatPrice(top.price) : "AED 99"} at ${top.name}. Comprehensive packages covering 50+ biomarkers range from AED 200 to AED 500. Executive packages with cardiac and cancer markers start from AED 700.`
-            : `Health check packages in ${cityName} range from AED 99 (basic) to AED 999 (executive). Compare packages in the ranking above.`,
+            ? `Health check packages in ${cityName} start from ${top.price != null ? "contact lab for pricing" : "contact lab for current pricing"} at ${top.name}. Comprehensive packages covering 50+ biomarkers range varies by lab. Executive packages with cardiac and cancer markers start from contact lab for current pricing.`
+            : `Health check packages in ${cityName} range from contact lab for current pricing (basic) to contact lab for current pricing (executive). Compare packages in the ranking above.`,
         },
         {
           question: "Is a health package better value than individual tests?",
           answer:
-            "Yes, in most cases. Bundling tests into a package saves 30–50% versus ordering the same tests individually. A basic 5-test panel ordered individually costs AED 300–400 at most labs. The same tests bundled into a package run AED 99–180. However, ensure the package includes exactly the tests your doctor recommends — don't pay for tests you don't need.",
+            "Yes, in most cases. Bundling tests into a package saves 30–50% versus ordering the same tests individually. A basic 5-test panel ordered individually varies — contact the lab at most labs. The same tests bundled into a package run contact lab for current pricing. However, ensure the package includes exactly the tests your doctor recommends — don't pay for tests you don't need.",
         },
         {
           question: "Do I need a doctor's referral for a health package?",
@@ -525,7 +525,7 @@ function RankingItemCard({ item, listType }: { item: LabListItem; listType: LabL
             {item.price != null && (
               <div className="flex-shrink-0 text-right">
                 <p className="text-base font-bold text-[#006828] whitespace-nowrap">
-                  {formatPrice(item.price)}
+                  {"contact lab for pricing"}
                 </p>
                 {item.priceLabel && (
                   <p className="text-[10px] text-black/40">{item.priceLabel}</p>
@@ -676,7 +676,7 @@ export default async function LabListPage(props: { params: Promise<{ slug: strin
             <div className="bg-[#f8f8f6] px-3 py-2 flex items-center gap-2">
               <TrendingDown className="w-3.5 h-3.5 text-[#006828]" />
               <span className="text-xs font-bold text-[#1c1c1c]">
-                From {formatPrice(items[0].price)}
+                From {"contact lab for pricing"}
               </span>
             </div>
           )}

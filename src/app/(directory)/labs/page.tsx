@@ -14,7 +14,6 @@ import {
   getPopularTests,
   getPricesForLab,
   getPackagesForLab,
-  formatPrice,
 } from "@/lib/labs";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";
@@ -30,17 +29,12 @@ export function generateMetadata(): Metadata {
       stats.totalLabs +
       " Labs | UAE Open Healthcare Directory",
     description:
-      "Compare prices for " +
-      stats.totalTests +
-      " lab tests across " +
-      stats.totalLabs +
-      " diagnostic laboratories in the UAE. CBC from AED 69, Vitamin D from AED 85, Thyroid Panel from AED 130. Find the cheapest blood test near you in Dubai, Abu Dhabi, and Sharjah with home collection options.",
+      "Find the right diagnostic lab in the UAE. Browse " + stats.totalTests + " lab tests across " + stats.totalLabs + " licensed laboratories in Dubai, Abu Dhabi, and Sharjah. Compare accreditations, home collection availability, and turnaround times.",
     alternates: { canonical: `${base}/labs` },
     openGraph: {
-      title: "UAE Lab Test Price Comparison — Compare Blood Test Costs",
+      title: "UAE Lab Tests & Diagnostics — Find Licensed Labs Near You",
       description:
-        `Compare ${stats.totalTests} lab tests across ${stats.totalLabs} UAE labs. ` +
-        `Save up to 50% by comparing prices. Home collection available.`,
+        `Browse ${stats.totalTests} lab tests across ${stats.totalLabs} UAE licensed diagnostic laboratories. Compare accreditations, home collection options, and result turnaround times.`,
       url: `${base}/labs`,
       type: "website",
     },
@@ -63,17 +57,17 @@ export default function LabsPage() {
     {
       question: "How much does a blood test cost in the UAE?",
       answer:
-        "Blood test prices in the UAE vary significantly by lab and test type. A basic CBC costs between AED 69 and AED 120 depending on the laboratory. Comprehensive health check packages range from AED 99 (budget labs like Medsol) to AED 999 (premium labs like Unilabs). Home collection services typically start from AED 99 for a basic panel. Standalone labs in areas like Deira, Bur Dubai, and Al Karama tend to be cheaper than hospital-based labs or those in DIFC and Downtown Dubai.",
+        "Blood test prices in the UAE vary by lab and test type. Standalone labs in areas like Deira, Bur Dubai, and Al Karama tend to be lower cost than hospital-based labs. Contact each lab directly for current pricing.",
     },
     {
       question: "Can I get a blood test at home in the UAE?",
       answer:
-        "Yes, home blood test collection is widely available across Dubai, Abu Dhabi, and Sharjah. UAE-licensed (Dubai) nurses or phlebotomists visit your location, typically arriving within 30-60 minutes. Services like DarDoc, ServiceMarket, and Healthchecks360 operate daily from 7 AM to 10 PM. Many labs including Thumbay, Medsol, and Alpha Medical offer free home collection, while others charge AED 50-100. Results are delivered digitally within 24-48 hours.",
+        "Yes, home blood test collection is widely available across Dubai, Abu Dhabi, and Sharjah. Licensed phlebotomists visit your location, typically within 30-60 minutes. Services like DarDoc, ServiceMarket, and Healthchecks360 operate daily from 7 AM to 10 PM. Results are delivered digitally within 24-48 hours. Contact each lab to confirm home collection availability and fees.",
     },
     {
-      question: "Which is the cheapest lab for blood tests in the UAE?",
+      question: "Which lab should I use for blood tests in the UAE?",
       answer:
-        "Medsol Diagnostics and Alpha Medical Laboratory generally offer the lowest walk-in prices in the UAE. A basic health check at Medsol starts from AED 99 covering CBC, lipid profile, glucose, liver, and kidney function. For individual tests, Medsol offers CBC from AED 69 and Vitamin D from AED 85. However, prices vary by test — for some specialised tests, Thumbay Labs or STAR Metropolis may be more affordable. Always compare prices for your specific test needs.",
+        "Prices vary by test and lab. Standalone labs like Medsol Diagnostics and Alpha Medical Laboratory are generally competitively priced, while hospital-based labs tend to be higher. Contact labs directly for current pricing on specific tests.",
     },
     {
       question: "What blood tests should I get annually in the UAE?",
@@ -94,7 +88,7 @@ export default function LabsPage() {
 
   const breadcrumbs = [
     { label: "UAE", href: "/" },
-    { label: "Lab Test Price Comparison" },
+    { label: "Lab Tests & Diagnostics" },
   ];
 
   return (
@@ -285,8 +279,6 @@ export default function LabsPage() {
             {LAB_PROFILES.map((lab) => {
               const prices = getPricesForLab(lab.slug);
               const packages = getPackagesForLab(lab.slug);
-              const cheapest =
-                prices.length > 0 ? Math.min(...prices.map((p) => p.price)) : null;
               return (
                 <Link
                   key={lab.slug}
@@ -303,9 +295,7 @@ export default function LabsPage() {
                     <div className="inline-flex items-center gap-1.5 text-ink-soft">
                       <Home className="h-3.5 w-3.5 text-accent-dark" />
                       {lab.homeCollection
-                        ? lab.homeCollectionFee === 0
-                          ? "Free home"
-                          : `Home AED ${lab.homeCollectionFee}`
+                        ? "Home collection"
                         : "Walk-in only"}
                     </div>
                     <div className="inline-flex items-center gap-1.5 text-ink-soft">
@@ -321,11 +311,7 @@ export default function LabsPage() {
                     <p className="font-sans text-z-caption text-ink-muted">
                       {prices.length} tests · {packages.length} packages
                     </p>
-                    {cheapest !== null && (
-                      <p className="font-display font-semibold text-ink text-z-body">
-                        From AED {cheapest}
-                      </p>
-                    )}
+                    
                   </div>
                 </Link>
               );

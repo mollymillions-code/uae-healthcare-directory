@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Package, Check } from "lucide-react";
 import type { HealthPackage } from "@/lib/labs";
-import { getLabProfile, formatPrice } from "@/lib/labs";
+import { getLabProfile } from "@/lib/labs";
 
 interface PackageCardProps {
   pkg: HealthPackage;
@@ -24,15 +24,10 @@ export function PackageCard({ pkg }: PackageCardProps) {
         <p className="text-[11px] text-black/40 mt-1">{pkg.targetAudience}</p>
       </div>
 
-      {/* Price */}
+      {/* Biomarkers */}
       <div className="px-4 py-3 bg-[#f8f8f6]">
-        <div className="flex items-baseline gap-2">
-          <p className="text-xl font-bold text-[#1c1c1c]">{formatPrice(pkg.price)}</p>
-          {pkg.discountedPrice && (
-            <p className="text-xs text-black/40 line-through">{formatPrice(pkg.discountedPrice)}</p>
-          )}
-        </div>
-        <p className="text-[11px] text-black/40">{pkg.biomarkerCount} biomarkers</p>
+        <p className="text-sm font-bold text-[#1c1c1c]">{pkg.biomarkerCount} biomarkers</p>
+        <p className="text-[11px] text-black/40 mt-0.5">Contact lab for current pricing</p>
       </div>
 
       {/* Includes */}

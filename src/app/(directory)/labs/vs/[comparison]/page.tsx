@@ -35,7 +35,6 @@ import {
   getLabProfile,
   getPricesForLab,
   getPackagesForLab,
-  formatPrice,
   compareLabs,
 } from "@/lib/labs";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
@@ -286,9 +285,7 @@ export default async function LabComparisonPage({
     {
       question: `Which is cheaper, ${labA.name} or ${labB.name}?`,
       answer:
-        overallCheaper
-          ? `${overallCheaper} is cheaper on average across all common tests, with an average test price of ${formatPrice(avgA < avgB ? avgA : avgB)} compared to ${formatPrice(avgA < avgB ? avgB : avgA)} — a ${overallDiff}% difference. However, the winner varies by test: ${labA.name} is cheaper on ${aWins} test${aWins !== 1 ? "s" : ""} while ${labB.name} is cheaper on ${bWins}. Check the "Who Wins by Test" table above for individual test prices.`
-          : `${labA.name} and ${labB.name} have very similar average prices. Check the "Who Wins by Test" table above to see which lab offers a better price for the specific test you need.`,
+        `${labA.name} and ${labB.name} are both licensed diagnostic labs in the UAE. Contact each lab directly to compare current pricing for specific tests.`,
     },
     {
       question: `Does ${labA.name} or ${labB.name} have better accreditation?`,
@@ -303,11 +300,11 @@ export default async function LabComparisonPage({
       question: `Which lab offers home collection — ${labA.name} or ${labB.name}?`,
       answer:
         labA.homeCollection && labB.homeCollection
-          ? `Both ${labA.name} and ${labB.name} offer home sample collection. ${labA.name} charges ${labA.homeCollectionFee === 0 ? "free" : `AED ${labA.homeCollectionFee}`} for home collection${labA.homeCollectionFee === 0 ? " (free)" : ""}. ${labB.name} charges ${labB.homeCollectionFee === 0 ? "free" : `AED ${labB.homeCollectionFee}`}${labB.homeCollectionFee === 0 ? " (free)" : ""}. Home collection avoids travel and is especially convenient for fasting tests.`
+          ? `Both ${labA.name} and ${labB.name} offer home sample collection. Home collection avoids travel and is especially convenient for fasting tests. Contact each lab for current home collection fees.`
           : labA.homeCollection
-          ? `${labA.name} offers home collection${labA.homeCollectionFee === 0 ? " free of charge" : ` for AED ${labA.homeCollectionFee}`}. ${labB.name} does not currently offer home collection for this comparison — visit a branch directly.`
+          ? `${labA.name} offers home collection. ${labB.name} does not currently offer home collection — visit a branch directly.`
           : labB.homeCollection
-          ? `${labB.name} offers home collection${labB.homeCollectionFee === 0 ? " free of charge" : ` for AED ${labB.homeCollectionFee}`}. ${labA.name} does not currently offer home collection — visit a branch directly.`
+          ? `${labB.name} offers home collection. ${labA.name} does not currently offer home collection — visit a branch directly.`
           : `Neither ${labA.name} nor ${labB.name} currently offers home collection. Both require an in-branch visit.`,
     },
     {

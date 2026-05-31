@@ -6,7 +6,6 @@ interface LabCardProps {
   lab: LabProfile;
   testCount?: number;
   packageCount?: number;
-  cheapestFrom?: number;
 }
 
 const TYPE_LABELS: Record<LabProfile["type"], string> = {
@@ -16,7 +15,7 @@ const TYPE_LABELS: Record<LabProfile["type"], string> = {
   boutique: "Standalone Lab",
 };
 
-export function LabCard({ lab, testCount, packageCount, cheapestFrom }: LabCardProps) {
+export function LabCard({ lab, testCount, packageCount }: LabCardProps) {
   return (
     <Link
       href={`/labs/${lab.slug}`}
@@ -38,13 +37,6 @@ export function LabCard({ lab, testCount, packageCount, cheapestFrom }: LabCardP
 
       {/* Quick stats */}
       <div className="px-4 py-3 bg-[#f8f8f6] grid grid-cols-2 gap-2">
-        {cheapestFrom !== undefined && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-[#006828]">
-              From AED {cheapestFrom}
-            </span>
-          </div>
-        )}
         {testCount !== undefined && (
           <div className="text-[11px] text-black/40">
             {testCount} tests listed
@@ -68,7 +60,7 @@ export function LabCard({ lab, testCount, packageCount, cheapestFrom }: LabCardP
         {lab.homeCollection && (
           <div className="flex items-center gap-2 text-xs text-[#1c1c1c]">
             <Home className="w-3.5 h-3.5 text-[#006828] flex-shrink-0" />
-            Home collection {lab.homeCollectionFee === 0 ? "(free)" : `(AED ${lab.homeCollectionFee})`}
+            Home collection available
           </div>
         )}
         <div className="flex items-center gap-2 text-xs text-[#1c1c1c]">
