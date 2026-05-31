@@ -36,6 +36,7 @@ import {
   getPricesForLab,
   getPackagesForLab,
   compareLabs,
+  formatPrice,
 } from "@/lib/labs";
 import { breadcrumbSchema, faqPageSchema, speakableSchema } from "@/lib/seo";
 import { getBaseUrl } from "@/lib/helpers";

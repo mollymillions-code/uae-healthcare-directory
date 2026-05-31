@@ -239,21 +239,6 @@ export default function LabsPage() {
                     {test.name}
                   </p>
                 </div>
-                {test.priceRange && (
-                  <div className="text-right shrink-0">
-                    <p className="font-display font-semibold text-ink text-z-h3 leading-none">
-                      {formatPrice(test.priceRange.min)}
-                    </p>
-                    {test.priceRange.min !== test.priceRange.max && (
-                      <p className="font-sans text-z-micro text-ink-muted mt-1">
-                        – {formatPrice(test.priceRange.max)}
-                      </p>
-                    )}
-                    <p className="font-sans text-z-micro text-ink-muted">
-                      {test.priceRange.labCount} labs
-                    </p>
-                  </div>
-                )}
               </Link>
             ))}
           </div>
