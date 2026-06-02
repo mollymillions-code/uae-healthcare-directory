@@ -67,7 +67,12 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr">
       <head>
+        {/* Preconnect to image CDN and Google APIs — reduces LCP by ~200-400ms on cold loads */}
+        <link rel="preconnect" href="https://pub-12b97f7acbe84e70aacc715287b58c72.r2.dev" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://places.googleapis.com" />
+        {/* Preload critical display font — prevents render-blocking on first paint */}
+        <link rel="preload" as="font" href="/fonts/degular/DegularDisplayDemo-Semibold.otf" type="font/otf" crossOrigin="anonymous" />
       </head>
       {/* Lightweight tracking shims. Heavy marketing tags load after interaction or an 8s timeout in DeferredMarketingTags. */}
       <Script id="tracking-shims" strategy="lazyOnload">{`window.dataLayer=window.dataLayer||[];function gtag(){var a=arguments;if(a[0]==="event"){var n=a[1];if(n==="engaged_session"||n==="scroll_milestone"||n==="outbound_click"||n==="contact_click")return;}dataLayer.push(a);}window.gtag=gtag;if(!window.fbq){window.fbq=function(){window.fbq.queue=window.fbq.queue||[];window.fbq.queue.push(arguments)};window.fbq.queue=[];}if(!window.lintrk){window.lintrk=function(){window.lintrk.q=window.lintrk.q||[];window.lintrk.q.push(arguments)};window.lintrk.q=[];}if(!window.clarity){window.clarity=function(){window.clarity.q=window.clarity.q||[];window.clarity.q.push(arguments)};window.clarity.q=[];}`}</Script>

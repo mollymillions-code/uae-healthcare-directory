@@ -369,7 +369,7 @@ export default async function CityPage(props: Props) {
             </div>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 z-stagger">
-            {featured.map((p) => {
+            {featured.map((p, idx) => {
               const cat = categories.find((c) => c.slug === p.categorySlug);
               return (
                 <ProviderCardStatic
@@ -386,7 +386,7 @@ export default async function CityPage(props: Props) {
                   isVerified={p.isVerified}
                   photos={p.photos ?? []}
                   coverImageUrl={p.coverImageUrl ?? null}
-                  priority={false}
+                  priority={idx < 2}
                 />
               );
             })}

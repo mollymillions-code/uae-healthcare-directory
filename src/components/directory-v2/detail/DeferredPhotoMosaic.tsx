@@ -3,9 +3,11 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 
+// SSR enabled so the browser can discover and prioritise the first image
+// during HTML parse — critical for LCP on provider detail pages.
 const PhotoMosaic = dynamic(
   () => import("./PhotoMosaic").then((mod) => mod.PhotoMosaic),
-  { ssr: false },
+  { ssr: true },
 );
 
 interface DeferredPhotoMosaicProps {
@@ -17,14 +19,13 @@ interface DeferredPhotoMosaicProps {
 
 export function DeferredPhotoMosaic(props: DeferredPhotoMosaicProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(true); // render immediately — first image needs priority
 
   useEffect(() => {
+    // For images beyond the first (priorityCount), still use IntersectionObserver
+    // to avoid loading off-screen images. But the component itself renders on server.
     const node = rootRef.current;
-    if (!node || typeof IntersectionObserver === "undefined") {
-      setReady(true);
-      return;
-    }
+    if (!node || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
@@ -32,7 +33,7 @@ export function DeferredPhotoMosaic(props: DeferredPhotoMosaicProps) {
           observer.disconnect();
         }
       },
-      { rootMargin: "240px 0px" },
+      { rootMargin: "400px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -40,11 +41,7 @@ export function DeferredPhotoMosaic(props: DeferredPhotoMosaicProps) {
 
   return (
     <div ref={rootRef} className="relative w-full">
-      {ready ? (
-        <PhotoMosaic {...props} deferUntilVisible={false} />
-      ) : (
-        <div className="rounded-z-lg border border-ink-line bg-white/70 aspect-[5/3] md:aspect-[2/1]" />
-      )}
+      <PhotoMosaic {...props} deferUntilVisible={false} />
     </div>
   );
 }
